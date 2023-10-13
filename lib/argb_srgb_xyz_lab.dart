@@ -1,3 +1,20 @@
+// Modified and maintained by open-source contributors, on behalf of libmonet.
+//
+// Original notice:
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import 'dart:math';
 
 /// Returns the standard white point, D65. Blue-white of a sunny day.
@@ -7,7 +24,7 @@ const _srgbToXyz = [
   [0.2126, 0.7152, 0.0722],
   [0.01932141, 0.11916382, 0.95034478],
 ];
-const _midgrayY = 0.1842;  /* yFromLstar(50.0) */
+const _midgrayY = 0.1842; /* yFromLstar(50.0) */
 const srgbAdaptingLuminance = 200.0 / pi * _midgrayY / 100.0;
 
 const _xyzToSrgb = [
@@ -35,10 +52,11 @@ int argbFromRgb(int red, int green, int blue) {
 
 /// Converts a color from linear RGB components to ARGB format.
 int argbFromLinrgb(List<double> linrgb) {
-  final r = delinear(linrgb[0]);
-  final g = delinear(linrgb[1]);
-  final b = delinear(linrgb[2]);
-  return argbFromRgb(r, g, b);
+  return argbFromLinrgbComponents(linrgb[0], linrgb[1], linrgb[2]);
+}
+
+int argbFromLinrgbComponents(double r, double g, double b) {
+  return argbFromRgb(delinear(r), delinear(g), delinear(b));
 }
 
 /// Returns the red component of a color in ARGB format.
@@ -192,6 +210,15 @@ int delinear(double rgbComponent) {
   return raw.clamp(0, 255).round();
 }
 
+/// Ensures [degrees] is between 0 and 360.
+double sanitizeDegreesDouble(double degrees) {
+  degrees = degrees % 360.0;
+  if (degrees < 0) {
+    degrees = degrees + 360.0;
+  }
+  return degrees;
+}
+  
 double _labF(double t) {
   const e = 216.0 / 24389.0;
   const kappa = 24389.0 / 27.0;
