@@ -1,7 +1,4 @@
 library libmonet;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'cam16.dart';
+export 'cam16_viewing_conditions.dart';
