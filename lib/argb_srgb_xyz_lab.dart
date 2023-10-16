@@ -19,7 +19,7 @@ import 'dart:math';
 
 /// Returns the standard white point, D65. Blue-white of a sunny day.
 const whitePointD65 = [95.047, 100.0, 108.883];
-const _srgbToXyz = [
+const kSrgbToXyz = [
   [0.41233895, 0.35762064, 0.18051042],
   [0.2126, 0.7152, 0.0722],
   [0.01932141, 0.11916382, 0.95034478],
@@ -86,18 +86,6 @@ int argbFromXyz(double x, double y, double z) {
   return argbFromRgb(r, g, b);
 }
 
-/// Converts a color from XYZ to ARGB.
-List<double> xyzFromArgb(int argb) {
-  final r = linear(redFromArgb(argb));
-  final g = linear(greenFromArgb(argb));
-  final b = linear(blueFromArgb(argb));
-  const m = _srgbToXyz;
-  final x = r * m[0][0] + g * m[0][1] + b * m[0][2];
-  final y = r * m[1][0] + g * m[1][1] + b * m[1][2];
-  final z = r * m[2][0] + g * m[2][1] + b * m[2][2];
-  return [x, y, z];
-}
-
 /// Convert a color from L*a*b* to RGB.
 int argbFromLab(double l, double a, double b) {
   const whitePoint = whitePointD65;
@@ -121,7 +109,7 @@ List<double> labFromArgb(int argb) {
   final linearR = linear(redFromArgb(argb));
   final linearG = linear(greenFromArgb(argb));
   final linearB = linear(blueFromArgb(argb));
-  const matrix = _srgbToXyz;
+  const matrix = kSrgbToXyz;
   final x =
       matrix[0][0] * linearR + matrix[0][1] * linearG + matrix[0][2] * linearB;
   final y =
@@ -158,7 +146,7 @@ double lstarFromArgb(int argb) {
   final r = linear(redFromArgb(argb));
   final g = linear(greenFromArgb(argb));
   final b = linear(blueFromArgb(argb));
-  const m = _srgbToXyz;
+  const m = kSrgbToXyz;
   final y = r * m[1][0] + g * m[1][1] + b * m[1][2];
   return 116.0 * _labF(y / 100.0) - 16.0;
 }

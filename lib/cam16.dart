@@ -94,11 +94,13 @@ class Cam16 {
   /// Given [viewingConditions], convert [argb] to CAM16.
   static Cam16 fromIntInViewingConditions(
       int argb, Cam16ViewingConditions viewingConditions) {
-    // Transform ARGB int to XYZ
-    final xyz = xyzFromArgb(argb);
-    final x = xyz[0];
-    final y = xyz[1];
-    final z = xyz[2];
+    final r = linear(redFromArgb(argb));
+    final g = linear(greenFromArgb(argb));
+    final b = linear(blueFromArgb(argb));
+    const m = kSrgbToXyz;
+    final x = r * m[0][0] + g * m[0][1] + b * m[0][2];
+    final y = r * m[1][0] + g * m[1][1] + b * m[1][2];
+    final z = r * m[2][0] + g * m[2][1] + b * m[2][2];
     return fromXyzInViewingConditions(x, y, z, viewingConditions);
   }
 

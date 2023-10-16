@@ -506,14 +506,6 @@ class HctSolver {
     return [left, right];
   }
 
-  static List<double> _midpoint(List<double> a, List<double> b) {
-    return [
-      (a[0] + b[0]) / 2,
-      (a[1] + b[1]) / 2,
-      (a[2] + b[2]) / 2,
-    ];
-  }
-
   static int _criticalPlaneBelow(double x) {
     return (x - 0.5).floor();
   }
@@ -526,8 +518,8 @@ class HctSolver {
   /// cube.
   ///
   /// Returns the color with the desired Y value [y] and hue
-  /// [targetHue], in linear RGB coordinates.
-  static List<double> _bisectToLimit(double y, double targetHue) {
+  /// [targetHue], as an ARGB integer.
+  static int _bisectToLimit(double y, double targetHue) {
     final segment = _bisectToSegment(y, targetHue);
     var left = segment[0];
     var leftHue = _hueOf(left);
@@ -563,7 +555,14 @@ class HctSolver {
         }
       }
     }
-    return _midpoint(left, right);
+    
+    // return _midpoint(left, right);
+    // Inline midpoint:
+    return argbFromLinrgbComponents(
+      (left[0] + right[0]) / 2,
+      (left[1] + right[1]) / 2,
+      (left[2] + right[2]) / 2,
+    );
   }
 
   static double _inverseChromaticAdaptation(double adapted) {
@@ -677,8 +676,7 @@ class HctSolver {
     if (exactAnswer != 0) {
       return exactAnswer;
     }
-    final linrgb = _bisectToLimit(y, hueRadians);
-    return argbFromLinrgb(linrgb);
+    return _bisectToLimit(y, hueRadians);
   }
 
   /// Finds a CAM16 object with the given hue, chroma, and L*, if
