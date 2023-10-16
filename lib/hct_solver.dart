@@ -25,7 +25,7 @@ import 'package:libmonet/math.dart';
 
 /// A class that solves the HCT equation.
 class HctSolver {
-  static final _scaledDiscountFromLinrgb = [
+  static const _scaledDiscountFromLinrgb = [
     [
       0.001200833568784504,
       0.002389694492170889,
@@ -43,7 +43,7 @@ class HctSolver {
     ],
   ];
 
-  static final _linrgbFromScaledDiscount = [
+  static const _linrgbFromScaledDiscount = [
     [
       1373.2198709594231,
       -1100.4251190754821,
@@ -61,9 +61,9 @@ class HctSolver {
     ],
   ];
 
-  static final _yFromLinrgb = [0.2126, 0.7152, 0.0722];
+  static const _yFromLinrgb = [0.2126, 0.7152, 0.0722];
 
-  static final _criticalPlanes = [
+  static const _criticalPlanes = [
     0.015176349177441876,
     0.045529047532325624,
     0.07588174588720938,
