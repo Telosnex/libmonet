@@ -411,7 +411,6 @@ class HctSolver {
     double midR, midG, midB;
     double leftHue = 0.0;
     double rightHue = 0.0;
-    bool initialized = false;
     bool uncut = true;
 
     for (var n = 0; n < 12; n++) {
