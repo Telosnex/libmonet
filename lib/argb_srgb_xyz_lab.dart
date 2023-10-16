@@ -50,11 +50,6 @@ int argbFromRgb(int red, int green, int blue) {
   return 255 << 24 | (red & 255) << 16 | (green & 255) << 8 | blue & 255;
 }
 
-/// Converts a color from linear RGB components to ARGB format.
-int argbFromLinrgb(List<double> linrgb) {
-  return argbFromLinrgbComponents(linrgb[0], linrgb[1], linrgb[2]);
-}
-
 int argbFromLinrgbComponents(double r, double g, double b) {
   return argbFromRgb(delinear(r), delinear(g), delinear(b));
 }
