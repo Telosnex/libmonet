@@ -24,7 +24,7 @@ const kSrgbToXyz = [
   [0.2126, 0.7152, 0.0722],
   [0.01932141, 0.11916382, 0.95034478],
 ];
-const _midgrayY = 0.1842; /* yFromLstar(50.0) */
+const _midgrayY = 18.418651851244416; /* yFromLstar(50.0) */
 const srgbAdaptingLuminance = 200.0 / pi * _midgrayY / 100.0;
 
 const _xyzToSrgb = [

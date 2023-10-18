@@ -20,12 +20,13 @@
 import 'dart:math';
 
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:libmonet/cam16.dart';
+import 'package:libmonet/cam16_viewing_conditions.dart';
 import 'package:libmonet/math.dart';
 
 /// A class that solves the HCT equation.
 class HctSolver {
-  static const _scaledDiscountFromLinrgb = [
+  static final _scaledDiscountFromLinrgb = [
     [
       0.001200833568784504,
       0.002389694492170889,
@@ -43,7 +44,7 @@ class HctSolver {
     ],
   ];
 
-  static const _linrgbFromScaledDiscount = [
+  static final _linrgbFromScaledDiscount = [
     [
       1373.2198709594231,
       -1100.4251190754821,
@@ -61,9 +62,9 @@ class HctSolver {
     ],
   ];
 
-  static const _yFromLinrgb = [0.2126, 0.7152, 0.0722];
+  static final _yFromLinrgb = [0.2126, 0.7152, 0.0722];
 
-  static const _criticalPlanes = [
+  static final _criticalPlanes = [
     0.015176349177441876,
     0.045529047532325624,
     0.07588174588720938,
@@ -353,25 +354,17 @@ class HctSolver {
 
   /// Returns the hue of [linrgb], a linear RGB color, in CAM16, in
   /// radians.
-  static double _hueOf(double r, double g, double b) {
-    final dR = r * _scaledDiscountFromLinrgb[0][0] +
-        g * _scaledDiscountFromLinrgb[0][1] +
-        b * _scaledDiscountFromLinrgb[0][2];
-    final dG = r * _scaledDiscountFromLinrgb[1][0] +
-        g * _scaledDiscountFromLinrgb[1][1] +
-        b * _scaledDiscountFromLinrgb[1][2];
-    final dB = r * _scaledDiscountFromLinrgb[2][0] +
-        g * _scaledDiscountFromLinrgb[2][1] +
-        b * _scaledDiscountFromLinrgb[2][2];
-
-    final rA = _chromaticAdaptation(dR);
-    final gA = _chromaticAdaptation(dG);
-    final bA = _chromaticAdaptation(dB);
+  static double _hueOf(List<double> linrgb) {
+    final scaledDiscount =
+        _matrixMultiply(linrgb, _scaledDiscountFromLinrgb);
+    final rA = _chromaticAdaptation(scaledDiscount[0]);
+    final gA = _chromaticAdaptation(scaledDiscount[1]);
+    final bA = _chromaticAdaptation(scaledDiscount[2]);
     // redness-greenness
-    final a2 = (11.0 * rA + -12.0 * gA + bA) / 11.0;
+    final a = (11.0 * rA + -12.0 * gA + bA) / 11.0;
     // yellowness-blueness
-    final b2 = (rA + gA - 2.0 * bA) / 9.0;
-    return atan2(b2, a2);
+    final b = (rA + gA - 2.0 * bA) / 9.0;
+    return atan2(b, a);
   }
 
   static bool _areInCyclicOrder(double a, double b, double c) {
@@ -388,8 +381,127 @@ class HctSolver {
     return (mid - source) / (target - source);
   }
 
+  static List<double> _lerpPoint(
+      List<double> source, double t, List<double> target) {
+    return [
+      source[0] + (target[0] - source[0]) * t,
+      source[1] + (target[1] - source[1]) * t,
+      source[2] + (target[2] - source[2]) * t,
+    ];
+  }
+
+  /// Intersects a segment with a plane.
+  ///
+  /// Returns the intersection point of:
+  /// - the segment with [source] and [target] as its endpoints, and
+  /// - the plane
+  /// ... R = [coordinate] if [axis] == 0
+  /// ... G = [coordinate] if [axis] == 1
+  /// ... B = [coordinate] if [axis] == 2
+  static List<double> _setCoordinate(
+    List<double> source,
+    double coordinate,
+    List<double> target,
+    int axis,
+  ) {
+    final t = _intercept(source[axis], coordinate, target[axis]);
+    return _lerpPoint(source, t, target);
+  }
+
   static bool _isBounded(double x) {
     return 0.0 <= x && x <= 100.0;
+  }
+
+  /// Returns the nth possible vertex of the polygonal intersection.
+  ///
+  /// Given a plane Y = [y] and an zero-based index [n] such that 0
+  /// <= [n] <= 11, returns the nth possible vertex of the polygonal
+  /// intersection of the plane and the RGB cube, in linear RGB
+  /// coordinates, if it exists.
+  /// If this possible vertex lies outside of the cube, [-1.0, -1.0,
+  /// -1.0] is returned.
+  static List<double> _nthVertex(double y, int n) {
+    final kR = _yFromLinrgb[0];
+    final kG = _yFromLinrgb[1];
+    final kB = _yFromLinrgb[2];
+    final coordA = n % 4 <= 1 ? 0.0 : 100.0;
+    final coordB = n % 2 == 0 ? 0.0 : 100.0;
+    if (n < 4) {
+      final g = coordA;
+      final b = coordB;
+      final r = (y - g * kG - b * kB) / kR;
+      if (_isBounded(r)) {
+        return [r, g, b];
+      } else {
+        return [-1.0, -1.0, -1.0];
+      }
+    } else if (n < 8) {
+      final b = coordA;
+      final r = coordB;
+      final g = (y - r * kR - b * kB) / kG;
+      if (_isBounded(g)) {
+        return [r, g, b];
+      } else {
+        return [-1.0, -1.0, -1.0];
+      }
+    } else {
+      final r = coordA;
+      final g = coordB;
+      final b = (y - r * kR - g * kG) / kB;
+      if (_isBounded(b)) {
+        return [r, g, b];
+      } else {
+        return [-1.0, -1.0, -1.0];
+      }
+    }
+  }
+
+  /// Finds the segment containing the desired color.
+  ///
+  /// Given a plane Y = [y] and a desired [target_hue], returns the
+  /// segment containing the desired color, represented as an array of
+  /// its two endpoints.
+  static List<List<double>> _bisectToSegment(double y, double targetHue) {
+    var left = [-1.0, -1.0, -1.0];
+    var right = left;
+    var leftHue = 0.0;
+    var rightHue = 0.0;
+    var initialized = false;
+    var uncut = true;
+    for (var n = 0; n < 12; n++) {
+      final mid = _nthVertex(y, n);
+      if (mid[0] < 0) {
+        continue;
+      }
+      final midHue = _hueOf(mid);
+      if (!initialized) {
+        left = mid;
+        right = mid;
+        leftHue = midHue;
+        rightHue = midHue;
+        initialized = true;
+        continue;
+      }
+      if (uncut || _areInCyclicOrder(leftHue, midHue, rightHue)) {
+        uncut = false;
+        if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
+          right = mid;
+          rightHue = midHue;
+        } else {
+          left = mid;
+          leftHue = midHue;
+        }
+      }
+    }
+    return [left, right];
+  }
+
+  static List<double> _midpoint(List<double> a, List<double> b) {
+    return [
+      (a[0] + b[0]) / 2,
+      (a[1] + b[1]) / 2,
+      (a[2] + b[2]) / 2,
+    ];
   }
 
   static int _criticalPlaneBelow(double x) {
@@ -404,120 +516,22 @@ class HctSolver {
   /// cube.
   ///
   /// Returns the color with the desired Y value [y] and hue
-  /// [targetHue], as an ARGB integer.
-  static int _bisectToLimit(double y, double targetHue) {
-    double leftR = -1.0, leftG = -1.0, leftB = -1.0;
-    double rightR = -1.0, rightG = -1.0, rightB = -1.0;
-    double midR, midG, midB;
-    double leftHue = 0.0;
-    double rightHue = 0.0;
-    bool uncut = true;
-
-    for (var n = 0; n < 12; n++) {
-      midR = -1.0;
-      midG = -1.0;
-      midB = -1.0;
-
-      // Formerly: static List<double> _nthVertex(double y, int n) {
-      // Given a plane Y = [y] and an zero-based index [n] such that 0
-      // <= [n] <= 11, returns the nth possible vertex of the polygonal
-      // intersection of the plane and the RGB cube, in linear RGB
-      // coordinates, if it exists.
-      // If this possible vertex lies outside of the cube, [-1.0, -1.0,
-      // -1.0] is returned.
-      double kR = _yFromLinrgb[0];
-      double kG = _yFromLinrgb[1];
-      double kB = _yFromLinrgb[2];
-      double coordA = n % 4 <= 1 ? 0.0 : 100.0;
-      double coordB = n % 2 == 0 ? 0.0 : 100.0;
-      if (n < 4) {
-        double g = coordA;
-        double b = coordB;
-        double r = (y - g * kG - b * kB) / kR;
-        if (_isBounded(r)) {
-          midR = r;
-          midG = g;
-          midB = b;
-        }
-      } else if (n < 8) {
-        double b = coordA;
-        double r = coordB;
-        double g = (y - r * kR - b * kB) / kG;
-        if (_isBounded(g)) {
-          midR = r;
-          midG = g;
-          midB = b;
-        }
-      } else {
-        double r = coordA;
-        double g = coordB;
-        double b = (y - r * kR - g * kG) / kB;
-        if (_isBounded(b)) {
-          midR = r;
-          midG = g;
-          midB = b;
-        }
-      }
-      // Skip if midR < 0
-      if (midR < 0) continue;
-
-      double midHue = _hueOf(midR, midG, midB);
-      if (leftR < 0) {
-        leftR = rightR = midR;
-        leftG = rightG = midG;
-        leftB = rightB = midB;
-        leftHue = rightHue = midHue;
-        continue;
-      }
-      if (uncut || _areInCyclicOrder(leftHue, midHue, rightHue)) {
-        uncut = false;
-        if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
-          rightR = midR;
-          rightG = midG;
-          rightB = midB;
-          rightHue = midHue;
-        } else {
-          leftR = midR;
-          leftG = midG;
-          leftB = midB;
-          leftHue = midHue;
-        }
-      }
-    }
-
-    // Formerly: static List<List<double>> _bisectToSegment
-    // Finds the segment containing the desired color.
-    // 
-    // Given a plane Y = [y] and a desired [target_hue], returns the
-    // segment containing the desired color, represented as an array of
-    // its two endpoints.
-    leftHue = _hueOf(leftR, leftG, leftB);
+  /// [targetHue], in linear RGB coordinates.
+  static List<double> _bisectToLimit(double y, double targetHue) {
+    final segment = _bisectToSegment(y, targetHue);
+    var left = segment[0];
+    var leftHue = _hueOf(left);
+    var right = segment[1];
     for (var axis = 0; axis < 3; axis++) {
-      double leftVal = 0.0, rightVal = 0.0;
-      switch (axis) {
-        case 0:
-          leftVal = leftR;
-          rightVal = rightR;
-          break;
-        case 1:
-          leftVal = leftG;
-          rightVal = rightG;
-          break;
-        case 2:
-          leftVal = leftB;
-          rightVal = rightB;
-          break;
-      }
-
-      if (leftVal != rightVal) {
+      if (left[axis] != right[axis]) {
         var lPlane = -1;
         var rPlane = 255;
-        if (leftVal < rightVal) {
-          lPlane = _criticalPlaneBelow(_trueDelinearized(leftVal));
-          rPlane = _criticalPlaneAbove(_trueDelinearized(rightVal));
+        if (left[axis] < right[axis]) {
+          lPlane = _criticalPlaneBelow(_trueDelinearized(left[axis]));
+          rPlane = _criticalPlaneAbove(_trueDelinearized(right[axis]));
         } else {
-          lPlane = _criticalPlaneAbove(_trueDelinearized(leftVal));
-          rPlane = _criticalPlaneBelow(_trueDelinearized(rightVal));
+          lPlane = _criticalPlaneAbove(_trueDelinearized(left[axis]));
+          rPlane = _criticalPlaneBelow(_trueDelinearized(right[axis]));
         }
         for (var i = 0; i < 8; i++) {
           if ((rPlane - lPlane).abs() <= 1) {
@@ -525,37 +539,13 @@ class HctSolver {
           } else {
             final mPlane = ((lPlane + rPlane) / 2.0).floor();
             final midPlaneCoordinate = _criticalPlanes[mPlane];
-            double t = _intercept(leftVal, midPlaneCoordinate, rightVal);
-            final midR = leftR + (rightR - leftR) * t;
-            final midG = leftG + (rightG - leftG) * t;
-            final midB = leftB + (rightB - leftB) * t;
-
-            final midHue = _hueOf(midR, midG, midB);
+            final mid = _setCoordinate(left, midPlaneCoordinate, right, axis);
+            final midHue = _hueOf(mid);
             if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
-              switch (axis) {
-                case 0:
-                  rightR = midR;
-                  break;
-                case 1:
-                  rightG = midG;
-                  break;
-                case 2:
-                  rightB = midB;
-                  break;
-              }
+              right = mid;
               rPlane = mPlane;
             } else {
-              switch (axis) {
-                case 0:
-                  leftR = midR;
-                  break;
-                case 1:
-                  leftG = midG;
-                  break;
-                case 2:
-                  leftB = midB;
-                  break;
-              }
+              left = mid;
               leftHue = midHue;
               lPlane = mPlane;
             }
@@ -563,12 +553,7 @@ class HctSolver {
         }
       }
     }
-
-    return argbFromLinrgbComponents(
-      (leftR + rightR) / 2,
-      (leftG + rightG) / 2,
-      (leftB + rightB) / 2,
-    );
+    return _midpoint(left, right);
   }
 
   static double _inverseChromaticAdaptation(double adapted) {
@@ -625,35 +610,28 @@ class HctSolver {
       final rCScaled = _inverseChromaticAdaptation(rA);
       final gCScaled = _inverseChromaticAdaptation(gA);
       final bCScaled = _inverseChromaticAdaptation(bA);
-
-      // Inline MATMUL
-      final lR = rCScaled * _linrgbFromScaledDiscount[0][0] +
-          gCScaled * _linrgbFromScaledDiscount[0][1] +
-          bCScaled * _linrgbFromScaledDiscount[0][2];
-      final lG = rCScaled * _linrgbFromScaledDiscount[1][0] +
-          gCScaled * _linrgbFromScaledDiscount[1][1] +
-          bCScaled * _linrgbFromScaledDiscount[1][2];
-      final lB = rCScaled * _linrgbFromScaledDiscount[2][0] +
-          gCScaled * _linrgbFromScaledDiscount[2][1] +
-          bCScaled * _linrgbFromScaledDiscount[2][2];
+      final linrgb = _matrixMultiply(
+        [rCScaled, gCScaled, bCScaled],
+        _linrgbFromScaledDiscount,
+      );
       // ===========================================================
       // Operations inlined from Cam16 to avoid repeated calculation
       // ===========================================================
-      if (lR < 0 || lG < 0 || lB < 0) {
+      if (linrgb[0] < 0 || linrgb[1] < 0 || linrgb[2] < 0) {
         return 0;
       }
       final kR = _yFromLinrgb[0];
       final kG = _yFromLinrgb[1];
       final kB = _yFromLinrgb[2];
-      final fnj = kR * lR + kG * lG + kB * lB;
+      final fnj = kR * linrgb[0] + kG * linrgb[1] + kB * linrgb[2];
       if (fnj <= 0) {
         return 0;
       }
       if (iterationRound == 4 || (fnj - y).abs() < 0.002) {
-        if (lR > 100.01 || lG > 100.01 || lB > 100.01) {
+        if (linrgb[0] > 100.01 || linrgb[1] > 100.01 || linrgb[2] > 100.01) {
           return 0;
         }
-        return argbFromLinrgbComponents(lR, lG, lB);
+        return argbFromLinrgbComponents(linrgb[0], linrgb[1], linrgb[2]);
       }
       // Iterates with Newton method,
       // Using 2 * fn(j) / j as the approximation of fn'(j)
@@ -681,7 +659,8 @@ class HctSolver {
     if (exactAnswer != 0) {
       return exactAnswer;
     }
-    return _bisectToLimit(y, hueRadians);
+    final linrgb = _bisectToLimit(y, hueRadians);
+    return argbFromLinrgbComponents(linrgb[0], linrgb[1], linrgb[2]);
   }
 
   /// Finds a CAM16 object with the given hue, chroma, and L*, if
@@ -694,5 +673,16 @@ class HctSolver {
   /// chroma will be maximized.
   static Cam16 solveToCam(double hueDegrees, double chroma, double lstar) {
     return Cam16.fromInt(solveToInt(hueDegrees, chroma, lstar));
+  }
+
+  static List<double> _matrixMultiply(
+      List<double> row, List<List<double>> matrix) {
+    final a =
+        row[0] * matrix[0][0] + row[1] * matrix[0][1] + row[2] * matrix[0][2];
+    final b =
+        row[0] * matrix[1][0] + row[1] * matrix[1][1] + row[2] * matrix[1][2];
+    final c =
+        row[0] * matrix[2][0] + row[1] * matrix[2][1] + row[2] * matrix[2][2];
+    return [a, b, c];
   }
 }
