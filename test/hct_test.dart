@@ -41,7 +41,6 @@ void main() {
   });
 
   test('y_midgray', () {
-    print('yFromLstar(50.0) = ${yFromLstar(50.0)}');
     expect(18.418, closeTo(yFromLstar(50.0), 0.001));
   });
 

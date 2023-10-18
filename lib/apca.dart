@@ -43,13 +43,59 @@ const double mExpAdj = 0.2833433964208690;
 const double mExp = 0.2833433964208690 / 1.414;
 const double mOffsetOut = 0.3128657958707580;
 
+// Extracted from apcaContrast in original source, so all functions can use it
+// for validation.
+const inputClampMin = 0.0;
+const inputClampMax = 1.1;
+double inBoundsApcaY(double apcaY) {
+  if (apcaY < inputClampMin) {
+    apcaY = inputClampMin;
+  }
+  if (apcaY > inputClampMax) {
+    apcaY = inputClampMax;
+  }
+
+  apcaY = _fixupForBlackThreshold(apcaY);
+
+  return apcaY;
+}
+
+int apcaYToGrayscaleArgb(double apcaY) {
+  // Given answer is graycale, can assume R = G = B
+  // Therefore:
+  // sRCO * simpleExp(R) + sGCO * simpleExp(G) + sBCO * simpleExp(B) = Y
+  // is equivalent to:
+  // sRCO * simpleExp(R) + sGCO * simpleExp(R) + sBCO * simpleExp(R) = Y
+  // Therefore:
+  // (sRCO + sGCO + sBCO) * simpleExp(X) = Y
+  // simpleExp(X) = Y / (sRCO + sGCO + sBCO)
+  // simpleExp(X) = (X / 255) ^ 2.4
+  // Therefore:
+  // (sRCO + sGCO + sBCO) * (X / 255) ^ 2.4 = Y
+  // (X / 255) ^ 2.4 = (Y / (sRCO + sGCO + sBCO))
+  // X / 255 = (Y / (sRCO + sGCO + sBCO)) ^ (1/2.4)
+  // X = 255 * (Y / (sRCO + sGCO + sBCO)) ^ (1/2.4)
+  final channel = (255.0 * math.pow(apcaY / (sRco + sGco + sBco), 1.0 / 2.4))
+      .round()
+      .clamp(0, 255);
+  return argbFromRgb(channel, channel, channel);
+}
+
+double apcaYToLstar(double apcaY) {
+  return lstarFromArgb(apcaYToGrayscaleArgb(apcaY));
+}
+
+double lstarToApcaY(double lstar) {
+  return argbToApcaY(argbFromLstar(lstar));
+}
+
 double argbToApcaY(int argb) {
   double simpleExp(int channel) {
     return math.pow(channel.toDouble() / 255.0, mainTrc).toDouble();
   }
 
   return sRco * simpleExp(redFromArgb(argb)) +
-      sGco * simpleExp(greenFromArgb(argb)) + 
+      sGco * simpleExp(greenFromArgb(argb)) +
       sBco * simpleExp(blueFromArgb(argb));
 }
 
@@ -66,6 +112,159 @@ double _fixupForBlackThreshold(double apcaY) {
   }
 }
 
+double lighterBackgroundLstar(double textLstar, double apca) {
+  final lighterBackgroundApcaYValue =
+      lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
+  return apcaYToLstar(lighterBackgroundApcaYValue);
+}
+
+double lighterTextLstar(double backgroundLstar, double apca) {
+  final lighterTextApcaYValue =
+      lighterTextApcaY(lstarToApcaY(backgroundLstar), apca);
+  return apcaYToLstar(lighterTextApcaYValue);
+}
+
+double darkerBackgroundLstar(double textLstar, double apca) {
+  final darkerBackgroundApcaYValue =
+      darkerBackgroundApcaY(lstarToApcaY(textLstar), apca);
+  return apcaYToLstar(darkerBackgroundApcaYValue);
+}
+
+double darkerTextLstar(double backgroundYLstar, double apca) {
+  final darkerTextApcaYValue =
+      darkerTextApcaY(lstarToApcaY(backgroundYLstar), apca);
+  return apcaYToLstar(darkerTextApcaYValue);
+}
+
+double lighterBackgroundApcaY(double textApcaY, double apca) {
+  textApcaY = inBoundsApcaY(textApcaY);
+  apca = apca / 100.0;
+  // Go backwards through apcaContrastOfApcaY with background > text
+  final sapc = apca == 0.0 ? 0.0 : apca + loBoWOffset;
+  // k1 = normBg
+  // k2 = normText
+  // k3 = scaleBoW
+  // x = sapc
+  // y = backgroundApcaY
+  // z = textApcaY
+
+  // Find Y:
+  // sapc = (backgroundApcaY ^ normBg - textApcaY ^ normText) * scaleBoW
+  // x = (y^k1 - z^k2) * k3
+  // x / k3 = y ^ k1 - z ^k2
+  // x / k3 + z ^ k2 = y ^ k1
+  // y ^ k1 = x / k3 + z ^ k2
+  // y = (x / k3 + z ^ k2) ^ (1/k1)
+  final bgApcaY = math
+      .pow((sapc / scaleBoW) + math.pow(textApcaY, normText), 1.0 / normBg)
+      .toDouble();
+  return bgApcaY;
+}
+
+double lighterTextApcaY(double backgroundApcaY, double apca) {
+  backgroundApcaY = inBoundsApcaY(backgroundApcaY);
+  apca = apca / 100.0;
+  // Go backwards through apcaContrastOfApcaY with background < text
+  final sapc = apca == 0.0 ? 0.0 : apca - loWoBOffset;
+  // k1 = normBg
+  // k2 = normText
+  // k3 = scaleBoW
+  // x = sapc
+  // y = backgroundApcaY
+  // z = textApcaY
+
+  // Find Z:
+  // sapc = (backgroundApcaY ^ revBg - textApcaY ^ revText) * scaleWoB
+  // x = (y^k1 - z^k2) * k3
+  // x / k3 = y^k1 - z^k2
+  // x / k3 + z^k2 = y^k1
+  // z^k2 = (y^k1 - x / k3)
+  // z = ((y^k1) - (x / k3)) ^ (1/k2)
+  final textApcaY = math
+      .pow(
+        math.pow(backgroundApcaY, revBg) - (sapc / scaleWoB),
+        1.0 / revText,
+      )
+      .toDouble();
+  return textApcaY;
+}
+
+double darkerBackgroundApcaY(double textApcaY, double apca) {
+  textApcaY = inBoundsApcaY(textApcaY);
+  apca = apca / 100.0;
+  // Go backwards through apcaContrastOfApcaY with background < text
+  final sapc = apca == 0.0 ? 0.0 : apca - loWoBOffset;
+
+  // k1 = revBg
+  // k2 = revText
+  // k3 = scaleWoB
+  // x = sapc
+  // y = backgroundApcaY
+  // z = textApcaY
+
+  // Find Y:
+  // sapc = (backgroundApcaY ^ revBg - textApcaY ^ revText) * scaleWoB
+  // x = (y^k1 - z^k2) * k3
+  // x / k3 = y ^ k1 - z ^k2
+  // x / k3 + z ^ k2 = y ^ k1
+  // y ^ k1 = x / k3 + z ^ k2
+  // y = (x / k3 + z ^ k2) ^ (1/k1)
+  final base = (sapc / scaleWoB) + math.pow(textApcaY, revText);
+  if (base < 0) {
+    // Why?
+    // #1 Raising a negative number to a fractional power returns NaN.
+    // #2 What this tells us is that the text is too dark to be legible on
+    //    any background at the desired contrast level (apca), even the darkest.
+    // #3 The lighter functions somehow inherently fail gracefully in this
+    //    case and simply return 100.0. Nothing was added to induce that.
+    // Therefore, we match the behavior of the lighter functions and return
+    // the lowest possible in-bounds value.
+    return 0;
+  }
+  final bgApcaY = math.pow(base, 1.0 / revBg).toDouble();
+  return bgApcaY;
+}
+
+double darkerTextApcaY(double backgroundApcaY, double apca) {
+  backgroundApcaY = inBoundsApcaY(backgroundApcaY);
+  apca = apca / 100.0;
+  // Go backwards through apcaContrastOfApcaY with background > text
+  final sapc = apca == 0.0 ? 0.0 : apca + loBoWOffset;
+  // k1 = normBg
+  // k2 = normText
+  // k3 = scaleBoW
+  // x = sapc
+  // y = backgroundApcaY
+  // z = textApcaY
+
+  // Find Z:
+  // sapc = (backgroundApcaY ^ normBg - textApcaY ^ normText) * scaleBow
+  // x = (y^k1 - z^k2) * k3
+  // x / k3 = y ^ k1 - z ^k2
+  // x / k3 + z ^ k2 = y ^ k1
+  // z ^ k2 = (y ^ k1 - x / k3)
+  // z = ((y ^ k1) - (x / k3)) ^ (1/k2)
+  final base = math.pow(backgroundApcaY, normBg) - (sapc / scaleBoW);
+  if (base < 0) {
+    // Why?
+    // #1 Raising a negative number to a fractional power returns NaN.
+    // #2 What this tells us is that the text is too dark to be legible on
+    //    any background at the desired contrast level (apca), even the darkest.
+    // #3 The lighter functions somehow inherently fail gracefully in this
+    //    case and simply return 100.0. Nothing was added to induce that.
+    // Therefore, we match the behavior of the lighter functions and return
+    // the lowest possible in-bounds value.
+    return 0;
+  }
+  final textApcaY = math
+      .pow(
+        base,
+        1.0 / normText,
+      )
+      .toDouble();
+  return textApcaY;
+}
+
 double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
   const inputClampMin = 0.0;
   const inputClampMax = 1.1;
@@ -76,7 +275,7 @@ double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
 
   var sapc = 0.0; // For raw SAPC value
   var outputContrast = 0.0;
-  // Rational for ignore; crucial property of algorithm, present in original 
+  // Rational for ignore; crucial property of algorithm, present in original
   // implementation, and signals the code was ported correctly.
   // ignore: unused_local_variable
   var polarity = Polarity.blackOnWhite;
@@ -100,19 +299,20 @@ double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
 
     // Low Contrast smooth rollout to prevent polarity reversal and also a
     // low-clip for very low contrasts
-    outputContrast = (sapc < loClip) ? 0 : sapc - loBoWOffset;
+    outputContrast = (sapc < loClip) ? 0.0 : sapc - loBoWOffset;
   } else {
+    // background < text
     polarity = Polarity.whiteOnBlack;
     sapc = (math.pow(backgroundApcaY, revBg) - math.pow(textApcaY, revText)) *
         scaleWoB;
-    outputContrast = (sapc > loClip) ? 0.0 : sapc + loWoBOffset;
+    outputContrast = (sapc > (-1.0 * loClip)) ? 0.0 : sapc + loWoBOffset;
   }
 
   // return Lc (lightness contrast) as a signed numeric value
   //
   // Note: Original implementation could conditionally return a string based
   // on the value of a `places` argument.
-  return outputContrast;
+  return outputContrast * 100.0;
 }
 
 double apcaContrastOfArgb(int textArgb, int backgroundArgb) {
