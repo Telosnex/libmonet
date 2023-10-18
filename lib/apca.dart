@@ -49,7 +49,7 @@ double argbToApcaY(int argb) {
   }
 
   return sRco * simpleExp(redFromArgb(argb)) +
-      sGco * simpleExp(greenFromArgb(argb)) +
+      sGco * simpleExp(greenFromArgb(argb)) + 
       sBco * simpleExp(blueFromArgb(argb));
 }
 
@@ -66,7 +66,7 @@ double _fixupForBlackThreshold(double apcaY) {
   }
 }
 
-double apcaContrast(double textApcaY, double backgroundApcaY) {
+double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
   const inputClampMin = 0.0;
   const inputClampMax = 1.1;
   final smallest = math.min(textApcaY, backgroundApcaY);
@@ -76,8 +76,7 @@ double apcaContrast(double textApcaY, double backgroundApcaY) {
 
   var sapc = 0.0; // For raw SAPC value
   var outputContrast = 0.0;
-
-  // Ignore unused variable; crucial step in algortihm, in original 
+  // Rational for ignore; crucial property of algorithm, present in original 
   // implementation, and signals the code was ported correctly.
   // ignore: unused_local_variable
   var polarity = Polarity.blackOnWhite;
@@ -110,7 +109,15 @@ double apcaContrast(double textApcaY, double backgroundApcaY) {
   }
 
   // return Lc (lightness contrast) as a signed numeric value
+  //
   // Note: Original implementation could conditionally return a string based
   // on the value of a `places` argument.
   return outputContrast;
+}
+
+double apcaContrastOfArgb(int textArgb, int backgroundArgb) {
+  return apcaContrastOfApcaY(
+    argbToApcaY(textArgb),
+    argbToApcaY(backgroundArgb),
+  );
 }
