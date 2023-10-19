@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/debug_print.dart';
 
 /// Calculations for APCA contrast.
 /// Per [APCA landing page](https://github.com/Myndex/apca-w3/):
@@ -112,31 +113,52 @@ double _fixupForBlackThreshold(double apcaY) {
   }
 }
 
-double lighterBackgroundLstar(double textLstar, double apca) {
+double lighterBackgroundLstar(double textLstar, double apca,
+    {bool debug = false}) {
   final lighterBackgroundApcaYValue =
       lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
   return apcaYToLstar(lighterBackgroundApcaYValue);
 }
 
-double lighterTextLstar(double backgroundLstar, double apca) {
-  final lighterTextApcaYValue =
-      lighterTextApcaY(lstarToApcaY(backgroundLstar), apca);
+double lighterTextLstar(double backgroundLstar, double apca,
+    {bool debug = false}) {
+  final apcaY = lstarToApcaY(backgroundLstar);
+  monetDebug(debug, () => 'apcaY: $apcaY');
+  final lighterTextApcaYValue = lighterTextApcaY(apcaY, apca);
+  monetDebug(debug, () => 'lighterTextApcaYValue: $lighterTextApcaYValue');
   return apcaYToLstar(lighterTextApcaYValue);
 }
 
-double darkerBackgroundLstar(double textLstar, double apca) {
-  final darkerBackgroundApcaYValue =
-      darkerBackgroundApcaY(lstarToApcaY(textLstar), apca);
+double darkerBackgroundLstar(double textLstar, double apca,
+    {bool debug = false}) {
+  final apcaY = lstarToApcaY(textLstar);
+  monetDebug(debug, () => 'apcaY: $apcaY');
+
+  final darkerBackgroundApcaYValue = darkerBackgroundApcaY(apcaY, apca);
+  monetDebug(
+      debug, () => 'darkerBackgroundApcaYValue: $darkerBackgroundApcaYValue');
+  if (darkerBackgroundApcaYValue == null) {
+    monetDebug(debug, () => 'darker impossible, returning lighter');
+    return lighterBackgroundLstar(apcaY, apca);
+  }
   return apcaYToLstar(darkerBackgroundApcaYValue);
 }
 
-double darkerTextLstar(double backgroundYLstar, double apca) {
-  final darkerTextApcaYValue =
-      darkerTextApcaY(lstarToApcaY(backgroundYLstar), apca);
+double darkerTextLstar(double backgroundYLstar, double apca,
+    {bool debug = false}) {
+  final apcaY = lstarToApcaY(backgroundYLstar);
+  monetDebug(debug, () => 'apcaY: $apcaY');
+  final darkerTextApcaYValue = darkerTextApcaY(apcaY, apca, debug: debug);
+  monetDebug(debug, () => 'darkerTextApcaYValue: $darkerTextApcaYValue');
+  if (darkerTextApcaYValue == null) {
+    monetDebug(debug, () => 'darker impossible, returning lighter');
+    return lighterTextLstar(apcaY, apca);
+  }
   return apcaYToLstar(darkerTextApcaYValue);
 }
 
-double lighterBackgroundApcaY(double textApcaY, double apca) {
+double lighterBackgroundApcaY(double textApcaY, double apca,
+    {bool debug = false}) {
   textApcaY = inBoundsApcaY(textApcaY);
   apca = apca / 100.0;
   // Go backwards through apcaContrastOfApcaY with background > text
@@ -158,10 +180,12 @@ double lighterBackgroundApcaY(double textApcaY, double apca) {
   final bgApcaY = math
       .pow((sapc / scaleBoW) + math.pow(textApcaY, normText), 1.0 / normBg)
       .toDouble();
+  monetDebug(debug, () => 'lighterBackgroundApcaY bgApcaY: $bgApcaY');
   return bgApcaY;
 }
 
-double lighterTextApcaY(double backgroundApcaY, double apca) {
+double lighterTextApcaY(double backgroundApcaY, double apca,
+    {bool debug = false}) {
   backgroundApcaY = inBoundsApcaY(backgroundApcaY);
   apca = apca / 100.0;
   // Go backwards through apcaContrastOfApcaY with background < text
@@ -186,10 +210,11 @@ double lighterTextApcaY(double backgroundApcaY, double apca) {
         1.0 / revText,
       )
       .toDouble();
+  monetDebug(debug, () => 'lighterTextApcaY textApcaY: $textApcaY');
   return textApcaY;
 }
 
-double darkerBackgroundApcaY(double textApcaY, double apca) {
+double? darkerBackgroundApcaY(double textApcaY, double apca) {
   textApcaY = inBoundsApcaY(textApcaY);
   apca = apca / 100.0;
   // Go backwards through apcaContrastOfApcaY with background < text
@@ -217,17 +242,22 @@ double darkerBackgroundApcaY(double textApcaY, double apca) {
     //    any background at the desired contrast level (apca), even the darkest.
     // #3 The lighter functions somehow inherently fail gracefully in this
     //    case and simply return 100.0. Nothing was added to induce that.
-    // Therefore, we match the behavior of the lighter functions and return
-    // the lowest possible in-bounds value.
-    return 0;
+    // Matching the behavior of the lighter functions is undesirable here:
+    // callers need to know that the text is too dark to be legible, and ideally
+    // how much the gap is. For now, we can signal it is too dark by returning
+    // null.
+    return null;
   }
   final bgApcaY = math.pow(base, 1.0 / revBg).toDouble();
   return bgApcaY;
 }
 
-double darkerTextApcaY(double backgroundApcaY, double apca) {
+double? darkerTextApcaY(double backgroundApcaY, double apca,
+    {bool debug = false}) {
   backgroundApcaY = inBoundsApcaY(backgroundApcaY);
+  monetDebug(debug, () => 'backgroundApcaY: $backgroundApcaY');
   apca = apca / 100.0;
+  monetDebug(debug, () => 'apca: $apca');
   // Go backwards through apcaContrastOfApcaY with background > text
   final sapc = apca == 0.0 ? 0.0 : apca + loBoWOffset;
   // k1 = normBg
@@ -245,6 +275,7 @@ double darkerTextApcaY(double backgroundApcaY, double apca) {
   // z ^ k2 = (y ^ k1 - x / k3)
   // z = ((y ^ k1) - (x / k3)) ^ (1/k2)
   final base = math.pow(backgroundApcaY, normBg) - (sapc / scaleBoW);
+  monetDebug(debug, () => 'base: $base');
   if (base < 0) {
     // Why?
     // #1 Raising a negative number to a fractional power returns NaN.
@@ -252,9 +283,11 @@ double darkerTextApcaY(double backgroundApcaY, double apca) {
     //    any background at the desired contrast level (apca), even the darkest.
     // #3 The lighter functions somehow inherently fail gracefully in this
     //    case and simply return 100.0. Nothing was added to induce that.
-    // Therefore, we match the behavior of the lighter functions and return
-    // the lowest possible in-bounds value.
-    return 0;
+    // Matching the behavior of the lighter functions is undesirable here:
+    // callers need to know that the text is too dark to be legible, and ideally
+    // how much the gap is. For now, we can signal it is too dark by returning
+    // null.
+    return null;
   }
   final textApcaY = math
       .pow(
