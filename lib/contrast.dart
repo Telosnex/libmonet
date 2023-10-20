@@ -169,7 +169,10 @@ double apcaInterpolation({required double percent, required Usage usage}) {
     (Usage.text) => 60, // "APCA Lc 60 'similar' to WCAG 4.5"
     (Usage.fill) => 45, // "APCA Lc 45 'similar' to WCAG 3.0"
   };
-  const end = 100;
+  // Earlier, assumed end was 100. But, at high contrast, this wasn't leading
+  // to white/black as expected. 110 seems to work better...but better to have
+  // a concrete reason for this.
+  const end = 110;
   final actualPercent = (percent > 0.5 ? percent - 0.5 : percent) / 0.5;
   final actualStart = percent > 0.5 ? mid : start;
   final actualEnd = percent > 0.5 ? end : mid;

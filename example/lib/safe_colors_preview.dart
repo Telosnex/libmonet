@@ -71,14 +71,7 @@ class SafeColorsPreviewRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Hello, world!',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: colors.text),
-                ),
-                const HorizontalPadding(),
+             
                 OutlinedButton(
                   style: buttonStylefromSafeColorsColor(colors),
                   onPressed: () {},
