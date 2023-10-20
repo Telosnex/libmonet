@@ -12,20 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:ui';
+
 import 'package:libmonet/hex_codes.dart';
 import 'package:matcher/matcher.dart';
 
-Matcher isColor(int color) => _ColorMatcher(color);
+Matcher isColor(dynamic color) => _ColorMatcher(color);
 
 class _ColorMatcher extends Matcher {
   _ColorMatcher(this._argb);
 
-  final int _argb;
+  final dynamic _argb;
 
   @override
   bool matches(dynamic object, Map<dynamic, dynamic> matchState) {
-    if (object is! int) {
+    if (object is! int && object is! Color) {
       return false;
+    }
+    if (object is Color && _argb is int) {
+      return object.value == _argb;
+    } else if (object is int && _argb is Color) {
+      return object == _argb.value;
     }
     return object == _argb;
   }
@@ -46,6 +53,6 @@ class _ColorMatcher extends Matcher {
         .add('expected hex code\n  ')
         .add(hexFromArgb(_argb))
         .add('\nbut got\n  ')
-        .add(hexFromArgb(item as int));
+        .add(hexFromArgb(item is Color ? item.value : item as int));
   }
 }

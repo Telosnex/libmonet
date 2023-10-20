@@ -15,6 +15,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:ui';
+
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/cam16_viewing_conditions.dart';
 import 'package:libmonet/hct_solver.dart';
@@ -57,6 +59,16 @@ class Hct {
 
   /// HCT representation of [argb].
   static Hct fromInt(int argb) {
+    return Hct._(argb);
+  }
+
+  static Color colorFrom(double hue, double chroma, double tone) {
+    final argb = HctSolver.solveToInt(hue, chroma, tone);
+    return Color(argb);
+  }
+
+  factory Hct.fromColor(Color color) {
+    final argb = color.value;
     return Hct._(argb);
   }
 
