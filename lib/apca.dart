@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/complex.dart';
 import 'package:libmonet/debug_print.dart';
 
 /// Calculations for APCA contrast.
@@ -61,7 +62,8 @@ double inBoundsApcaY(double apcaY) {
   return apcaY;
 }
 
-int apcaYToGrayscaleArgb(double apcaY) {
+int apcaYToGrayscaleArgb(double apcaY, {bool debug = false}) {
+  monetDebug(debug, () => 'APCA Y TO GRAYSCALE ARGB ENTER. apcaY = $apcaY');
   // Given answer is graycale, can assume R = G = B
   // Therefore:
   // sRCO * simpleExp(R) + sGCO * simpleExp(G) + sBCO * simpleExp(B) = Y
@@ -76,14 +78,15 @@ int apcaYToGrayscaleArgb(double apcaY) {
   // (X / 255) ^ 2.4 = (Y / (sRCO + sGCO + sBCO))
   // X / 255 = (Y / (sRCO + sGCO + sBCO)) ^ (1/2.4)
   // X = 255 * (Y / (sRCO + sGCO + sBCO)) ^ (1/2.4)
+  apcaY = apcaY.clamp(0, 1.0);
   final channel = (255.0 * math.pow(apcaY / (sRco + sGco + sBco), 1.0 / 2.4))
       .round()
       .clamp(0, 255);
   return argbFromRgb(channel, channel, channel);
 }
 
-double apcaYToLstar(double apcaY) {
-  return lstarFromArgb(apcaYToGrayscaleArgb(apcaY));
+double apcaYToLstar(double apcaY, {bool debug = false}) {
+  return lstarFromArgb(apcaYToGrayscaleArgb(apcaY, debug: debug));
 }
 
 double lstarToApcaY(double lstar) {
@@ -115,6 +118,7 @@ double _fixupForBlackThreshold(double apcaY) {
 
 double lighterBackgroundLstar(double textLstar, double apca,
     {bool debug = false}) {
+  monetDebug(debug, () => 'LIGHTER BACKGROUND L* ENTER');
   final lighterBackgroundApcaYValue =
       lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
   return apcaYToLstar(lighterBackgroundApcaYValue);
@@ -122,37 +126,107 @@ double lighterBackgroundLstar(double textLstar, double apca,
 
 double lighterTextLstar(double backgroundLstar, double apca,
     {bool debug = false}) {
-  final apcaY = lstarToApcaY(backgroundLstar);
-  monetDebug(debug, () => 'apcaY: $apcaY');
-  final lighterTextApcaYValue = lighterTextApcaY(apcaY, apca);
-  monetDebug(debug, () => 'lighterTextApcaYValue: $lighterTextApcaYValue');
+  monetDebug(debug, () => 'LIGHTER TEXT L* ENTER');
+  final backgroundApcaY = lstarToApcaY(backgroundLstar);
+  monetDebug(debug, () => 'apcaY: $backgroundApcaY');
+  final lighterTextApcaYValue = lighterTextApcaY(backgroundApcaY, apca, debug: debug);
+  if (lighterTextApcaYValue > 1.0) {
+    monetDebug(debug, () => 'lighter text has $lighterTextApcaYValue, lets check darker');
+    final darkerTextApcaYValue = darkerTextApcaY(backgroundApcaY, apca, debug: debug);
+    if (darkerTextApcaYValue < 0) {
+      final distanceFromNeededLightToMaxLight =
+          lighterTextApcaYValue - 1.0;
+      final distanceFromNeededDarkToMaxDark = 0.0 - darkerTextApcaYValue;
+      if (distanceFromNeededLightToMaxLight > distanceFromNeededDarkToMaxDark) {
+        monetDebug(
+            debug,
+            () =>
+                'going with darker, lighter distance was ${distanceFromNeededLightToMaxLight}, darker distance was $distanceFromNeededDarkToMaxDark');
+        return 0.0;
+      } else {
+        monetDebug(debug, () => 'going with lighter');
+        return 100.0;
+      }
+    } else {
+      monetDebug(
+          debug,
+          () =>
+              'asked for lighter, but darker is in bounds. darkerTextApcaYValue: $darkerTextApcaYValue');
+      return apcaYToLstar(darkerTextApcaYValue);
+    }
+  }
   return apcaYToLstar(lighterTextApcaYValue);
 }
 
 double darkerBackgroundLstar(double textLstar, double apca,
     {bool debug = false}) {
-  final apcaY = lstarToApcaY(textLstar);
-  monetDebug(debug, () => 'apcaY: $apcaY');
+  monetDebug(debug, () => 'DARKER BACKGROUND L* ENTER');
 
-  final darkerBackgroundApcaYValue = darkerBackgroundApcaY(apcaY, apca);
+  final textApcaY = lstarToApcaY(textLstar);
+  monetDebug(debug, () => 'apcaY: $textApcaY');
+
+  final darkerBackgroundApcaYValue = darkerBackgroundApcaY(textApcaY, apca);
   monetDebug(
       debug, () => 'darkerBackgroundApcaYValue: $darkerBackgroundApcaYValue');
-  if (darkerBackgroundApcaYValue == null) {
-    monetDebug(debug, () => 'darker impossible, returning lighter');
-    return lighterBackgroundLstar(apcaY, apca);
+  if (darkerBackgroundApcaYValue < 0) {
+    monetDebug(
+        debug,
+        () =>
+            'darker background has $darkerBackgroundApcaYValue, lets check lighter');
+    final lighterBackgroundApcaYValue = lighterBackgroundApcaY(textApcaY, apca);
+    if (lighterBackgroundApcaYValue > 1) {
+      final distanceFromNeededLightToMaxLight =
+          lighterBackgroundApcaYValue - 1.0;
+      final distanceFromNeededDarkToMaxDark = 0.0 - darkerBackgroundApcaYValue;
+      if (distanceFromNeededLightToMaxLight > distanceFromNeededDarkToMaxDark) {
+        monetDebug(
+            debug,
+            () =>
+                'going with darker, lighter distance was ${distanceFromNeededLightToMaxLight}, darker distance was $distanceFromNeededDarkToMaxDark');
+        return 0.0;
+      } else {
+        return 100.0;
+      }
+    }
+    return apcaYToLstar(lighterBackgroundApcaYValue);
   }
-  return apcaYToLstar(darkerBackgroundApcaYValue);
+  return apcaYToLstar(darkerBackgroundApcaYValue, debug: debug);
 }
 
 double darkerTextLstar(double backgroundYLstar, double apca,
     {bool debug = false}) {
-  final apcaY = lstarToApcaY(backgroundYLstar);
-  monetDebug(debug, () => 'apcaY: $apcaY');
-  final darkerTextApcaYValue = darkerTextApcaY(apcaY, apca, debug: debug);
+  monetDebug(debug, () => 'DARKER TEXT L* ENTER');
+
+  final backgroundApcaY = lstarToApcaY(backgroundYLstar);
+  monetDebug(debug, () => 'apcaY: $backgroundApcaY');
+  final darkerTextApcaYValue =
+      darkerTextApcaY(backgroundApcaY, apca, debug: debug);
   monetDebug(debug, () => 'darkerTextApcaYValue: $darkerTextApcaYValue');
-  if (darkerTextApcaYValue == null) {
-    monetDebug(debug, () => 'darker impossible, returning lighter');
-    return lighterTextLstar(apcaY, apca);
+  if (darkerTextApcaYValue < 0) {
+    monetDebug(debug,
+        () => 'darker text has $darkerTextApcaYValue, lets check lighter');
+    final lighterTextApcaYValue =
+        lighterTextApcaY(backgroundApcaY, apca, debug: debug);
+    if (lighterTextApcaYValue > 1) {
+      final distanceFromNeededLightToMaxLight = lighterTextApcaYValue - 1.0;
+      final distanceFromNeededDarkToMaxDark = 0.0 - darkerTextApcaYValue;
+      if (distanceFromNeededLightToMaxLight > distanceFromNeededDarkToMaxDark) {
+        monetDebug(
+            debug,
+            () =>
+                'going with darker, lighter distance was ${distanceFromNeededLightToMaxLight}, darker distance was $distanceFromNeededDarkToMaxDark');
+        return 0.0;
+      } else {
+        monetDebug(debug, () => 'going with lighter');
+        return 100.0;
+      }
+    } else {
+      monetDebug(
+          debug,
+          () =>
+              'asked for darker, but lighter is in bounds. lighterTextApcaYValue: $lighterTextApcaYValue');
+      return apcaYToLstar(lighterTextApcaYValue);
+    }
   }
   return apcaYToLstar(darkerTextApcaYValue);
 }
@@ -176,10 +250,16 @@ double lighterBackgroundApcaY(double textApcaY, double apca,
   // x / k3 = y ^ k1 - z ^k2
   // x / k3 + z ^ k2 = y ^ k1
   // y ^ k1 = x / k3 + z ^ k2
-  // y = (x / k3 + z ^ k2) ^ (1/k1)
-  final bgApcaY = math
-      .pow((sapc / scaleBoW) + math.pow(textApcaY, normText), 1.0 / normBg)
-      .toDouble();
+  // y = (z ^ k2 + x / k3) ^ (1/k1)
+  final firstTerm = math.pow(textApcaY, normText);
+  final secondTerm = sapc / scaleBoW;
+  final base = firstTerm + secondTerm;
+  if (base < 0) {
+    final complex = Complex(0, (secondTerm - firstTerm)).pow(1 / normBg);
+    monetDebug(debug, () => 'lighter background APCA Y is complex: $complex');
+    return complex.real;
+  }
+  final bgApcaY = math.pow(base, 1.0 / normBg).toDouble();
   monetDebug(debug, () => 'lighterBackgroundApcaY bgApcaY: $bgApcaY');
   return bgApcaY;
 }
@@ -188,11 +268,14 @@ double lighterTextApcaY(double backgroundApcaY, double apca,
     {bool debug = false}) {
   backgroundApcaY = inBoundsApcaY(backgroundApcaY);
   apca = apca / 100.0;
+  if (apca > 0) {
+    apca = -apca;
+  }
   // Go backwards through apcaContrastOfApcaY with background < text
   final sapc = apca == 0.0 ? 0.0 : apca - loWoBOffset;
-  // k1 = normBg
-  // k2 = normText
-  // k3 = scaleBoW
+  // k1 = revBg
+  // k2 = revText
+  // k3 = scaleWoB
   // x = sapc
   // y = backgroundApcaY
   // z = textApcaY
@@ -204,6 +287,14 @@ double lighterTextApcaY(double backgroundApcaY, double apca,
   // x / k3 + z^k2 = y^k1
   // z^k2 = (y^k1 - x / k3)
   // z = ((y^k1) - (x / k3)) ^ (1/k2)
+  final firstTerm = math.pow(backgroundApcaY, revBg);
+  final secondTerm = sapc / scaleWoB;
+  final base = firstTerm - secondTerm;
+  if (base < 0) {
+    Complex complexTerm2 = Complex(0, (secondTerm - firstTerm)).pow(1 / revBg);
+    monetDebug(debug, () => 'lighterTextApcaY complex: $complexTerm2');
+    return complexTerm2.real;
+  }
   final textApcaY = math
       .pow(
         math.pow(backgroundApcaY, revBg) - (sapc / scaleWoB),
@@ -214,12 +305,18 @@ double lighterTextApcaY(double backgroundApcaY, double apca,
   return textApcaY;
 }
 
-double? darkerBackgroundApcaY(double textApcaY, double apca) {
+double darkerBackgroundApcaY(
+  double textApcaY,
+  double apca, {
+  bool debug = false,
+}) {
   textApcaY = inBoundsApcaY(textApcaY);
   apca = apca / 100.0;
+  if (apca > 0) {
+    apca = -apca;
+  }
   // Go backwards through apcaContrastOfApcaY with background < text
   final sapc = apca == 0.0 ? 0.0 : apca - loWoBOffset;
-
   // k1 = revBg
   // k2 = revText
   // k3 = scaleWoB
@@ -234,25 +331,19 @@ double? darkerBackgroundApcaY(double textApcaY, double apca) {
   // x / k3 + z ^ k2 = y ^ k1
   // y ^ k1 = x / k3 + z ^ k2
   // y = (x / k3 + z ^ k2) ^ (1/k1)
-  final base = (sapc / scaleWoB) + math.pow(textApcaY, revText);
+  final firstTerm = sapc / scaleWoB;
+  final secondTerm = math.pow(textApcaY, revText);
+  final base = firstTerm + secondTerm;
   if (base < 0) {
-    // Why?
-    // #1 Raising a negative number to a fractional power returns NaN.
-    // #2 What this tells us is that the text is too dark to be legible on
-    //    any background at the desired contrast level (apca), even the darkest.
-    // #3 The lighter functions somehow inherently fail gracefully in this
-    //    case and simply return 100.0. Nothing was added to induce that.
-    // Matching the behavior of the lighter functions is undesirable here:
-    // callers need to know that the text is too dark to be legible, and ideally
-    // how much the gap is. For now, we can signal it is too dark by returning
-    // null.
-    return null;
+    final complex = Complex(0, (secondTerm + firstTerm)).pow(1 / revBg);
+    monetDebug(debug, () => 'darkerBackgroundApcaY complex: $complex');
+    return complex.real;
   }
   final bgApcaY = math.pow(base, 1.0 / revBg).toDouble();
   return bgApcaY;
 }
 
-double? darkerTextApcaY(double backgroundApcaY, double apca,
+double darkerTextApcaY(double backgroundApcaY, double apca,
     {bool debug = false}) {
   backgroundApcaY = inBoundsApcaY(backgroundApcaY);
   monetDebug(debug, () => 'backgroundApcaY: $backgroundApcaY');
@@ -274,21 +365,28 @@ double? darkerTextApcaY(double backgroundApcaY, double apca,
   // x / k3 + z ^ k2 = y ^ k1
   // z ^ k2 = (y ^ k1 - x / k3)
   // z = ((y ^ k1) - (x / k3)) ^ (1/k2)
-  final base = math.pow(backgroundApcaY, normBg) - (sapc / scaleBoW);
-  monetDebug(debug, () => 'base: $base');
+  final firstTerm = math.pow(backgroundApcaY, normBg);
+  final secondTerm = sapc / scaleBoW;
+  final base = firstTerm - secondTerm;
+
   if (base < 0) {
-    // Why?
-    // #1 Raising a negative number to a fractional power returns NaN.
-    // #2 What this tells us is that the text is too dark to be legible on
-    //    any background at the desired contrast level (apca), even the darkest.
-    // #3 The lighter functions somehow inherently fail gracefully in this
-    //    case and simply return 100.0. Nothing was added to induce that.
-    // Matching the behavior of the lighter functions is undesirable here:
-    // callers need to know that the text is too dark to be legible, and ideally
-    // how much the gap is. For now, we can signal it is too dark by returning
-    // null.
-    return null;
+// When 'secondTerm' is greater than 'firstTerm', the difference
+// (firstTerm - secondTerm) is negative.
+// Negative numbers present complexities when raised to fractional powers.
+// To adhere to mathematical principals in the complex plane,
+// we switch positions from 'firstTerm - secondTerm' to 'secondTerm - firstTerm'
+// to make the difference positive.
+// As we are dealing with a negative number (in the real number system),
+// which corresponds to a purely imaginary number in the complex plane,
+// we put this positive difference in the imaginary part (0, (secondTerm - firstTerm).abs()).
+// This way, we represent the original negative real number as a positive imaginary number,
+// in order to handle the power operation in the complex number system properly.
+    Complex complexTerm2 =
+        Complex(0, (secondTerm - firstTerm)).pow(1 / normText);
+
+    return complexTerm2.real;
   }
+
   final textApcaY = math
       .pow(
         base,

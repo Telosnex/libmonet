@@ -20,6 +20,11 @@ double contrastingLstar({
   required double contrastPercentage,
   bool debug = false,
 }) {
+  monetDebug(debug, () => '== CONTRASTING LSTAR ENTER');
+  monetDebug(
+      debug,
+      () =>
+          '== Looking for $contrastPercentage contrast with $usage usage using $by algo on L* $withLstar');
   final prefersLighter = lstarPrefersLighterPair(withLstar);
   monetDebug(debug, () => 'prefersLighter: $prefersLighter');
   if (prefersLighter) {
@@ -89,15 +94,15 @@ double contrastingLstar({
         monetDebug(debug, () => 'apca: $apca');
         final naiveDarkerLstar = switch (usage) {
           (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
-          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca)
+          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca, debug: debug)
         };
         monetDebug(debug, () => 'naiveDarkerLstar: $naiveDarkerLstar');
         if (naiveDarkerLstar.round() >= 0) {
           return naiveDarkerLstar;
         }
         final naiveLighterLstar = switch (usage) {
-          (Usage.text) => lighterTextLstar(withLstar, -apca),
-          (Usage.fill) => lighterBackgroundLstar(withLstar, apca)
+          (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
+          (Usage.fill) => lighterBackgroundLstar(withLstar, apca, debug: debug)
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         final naiveLighterDelta =

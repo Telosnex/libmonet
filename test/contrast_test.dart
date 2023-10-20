@@ -54,6 +54,91 @@ void main() {
     });
   });
 
+  group('contrasting L* min mid APCA', () {
+    const contrast = 0.25;
+    test('darker text', () {
+      final lstar = contrastingLstar(
+        withLstar: 100.0,
+        usage: Usage.text,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(80.242, 0.001));
+    });
+    test('lighter text', () {
+      final lstar = contrastingLstar(
+        withLstar: 0.0,
+        usage: Usage.text,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(49.637, 0.001));
+    });
+
+    test('darker fill', () {
+      final lstar = contrastingLstar(
+        withLstar: 100.0,
+        usage: Usage.fill,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(86.695, 0.001));
+    });
+
+    test('lighter fill', () {
+      final lstar = contrastingLstar(
+        withLstar: 0.0,
+        usage: Usage.fill,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(40.730, 0.001));
+    });
+  });
+
+
+  group('contrasting L* mid max APCA', () {
+    const contrast = 0.75;
+    test('darker text', () {
+      final lstar = contrastingLstar(
+        withLstar: 100.0,
+        usage: Usage.text,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(36.986, 0.001));
+    });
+    test('lighter text', () {
+      final lstar = contrastingLstar(
+        withLstar: 0.0,
+        usage: Usage.text,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(87.406, 0.001));
+    });
+
+    test('darker fill', () {
+      final lstar = contrastingLstar(
+        withLstar: 100.0,
+        usage: Usage.fill,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(49.238, 0.001));
+    });
+
+    test('lighter fill', () {
+      final lstar = contrastingLstar(
+        withLstar: 0.0,
+        usage: Usage.fill,
+        by: Algo.apca,
+        contrastPercentage: contrast,
+      );
+      expect(lstar, closeTo(82.764, 0.001));
+    });
+  });
+
   group('contrasting L* APCA', () {
     test('darker text', () {
       final lstar = contrastingLstar(
@@ -94,7 +179,6 @@ void main() {
       expect(lstar, closeTo(59.788, 0.001));
     });
   });
-
   group('contrasting L* WCAG', () {
     test('darker text', () {
       final lstar = contrastingLstar(

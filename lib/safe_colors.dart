@@ -83,6 +83,7 @@ class SafeColors {
       usage: Usage.fill,
       by: algo,
       contrastPercentage: contrast,
+
     );
     final text = contrastingLstar(
       withLstar: backgroundLstar,
