@@ -123,19 +123,19 @@ void main() {
     test('T0', () {
       const textLstar = 0.0;
       final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(0.0, 0.001));
+      expect(backgroundLstar, closeTo(72.205, 0.001));
     });
 
     test('T10', () {
       const textLstar = 10.0;
       final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(0.0, 0.001));
+      expect(backgroundLstar, closeTo(72.943, 0.001));
     });
 
     test('T50', () {
       const textLstar = 50.0;
       final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(0.0, 0.001));
+      expect(backgroundLstar, closeTo(90.941, 0.001));
     });
 
     test('T80', () {
