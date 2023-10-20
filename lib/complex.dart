@@ -34,9 +34,9 @@ class Complex {
     return Complex(realPart, imagPart);
   }
 
+  @override
   String toString() {
-    // ignore: unnecessary_string_interpolations
-    if (imaginary == 0) return '${real.toString()}';
+    if (imaginary == 0) return real.toString();
     if (imaginary >= 0) return '${real.toString()} + ${imaginary.toString()}i';
     return '${real.toString()} - ${imaginary.abs().toString()}i';
   }

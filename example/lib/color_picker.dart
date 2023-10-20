@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:example/safe_colors_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:libmonet/contrast.dart';
@@ -10,9 +12,10 @@ class ColorPicker extends StatefulWidget {
 }
 
 class _ColorPickerState extends State<ColorPicker> {
-  static const _color = Color(0xff334157);
+  var _color = const Color(0xff334157);
   var _algo = Algo.apca;
   var _contrast = 0.5;
+  final random = Random.secure();
 
 
   @override
@@ -24,6 +27,11 @@ class _ColorPickerState extends State<ColorPicker> {
             _algo = index == 0 ? Algo.apca : Algo.wcag21;
           });
         },children: const [Text('APCA'), Text('WCAG 2.1')],),
+        ElevatedButton.icon(onPressed: () {
+          setState(() {
+            _color = Color.fromARGB(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+          });
+        }, icon: const Icon(Icons.shuffle), label: const Text('Shuffle')),
         Slider(value: _contrast, min: 0.0, max: 1.0, onChanged: (value) {
           setState(() {
             _contrast = value;

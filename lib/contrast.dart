@@ -1,5 +1,6 @@
 import 'dart:math' as math;
-import 'package:libmonet/apca.dart';
+import 'package:libmonet/apca_contrast.dart';
+import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/wcag.dart';
 import 'debug_print.dart';
 
@@ -16,22 +17,22 @@ enum Usage {
 double contrastingLstar({
   required double withLstar,
   required Usage usage,
-  required Algo by,
-  required double contrastPercentage,
+  Algo by = Algo.apca,
+  required double contrast,
   bool debug = false,
 }) {
   monetDebug(debug, () => '== CONTRASTING LSTAR ENTER');
   monetDebug(
       debug,
       () =>
-          '== Looking for $contrastPercentage contrast with $usage usage using $by algo on L* $withLstar');
+          '== Looking for $contrast contrast with $usage usage using $by algo on L* $withLstar');
   final prefersLighter = lstarPrefersLighterPair(withLstar);
   monetDebug(debug, () => 'prefersLighter: $prefersLighter');
   if (prefersLighter) {
     switch (by) {
       case Algo.apca:
         final apca =
-            apcaInterpolation(percent: contrastPercentage, usage: usage);
+            apcaInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'apca: $apca');
         final naiveLighterLstar = switch (usage) {
           (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
@@ -57,7 +58,7 @@ double contrastingLstar({
         }
         return 0.0;
       case Algo.wcag21:
-        final ratio = contrastRatio(percent: contrastPercentage, usage: usage);
+        final ratio = contrastRatioInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'ratio: $ratio');
         final naiveLighterLstar = lighterLstarUnsafe(
           lstar: withLstar,
@@ -90,7 +91,7 @@ double contrastingLstar({
       case Algo.apca:
         // APCA is negative when referring to a darker color.
         final apca =
-            apcaInterpolation(percent: contrastPercentage, usage: usage);
+            apcaInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'apca: $apca');
         final naiveDarkerLstar = switch (usage) {
           (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
@@ -117,7 +118,7 @@ double contrastingLstar({
         }
         return 100.0;
       case Algo.wcag21:
-        final ratio = contrastRatio(percent: contrastPercentage, usage: usage);
+        final ratio = contrastRatioInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'ratio: $ratio with ${withLstar.round()}');
         final naiveDarkerLstar = darkerLstarUnsafe(
           lstar: withLstar,
@@ -153,7 +154,14 @@ bool lstarPrefersLighterPair(double lstar) {
   return lstar.round() <= 60.0;
 }
 
-double contrastRatio({required double percent, required Usage usage}) {
+double contrastRatioOfLstars(double a, double b) {
+  final aY = yFromLstar(a);
+  final bY = yFromLstar(b);
+  final higher = math.max(aY, bY);
+  final lower = math.min(aY, bY);
+  return (higher + 5.0) / (lower + 5.0);
+}
+double contrastRatioInterpolation({required double percent, required Usage usage}) {
   const start = 1.0;
   final mid = switch (usage) {
     (Usage.text) => 4.5,

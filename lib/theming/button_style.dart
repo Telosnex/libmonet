@@ -19,7 +19,7 @@ extension SafeColorsButtonStyle on ButtonStyle {
       shadowColor: MaterialStateProperty.all(safeColors.colorBorder),
       elevation: MaterialStateProperty.all(0),
       side:
-          MaterialStateProperty.all(BorderSide(color: safeColors.colorBorder)),
+          MaterialStateProperty.all(BorderSide(color: safeColors.colorBorder, width: 2)),
     );
   }
 }
@@ -40,7 +40,7 @@ ButtonStyle buttonStylefromSafeColorsColor(SafeColors safeColors) {
     foregroundColor: MaterialStateProperty.all(safeColors.colorText),
     shadowColor: MaterialStateProperty.all(safeColors.colorBorder),
     elevation: MaterialStateProperty.all(0),
-    side: MaterialStateProperty.all(BorderSide(color: safeColors.colorBorder)),
+    side: MaterialStateProperty.all(BorderSide(color: safeColors.colorBorder, width: 2)),
   );
 }
 
