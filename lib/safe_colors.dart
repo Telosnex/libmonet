@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:libmonet/contrast.dart';
@@ -46,10 +47,11 @@ class SafeColors {
   }) {
     final colorHct = Hct.fromColor(color);
     final colorBorder = contrastingLstar(
-      withLstar: colorHct.tone,
+      withLstar: backgroundLstar,
       usage: Usage.fill,
       by: algo,
       contrastPercentage: contrast,
+
     );
     final colorText = contrastingLstar(
       withLstar: colorHct.tone,
@@ -82,7 +84,6 @@ class SafeColors {
       by: algo,
       contrastPercentage: contrast,
     );
-
     final text = contrastingLstar(
       withLstar: backgroundLstar,
       usage: Usage.text,
@@ -90,28 +91,28 @@ class SafeColors {
       contrastPercentage: contrast,
     );
 
-    final hoverContrast = contrast / 4.0;
-    final splashContrast = contrast / 2.0;
+    final hoverContrast = math.max(contrast - 0.3, 0.0);
+    final splashContrast =  math.max(contrast - 0.2, 0.0);
     final colorHover = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: colorHct.tone,
       usage: Usage.fill,
       by: algo,
       contrastPercentage: hoverContrast,
     );
     final colorSplash = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: colorHct.tone,
       usage: Usage.fill,
       by: algo,
       contrastPercentage: splashContrast,
     );
     final fillHover = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: fill,
       usage: Usage.fill,
       by: algo,
       contrastPercentage: hoverContrast,
     );
     final fillSplash = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: fill,
       usage: Usage.fill,
       by: algo,
       contrastPercentage: splashContrast,

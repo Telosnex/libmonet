@@ -53,10 +53,12 @@ double contrastingLstar({
         return 0.0;
       case Algo.wcag21:
         final ratio = contrastRatio(percent: contrastPercentage, usage: usage);
+        monetDebug(debug, () => 'ratio: $ratio');
         final naiveLighterLstar = lighterLstarUnsafe(
           lstar: withLstar,
           contrastRatio: ratio,
         );
+        monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         if (naiveLighterLstar.round() <= 100) {
           return naiveLighterLstar;
         }
@@ -68,10 +70,14 @@ double contrastingLstar({
             (math.min(100, naiveLighterLstar) - withLstar).abs();
         final naiveDarkerDelta =
             (math.max(naiveDarkerLstar, 0) - withLstar).abs();
+        monetDebug(debug, () => 'naiveLighterDelta: $naiveLighterDelta');
+        monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
         if (naiveLighterDelta.roundToDouble() >=
             naiveDarkerDelta.roundToDouble()) {
+          monetDebug(debug, () => 'returning white, naiveLighterDelta >= naiveDarkerDelta');
           return 100.0;
         }
+        monetDebug(debug, () => 'returning black, naiveLighterDelta < naiveDarkerDelta');
         return 0.0;
     }
   } else {
@@ -95,9 +101,9 @@ double contrastingLstar({
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         final naiveLighterDelta =
-            (math.min(100, naiveLighterLstar) - withLstar).abs();
+            (math.min(100, naiveLighterLstar) - naiveLighterLstar).abs();
         final naiveDarkerDelta =
-            (math.max(naiveDarkerLstar, 0) - withLstar).abs();
+            (math.max(naiveDarkerLstar, 0) - naiveDarkerLstar).abs();
         monetDebug(debug, () => 'naiveLighterDelta: $naiveLighterDelta');
         monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
         if (naiveDarkerDelta.roundToDouble() <=
@@ -107,10 +113,12 @@ double contrastingLstar({
         return 100.0;
       case Algo.wcag21:
         final ratio = contrastRatio(percent: contrastPercentage, usage: usage);
+        monetDebug(debug, () => 'ratio: $ratio with ${withLstar.round()}');
         final naiveDarkerLstar = darkerLstarUnsafe(
           lstar: withLstar,
           contrastRatio: ratio,
         );
+        monetDebug(debug, () => 'naiveDarkerLstar: $naiveDarkerLstar');
         if (naiveDarkerLstar.round() >= 0) {
           return naiveDarkerLstar;
         }
@@ -118,14 +126,19 @@ double contrastingLstar({
           lstar: withLstar,
           contrastRatio: ratio,
         );
+        monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         final naiveLighterDelta =
-            (math.min(100, naiveLighterLstar) - withLstar).abs();
+            (math.min(100, naiveLighterLstar) - naiveLighterLstar).abs();
         final naiveDarkerDelta =
-            (math.max(naiveDarkerLstar, 0) - withLstar).abs();
+            (math.max(naiveDarkerLstar, 0) - naiveDarkerLstar).abs();
+        monetDebug(debug, () => 'naiveLighterDelta: $naiveLighterDelta');
+        monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
         if (naiveDarkerDelta.roundToDouble() <=
             naiveLighterDelta.roundToDouble()) {
+          monetDebug(debug, () => 'returning black, naiveDarkerDelta <= naiveLighterDelta');
           return 0.0;
         }
+        monetDebug(debug, () => 'returning white, naiveDarkerDelta > naiveLighterDelta');
         return 100.0;
     }
   }
