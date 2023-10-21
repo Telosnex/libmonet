@@ -14,16 +14,16 @@ void main() {
         backgroundLstar: 100.0,
       );
       expect(colors.color, isColor(0xff334157));
-      expect(colors.colorBorder, isColor(0xffA6B5CF));
+      expect(colors.colorBorder, isColor(0xff334157));
       expect(colors.colorText, isColor(0xffB4C3DE));
       expect(colors.colorIcon, isColor(0xff9AA9C3));
       expect(colors.colorHover, isColor(0xff637189));
       expect(colors.colorSplash, isColor(0xff77859E));
-      expect(colors.fill, isColor(0xffA6B5CF));
-      expect(colors.fillText, isColor(0xff19283C));
-      expect(colors.fillIcon, isColor(0xff47556C));
-      expect(colors.fillHover, isColor(0xff8492AB));
-      expect(colors.fillSplash, isColor(0xff728098));
+      expect(colors.fill, isColor(0xff334157));
+      expect(colors.fillText, isColor(0xffB4C3DE));
+      expect(colors.fillIcon, isColor(0xff9AA9C3));
+      expect(colors.fillHover, isColor(0xff637189));
+      expect(colors.fillSplash, isColor(0xff77859E));
       expect(colors.text, isColor(0xff818FA8));
       expect(colors.textHover, isColor(0xffC4D3EE));
       expect(colors.textSplash, isColor(0xffAEBDD8));
