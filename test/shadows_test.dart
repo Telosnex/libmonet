@@ -3,74 +3,136 @@ import 'package:libmonet/shadows.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('black BG FG 100', () {
-    final opacities = getShadowOpacities(
-        minBgLstar: 0,
-        maxBgLstar: 0,
+  group('black BG', () {
+    const minBgLstar = 0.0;
+    const maxBgLstar = 0.0;
+    test('FG 100', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
         foregroundLstar: 100,
         contrast: 0.5,
         algo: Algo.wcag21,
-        blurRadius: 10);
-    expect(opacities, []);
-  });
+        blurRadius: 10,
+      );
+      expect(opacities, []);
+    });
 
-  test('black BG FG 40', () {
-    final opacities = getShadowOpacities(
-        minBgLstar: 0,
-        maxBgLstar: 0,
+    test('FG 40', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
         foregroundLstar: 40,
         contrast: 0.5,
         algo: Algo.wcag21,
         blurRadius: 10,
-        debug: true);
-    expect(opacities, [1.0, 1.0, 0.5718940716656867]);
-  });
+      );
+      expect(opacities, [1.0, 1.0, 0.5718940716656867]);
+    });
 
-  test('black BG FG 30', () {
-    final opacities = getShadowOpacities(
-        minBgLstar: 0,
-        maxBgLstar: 0,
+    test('FG 30', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
         foregroundLstar: 30,
         contrast: 0.5,
         algo: Algo.wcag21,
         blurRadius: 10,
-        debug: true);
-    expect(opacities, [1.0, 0.7031085656183739]);
+      );
+      expect(opacities, [1.0, 0.7031085656183739]);
+    });
   });
 
-  test('white BG FG 100', () {
-    final opacities = getShadowOpacities(
-        minBgLstar: 100,
-        maxBgLstar: 100,
+  group('zebra bg', () {
+    const minBgLstar = 0.0;
+    const maxBgLstar = 100.0;
+    test('FG 100', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
         foregroundLstar: 100,
         contrast: 0.5,
         algo: Algo.wcag21,
         blurRadius: 10,
-        debug: true);
-    expect(opacities, [1.0, 0.01974311408058837]);
+      );
+      expect(opacities, [1.0, 0.01974311408058837]);
+    });
+
+    test('FG 40', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
+        foregroundLstar: 40,
+        contrast: 0.5,
+        algo: Algo.wcag21,
+        blurRadius: 10,
+      );
+      expect(opacities, [1.0, 1.0, 0.5718940716656867]);
+    });
+
+    test('FG 30', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
+        foregroundLstar: 30,
+        contrast: 0.5,
+        algo: Algo.wcag21,
+        blurRadius: 10,
+      );
+      expect(opacities, [1.0, 0.7031085656183739]);
+    });
+
+    test('FG 0', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
+        foregroundLstar: 100,
+        contrast: 0.5,
+        algo: Algo.wcag21,
+        blurRadius: 10,
+      );
+      expect(opacities, [1.0, 0.01974311408058837]);
+    });
   });
 
-  test('white BG FG 90', () {
-    final opacities = getShadowOpacities(
-        minBgLstar: 100,
-        maxBgLstar: 100,
+  group('white bg', () {
+    const minBgLstar = 100.0;
+    const maxBgLstar = 100.0;
+    test('FG 100', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
+        foregroundLstar: 100,
+        contrast: 0.5,
+        algo: Algo.wcag21,
+        blurRadius: 10,
+
+      );
+      expect(opacities, [1.0, 0.01974311408058837]);
+    });
+
+    test('FG 90', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
         foregroundLstar: 90,
         contrast: 0.5,
         algo: Algo.wcag21,
         blurRadius: 10,
-        debug: true);
-    expect(opacities, [1.0, 0.3011288882432057]);
-  });
+      );
+      expect(opacities, [1.0, 0.3011288882432057]);
+    });
 
-  test('white BG FG 0', () {
-    final opacities = getShadowOpacities(
-        minBgLstar: 100,
-        maxBgLstar: 100,
+    test('FG 0', () {
+      final opacities = getShadowOpacities(
+        minBgLstar: minBgLstar,
+        maxBgLstar: maxBgLstar,
         foregroundLstar: 0,
         contrast: 0.5,
         algo: Algo.wcag21,
         blurRadius: 10,
-        debug: true);
-    expect(opacities, []);
+      );
+      expect(opacities, []);
+    });
   });
 }
