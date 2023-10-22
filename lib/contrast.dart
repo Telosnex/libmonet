@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:libmonet/apca.dart';
 import 'package:libmonet/apca_contrast.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/wcag.dart';
@@ -6,7 +7,26 @@ import 'debug_print.dart';
 
 enum Algo {
   wcag21,
-  apca,
+  apca;
+
+  double getAbsoluteContrast(double interpolation, Usage usage) {
+    switch (this) {
+      case Algo.wcag21:
+        return contrastRatioInterpolation(
+            percent: interpolation, usage: usage);
+      case Algo.apca:
+        return apcaInterpolation(percent: interpolation, usage: usage);
+    }
+  }
+
+  double getContrastBetweenLstars(double a, double b) {
+    switch (this) {
+      case Algo.wcag21:
+        return contrastRatioOfLstars(a, b);
+      case Algo.apca:
+        return apcaContrastOfApcaY(lstarToApcaY(a), lstarToApcaY(b));
+    }
+  }
 }
 
 enum Usage {
@@ -31,8 +51,7 @@ double contrastingLstar({
   if (prefersLighter) {
     switch (by) {
       case Algo.apca:
-        final apca =
-            apcaInterpolation(percent: contrast, usage: usage);
+        final apca = apcaInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'apca: $apca');
         final naiveLighterLstar = switch (usage) {
           (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
@@ -58,7 +77,8 @@ double contrastingLstar({
         }
         return 0.0;
       case Algo.wcag21:
-        final ratio = contrastRatioInterpolation(percent: contrast, usage: usage);
+        final ratio =
+            contrastRatioInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'ratio: $ratio');
         final naiveLighterLstar = lighterLstarUnsafe(
           lstar: withLstar,
@@ -80,18 +100,19 @@ double contrastingLstar({
         monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
         if (naiveLighterDelta.roundToDouble() >=
             naiveDarkerDelta.roundToDouble()) {
-          monetDebug(debug, () => 'returning white, naiveLighterDelta >= naiveDarkerDelta');
+          monetDebug(debug,
+              () => 'returning white, naiveLighterDelta >= naiveDarkerDelta');
           return 100.0;
         }
-        monetDebug(debug, () => 'returning black, naiveLighterDelta < naiveDarkerDelta');
+        monetDebug(debug,
+            () => 'returning black, naiveLighterDelta < naiveDarkerDelta');
         return 0.0;
     }
   } else {
     switch (by) {
       case Algo.apca:
         // APCA is negative when referring to a darker color.
-        final apca =
-            apcaInterpolation(percent: contrast, usage: usage);
+        final apca = apcaInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'apca: $apca');
         final naiveDarkerLstar = switch (usage) {
           (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
@@ -118,7 +139,8 @@ double contrastingLstar({
         }
         return 100.0;
       case Algo.wcag21:
-        final ratio = contrastRatioInterpolation(percent: contrast, usage: usage);
+        final ratio =
+            contrastRatioInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'ratio: $ratio with ${withLstar.round()}');
         final naiveDarkerLstar = darkerLstarUnsafe(
           lstar: withLstar,
@@ -141,10 +163,12 @@ double contrastingLstar({
         monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
         if (naiveDarkerDelta.roundToDouble() <=
             naiveLighterDelta.roundToDouble()) {
-          monetDebug(debug, () => 'returning black, naiveDarkerDelta <= naiveLighterDelta');
+          monetDebug(debug,
+              () => 'returning black, naiveDarkerDelta <= naiveLighterDelta');
           return 0.0;
         }
-        monetDebug(debug, () => 'returning white, naiveDarkerDelta > naiveLighterDelta');
+        monetDebug(debug,
+            () => 'returning white, naiveDarkerDelta > naiveLighterDelta');
         return 100.0;
     }
   }
@@ -159,9 +183,13 @@ double contrastRatioOfLstars(double a, double b) {
   final bY = yFromLstar(b);
   final higher = math.max(aY, bY);
   final lower = math.min(aY, bY);
-  return (higher + 5.0) / (lower + 5.0);
+
+  final contrast = (higher + 5.0) / (lower + 5.0);
+  return contrast;
 }
-double contrastRatioInterpolation({required double percent, required Usage usage}) {
+
+double contrastRatioInterpolation(
+    {required double percent, required Usage usage}) {
   const start = 1.0;
   final mid = switch (usage) {
     (Usage.text) => 4.5,

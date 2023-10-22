@@ -69,6 +69,17 @@ int blueFromArgb(int argb) {
   return argb & 255;
 }
 
+double lumaFromLstar(double lstar) {
+  return lumaFromArgb(argbFromLstar(lstar));
+}
+
+double lumaFromArgb(int argb) {
+  final r = redFromArgb(argb).toDouble() / 255.0;
+  final g = greenFromArgb(argb).toDouble() / 255.0;
+  final b = blueFromArgb(argb).toDouble() / 255.0;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) * 100.0;
+}
+
 /// Converts a color from ARGB to XYZ.
 int argbFromXyz(double x, double y, double z) {
   const matrix = _xyzToSrgb;
@@ -201,7 +212,7 @@ double sanitizeDegreesDouble(double degrees) {
   }
   return degrees;
 }
-  
+
 double _labF(double t) {
   const e = 216.0 / 24389.0;
   const kappa = 24389.0 / 27.0;

@@ -105,8 +105,8 @@ class SafeColors {
       contrast: contrast,
     );
 
-    final hoverContrast = math.max(contrast - 0.3, 0.0);
-    final splashContrast =  math.max(contrast - 0.2, 0.0);
+    final hoverContrast = math.max(contrast - 0.3, 0.1);
+    final splashContrast = math.max(contrast - 0.15, 0.1);
     final colorHover = contrastingLstar(
       withLstar: colorHct.tone,
       usage: Usage.fill,
