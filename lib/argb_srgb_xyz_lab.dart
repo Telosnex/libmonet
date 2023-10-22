@@ -92,12 +92,10 @@ int argbFromXyz(double x, double y, double z) {
   return argbFromRgb(r, g, b);
 }
 
-
-  /// Returns the alpha component of a color in ARGB format.
-  int alphaFromArgb(int argb) {
-    return argb >> 24 & 255;
-  }
-
+/// Returns the alpha component of a color in ARGB format.
+int alphaFromArgb(int argb) {
+  return argb >> 24 & 255;
+}
 
 /// Convert a color from L*a*b* to RGB.
 int argbFromLab(double l, double a, double b) {
