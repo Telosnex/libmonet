@@ -45,6 +45,7 @@ class QuantizerWsmeans {
 
   static void debugLog(String log) {
     if (debug) {
+      // ignore: avoid_print
       print(log);
     }
   }
@@ -61,7 +62,7 @@ class QuantizerWsmeans {
     final points = <List<double>>[];
     final pixels = <int>[];
     var pointCount = 0;
-    inputPixels.forEach((inputPixel) {
+    for (var inputPixel in inputPixels) {
       final pixelCount = pixelToCount.update(inputPixel, (value) => value + 1,
           ifAbsent: () => 1);
       if (pixelCount == 1) {
@@ -69,7 +70,7 @@ class QuantizerWsmeans {
         points.add(pointProvider.fromInt(inputPixel));
         pixels.add(inputPixel);
       }
-    });
+    }
 
     final counts = List<int>.filled(pointCount, 0);
     for (var i = 0; i < pointCount; i++) {
@@ -110,9 +111,9 @@ class QuantizerWsmeans {
         indices.add(index);
       }
 
-      indices.forEach((index) {
+      for (var index in indices) {
         clusters.add(points[index]);
-      });
+      }
     }
     debugLog(
       'have ${clusters.length} starting clusters, ${points.length} points',

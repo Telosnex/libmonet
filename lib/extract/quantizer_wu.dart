@@ -21,7 +21,7 @@
 // languages. Including variable types, though sometimes unnecessary, is a
 // powerful help to verification and avoiding hard-to-debug issues.
 
-import 'package:material_color_utilities/utils/color_utils.dart';
+import 'package:libmonet/argb_srgb_xyz_lab.dart';
 
 import 'quantizer.dart';
 import 'quantizer_map.dart';
@@ -39,9 +39,9 @@ class QuantizerWu implements Quantizer {
   // historical best practice is to use 5 bits  of the 8 in each channel,
   // reducing the histogram to a volume of ~32,000.
   static const indexBits = 5;
-  static final maxIndex = 32;
-  static final sideLength = 33;
-  static final totalSize = 35937;
+  static const maxIndex = 32;
+  static const sideLength = 33;
+  static const totalSize = 35937;
 
   @override
   Future<QuantizerResult> quantize(Iterable<int> pixels, int colorCount) async {
@@ -71,10 +71,10 @@ class QuantizerWu implements Quantizer {
     for (var entry in pixels.entries) {
       final pixel = entry.key;
       final count = entry.value;
-      final red = ColorUtils.redFromArgb(pixel);
-      final green = ColorUtils.greenFromArgb(pixel);
-      final blue = ColorUtils.blueFromArgb(pixel);
-      final bitsToRemove = 8 - indexBits;
+      final red = redFromArgb(pixel);
+      final green = greenFromArgb(pixel);
+      final blue = blueFromArgb(pixel);
+      const bitsToRemove = 8 - indexBits;
       final iR = (red >> bitsToRemove) + 1;
       final iG = (green >> bitsToRemove) + 1;
       final iB = (blue >> bitsToRemove) + 1;
@@ -172,7 +172,7 @@ class QuantizerWu implements Quantizer {
         int r = (volume(cube, momentsR) / weight).round();
         int g = (volume(cube, momentsG) / weight).round();
         int b = (volume(cube, momentsB) / weight).round();
-        int color = ColorUtils.argbFromRgb(r, g, b);
+        int color = argbFromRgb(r, g, b);
         colors.add(color);
       }
     }

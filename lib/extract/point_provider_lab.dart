@@ -15,7 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:material_color_utilities/utils/color_utils.dart';
+import 'package:libmonet/argb_srgb_xyz_lab.dart';
 
 import 'point_provider.dart';
 
@@ -24,12 +24,12 @@ class PointProviderLab implements PointProvider {
 
   @override
   List<double> fromInt(int argb) {
-    return ColorUtils.labFromArgb(argb);
+    return labFromArgb(argb);
   }
 
   @override
   int toInt(List<double> lab) {
-    return ColorUtils.argbFromLab(lab[0], lab[1], lab[2]);
+    return argbFromLab(lab[0], lab[1], lab[2]);
   }
 
   @override
