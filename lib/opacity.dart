@@ -1,6 +1,7 @@
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/debug_print.dart';
+import 'package:libmonet/hex_codes.dart';
 import 'package:libmonet/wcag.dart';
 
 class OpacityResult {
@@ -92,8 +93,11 @@ OpacityResult getOpacity({
   // oP = (lPF - lB) / (lP - lB)
   const lPMin = 100.0;
   final lBMin = lumaFromLstar(minBgLstar);
-  final lPFMin = lumaFromLstar(lighterLstarUnsafe(
-      lstar: foregroundLstar, contrastRatio: absoluteContrast));
+  final lstarPFMin = lighterLstarUnsafe(
+    lstar: foregroundLstar,
+    contrastRatio: absoluteContrast,
+  );
+  final lPFMin = lumaFromLstar(lstarPFMin);
   final oPMinRaw = (lPFMin - lBMin) / (lPMin - lBMin);
 
   // Let's find the opacity for the maximum background.
@@ -102,8 +106,11 @@ OpacityResult getOpacity({
   // lP = 0.0 (minimizing L* minimizes opacity)
   const lPMax = 0.0;
   final lBMax = lumaFromLstar(maxBgLstar);
-  final lPFMax = lumaFromLstar(darkerLstarUnsafe(
-      lstar: foregroundLstar, contrastRatio: absoluteContrast));
+  final lstarPFMax = darkerLstarUnsafe(
+    lstar: foregroundLstar,
+    contrastRatio: absoluteContrast,
+  );
+  final lPFMax = lumaFromLstar(lstarPFMax);
   final oPMaxRaw = (lPFMax - lBMax) / (lPMax - lBMax);
 
   double? cleanRawOpacity(double rawOpacity) {
@@ -134,9 +141,14 @@ OpacityResult getOpacity({
           'opMaxRaw: $oPMaxRaw = ($lumaAfterBlend - $lBMax) / ($lPMax - $lBMax)');
   monetDebug(
       debug, () => 'Raw opacity required with black protection: $oPMaxRaw');
-
-  monetDebug(debug, () => 'Opacity required with white protection: $oPMin');
-  monetDebug(debug, () => 'Opacity required with black protection: $oPMax');
+  monetDebug(
+      debug,
+      () =>
+          'Opacity required with white protection: $oPMin. Goal is to hit $lstarPFMin, which is hex ${hexFromArgb(argbFromLstar(lstarPFMin))}');
+  monetDebug(
+      debug,
+      () =>
+          'Opacity required with black protection: $oPMax. Goal is to hit $lstarPFMax, which is hex ${hexFromArgb(argbFromLstar(lstarPFMax))}');
 
   // Ensure opacity is null if it's completely impossible.
   //
