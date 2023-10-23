@@ -1,6 +1,6 @@
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/shadows.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('black BG', () {

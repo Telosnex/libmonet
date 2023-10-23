@@ -1,5 +1,5 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/apca_contrast.dart';
-import 'package:test/test.dart';
 
 void main() {
   // Using APCA value 60, represents contrast for w400 (normal) text @ 18 pts.

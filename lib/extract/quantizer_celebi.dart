@@ -23,7 +23,7 @@ import 'point_provider_lab.dart';
 class QuantizerCelebi implements Quantizer {
   @override
   Future<QuantizerResult> quantize(Iterable<int> pixels, int maxColors,
-      {bool returnInputPixelToClusterPixel = false}) async {
+      {bool returnInputPixelToClusterPixel = false,}) async {
     final wu = QuantizerWu();
     final wuResult = await wu.quantize(pixels, maxColors);
     final wsmeansResult = QuantizerWsmeans.quantize(pixels, maxColors,

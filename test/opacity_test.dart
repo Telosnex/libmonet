@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/opacity.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('zebra BG', () {
