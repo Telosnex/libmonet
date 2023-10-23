@@ -16,6 +16,7 @@
 // limitations under the License.
 
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/extract/quantizer_result.dart';
 
 import 'quantizer.dart';
 

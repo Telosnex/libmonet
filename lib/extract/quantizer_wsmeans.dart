@@ -19,8 +19,8 @@ import 'dart:math' as math show Random, min;
 
 import 'package:libmonet/extract/point_provider.dart';
 import 'package:libmonet/extract/point_provider_lab.dart';
+import 'package:libmonet/extract/quantizer_result.dart';
 
-import 'quantizer.dart';
 
 class DistanceAndIndex implements Comparable<DistanceAndIndex> {
   double distance;

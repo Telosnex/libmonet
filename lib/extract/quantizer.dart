@@ -15,15 +15,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:libmonet/extract/quantizer_result.dart';
+
 abstract class Quantizer {
   Future<QuantizerResult> quantize(List<int> pixels, int maxColors);
 }
 
-class QuantizerResult {
-  final Map<int, int> argbToCount;
-  final Map<int, int> inputPixelToClusterPixel;
-  const QuantizerResult(
-    this.argbToCount, {
-    this.inputPixelToClusterPixel = const {},
-  });
-}

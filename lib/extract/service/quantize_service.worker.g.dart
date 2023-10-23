@@ -16,7 +16,8 @@ class _$QuantizeServiceWorkerService extends QuantizeService
 
   late final Map<int, CommandHandler> _operations =
       Map.unmodifiable(<int, CommandHandler>{
-    _$quantizeId: ($) => quantize($.args[0].cast<int>(), $.args[1]),
+    _$quantizeId: ($) async =>
+        (await quantize($.args[0].cast<int>(), $.args[1])).toJson(),
   });
 
   static const int _$quantizeId = 1;
@@ -46,7 +47,8 @@ class QuantizeServiceWorker extends Worker implements QuantizeService {
   @override
   Future<QuantizerResult> quantize(List<int> argbs, int maxColors) =>
       send(_$QuantizeServiceWorkerService._$quantizeId,
-          args: [argbs.cast<int>(), maxColors]);
+              args: [argbs.cast<int>(), maxColors])
+          .then((_) => QuantizerResult.fromJson(_));
 }
 
 /// Worker pool for QuantizeService

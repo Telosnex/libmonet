@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:libmonet/extract/quantizer.dart';
 import 'package:libmonet/extract/quantizer_celebi.dart';
+import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:squadron/squadron_annotations.dart';
 import 'package:squadron/squadron.dart';
 

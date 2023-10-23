@@ -22,6 +22,7 @@
 // powerful help to verification and avoiding hard-to-debug issues.
 
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/extract/quantizer_result.dart';
 
 import 'quantizer.dart';
 import 'quantizer_map.dart';
