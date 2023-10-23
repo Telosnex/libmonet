@@ -2,12 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/debug_print.dart';
 import 'package:libmonet/extract/quantizer.dart';
-import 'package:libmonet/extract/quantizer_celebi.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:libmonet/extract/service/quantize_service.dart';
+import 'package:squadron/squadron.dart';
+
 class Extract {
+  static QuantizeServiceWorkerPool? _quantizeServiceWorkerPool;
+
+  static Future<QuantizeServiceWorkerPool> _getQuantizeWorkerPool() async {
+    if (_quantizeServiceWorkerPool == null) {
+      const concurrency =
+          ConcurrencySettings(minWorkers: 1, maxWorkers: 4, maxParallel: 1);
+      final pool = QuantizeServiceWorkerPool(concurrencySettings: concurrency);
+      _quantizeServiceWorkerPool = pool;
+    }
+
+    await _quantizeServiceWorkerPool!.start();
+    return _quantizeServiceWorkerPool!;
+  }
+
   static Future<QuantizerResult> quantize(
       ImageProvider imageProvider, int count,
       {bool debug = false}) async {
@@ -24,12 +40,17 @@ class Extract {
     monetDebug(debug, () => '[Extract] Uint32s in ${sw.elapsedMilliseconds}ms');
 
     sw.reset();
-    final argbBytes = bytes.map(_rgbaToArgb).toList();
+    final argbBytes =
+        bytes.map(_rgbaToArgb).where((e) => alphaFromArgb(e) == 255).toList();
     monetDebug(debug, () => '[Extract] ARGB in ${sw.elapsedMilliseconds}ms');
 
     sw.reset();
-    final quantizerResult = await QuantizerCelebi().quantize(
-        argbBytes.where((element) => alphaFromArgb(element) == 255), count);
+    final pool = await _getQuantizeWorkerPool();
+    monetDebug(
+        debug, () => '[Extract] Worker pool in ${sw.elapsedMilliseconds}ms');
+
+    sw.reset();
+    final quantizerResult = await pool.quantize(argbBytes, count);
     monetDebug(
         debug, () => '[Extract] Quantized in ${sw.elapsedMilliseconds}ms');
 

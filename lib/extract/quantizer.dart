@@ -20,9 +20,10 @@ abstract class Quantizer {
 }
 
 class QuantizerResult {
-  final Map<int, int> colorToCount;
-
+  final Map<int, int> argbToCount;
   final Map<int, int> inputPixelToClusterPixel;
-  const QuantizerResult(this.colorToCount,
-      {this.inputPixelToClusterPixel = const {}});
+  const QuantizerResult(
+    this.argbToCount, {
+    this.inputPixelToClusterPixel = const {},
+  });
 }

@@ -27,7 +27,7 @@ class QuantizerCelebi implements Quantizer {
     final wu = QuantizerWu();
     final wuResult = await wu.quantize(pixels, maxColors);
     final wsmeansResult = QuantizerWsmeans.quantize(pixels, maxColors,
-        startingClusters: wuResult.colorToCount.keys.toList(),
+        startingClusters: wuResult.argbToCount.keys.toList(),
         pointProvider: const PointProviderLab(),
         returnInputPixelToClusterPixel: returnInputPixelToClusterPixel);
     return wsmeansResult;

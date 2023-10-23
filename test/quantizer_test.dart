@@ -15,7 +15,7 @@ void main() {
           reason: 'Image file not found');
       final imageProvider = FileImage(File(imagePath));
       final quantize = await Extract.quantize(imageProvider, 16);
-      expect(quantize.colorToCount, {
+      expect(quantize.argbToCount, {
         0xffff0000: 9216,
       });
     });
@@ -27,7 +27,7 @@ void main() {
       final imageProvider = FileImage(File(imagePath));
       final quantize = await Extract.quantize(imageProvider, 16);
 
-      expect(quantize.colorToCount, {
+      expect(quantize.argbToCount, {
         0xff00ff00: 9216,
       });
     });
@@ -39,7 +39,7 @@ void main() {
       final imageProvider = FileImage(File(imagePath));
       final quantize = await Extract.quantize(imageProvider, 16);
 
-      expect(quantize.colorToCount, {
+      expect(quantize.argbToCount, {
         0xff0000ff: 9216,
       });
     });
@@ -51,8 +51,8 @@ void main() {
       expect(File(imagePath).existsSync(), isTrue,
           reason: 'Image file not found');
       final imageProvider = FileImage(File(imagePath));
-      final quantize = await Extract.quantize(imageProvider, 16);
-      expect(quantize.colorToCount, {
+      final quantize = await Extract.quantize(imageProvider, 16, debug: false);
+      expect(quantize.argbToCount, {
         4282192191: 1352,
         4285186771: 131,
         4289405542: 73,

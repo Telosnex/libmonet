@@ -46,7 +46,7 @@ class QuantizerWu implements Quantizer {
   @override
   Future<QuantizerResult> quantize(Iterable<int> pixels, int colorCount) async {
     final result = await QuantizerMap().quantize(pixels, colorCount);
-    constructHistogram(result.colorToCount);
+    constructHistogram(result.argbToCount);
     computeMoments();
     final createBoxesResult = createBoxes(colorCount);
     final results = createResult(createBoxesResult.resultCount);
