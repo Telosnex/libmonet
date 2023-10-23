@@ -218,6 +218,16 @@ double sanitizeDegreesDouble(double degrees) {
   return degrees;
 }
 
+/// Ensures [degrees] is between 0 and 360.
+int sanitizeDegreesInt(int degrees) {
+  degrees = degrees % 360;
+  if (degrees < 0) {
+    degrees = degrees + 360;
+  }
+  return degrees;
+}
+
+
 double _labF(double t) {
   const e = 216.0 / 24389.0;
   const kappa = 24389.0 / 27.0;
