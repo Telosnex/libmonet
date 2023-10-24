@@ -28,7 +28,6 @@ class Home extends HookConsumerWidget {
       surfaceLstar: Theme.of(context).brightness == Brightness.light ? 93 : 10,
       child: Builder(builder: (context) {
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface,
           appBar: AppBar(
             title: const Text('Monet Studio'),
           ),
@@ -90,7 +89,8 @@ class Home extends HookConsumerWidget {
       return;
     }
 
-    images.value = images.value..add(imageProvider);
+    images.value = List.from(images.value)..add(imageProvider);
+    print('images: ${images.value.length}');
 
     // final sw = Stopwatch()..start();
     // final quantizerResult = await Extract.quantize(imageProvider, 64);

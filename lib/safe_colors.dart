@@ -6,6 +6,9 @@ import 'package:libmonet/contrast.dart';
 import 'package:libmonet/hct.dart';
 
 class SafeColors {
+  final Color background;
+  final Color backgroundText;
+  
   final Color color;
   final Color colorHover;
   final Color colorSplash;
@@ -34,6 +37,8 @@ class SafeColors {
   final Color textSplashText;
 
   SafeColors({
+    required this.background,
+    required this.backgroundText,
     required this.color,
     required this.colorText,
     required this.colorBorder,
@@ -64,7 +69,6 @@ class SafeColors {
   }) {
     final hoverContrast = math.max(contrast - 0.3, 0.1);
     final splashContrast = math.max(contrast - 0.15, 0.25);
-
     final colorHct = Hct.fromColor(color);
     bool needBorder = false;
     switch (algo) {
@@ -88,6 +92,14 @@ class SafeColors {
         break;
     }
 
+    final backgroundHct =
+        Hct.from(colorHct.hue, colorHct.chroma, backgroundLstar);
+    final backgroundTextTone = contrastingLstar(
+      withLstar: backgroundLstar,
+      usage: Usage.text,
+      by: algo,
+      contrast: contrast,
+    );
     final colorBorder = !needBorder
         ? colorHct.tone
         : contrastingLstar(
@@ -205,6 +217,9 @@ class SafeColors {
     final hue = colorHct.hue;
     final chroma = colorHct.chroma;
     return SafeColors(
+      background: backgroundHct.color,
+      backgroundText: Hct.colorFrom(
+          backgroundHct.hue, backgroundHct.chroma, backgroundTextTone),
       color: color,
       colorHover: Hct.colorFrom(hue, chroma, colorHover),
       colorSplash: Hct.colorFrom(hue, chroma, colorSplash),
