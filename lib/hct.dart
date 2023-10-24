@@ -76,6 +76,10 @@ class Hct {
     return _argb;
   }
 
+  Color get color {
+    return Color(_argb);
+  }
+
   /// A number, in degrees, representing ex. red, orange, yellow, etc.
   /// Ranges from 0 <= [hue] < 360
   double get hue {

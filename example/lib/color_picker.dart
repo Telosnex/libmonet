@@ -1,69 +1,56 @@
 import 'dart:math';
 
+import 'package:example/hue_tone_picker.dart';
 import 'package:example/safe_colors_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:libmonet/contrast.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:libmonet/hct.dart';
+import 'package:libmonet/theming/monet_theme.dart';
 
-class ColorPicker extends StatefulWidget {
-  const ColorPicker({
+class ColorPicker extends HookConsumerWidget {
+  ColorPicker({
     super.key,
     required this.color,
     required this.onColorChanged,
   });
 
-  final Color color;
-  final Function(Color) onColorChanged;
-
-  @override
-  State<ColorPicker> createState() => _ColorPickerState();
-}
-
-class _ColorPickerState extends State<ColorPicker> {
-  // var _color = const Color(0xff334157);
-  var _algo = Algo.apca;
-  var _contrast = 0.5;
   final random = Random.secure();
+  final Color color;
+  final void Function(Color) onColorChanged;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        ToggleButtons(
-          isSelected: [_algo == Algo.apca, _algo == Algo.wcag21],
-          onPressed: (index) {
-            setState(() {
-              _algo = index == 0 ? Algo.apca : Algo.wcag21;
-            });
-          },
-          children: const [Text('APCA'), Text('WCAG 2.1')],
+        SizedBox(
+          height: 240,
+          child: HueTonePicker(
+              color: color,
+              onChanged: (double hue, double tone) {
+                final hct = Hct.fromColor(color);
+                hct.hue = hue;
+                hct.tone = tone;
+                onColorChanged(hct.color);
+              }),
         ),
         ElevatedButton.icon(
-            onPressed: () {
-              final randomColor = Color.fromARGB(255, random.nextInt(256),
-                  random.nextInt(256), random.nextInt(256));
-              widget.onColorChanged(randomColor);
-            },
-            icon: const Icon(Icons.shuffle),
-            label: const Text('Shuffle')),
-        Slider(
-            value: _contrast,
-            min: 0.0,
-            max: 1.0,
-            onChanged: (value) {
-              setState(() {
-                _contrast = value;
-              });
-            }),
+          onPressed: () {
+            final randomColor = Color.fromARGB(255, random.nextInt(256),
+                random.nextInt(256), random.nextInt(256));
+            onColorChanged(randomColor);
+          },
+          icon: const Icon(Icons.shuffle),
+          label: const Text('Random Color'),
+        ),
         SafeColorsPreviewRow(
-            color: widget.color,
-            contrast: _contrast,
-            algo: _algo,
-            backgroundLstar: 100),
+          safeColors: MonetTheme.of(context).primarySafeColors,
+        ),
         SafeColorsPreviewRow(
-            color: widget.color,
-            contrast: _contrast,
-            algo: _algo,
-            backgroundLstar: 0),
+          safeColors: MonetTheme.of(context).secondarySafeColors,
+        ),
+        SafeColorsPreviewRow(
+          safeColors: MonetTheme.of(context).tertiarySafeColors,
+        ),
       ],
     );
   }
