@@ -37,7 +37,12 @@ MaterialStateProperty<Color> stateColors(
   });
 }
 
-ButtonStyle buttonStylefromSafeColorsColor(SafeColors safeColors) {
+ButtonStyle elevatedButtonStyleFromColors(SafeColors safeColors) {
+  return filledButtonStyleFromColors(safeColors)
+      .copyWith(elevation: const MaterialStatePropertyAll(16));
+}
+
+ButtonStyle filledButtonStyleFromColors(SafeColors safeColors) {
   final alwaysSurface = stateColors(
     color: safeColors.color,
     hover: safeColors.color,
@@ -59,6 +64,32 @@ ButtonStyle buttonStylefromSafeColorsColor(SafeColors safeColors) {
     side: MaterialStateProperty.all(
       BorderSide(color: safeColors.colorBorder, width: 2),
     ),
+  );
+}
+
+ButtonStyle outlinedButtonStyleFromColors(SafeColors safeColors) {
+  return ButtonStyle(
+    backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
+    surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
+    overlayColor: stateColors(
+      color: Colors.transparent,
+      hover: safeColors.textHover,
+      splash: safeColors.textSplash,
+    ),
+    foregroundColor: stateColors(
+      color: safeColors.text,
+      hover: safeColors.textHoverText,
+      splash: safeColors.textSplashText,
+    ),
+    side: MaterialStateProperty.all(
+      BorderSide(color: safeColors.fill, width: 2),
+    ),
+  );
+}
+
+ButtonStyle textButtonStyleFromColors(SafeColors safeColors) {
+  return outlinedButtonStyleFromColors(safeColors).copyWith(
+    side: MaterialStateProperty.all(BorderSide.none),
   );
 }
 

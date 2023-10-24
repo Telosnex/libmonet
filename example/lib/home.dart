@@ -25,7 +25,7 @@ class Home extends HookConsumerWidget {
       algo: algo.value,
       contrast: contrast.value,
       color: color.value,
-      surfaceLstar: Theme.of(context).brightness == Brightness.light ? 95 : 10,
+      surfaceLstar: Theme.of(context).brightness == Brightness.light ? 93 : 10,
       child: Builder(builder: (context) {
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,

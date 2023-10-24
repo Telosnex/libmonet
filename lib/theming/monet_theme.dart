@@ -4,6 +4,7 @@ import 'package:libmonet/full_color_scheme.dart';
 import 'package:libmonet/hct.dart';
 import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/temperature.dart';
+import 'package:libmonet/theming/button_style.dart';
 
 class MonetTheme extends StatelessWidget {
   final SafeColors primarySafeColors;
@@ -39,6 +40,7 @@ class MonetTheme extends StatelessWidget {
       child: child,
     );
   }
+  
   factory MonetTheme.fromColors({
     required Brightness brightness,
     required double surfaceLstar,
@@ -92,11 +94,6 @@ class MonetTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context).copyWith(
-      appBarTheme: AppBarTheme(
-        backgroundColor: primarySafeColors.color,
-        foregroundColor: primarySafeColors.colorText,
-        surfaceTintColor: Colors.transparent,
-      ),
       brightness: brightness,
       colorScheme: _monetColorScheme(
         brightness,
@@ -114,6 +111,12 @@ class MonetTheme extends StatelessWidget {
           tertiary: tertiarySafeColors,
         ),
       ],
+      // BEGIN ALL THE ACCOUTREMENTS
+      appBarTheme: appBarTheme(),
+      elevatedButtonTheme: elevatedButtonTheme(),
+      filledButtonTheme: filledButtonTheme(),
+      outlinedButtonTheme: outlinedButtonTheme(),
+      textButtonTheme: textButtonTheme(),
     );
 
     return _MonetInheritedTheme(
@@ -122,6 +125,39 @@ class MonetTheme extends StatelessWidget {
         data: themeData,
         child: child,
       ),
+    );
+  }
+
+  AppBarTheme appBarTheme() {
+    return AppBarTheme(
+      backgroundColor: primarySafeColors.color,
+      foregroundColor: primarySafeColors.colorText,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+    );
+  }
+
+  ElevatedButtonThemeData elevatedButtonTheme() {
+    return ElevatedButtonThemeData(
+      style: elevatedButtonStyleFromColors(primarySafeColors),
+    );
+  }
+
+  FilledButtonThemeData filledButtonTheme() {
+    return FilledButtonThemeData(
+      style: filledButtonStyleFromColors(primarySafeColors),
+    );
+  }
+
+  OutlinedButtonThemeData outlinedButtonTheme() {
+    return OutlinedButtonThemeData(
+      style: outlinedButtonStyleFromColors(primarySafeColors),
+    );
+  }
+
+  TextButtonThemeData textButtonTheme() {
+    return TextButtonThemeData(
+      style: textButtonStyleFromColors(primarySafeColors),
     );
   }
 }

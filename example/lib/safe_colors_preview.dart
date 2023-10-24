@@ -7,7 +7,6 @@ import 'package:libmonet/theming/button_style.dart';
 class SafeColorsPreviewRow extends StatelessWidget {
   final SafeColors safeColors;
 
-
   const SafeColorsPreviewRow({
     required this.safeColors,
     super.key,
@@ -27,24 +26,20 @@ class SafeColorsPreviewRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                OutlinedButton(
-                  style: buttonStylefromSafeColorsColor(colors),
+                ElevatedButton(onPressed: () {}, child: const Text('Elevated')),
+                const HorizontalPadding(),
+
+                FilledButton(
+                  // style: buttonStylefromSafeColorsColor(colors),
                   onPressed: () {},
-                  child: const Text('Color'),
+                  child: const Text('Filled'),
                 ),
                 const HorizontalPadding(),
-                OutlinedButton(
-                  style: buttonStylefromSafeColorsFill(colors),
-                  onPressed: () {},
-                  child: const Text('Fill'),
-                ),
+
+                OutlinedButton(onPressed: () {}, child: const Text('Outline')),
                 const HorizontalPadding(),
-                TextButton(
-                  style: buttonStylefromSafeColorsText(colors),
-                  onPressed: () {},
-                  child: const Text('Text'),
-                ),
-                const HorizontalPadding(),
+
+                TextButton(onPressed: () {}, child: const Text('Text')),
               ],
             ))
       ],
