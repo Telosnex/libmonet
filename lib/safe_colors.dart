@@ -93,7 +93,7 @@ class SafeColors {
     }
 
     final backgroundHct =
-        Hct.from(colorHct.hue, colorHct.chroma, backgroundLstar);
+        Hct.from(colorHct.hue, math.min(32, colorHct.chroma), backgroundLstar);
     final backgroundTextTone = contrastingLstar(
       withLstar: backgroundLstar,
       usage: Usage.text,

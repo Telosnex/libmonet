@@ -119,7 +119,35 @@ class MonetTheme extends StatelessWidget {
       Hct.from(0, 0, surfaceLstar).color,
     );
     final typographyData = typography(colorScheme);
-    final textTheme = createTextTheme(typographyData);
+    final textThemeIntermediate = createTextTheme(typographyData);
+    final textTheme = textThemeIntermediate.copyWith(
+      displayLarge: textThemeIntermediate.displayLarge!.copyWith(
+        fontSize: 24,
+        color: primarySafeColors.backgroundText,
+      ),
+      displayMedium: textThemeIntermediate.displayMedium!
+          .copyWith(fontSize: 22, color: primarySafeColors.backgroundText),
+      displaySmall: textThemeIntermediate.displaySmall!
+          .copyWith(fontSize: 20, color: primarySafeColors.backgroundText),
+      headlineLarge: textThemeIntermediate.headlineLarge!
+          .copyWith(fontSize: 20, color: primarySafeColors.backgroundText),
+      headlineMedium: textThemeIntermediate.headlineMedium!
+          .copyWith(fontSize: 18, color: primarySafeColors.backgroundText),
+      headlineSmall: textThemeIntermediate.headlineSmall!
+          .copyWith(fontSize: 16, color: primarySafeColors.backgroundText),
+      bodyLarge: textThemeIntermediate.bodyLarge!
+          .copyWith(fontSize: 16, color: primarySafeColors.backgroundText),
+      bodyMedium: textThemeIntermediate.bodyMedium!
+          .copyWith(fontSize: 14, color: primarySafeColors.backgroundText),
+      bodySmall: textThemeIntermediate.bodySmall!
+          .copyWith(fontSize: 12, color: primarySafeColors.backgroundText),
+      labelLarge: textThemeIntermediate.labelLarge!
+          .copyWith(fontSize: 14, color: primarySafeColors.backgroundText),
+      labelMedium: textThemeIntermediate.labelMedium!
+          .copyWith(fontSize: 14, color: primarySafeColors.backgroundText),
+      labelSmall: textThemeIntermediate.labelSmall!
+          .copyWith(fontSize: 12, color: primarySafeColors.backgroundText),
+    );
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
       // with opacity to surface to make elevated surfaces lighter. Doesn't
@@ -274,7 +302,7 @@ class MonetTheme extends StatelessWidget {
       backgroundColor: primarySafeColors.fill,
       surfaceTintColor: primarySafeColors.fill,
       shadowColor: Colors.transparent,
-      dividerColor: primarySafeColors.backgroundText,
+      dividerColor: Colors.transparent,
       // Copy defaults from Banner.dart
       contentTextStyle: TextStyle(
         color: primarySafeColors.fillText,
@@ -296,36 +324,6 @@ class MonetTheme extends StatelessWidget {
       shadowColor: Colors.transparent,
       padding: const EdgeInsets.symmetric(
           vertical: 12.0, horizontal: 16.0), // bottom_app_bar.dart
-    );
-  }
-
-  BottomNavigationBarThemeData bottomNavigationBarThemeData(
-      TextTheme textTheme) {
-    return BottomNavigationBarThemeData(
-      backgroundColor: primarySafeColors.background,
-      elevation: 0,
-      type: BottomNavigationBarType.fixed,
-      selectedIconTheme:
-          iconThemeData().copyWith(color: primarySafeColors.fill),
-      unselectedIconTheme:
-          iconThemeData().copyWith(color: primarySafeColors.backgroundText),
-      selectedLabelStyle:
-          textTheme.labelSmall!.copyWith(color: primarySafeColors.fill),
-      unselectedLabelStyle: textTheme.labelSmall!
-          .copyWith(color: primarySafeColors.backgroundText),
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-
-      // Don't specify: this allows the widget to switch between fixed and
-      // shifting based on the number of items.
-      // type: BottomNavigationBarType.fixed,
-
-      enableFeedback: true,
-      // Don't specify, allows widget to default to spread
-      // landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
-
-      // Don't specify, allows widget to default to MaterialStateMouseCursor.clickable
-      // mouseCursor:
     );
   }
 
@@ -425,7 +423,22 @@ class MonetTheme extends StatelessWidget {
       labelStyle: textTheme.bodyMedium!.copyWith(
         color: secondarySafeColors.colorText,
       ),
-    );
+    ).copyWith(
+        checkmarkColor: MaterialStateColor.resolveWith((states) {
+          return primarySafeColors.fill;
+        }),
+        surfaceTintColor: MaterialStateColor.resolveWith((states) {
+          return primarySafeColors.background;
+        }),
+        selectedColor: Colors
+            .transparent, // messes everything up because FG can't be set based on state
+        secondarySelectedColor: primarySafeColors.textHover,
+        secondaryLabelStyle: textTheme.labelLarge!
+            .copyWith(color: primarySafeColors.textHoverText),
+        side: BorderSide(width: 2, color: primarySafeColors.fill),
+        backgroundColor: primarySafeColors.background,
+        labelStyle:
+            textTheme.labelLarge!.copyWith(color: primarySafeColors.text));
   }
 
   DataTableThemeData dataTableThemeData(TextTheme textTheme) {
@@ -447,26 +460,22 @@ class MonetTheme extends StatelessWidget {
     final background = MaterialStateProperty.resolveWith(
       (states) {
         if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.colorHover;
+          return primarySafeColors.textHover;
         } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.colorSplash;
+          return primarySafeColors.textSplash;
         } else if (states.contains(MaterialState.selected)) {
           return primarySafeColors.color;
         } else {
-          return primarySafeColors.background;
+          return Colors.transparent;
         }
       },
     );
     final foreground = MaterialStateProperty.resolveWith(
       (states) {
-        if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.colorHover;
-        } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.colorSplash;
-        } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.color;
+        if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.colorText;
         } else {
-          return primarySafeColors.background;
+          return primarySafeColors.backgroundText;
         }
       },
     );
@@ -526,7 +535,7 @@ class MonetTheme extends StatelessWidget {
       rangePickerHeaderHelpStyle: textTheme.headlineSmall,
       rangeSelectionBackgroundColor: primarySafeColors.fill,
       rangeSelectionOverlayColor: fillText,
-      dividerColor: primarySafeColors.backgroundText,
+      dividerColor: Colors.transparent,
       inputDecorationTheme: null, // if null, uses ThemeData's
     );
   }
@@ -640,7 +649,7 @@ class MonetTheme extends StatelessWidget {
 
   IconButtonThemeData iconButtonThemeData() {
     return IconButtonThemeData(
-        style: filledButtonStyleFromColors(primarySafeColors));
+        style: iconButtonStyleFromColors(primarySafeColors));
   }
 
   ListTileThemeData listTileThemeData(TextTheme textTheme) {
@@ -750,10 +759,40 @@ class MonetTheme extends StatelessWidget {
         } else if (states.contains(MaterialState.hovered)) {
           // not supported
         }
-        return IconThemeData(color: primarySafeColors.text);
+        return IconThemeData(color: primarySafeColors.backgroundText);
       }),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       /* size constraints not included */
+    );
+  }
+
+  BottomNavigationBarThemeData bottomNavigationBarThemeData(
+      TextTheme textTheme) {
+    return BottomNavigationBarThemeData(
+      backgroundColor: primarySafeColors.background,
+      elevation: 0,
+      type: BottomNavigationBarType.fixed,
+      selectedIconTheme:
+          iconThemeData().copyWith(color: primarySafeColors.fill),
+      unselectedIconTheme:
+          iconThemeData().copyWith(color: primarySafeColors.backgroundText),
+      selectedLabelStyle:
+          textTheme.labelSmall!.copyWith(color: primarySafeColors.fill),
+      unselectedLabelStyle: textTheme.labelSmall!
+          .copyWith(color: primarySafeColors.backgroundText),
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+
+      // Don't specify: this allows the widget to switch between fixed and
+      // shifting based on the number of items.
+      // type: BottomNavigationBarType.fixed,
+
+      enableFeedback: true,
+      // Don't specify, allows widget to default to spread
+      // landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
+
+      // Don't specify, allows widget to default to MaterialStateMouseCursor.clickable
+      // mouseCursor:
     );
   }
 
@@ -1141,17 +1180,7 @@ class MonetTheme extends StatelessWidget {
         color: primarySafeColors.fill,
         width: 2,
       ),
-      dayPeriodColor: MaterialStateColor.resolveWith((states) {
-        if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.fillHover;
-        } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.fillSplash;
-        } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fill;
-        } else {
-          return primarySafeColors.background;
-        }
-      }),
+
       dayPeriodShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
@@ -1160,31 +1189,34 @@ class MonetTheme extends StatelessWidget {
         ),
       ),
       dayPeriodTextColor: MaterialStateColor.resolveWith((states) {
-        if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.fillHoverText;
-        } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.fillSplashText;
-        } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fillSplashText;
-        } else {
+        if (states.contains(MaterialState.selected)) {
           return primarySafeColors.fillText;
+        } else {
+          return primarySafeColors.backgroundText;
         }
       }),
       dayPeriodTextStyle: textTheme.labelLarge,
-      dialBackgroundColor: primarySafeColors.color,
-      dialHandColor: primarySafeColors.colorIcon,
-      dialTextColor: primarySafeColors.colorText,
+      dialBackgroundColor: primarySafeColors.fill,
+      dialHandColor: primarySafeColors.fillText,
+      dialTextColor: primarySafeColors.text,
       dialTextStyle: textTheme.labelLarge,
       elevation: 24,
       entryModeIconColor: primarySafeColors.fill,
-      helpTextStyle: textTheme.labelSmall,
+      helpTextStyle: textTheme.headlineSmall,
+      dayPeriodColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.fill;
+        } else {
+          return primarySafeColors.background;
+        }
+      }),
       hourMinuteColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.hovered)) {
           return primarySafeColors.fillHover;
         } else if (states.contains(MaterialState.pressed)) {
           return primarySafeColors.fillSplash;
         } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fillSplash;
+          return primarySafeColors.fill;
         } else {
           return primarySafeColors.background;
         }
@@ -1202,7 +1234,7 @@ class MonetTheme extends StatelessWidget {
         } else if (states.contains(MaterialState.pressed)) {
           return primarySafeColors.fillSplashText;
         } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fillSplashText;
+          return primarySafeColors.fillText;
         } else {
           return primarySafeColors.backgroundText;
         }
@@ -1298,7 +1330,7 @@ class MonetTheme extends StatelessWidget {
 
   InputDecorationTheme inputDecorationTheme() {
     return InputDecorationTheme(
-      fillColor: primarySafeColors.color,
+      fillColor: primarySafeColors.background,
       filled: true,
       border: OutlineInputBorder(
         borderSide: BorderSide(width: 2, color: primarySafeColors.colorBorder),

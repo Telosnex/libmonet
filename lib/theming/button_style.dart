@@ -69,6 +69,26 @@ ButtonStyle filledButtonStyleFromColors(SafeColors safeColors) {
   );
 }
 
+ButtonStyle iconButtonStyleFromColors(SafeColors safeColors) {
+  return ButtonStyle(
+    backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
+    surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
+    overlayColor: stateColors(
+      color: Colors.transparent,
+      hover: safeColors.textHover,
+      splash: safeColors.textSplash,
+    ),
+    foregroundColor: stateColors(
+      color: safeColors.text,
+      hover: safeColors.textHoverText,
+      splash: safeColors.textSplashText,
+    ),
+    side: MaterialStateProperty.all(
+      const BorderSide(color: Colors.transparent, width: 0),
+    ),
+  );
+}
+
 /// Useful for ex. MaterialBanner
 ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
   final alwaysSurface = stateColors(

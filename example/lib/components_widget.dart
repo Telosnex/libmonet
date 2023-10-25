@@ -119,19 +119,6 @@ class ComponentsWidget extends HookConsumerWidget {
             ],
           ),
         ),
-        const H3('BottomNavigationBar'),
-        BottomNavigationBar(
-            currentIndex: 0,
-            useLegacyColorScheme: false,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.abc,
-                  ),
-                  label: 'Label'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.ac_unit), label: 'Another Label')
-            ]),
         const H3('ButtonBar'),
         ButtonBar(children: <Widget>[
           TextButton.icon(
