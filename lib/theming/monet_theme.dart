@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/full_color_scheme.dart';
 import 'package:libmonet/hct.dart';
@@ -18,6 +19,12 @@ class MonetTheme extends StatelessWidget {
 
   final Brightness brightness;
   final Widget child;
+
+  static const double touchSize = 36.0;
+  static final InteractiveInkFeatureFactory splashFactory =
+      defaultTargetPlatform == TargetPlatform.android && !kIsWeb
+          ? InkRipple.splashFactory
+          : InkSparkle.splashFactory;
 
   factory MonetTheme.fromColor({
     required Color color,
@@ -112,13 +119,12 @@ class MonetTheme extends StatelessWidget {
       Hct.from(0, 0, surfaceLstar).color,
     );
     final typographyData = typography(colorScheme);
-    final textThemeData = textTheme(typographyData);
-    final themeData = Theme.of(context).copyWith(
+    final textTheme = createTextTheme(typographyData);
+    final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
       // with opacity to surface to make elevated surfaces lighter. Doesn't
       // make sense once you don't only have opacity for lightening, but color.
       applyElevationOverlayColor: false,
-      // TODO: odd dance, to construct one _requires_ ThemeData
       cupertinoOverrideTheme: null,
       extensions: [
         MonetColorScheme.fromSafeColors(
@@ -136,9 +142,7 @@ class MonetTheme extends StatelessWidget {
       pageTransitionsTheme: const PageTransitionsTheme(),
       scrollbarTheme: scrollbarThemeData(),
       // Copy logic from ThemeData, modulo useMaterial3 always is true
-      splashFactory: defaultTargetPlatform == TargetPlatform.android && !kIsWeb
-          ? InkRipple.splashFactory
-          : InkSparkle.splashFactory,
+      splashFactory: splashFactory,
       useMaterial3: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       brightness: brightness,
@@ -146,7 +150,6 @@ class MonetTheme extends StatelessWidget {
       cardColor: primarySafeColors.background,
       colorScheme: colorScheme,
       dialogBackgroundColor: primarySafeColors.background,
-      // TODO: do we want to set this?
       disabledColor: primarySafeColors.color,
       dividerColor: primarySafeColors.backgroundText,
       // colorHover only guarantees contrast with colorBorder
@@ -161,41 +164,77 @@ class MonetTheme extends StatelessWidget {
       indicatorColor: secondarySafeColors.fill,
       scaffoldBackgroundColor: primarySafeColors.background,
       secondaryHeaderColor: secondarySafeColors.backgroundText,
-      // TODO: non-sequitor, need shadow opacity too, and may need multiple
-      // shadows
+      // Avoid setting a default, as each widget may be a different color and
+      // thus should be set explicitly.
       shadowColor: Colors.transparent,
       splashColor: primarySafeColors.fillSplash,
-      // TODO: material uses 70% white in dark mode, 54% black in light mode
+      // Material uses 70% white in dark mode, 54% black in light mode
       // Is transparency important? Where is this used?
       // For now, treat it like text
       unselectedWidgetColor: primarySafeColors.backgroundText,
       iconTheme: iconThemeData(),
       primaryIconTheme: iconThemeData(),
-      primaryTextTheme: textThemeData,
-      textTheme: textThemeData,
+      primaryTextTheme: textTheme,
+      textTheme: textTheme,
       typography: typographyData,
       // BEGIN ALL THE ACCOUTREMENTS
       actionIconTheme: actionIconTheme(),
       appBarTheme: appBarTheme(),
-      badgeTheme: badgeThemeData(context, textThemeData),
+      badgeTheme: badgeThemeData(context, textTheme),
       bannerTheme: bannerThemeData(),
       bottomAppBarTheme: bottomAppBarTheme(),
-      bottomNavigationBarTheme: bottomNavigationBarThemeData(textThemeData),
+      bottomNavigationBarTheme: bottomNavigationBarThemeData(textTheme),
       bottomSheetTheme: bottomSheetThemeData(),
       buttonBarTheme: buttonBarThemeData(),
       buttonTheme: buttonThemeData(),
       cardTheme: cardTheme(),
       checkboxTheme: checkboxThemeData(),
+      chipTheme: chipThemeData(brightness, textTheme),
+      dataTableTheme: dataTableThemeData(textTheme),
+      datePickerTheme: datePickerThemeData(brightness, textTheme),
+      dialogTheme: createDialogTheme(textTheme),
+      dividerTheme: dividerThemeData(),
+      drawerTheme: drawerThemeData(),
       elevatedButtonTheme: elevatedButtonTheme(),
+      expansionTileTheme: expansionTileThemeData(),
       filledButtonTheme: filledButtonTheme(),
+      floatingActionButtonTheme: floatingActionButtonThemeData(textTheme),
+      iconButtonTheme: iconButtonThemeData(),
+      listTileTheme: listTileThemeData(textTheme),
+      menuBarTheme: menuBarThemeData(),
+      menuButtonTheme: menuButtonThemeData(),
+      menuTheme: menuThemeData(),
+      navigationBarTheme: navigationBarThemeData(textTheme),
+      navigationDrawerTheme: navigationDrawerThemeData(textTheme),
+      navigationRailTheme: navigationRailThemeData(textTheme),
       outlinedButtonTheme: outlinedButtonTheme(),
+      popupMenuTheme: popupMenuThemeData(textTheme),
+      progressIndicatorTheme: progressIndicatorThemeData(),
+      radioTheme: radioThemeData(),
+      searchBarTheme: searchBarThemeData(textTheme),
+      searchViewTheme: searchViewThemeData(textTheme),
+      segmentedButtonTheme: segmentedButtonThemeData(),
+      sliderTheme: sliderThemeData(textTheme),
+      snackBarTheme: snackBarThemeData(textTheme),
+      switchTheme: switchThemeData(),
+      tabBarTheme: createTabBarTheme(textTheme),
       textButtonTheme: textButtonTheme(),
+      textSelectionTheme: textSelectionThemeData(),
+      timePickerTheme: timePickerThemeData(textTheme),
+      toggleButtonsTheme: toggleButtonsThemeData(textTheme),
+      tooltipTheme: tooltipThemeData(textTheme),
     );
+
+    final cupertinoOverrideTheme =
+        MaterialBasedCupertinoThemeData(materialTheme: themeData);
+        
 
     return _MonetInheritedTheme(
       theme: this,
       child: Theme(
-        data: themeData,
+        data: themeData.copyWith(
+          cupertinoOverrideTheme: cupertinoOverrideTheme,
+        ),
         child: child,
       ),
     );
@@ -343,9 +382,183 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
+  ChipThemeData chipThemeData(Brightness brightness, TextTheme textTheme) {
+    return ChipThemeData.fromDefaults(
+      brightness: brightness,
+      secondaryColor: secondarySafeColors.color,
+      labelStyle: textTheme.bodyMedium!.copyWith(
+        color: secondarySafeColors.colorText,
+      ),
+      primaryColor: primarySafeColors.color,
+    );
+  }
+
+  DataTableThemeData dataTableThemeData(TextTheme textTheme) {
+    return DataTableThemeData(
+      dataTextStyle: textTheme.bodyMedium,
+      dividerThickness: 2.0,
+      headingTextStyle: textTheme.headlineMedium,
+      headingRowColor: MaterialStateProperty.all(Colors.transparent),
+      dataRowMinHeight: touchSize,
+      dataRowMaxHeight: double.infinity,
+      headingRowHeight: 0,
+    );
+  }
+
+  DatePickerThemeData datePickerThemeData(
+    Brightness brightness,
+    TextTheme textTheme,
+  ) {
+    final background = MaterialStateProperty.resolveWith(
+      (states) {
+        if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.colorHover;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.colorSplash;
+        } else if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.color;
+        } else {
+          return primarySafeColors.background;
+        }
+      },
+    );
+    final foreground = MaterialStateProperty.resolveWith(
+      (states) {
+        if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.colorHover;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.colorSplash;
+        } else if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.color;
+        } else {
+          return primarySafeColors.background;
+        }
+      },
+    );
+    final fillText = MaterialStateProperty.resolveWith(
+      (states) {
+        if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.fillHoverText;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.fillSplashText;
+        } else if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.fillSplashText;
+        } else {
+          return primarySafeColors.fillText;
+        }
+      },
+    );
+    final shadowColor = lstarFromArgb(primarySafeColors.background.value) > 60
+        ? Colors.black
+        : Colors.white;
+    return DatePickerThemeData(
+      backgroundColor: primarySafeColors.background,
+      elevation: null /* will match Dialog.elevation */,
+      shadowColor: shadowColor,
+      surfaceTintColor: primarySafeColors.background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      headerBackgroundColor: primarySafeColors.color,
+      headerForegroundColor: primarySafeColors.colorText,
+      headerHeadlineStyle: textTheme.headlineMedium,
+      headerHelpStyle: textTheme.headlineSmall,
+      weekdayStyle: textTheme.bodyLarge,
+      dayStyle: textTheme.bodySmall,
+      dayForegroundColor: foreground,
+      dayBackgroundColor: background,
+      dayOverlayColor: background,
+      todayForegroundColor: foreground,
+      todayBackgroundColor: background,
+      todayBorder: BorderSide(
+        width: 2.0,
+        color: primarySafeColors.fill,
+      ),
+      yearStyle: textTheme.headlineMedium,
+      yearBackgroundColor: background,
+      yearForegroundColor: foreground,
+      yearOverlayColor: background,
+      rangePickerBackgroundColor: primarySafeColors.background,
+      rangePickerElevation: 0,
+      rangePickerShadowColor: shadowColor,
+      rangePickerSurfaceTintColor: primarySafeColors.background,
+      rangePickerShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      rangePickerHeaderBackgroundColor: primarySafeColors.color,
+      rangePickerHeaderForegroundColor: primarySafeColors.colorText,
+      rangePickerHeaderHeadlineStyle: textTheme.headlineMedium,
+      rangePickerHeaderHelpStyle: textTheme.headlineSmall,
+      rangeSelectionBackgroundColor: primarySafeColors.fill,
+      rangeSelectionOverlayColor: fillText,
+      dividerColor: primarySafeColors.backgroundText,
+      inputDecorationTheme: null, // if null, uses ThemeData's
+    );
+  }
+
+  DialogTheme createDialogTheme(TextTheme textTheme) {
+    return DialogTheme(
+      backgroundColor: primarySafeColors.background,
+      elevation: 24,
+      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60
+          ? Colors.black
+          : Colors.white,
+      surfaceTintColor: primarySafeColors.background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: null,
+      iconColor: primarySafeColors.fill,
+      titleTextStyle: textTheme.headlineMedium,
+      contentTextStyle: textTheme.bodyMedium,
+      actionsPadding:
+          null, // don't override default in AlertDialog.actionsPading
+    );
+  }
+
+  DropdownMenuThemeData dropdownMenuThemeData(TextTheme textTheme) {
+    return DropdownMenuThemeData(
+      inputDecorationTheme: const InputDecorationTheme(
+        fillColor: Colors.red,
+        filled: true,
+      ),
+      textStyle: textTheme.bodyMedium!.copyWith(color: primarySafeColors.text),
+      menuStyle: createMenuStyle(),
+    );
+  }
+
   ElevatedButtonThemeData elevatedButtonTheme() {
     return ElevatedButtonThemeData(
       style: elevatedButtonStyleFromColors(primarySafeColors),
+    );
+  }
+
+  ExpansionTileThemeData expansionTileThemeData() {
+    return ExpansionTileThemeData(
+      backgroundColor: primarySafeColors.background,
+      collapsedBackgroundColor: primarySafeColors.background,
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+      /* Match default */
+      expandedAlignment: Alignment.center,
+      childrenPadding: EdgeInsets.zero,
+      iconColor: primarySafeColors.fill,
+      collapsedIconColor: primarySafeColors.fill,
+      textColor: primarySafeColors.text,
+      collapsedTextColor: primarySafeColors.text,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.colorBorder,
+          width: 2,
+        ),
+      ),
+      collapsedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.colorBorder,
+          width: 2,
+        ),
+      ),
     );
   }
 
@@ -355,15 +568,618 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
+  FloatingActionButtonThemeData floatingActionButtonThemeData(
+      TextTheme textTheme) {
+    return FloatingActionButtonThemeData(
+      foregroundColor: primarySafeColors.colorIcon,
+      backgroundColor: primarySafeColors.color,
+      focusColor: primarySafeColors.colorHover,
+      hoverColor: primarySafeColors.colorHover,
+      splashColor: primarySafeColors.colorSplash,
+      elevation: 24,
+      focusElevation: 24,
+      hoverElevation: 24,
+      highlightElevation: 24,
+      disabledElevation: 24,
+      shape: CircleBorder(
+        side: BorderSide(
+          color: primarySafeColors.colorBorder,
+          width: 2,
+        ),
+      ),
+      enableFeedback: true,
+      iconSize: 24,
+      extendedTextStyle:
+          textTheme.bodyMedium!.copyWith(color: primarySafeColors.colorText),
+      /* size constraints not included */
+    );
+  }
+
+  IconButtonThemeData iconButtonThemeData() {
+    return IconButtonThemeData(
+        style: filledButtonStyleFromColors(primarySafeColors));
+  }
+
+  ListTileThemeData listTileThemeData(TextTheme textTheme) {
+    return ListTileThemeData(
+      dense: true,
+      shape: null,
+      style: ListTileStyle.list,
+      selectedColor: primarySafeColors.fillHover,
+      iconColor: primarySafeColors.fill,
+      textColor: primarySafeColors.text,
+      titleTextStyle:
+          textTheme.titleSmall!.copyWith(color: primarySafeColors.text),
+      subtitleTextStyle:
+          textTheme.bodyLarge!.copyWith(color: primarySafeColors.text),
+      leadingAndTrailingTextStyle:
+          textTheme.bodyMedium!.copyWith(color: primarySafeColors.text),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+      tileColor: primarySafeColors.background,
+      selectedTileColor: primarySafeColors.fillHover,
+      horizontalTitleGap: 16,
+      minVerticalPadding: 4,
+      minLeadingWidth: 40,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      titleAlignment: ListTileTitleAlignment.threeLine,
+    );
+  }
+
+  MenuBarThemeData menuBarThemeData() {
+    return MenuBarThemeData(
+      style: createMenuStyle(),
+    );
+  }
+
+  MenuStyle createMenuStyle() {
+    return MenuStyle(
+      backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
+      shadowColor: MaterialStateProperty.all(Colors.transparent),
+      surfaceTintColor: MaterialStatePropertyAll(primarySafeColors.background),
+      elevation: const MaterialStatePropertyAll(24),
+      side: MaterialStatePropertyAll(
+        BorderSide(
+          color: primarySafeColors.colorBorder,
+          width: 2,
+        ),
+      ),
+      padding: const MaterialStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+      shape: MaterialStatePropertyAll(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            color: primarySafeColors.colorBorder,
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  MenuButtonThemeData menuButtonThemeData() {
+    return MenuButtonThemeData(
+      style: filledButtonStyleFromColors(primarySafeColors),
+    );
+  }
+
+  MenuThemeData menuThemeData() {
+    return MenuThemeData(
+      style: createMenuStyle(),
+    );
+  }
+
+  NavigationBarThemeData navigationBarThemeData(TextTheme textTheme) {
+    return NavigationBarThemeData(
+      height: 80,
+      backgroundColor: primarySafeColors.background,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+      surfaceTintColor: primarySafeColors.background,
+      indicatorColor: primarySafeColors.fill,
+      indicatorShape: const StadiumBorder(), // match default
+      labelTextStyle:
+          MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+        final TextStyle style = textTheme.labelMedium!;
+        return style.apply(
+          color: states.contains(MaterialState.selected)
+              ? primarySafeColors.text
+              : primarySafeColors.backgroundText,
+        );
+      }),
+      iconTheme: null,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      /* size constraints not included */
+    );
+  }
+
+  NavigationDrawerThemeData navigationDrawerThemeData(TextTheme textTheme) {
+    return NavigationDrawerThemeData(
+      tileHeight: 56,
+      /* match _NavigationDrawerDefaultsM3 */
+      backgroundColor: primarySafeColors.background,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+      surfaceTintColor: primarySafeColors.background,
+      indicatorColor: primarySafeColors.fill,
+      indicatorShape: const StadiumBorder(), // match default
+      labelTextStyle:
+          MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+        final TextStyle style = textTheme.labelMedium!;
+        return style.apply(
+          color: states.contains(MaterialState.selected)
+              ? primarySafeColors.text
+              : primarySafeColors.backgroundText,
+        );
+      }),
+    );
+  }
+
+  NavigationRailThemeData navigationRailThemeData(TextTheme textTheme) {
+    return NavigationRailThemeData(
+      backgroundColor: primarySafeColors.background,
+      elevation: 0,
+      unselectedLabelTextStyle: textTheme.labelMedium,
+      selectedLabelTextStyle:
+          textTheme.labelMedium!.copyWith(color: primarySafeColors.text),
+      unselectedIconTheme:
+          iconThemeData().copyWith(color: primarySafeColors.backgroundText),
+      selectedIconTheme:
+          iconThemeData().copyWith(color: primarySafeColors.fill),
+      groupAlignment: -1.0, // match default, top
+      labelType: NavigationRailLabelType.all,
+      useIndicator: true,
+      indicatorColor: primarySafeColors.fill,
+      indicatorShape: const StadiumBorder(), // match default
+      minWidth: 72, // match default
+      minExtendedWidth: 256, // match default
+    );
+  }
+
   OutlinedButtonThemeData outlinedButtonTheme() {
     return OutlinedButtonThemeData(
       style: outlinedButtonStyleFromColors(primarySafeColors),
     );
   }
 
+  PopupMenuThemeData popupMenuThemeData(TextTheme textTheme) {
+    return PopupMenuThemeData(
+      color: primarySafeColors.background, // Popup background
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.fill,
+          width: 2,
+        ),
+      ),
+      elevation: 24.0, // Popup outline elevation
+      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60
+          ? Colors.black
+          : Colors.white,
+      surfaceTintColor: primarySafeColors.background,
+      textStyle: textTheme.bodyMedium,
+      labelTextStyle: MaterialStatePropertyAll(textTheme.bodyMedium),
+      enableFeedback: true,
+      position: PopupMenuPosition.under,
+    );
+  }
+
+  ProgressIndicatorThemeData progressIndicatorThemeData() {
+    return ProgressIndicatorThemeData(
+      color: primarySafeColors.fill,
+      linearTrackColor: primarySafeColors.fillText,
+      linearMinHeight: 4,
+      circularTrackColor: primarySafeColors.fillText,
+      refreshBackgroundColor: primarySafeColors.background,
+    );
+  }
+
+  RadioThemeData radioThemeData() {
+    return RadioThemeData(
+      fillColor: MaterialStateProperty.resolveWith(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return primarySafeColors.fillSplashText;
+          } else if (states.contains(MaterialState.hovered)) {
+            return primarySafeColors.fillHoverText;
+          } else if (states.contains(MaterialState.pressed)) {
+            return primarySafeColors.fillSplashText;
+          } else {
+            return primarySafeColors.fillText;
+          }
+        },
+      ),
+      overlayColor: MaterialStateProperty.resolveWith(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return primarySafeColors.fillSplash;
+          } else if (states.contains(MaterialState.hovered)) {
+            return primarySafeColors.fillHover;
+          } else if (states.contains(MaterialState.pressed)) {
+            return primarySafeColors.fillSplash;
+          } else {
+            return primarySafeColors.fill;
+          }
+        },
+      ),
+      splashRadius: 20.0, // match checkbox default,
+      materialTapTargetSize: null, // let Theme manage it
+      visualDensity: null, // let Theme manage it
+    );
+  }
+
+  SearchBarThemeData searchBarThemeData(TextTheme textTheme) {
+    return SearchBarThemeData(
+      elevation: const MaterialStatePropertyAll(24),
+      backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
+      shadowColor: MaterialStatePropertyAll(
+        lstarFromArgb(primarySafeColors.background.value) > 60
+            ? Colors.black
+            : Colors.white,
+      ),
+      surfaceTintColor: MaterialStatePropertyAll(primarySafeColors.background),
+      overlayColor: MaterialStatePropertyAll(primarySafeColors.background),
+      side: MaterialStatePropertyAll(
+        BorderSide(
+          color: primarySafeColors.fill,
+          width: 2,
+        ),
+      ),
+      shape: MaterialStatePropertyAll(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            color: primarySafeColors.fill,
+            width: 2,
+          ),
+        ),
+      ),
+      padding: const MaterialStatePropertyAll(
+        EdgeInsets.symmetric(
+          horizontal: 16,
+        ),
+      ),
+      textStyle: MaterialStatePropertyAll(textTheme.bodyMedium),
+      hintStyle: MaterialStatePropertyAll(textTheme.labelMedium),
+      constraints: const BoxConstraints(
+          minWidth: 360.0, maxWidth: 800.0, minHeight: 56.0), // match default
+    );
+  }
+
+  SearchViewThemeData searchViewThemeData(TextTheme textTheme) {
+    return SearchViewThemeData(
+      backgroundColor: primarySafeColors.background,
+      elevation: 24,
+      surfaceTintColor: primarySafeColors.background,
+      constraints: const BoxConstraints(
+          minWidth: 360.0, maxWidth: 800.0, minHeight: 56.0),
+      side: BorderSide(color: primarySafeColors.fill, width: 2),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.fill,
+          width: 2,
+        ),
+      ),
+      headerTextStyle: textTheme.headlineMedium,
+      headerHintStyle: textTheme.headlineSmall,
+      dividerColor: primarySafeColors.backgroundText,
+    );
+  }
+
+  SegmentedButtonThemeData segmentedButtonThemeData() {
+    return SegmentedButtonThemeData(
+      style: filledButtonStyleFromColors(primarySafeColors),
+    );
+  }
+
+  SliderThemeData sliderThemeData(TextTheme textTheme) {
+    return SliderThemeData(
+      trackHeight: touchSize,
+      activeTrackColor: primarySafeColors.color,
+      inactiveTrackColor: primarySafeColors.background,
+      secondaryActiveTrackColor: primarySafeColors.color,
+      disabledActiveTrackColor: primarySafeColors.color,
+      disabledInactiveTrackColor: primarySafeColors.background,
+      disabledSecondaryActiveTrackColor: primarySafeColors.color,
+      activeTickMarkColor: primarySafeColors.colorText,
+      inactiveTickMarkColor: primarySafeColors.backgroundText,
+      disabledActiveTickMarkColor: primarySafeColors.colorText,
+      disabledInactiveTickMarkColor: primarySafeColors.backgroundText,
+      thumbColor: primarySafeColors.color,
+      overlappingShapeStrokeColor: primarySafeColors.fillText,
+      disabledThumbColor: primarySafeColors.color,
+      overlayColor: primarySafeColors.color,
+      valueIndicatorColor: primarySafeColors.color,
+      overlayShape: const RoundSliderOverlayShape(),
+      tickMarkShape: const RoundSliderTickMarkShape(),
+      thumbShape: const RoundSliderThumbShape(),
+      trackShape: const RoundedRectSliderTrackShape(),
+      valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
+      rangeTickMarkShape: const RoundRangeSliderTickMarkShape(),
+      rangeThumbShape: const RoundRangeSliderThumbShape(),
+      rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
+      rangeValueIndicatorShape: const PaddleRangeSliderValueIndicatorShape(),
+      showValueIndicator: ShowValueIndicator.always,
+      valueIndicatorTextStyle:
+          textTheme.labelLarge!.copyWith(color: primarySafeColors.colorText),
+      minThumbSeparation: 8,
+      allowedInteraction: SliderInteraction.tapAndSlide,
+    );
+  }
+
+  SnackBarThemeData snackBarThemeData(TextTheme textTheme) {
+    return SnackBarThemeData(
+      backgroundColor: primarySafeColors.color,
+      actionTextColor: primarySafeColors.colorText,
+      disabledActionTextColor: primarySafeColors.colorText,
+      contentTextStyle:
+          textTheme.bodyMedium!.copyWith(color: primarySafeColors.colorText),
+      elevation: 24,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.colorBorder,
+          width: 2,
+        ),
+      ),
+      behavior: SnackBarBehavior.floating,
+      width: null, // allows use of margin instead
+      insetPadding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 10.0),
+      showCloseIcon: true,
+      closeIconColor: primarySafeColors.colorIcon,
+      actionOverflowThreshold:
+          0.25, // match default,  the percentage threshold for action widget's width before it overflows  to a new line.
+      actionBackgroundColor: primarySafeColors.color,
+      disabledActionBackgroundColor: primarySafeColors.color,
+    );
+  }
+
+  SwitchThemeData switchThemeData() {
+    return SwitchThemeData(
+      thumbColor: MaterialStatePropertyAll(primarySafeColors.color),
+      trackColor: MaterialStatePropertyAll(primarySafeColors.background),
+      trackOutlineColor:
+          MaterialStatePropertyAll(primarySafeColors.colorBorder),
+      trackOutlineWidth: const MaterialStatePropertyAll(2.0),
+      materialTapTargetSize: null, // let Theme manage it
+      mouseCursor: null, // let Theme manage it
+      overlayColor: MaterialStateProperty.resolveWith(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return primarySafeColors.colorSplash;
+          } else if (states.contains(MaterialState.hovered)) {
+            return primarySafeColors.colorHover;
+          } else if (states.contains(MaterialState.pressed)) {
+            return primarySafeColors.colorSplash;
+          } else {
+            return primarySafeColors.color;
+          }
+        },
+      ),
+      splashRadius: 20.0, // match checkbox default,
+      thumbIcon: MaterialStateProperty.resolveWith(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return Icon(
+              Icons.check_outlined,
+              color: primarySafeColors.colorSplashText,
+            );
+          } else {
+            return null;
+          }
+        },
+      ),
+    );
+  }
+
+  TabBarTheme createTabBarTheme(TextTheme textTheme) {
+    final labelColor = MaterialStateColor.resolveWith((states) {
+      if (states.contains(MaterialState.selected)) {
+        return primarySafeColors.fillSplashText;
+      } else if (states.contains(MaterialState.hovered)) {
+        return primarySafeColors.fillHoverText;
+      } else if (states.contains(MaterialState.pressed)) {
+        return primarySafeColors.fillSplashText;
+      } else {
+        return primarySafeColors.backgroundText;
+      }
+    });
+    return TabBarTheme(
+      indicator: const UnderlineTabIndicator(),
+      indicatorColor: primarySafeColors.fill,
+      indicatorSize: TabBarIndicatorSize.label,
+      dividerColor: primarySafeColors.backgroundText,
+      labelColor: labelColor,
+      labelStyle: textTheme.labelMedium,
+      unselectedLabelColor: labelColor,
+      unselectedLabelStyle: textTheme.labelMedium,
+      overlayColor: MaterialStateProperty.resolveWith(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return primarySafeColors.fillSplash;
+          } else if (states.contains(MaterialState.hovered)) {
+            return primarySafeColors.fillHover;
+          } else if (states.contains(MaterialState.pressed)) {
+            return primarySafeColors.fillSplash;
+          } else {
+            return primarySafeColors.background;
+          }
+        },
+      ),
+      splashFactory: splashFactory,
+      mouseCursor: null, // use default view
+      tabAlignment: TabAlignment.fill,
+    );
+  }
+
   TextButtonThemeData textButtonTheme() {
     return TextButtonThemeData(
       style: textButtonStyleFromColors(primarySafeColors),
+    );
+  }
+
+  TextSelectionThemeData textSelectionThemeData() {
+    return TextSelectionThemeData(
+      cursorColor: primarySafeColors.text,
+      selectionColor: primarySafeColors.textHover,
+      selectionHandleColor: primarySafeColors.fill,
+    );
+  }
+
+  TimePickerThemeData timePickerThemeData(TextTheme textTheme) {
+    return TimePickerThemeData(
+      backgroundColor: primarySafeColors.background,
+      cancelButtonStyle: outlinedButtonStyleFromColors(tertiarySafeColors),
+      confirmButtonStyle: filledButtonStyleFromColors(primarySafeColors),
+      dayPeriodBorderSide: BorderSide(
+        color: primarySafeColors.fill,
+        width: 2,
+      ),
+      dayPeriodColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.fillHover;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.fillSplash;
+        } else if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.fill;
+        } else {
+          return primarySafeColors.background;
+        }
+      }),
+      dayPeriodShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.fill,
+          width: 2,
+        ),
+      ),
+      dayPeriodTextColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.fillHoverText;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.fillSplashText;
+        } else if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.fillSplashText;
+        } else {
+          return primarySafeColors.fillText;
+        }
+      }),
+      dayPeriodTextStyle: textTheme.labelLarge,
+      dialBackgroundColor: primarySafeColors.color,
+      dialHandColor: primarySafeColors.colorIcon,
+      dialTextColor: primarySafeColors.colorText,
+      dialTextStyle: textTheme.labelLarge,
+      elevation: 24,
+      entryModeIconColor: primarySafeColors.fill,
+      helpTextStyle: textTheme.labelSmall,
+      hourMinuteColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.fillHover;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.fillSplash;
+        } else if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.fillSplash;
+        } else {
+          return primarySafeColors.background;
+        }
+      }),
+      hourMinuteShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.fill,
+          width: 2,
+        ),
+      ),
+      hourMinuteTextColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.fillHoverText;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.fillSplashText;
+        } else if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.fillSplashText;
+        } else {
+          return primarySafeColors.backgroundText;
+        }
+      }),
+      inputDecorationTheme: null, // let picker use its defaults
+      padding: const EdgeInsets.all(24), // match default in time_picker.dart
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: primarySafeColors.fill,
+          width: 2,
+        ),
+      ),
+    );
+  }
+
+  ToggleButtonsThemeData toggleButtonsThemeData(TextTheme textTheme) {
+    return ToggleButtonsThemeData(
+      textStyle: textTheme.bodyMedium,
+      constraints: const BoxConstraints(
+        minWidth: touchSize,
+        minHeight: touchSize,
+      ),
+      color: primarySafeColors.colorText,
+      selectedColor: primarySafeColors.colorSplashText,
+      disabledColor: primarySafeColors.colorText,
+      fillColor: primarySafeColors.color,
+      focusColor: primarySafeColors.colorHover,
+      highlightColor: primarySafeColors.fillHover,
+      hoverColor: primarySafeColors.fillHover,
+      splashColor: primarySafeColors.fillSplash,
+      borderColor: primarySafeColors.colorBorder,
+      selectedBorderColor: primarySafeColors.colorBorder,
+      disabledBorderColor: primarySafeColors.colorBorder,
+      borderRadius: BorderRadius.circular(8),
+      borderWidth: 2,
+    );
+  }
+
+  TooltipThemeData tooltipThemeData(TextTheme textTheme) {
+    return TooltipThemeData(
+      height: switch (defaultTargetPlatform) {
+        TargetPlatform.macOS ||
+        TargetPlatform.linux ||
+        TargetPlatform.windows =>
+          24.0,
+        TargetPlatform.android ||
+        TargetPlatform.fuchsia ||
+        TargetPlatform.iOS =>
+          32.0,
+      },
+      padding: switch (defaultTargetPlatform) {
+        TargetPlatform.macOS ||
+        TargetPlatform.linux ||
+        TargetPlatform.windows =>
+          const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        TargetPlatform.android ||
+        TargetPlatform.fuchsia ||
+        TargetPlatform.iOS =>
+          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      },
+      margin: EdgeInsets.zero,
+      verticalOffset: 24,
+      preferBelow: true,
+      excludeFromSemantics: false,
+      decoration: ShapeDecoration(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            color: primarySafeColors.colorBorder,
+            width: 2,
+          ),
+        ),
+        color: primarySafeColors.color,
+      ),
+      textStyle:
+          textTheme.bodyMedium!.copyWith(color: primarySafeColors.colorText),
+      textAlign: TextAlign.center,
+      showDuration: const Duration(seconds: 2),
+      waitDuration: const Duration(seconds: 1),
+      triggerMode: TooltipTriggerMode.longPress,
+      enableFeedback: true,
     );
   }
 
@@ -410,11 +1226,35 @@ class MonetTheme extends StatelessWidget {
         platform: defaultTargetPlatform, colorScheme: colorScheme);
   }
 
-  TextTheme textTheme(Typography typography) {
+  TextTheme createTextTheme(Typography typography) {
     return switch (brightness) {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
     };
+  }
+
+  DividerThemeData dividerThemeData() {
+    return DividerThemeData(
+      color: primarySafeColors.backgroundText,
+      space: 4,
+      thickness: 2,
+      indent: 4,
+      endIndent: 4,
+    );
+  }
+
+  DrawerThemeData drawerThemeData() {
+    return DrawerThemeData(
+      backgroundColor: primarySafeColors.backgroundText,
+      scrimColor: Colors.black.withOpacity(0.54),
+      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60.0
+          ? Colors.black
+          : Colors.white,
+      surfaceTintColor: primarySafeColors.background,
+      shape: null,
+      endShape: null,
+      width: null /* use default value of Drawer.width */,
+    );
   }
 }
 
