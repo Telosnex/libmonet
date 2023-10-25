@@ -341,7 +341,7 @@ class MonetTheme extends StatelessWidget {
 
   ButtonBarThemeData buttonBarThemeData() {
     // Go with defaults, most of the properties are about padding and spacing.
-    return const ButtonBarThemeData();
+    return const ButtonBarThemeData(alignment: MainAxisAlignment.center);
   }
 
   ButtonThemeData buttonThemeData() {
@@ -353,12 +353,16 @@ class MonetTheme extends StatelessWidget {
     return CardTheme(
       clipBehavior: Clip.none, // match default
       color: primarySafeColors.background,
-      shadowColor: Colors.transparent,
+      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60
+          ? Colors.black
+          : Colors.white,
       surfaceTintColor: primarySafeColors.background,
-      elevation: 0,
-      margin: const EdgeInsets.all(4), // match default
+      elevation: 8,
+      margin: const EdgeInsets.all(0), // match default
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4)), // match default
+          borderRadius: BorderRadius.circular(4),
+          side: BorderSide(
+              color: primarySafeColors.fill, width: 2)), // match default
     );
   }
 
@@ -389,7 +393,6 @@ class MonetTheme extends StatelessWidget {
       labelStyle: textTheme.bodyMedium!.copyWith(
         color: secondarySafeColors.colorText,
       ),
-      primaryColor: primarySafeColors.color,
     );
   }
 

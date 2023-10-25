@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:example/color_picker.dart';
+import 'package:example/components_widget.dart';
 import 'package:example/extracted_widget.dart';
 import 'package:example/padding.dart';
 import 'package:flutter/foundation.dart';
@@ -42,6 +43,8 @@ class Home extends HookConsumerWidget {
                   },
                 ),
                 _contrastWidgets(algo, contrast),
+                const ComponentsWidget(),
+
                 ElevatedButton.icon(
                   onPressed: () => _uploadImagePressed(images),
                   icon: const Icon(Icons.photo),
@@ -90,7 +93,6 @@ class Home extends HookConsumerWidget {
     }
 
     images.value = List.from(images.value)..add(imageProvider);
-    print('images: ${images.value.length}');
 
     // final sw = Stopwatch()..start();
     // final quantizerResult = await Extract.quantize(imageProvider, 64);
