@@ -227,7 +227,6 @@ class MonetTheme extends StatelessWidget {
 
     final cupertinoOverrideTheme =
         MaterialBasedCupertinoThemeData(materialTheme: themeData);
-        
 
     return _MonetInheritedTheme(
       theme: this,
@@ -288,7 +287,7 @@ class MonetTheme extends StatelessWidget {
 
   BottomAppBarTheme bottomAppBarTheme() {
     return BottomAppBarTheme(
-      color: primarySafeColors.color,
+      color: primarySafeColors.background,
       elevation: 0,
       shape: const AutomaticNotchedShape(
           RoundedRectangleBorder()), // bottom_app_bar.dart _BottomAppBarDefaultsM3
@@ -305,13 +304,15 @@ class MonetTheme extends StatelessWidget {
     return BottomNavigationBarThemeData(
       backgroundColor: primarySafeColors.background,
       elevation: 0,
-      selectedIconTheme: iconThemeData(),
+      type: BottomNavigationBarType.fixed,
+      selectedIconTheme:
+          iconThemeData().copyWith(color: primarySafeColors.fill),
       unselectedIconTheme:
           iconThemeData().copyWith(color: primarySafeColors.backgroundText),
-      selectedLabelStyle: textTheme.bodyMedium!
-          .copyWith(fontSize: 14.0, color: primarySafeColors.fill),
-      unselectedLabelStyle: textTheme.bodyMedium!
-          .copyWith(fontSize: 12.0, color: primarySafeColors.backgroundText),
+      selectedLabelStyle:
+          textTheme.labelSmall!.copyWith(color: primarySafeColors.fill),
+      unselectedLabelStyle: textTheme.labelSmall!
+          .copyWith(color: primarySafeColors.backgroundText),
       showSelectedLabels: true,
       showUnselectedLabels: true,
 
@@ -370,9 +371,40 @@ class MonetTheme extends StatelessWidget {
     return CheckboxThemeData(
       mouseCursor: const MaterialStatePropertyAll(
           null), // allows widget to default to clickable
-      fillColor: MaterialStateProperty.all(primarySafeColors.fill),
-      checkColor: MaterialStateProperty.all(primarySafeColors.fillIcon),
-      overlayColor: MaterialStateProperty.all(primarySafeColors.fillSplash),
+      fillColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.fill;
+        } else if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.textHover;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.textSplash;
+        } else {
+          return primarySafeColors.background;
+        }
+      }),
+      // Even though it is an icon, it is displayed very small, text is a better
+      // fit (icon implies a height of 40 dp / 18 pt in parlance of WCAG 2.1)
+      checkColor: MaterialStateProperty.all(primarySafeColors.fillText),
+      overlayColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
+          return primarySafeColors.textHover;
+
+          // Note 1:
+          // Even though this is "wrong", i.e. the checkbox is filled,
+          // Checkbox is unique in that its overlay isn't actually displayed in
+          // the component, but around it. It feels more accurate to use the
+          // same overlay color as when it is not selected.
+          //
+          // Note 2: Other states aren't respected here, even if supplied. Ex.
+          // selected doesn't distinguish between being hovered and pressed.
+        } else if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.textHover;
+        } else if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.textSplash;
+        } else {
+          return primarySafeColors.background;
+        }
+      }),
       splashRadius: 20.0, // match M3 default
       materialTapTargetSize: null, // let Theme manage it
       visualDensity: null, // let Theme manage it
@@ -526,7 +558,7 @@ class MonetTheme extends StatelessWidget {
         filled: true,
       ),
       textStyle: textTheme.bodyMedium!.copyWith(color: primarySafeColors.text),
-      menuStyle: createMenuStyle(),
+      menuStyle: createMenuStyleForDropdown(),
     );
   }
 
@@ -574,7 +606,15 @@ class MonetTheme extends StatelessWidget {
   FloatingActionButtonThemeData floatingActionButtonThemeData(
       TextTheme textTheme) {
     return FloatingActionButtonThemeData(
-      foregroundColor: primarySafeColors.colorIcon,
+      foregroundColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.colorSplashText;
+        } else if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.colorHoverText;
+        } else {
+          return primarySafeColors.colorText;
+        }
+      }),
       backgroundColor: primarySafeColors.color,
       focusColor: primarySafeColors.colorHover,
       hoverColor: primarySafeColors.colorHover,
@@ -630,11 +670,11 @@ class MonetTheme extends StatelessWidget {
 
   MenuBarThemeData menuBarThemeData() {
     return MenuBarThemeData(
-      style: createMenuStyle(),
+      style: createMenuStyleForMenuBar(),
     );
   }
 
-  MenuStyle createMenuStyle() {
+  MenuStyle createMenuStyleForDropdown() {
     return MenuStyle(
       backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
       shadowColor: MaterialStateProperty.all(Colors.transparent),
@@ -660,21 +700,35 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
+  MenuStyle createMenuStyleForMenuBar() {
+    return MenuStyle(
+      backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
+      shadowColor: MaterialStateProperty.all(Colors.transparent),
+      surfaceTintColor: MaterialStatePropertyAll(primarySafeColors.background),
+      elevation: const MaterialStatePropertyAll(24),
+      padding: const MaterialStatePropertyAll(EdgeInsets.zero),
+      shape: const MaterialStatePropertyAll(null),
+    );
+  }
+
   MenuButtonThemeData menuButtonThemeData() {
     return MenuButtonThemeData(
-      style: filledButtonStyleFromColors(primarySafeColors),
+      style: textButtonStyleFromColors(primarySafeColors).copyWith(
+          padding: MaterialStateProperty.all(const EdgeInsets.all(16)),
+          shape: MaterialStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)))),
     );
   }
 
   MenuThemeData menuThemeData() {
     return MenuThemeData(
-      style: createMenuStyle(),
+      style: createMenuStyleForDropdown(),
     );
   }
 
   NavigationBarThemeData navigationBarThemeData(TextTheme textTheme) {
     return NavigationBarThemeData(
-      height: 80,
+      height: 80, // match default
       backgroundColor: primarySafeColors.background,
       elevation: 0,
       shadowColor: Colors.transparent,
@@ -683,14 +737,21 @@ class MonetTheme extends StatelessWidget {
       indicatorShape: const StadiumBorder(), // match default
       labelTextStyle:
           MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-        final TextStyle style = textTheme.labelMedium!;
+        final TextStyle style = textTheme.labelSmall!;
         return style.apply(
           color: states.contains(MaterialState.selected)
               ? primarySafeColors.text
               : primarySafeColors.backgroundText,
         );
       }),
-      iconTheme: null,
+      iconTheme: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
+          return IconThemeData(color: primarySafeColors.fillText);
+        } else if (states.contains(MaterialState.hovered)) {
+          // not supported
+        }
+        return IconThemeData(color: primarySafeColors.text);
+      }),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       /* size constraints not included */
     );
@@ -722,13 +783,14 @@ class MonetTheme extends StatelessWidget {
     return NavigationRailThemeData(
       backgroundColor: primarySafeColors.background,
       elevation: 0,
-      unselectedLabelTextStyle: textTheme.labelMedium,
+      unselectedLabelTextStyle: textTheme.labelMedium!
+          .copyWith(color: primarySafeColors.backgroundText),
       selectedLabelTextStyle:
           textTheme.labelMedium!.copyWith(color: primarySafeColors.text),
       unselectedIconTheme:
           iconThemeData().copyWith(color: primarySafeColors.backgroundText),
       selectedIconTheme:
-          iconThemeData().copyWith(color: primarySafeColors.fill),
+          iconThemeData().copyWith(color: primarySafeColors.fillIcon),
       groupAlignment: -1.0, // match default, top
       labelType: NavigationRailLabelType.all,
       useIndicator: true,
@@ -778,31 +840,25 @@ class MonetTheme extends StatelessWidget {
   }
 
   RadioThemeData radioThemeData() {
+    // States have choices that look odd compared to other components.
+    // This component is particularly challenging due to it being essentially
+    // a fill with a circle surrounding it for hover state. These were
+    // picked thoughtfully.
     return RadioThemeData(
       fillColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
-          if (states.contains(MaterialState.selected)) {
-            return primarySafeColors.fillSplashText;
-          } else if (states.contains(MaterialState.hovered)) {
-            return primarySafeColors.fillHoverText;
-          } else if (states.contains(MaterialState.pressed)) {
-            return primarySafeColors.fillSplashText;
-          } else {
-            return primarySafeColors.fillText;
+          if (states.contains(MaterialState.hovered)) {
+            return primarySafeColors.textHoverText;
           }
+          if (states.contains(MaterialState.selected)) {
+            return primarySafeColors.text;
+          }
+          return primarySafeColors.text;
         },
       ),
       overlayColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
-          if (states.contains(MaterialState.selected)) {
-            return primarySafeColors.fillSplash;
-          } else if (states.contains(MaterialState.hovered)) {
-            return primarySafeColors.fillHover;
-          } else if (states.contains(MaterialState.pressed)) {
-            return primarySafeColors.fillSplash;
-          } else {
-            return primarySafeColors.fill;
-          }
+          return primarySafeColors.textHover;
         },
       ),
       splashRadius: 20.0, // match checkbox default,
@@ -871,9 +927,53 @@ class MonetTheme extends StatelessWidget {
   }
 
   SegmentedButtonThemeData segmentedButtonThemeData() {
-    return SegmentedButtonThemeData(
-      style: filledButtonStyleFromColors(primarySafeColors),
+    // Button style in-lined due to unique requirements, essentially, a text
+    // button when not selected, fillbutton when selected.
+    final safeColors = primarySafeColors;
+    final selectedBackground = stateColors(
+      color: safeColors.color,
+      hover: safeColors.colorHover,
+      splash: safeColors.colorSplash,
     );
+    final unselectedBackground = stateColors(
+      color: safeColors.background,
+      hover: safeColors.textHover,
+      splash: safeColors.textSplash,
+    );
+    final background = MaterialStateProperty.resolveWith((states) {
+      if (states.contains(MaterialState.selected)) {
+        return selectedBackground.resolve(states);
+      } else {
+        return unselectedBackground.resolve(states);
+      }
+    });
+    final selectedForeground = stateColors(
+      color: safeColors.colorText,
+      hover: safeColors.colorHoverText,
+      splash: safeColors.colorSplashText,
+    );
+    final unselectedForeground = stateColors(
+      color: safeColors.backgroundText,
+      hover: safeColors.textHoverText,
+      splash: safeColors.textSplashText,
+    );
+    final foreground = MaterialStateProperty.resolveWith((states) {
+      if (states.contains(MaterialState.selected)) {
+        return selectedForeground.resolve(states);
+      } else {
+        return unselectedForeground.resolve(states);
+      }
+    });
+    return SegmentedButtonThemeData(
+        style: ButtonStyle(
+      backgroundColor: background,
+      surfaceTintColor: background,
+      overlayColor: background,
+      foregroundColor: foreground,
+      side: MaterialStateProperty.all(
+        BorderSide(color: safeColors.colorBorder, width: 2),
+      ),
+    ));
   }
 
   SliderThemeData sliderThemeData(TextTheme textTheme) {
@@ -979,32 +1079,34 @@ class MonetTheme extends StatelessWidget {
   TabBarTheme createTabBarTheme(TextTheme textTheme) {
     final labelColor = MaterialStateColor.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
-        return primarySafeColors.fillSplashText;
+        return primarySafeColors.text;
       } else if (states.contains(MaterialState.hovered)) {
-        return primarySafeColors.fillHoverText;
+        return primarySafeColors.textHoverText;
       } else if (states.contains(MaterialState.pressed)) {
-        return primarySafeColors.fillSplashText;
+        return primarySafeColors.textSplashText;
       } else {
         return primarySafeColors.backgroundText;
       }
     });
     return TabBarTheme(
-      indicator: const UnderlineTabIndicator(),
+      // Oddly, this still is required even if indicatorColor is set.
+      indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: primarySafeColors.fill, width: 2)),
       indicatorColor: primarySafeColors.fill,
       indicatorSize: TabBarIndicatorSize.label,
-      dividerColor: primarySafeColors.backgroundText,
-      labelColor: labelColor,
+      dividerColor: Colors.transparent,
+      labelColor: primarySafeColors.fill,
       labelStyle: textTheme.labelMedium,
       unselectedLabelColor: labelColor,
       unselectedLabelStyle: textTheme.labelMedium,
       overlayColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.selected)) {
-            return primarySafeColors.fillSplash;
+            return primarySafeColors.textSplash;
           } else if (states.contains(MaterialState.hovered)) {
-            return primarySafeColors.fillHover;
+            return primarySafeColors.textHover;
           } else if (states.contains(MaterialState.pressed)) {
-            return primarySafeColors.fillSplash;
+            return primarySafeColors.textSplash;
           } else {
             return primarySafeColors.background;
           }
@@ -1024,7 +1126,7 @@ class MonetTheme extends StatelessWidget {
 
   TextSelectionThemeData textSelectionThemeData() {
     return TextSelectionThemeData(
-      cursorColor: primarySafeColors.text,
+      cursorColor: primarySafeColors.fill,
       selectionColor: primarySafeColors.textHover,
       selectionHandleColor: primarySafeColors.fill,
     );
@@ -1124,13 +1226,21 @@ class MonetTheme extends StatelessWidget {
         minWidth: touchSize,
         minHeight: touchSize,
       ),
-      color: primarySafeColors.colorText,
-      selectedColor: primarySafeColors.colorSplashText,
-      disabledColor: primarySafeColors.colorText,
-      fillColor: primarySafeColors.color,
+      color: MaterialStateColor.resolveWith((states) {
+        // Color is not selected.
+        // States are always empty.
+        return primarySafeColors.text;
+      }),
+      selectedColor: MaterialStateColor.resolveWith((states) {
+        return primarySafeColors.textSplashText;
+      }),
+      disabledColor: primarySafeColors.text,
+      fillColor: primarySafeColors.textSplash,
       focusColor: primarySafeColors.colorHover,
       highlightColor: primarySafeColors.fillHover,
-      hoverColor: primarySafeColors.fillHover,
+      hoverColor: MaterialStateColor.resolveWith((states) {
+        return primarySafeColors.textHover;
+      }),
       splashColor: primarySafeColors.fillSplash,
       borderColor: primarySafeColors.colorBorder,
       selectedBorderColor: primarySafeColors.colorBorder,
@@ -1205,7 +1315,7 @@ class MonetTheme extends StatelessWidget {
       grade: 0.0,
       opticalSize: 48.0,
       shadows: const [],
-      color: primarySafeColors.colorIcon,
+      color: primarySafeColors.fill,
       opacity: 1,
     );
   }
@@ -1226,7 +1336,9 @@ class MonetTheme extends StatelessWidget {
 
   Typography typography(ColorScheme colorScheme) {
     return Typography.material2021(
-        platform: defaultTargetPlatform, colorScheme: colorScheme);
+      platform: defaultTargetPlatform,
+      colorScheme: colorScheme,
+    );
   }
 
   TextTheme createTextTheme(Typography typography) {

@@ -221,9 +221,17 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
     // (Re-)register the shortcuts with the ShortcutRegistry so that they are
     // available to the entire application, and update them if they've changed.
     _shortcutsEntry?.dispose();
+    _shortcutsEntry = null;
     Future.delayed(Duration.zero, () {
-      _shortcutsEntry =
-          ShortcutRegistry.of(context).addAll(MenuEntry.shortcuts(result));
+      if (context.mounted) {
+        try {
+          _shortcutsEntry =
+              ShortcutRegistry.of(context).addAll(MenuEntry.shortcuts(result));
+        } catch (e) {
+          // Silence exception, currently the Flutter demo code for MenuBar
+          // doesn't work and causes a lot of noise, even with workarounds.
+        }
+      }
     });
 
     return result;

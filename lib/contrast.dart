@@ -59,7 +59,7 @@ double contrastingLstar({
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         if (naiveLighterLstar.round() <= 100) {
-          return naiveLighterLstar;
+          return naiveLighterLstar.clamp(0, 100);
         }
         final naiveDarkerLstar = switch (usage) {
           (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
@@ -86,7 +86,7 @@ double contrastingLstar({
         );
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         if (naiveLighterLstar.round() <= 100) {
-          return naiveLighterLstar;
+          return naiveLighterLstar.clamp(0, 100);
         }
         final naiveDarkerLstar = darkerLstarUnsafe(
           lstar: withLstar,
@@ -120,7 +120,7 @@ double contrastingLstar({
         };
         monetDebug(debug, () => 'naiveDarkerLstar: $naiveDarkerLstar');
         if (naiveDarkerLstar.round() >= 0) {
-          return naiveDarkerLstar;
+          return naiveDarkerLstar.clamp(0.0, 100.0);
         }
         final naiveLighterLstar = switch (usage) {
           (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
@@ -148,7 +148,7 @@ double contrastingLstar({
         );
         monetDebug(debug, () => 'naiveDarkerLstar: $naiveDarkerLstar');
         if (naiveDarkerLstar.round() >= 0) {
-          return naiveDarkerLstar;
+          return naiveDarkerLstar.clamp(0.0, 100.0);
         }
         final naiveLighterLstar = lighterLstarUnsafe(
           lstar: withLstar,

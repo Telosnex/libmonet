@@ -42,6 +42,8 @@ ButtonStyle elevatedButtonStyleFromColors(SafeColors safeColors) {
       .copyWith(elevation: const MaterialStatePropertyAll(16));
 }
 
+
+
 ButtonStyle filledButtonStyleFromColors(SafeColors safeColors) {
   final alwaysSurface = stateColors(
     color: safeColors.color,
@@ -66,6 +68,33 @@ ButtonStyle filledButtonStyleFromColors(SafeColors safeColors) {
     ),
   );
 }
+
+/// Useful for ex. MaterialBanner
+ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
+  final alwaysSurface = stateColors(
+    color: safeColors.background,
+    hover: safeColors.background,
+    splash: safeColors.background,
+  );
+  return ButtonStyle(
+    backgroundColor: alwaysSurface,
+    surfaceTintColor: alwaysSurface,
+    overlayColor: stateColors(
+      color: safeColors.background,
+      hover: safeColors.textHover,
+      splash: safeColors.textSplash,
+    ),
+    foregroundColor: stateColors(
+      color: safeColors.backgroundText,
+      hover: safeColors.textHoverText,
+      splash: safeColors.textSplashText,
+    ),
+    side: MaterialStateProperty.all(
+      BorderSide(color: safeColors.colorBorder, width: 2),
+    ),
+  );
+}
+
 
 ButtonStyle outlinedButtonStyleFromColors(SafeColors safeColors) {
   return ButtonStyle(

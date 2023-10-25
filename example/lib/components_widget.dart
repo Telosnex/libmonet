@@ -4,6 +4,8 @@ import 'package:example/tab_bar_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:libmonet/theming/button_style.dart';
+import 'package:libmonet/theming/monet_theme.dart';
 
 class H3 extends ConsumerWidget {
   final String text;
@@ -20,14 +22,19 @@ class ComponentsWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final monetTheme = MonetTheme.of(context);
     final switchValue = useState(false);
     final sliderValue = useState(0.5);
     final choiceChipSelected = useState(false);
     final filterChipSelected = useState(false);
     final radioValue = useState<int?>(0);
+    final checkboxValue = useState(false);
+    final navigationBarSelectedValue = useState<int>(0);
+    final navigationRailSelectedValue = useState<int>(0);
     onRadioValueChanged(int? value) {
       radioValue.value = value;
     }
+
     final segmentedButtonSelected = useState<Set<int>>({0});
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,11 +88,13 @@ class ComponentsWidget extends HookConsumerWidget {
         MaterialBanner(content: const Text('Banner'), actions: [
           TextButton.icon(
             onPressed: () {},
+            style: onFillButtonStyleFromColors(monetTheme.primarySafeColors),
             label: const Text('Action'),
             icon: const Icon(Icons.abc),
           ),
           TextButton.icon(
             onPressed: () {},
+            style: onFillButtonStyleFromColors(monetTheme.primarySafeColors),
             label: const Text('Another action'),
             icon: const Icon(Icons.ac_unit),
           ),
@@ -111,15 +120,18 @@ class ComponentsWidget extends HookConsumerWidget {
           ),
         ),
         const H3('BottomNavigationBar'),
-        BottomNavigationBar(items: const [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.abc,
-              ),
-              label: 'Label'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.ac_unit), label: 'Another Label')
-        ]),
+        BottomNavigationBar(
+            currentIndex: 0,
+            useLegacyColorScheme: false,
+            items: const [
+              BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.abc,
+                  ),
+                  label: 'Label'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.ac_unit), label: 'Another Label')
+            ]),
         const H3('ButtonBar'),
         ButtonBar(children: <Widget>[
           TextButton.icon(
@@ -139,8 +151,12 @@ class ComponentsWidget extends HookConsumerWidget {
         const H3('Checkbox'),
         Row(
           children: [
-            Checkbox(value: true, onChanged: (bool? value) {}),
-            Checkbox(value: false, onChanged: (bool? value) {}),
+            Checkbox(
+                value: checkboxValue.value,
+                onChanged: (bool? value) {
+                  checkboxValue.value = value ?? false;
+                }),
+
           ],
         ),
         const H3('Data Table'),
@@ -256,6 +272,10 @@ class ComponentsWidget extends HookConsumerWidget {
         ),
         const H3('Navigation Bar'),
         NavigationBar(
+          onDestinationSelected: (value) {
+            navigationBarSelectedValue.value = value;
+          },
+          selectedIndex: navigationBarSelectedValue.value,
           destinations: const <NavigationDestination>[
             NavigationDestination(
               icon: Icon(Icons.home),
@@ -292,8 +312,10 @@ class ComponentsWidget extends HookConsumerWidget {
         SizedBox(
           height: 160,
           child: NavigationRail(
-            selectedIndex: 0,
-            onDestinationSelected: (int index) {},
+            selectedIndex: navigationRailSelectedValue.value,
+            onDestinationSelected: (int index) {
+              navigationRailSelectedValue.value = index;
+            },
             destinations: const [
               NavigationRailDestination(
                 icon: Icon(Icons.favorite_border),
@@ -338,7 +360,9 @@ class ComponentsWidget extends HookConsumerWidget {
         ),
         const H3('Search Bar'),
         const SearchBar(
-          leading: Icon(Icons.search),
+          leading: Icon(
+            Icons.search,
+          ),
         ),
         const H3('Segmented Button'),
         SegmentedButton(
