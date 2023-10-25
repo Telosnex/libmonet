@@ -39,7 +39,9 @@ MaterialStateProperty<Color> stateColors(
 
 ButtonStyle elevatedButtonStyleFromColors(SafeColors safeColors) {
   return filledButtonStyleFromColors(safeColors)
-      .copyWith(elevation: const MaterialStatePropertyAll(16));
+      .copyWith(
+    elevation: const MaterialStatePropertyAll(16),
+  );
 }
 
 
@@ -116,10 +118,10 @@ ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
 }
 
 
-ButtonStyle outlinedButtonStyleFromColors(SafeColors safeColors) {
+ButtonStyle outlineButtonStyleFromColors(SafeColors safeColors) {
   return ButtonStyle(
-    backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
-    surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
+    backgroundColor: MaterialStatePropertyAll(safeColors.background),
+    surfaceTintColor: MaterialStatePropertyAll(safeColors.background),
     overlayColor: stateColors(
       color: Colors.transparent,
       hover: safeColors.textHover,
@@ -137,7 +139,7 @@ ButtonStyle outlinedButtonStyleFromColors(SafeColors safeColors) {
 }
 
 ButtonStyle textButtonStyleFromColors(SafeColors safeColors) {
-  return outlinedButtonStyleFromColors(safeColors).copyWith(
+  return outlineButtonStyleFromColors(safeColors).copyWith(
     side: MaterialStateProperty.all(BorderSide.none),
   );
 }

@@ -80,6 +80,32 @@ class Hct {
     return Color(_argb);
   }
 
+  static Color lerpKeepHue(Color colorA, Color colorB, double t) {
+    final a = Hct.fromColor(colorA);
+    final b = Hct.fromColor(colorB);
+    final lstar = lerpDouble(a.tone, b.tone, t)!;
+    final chroma = lerpDouble(a.chroma, b.chroma, t)!;
+    final hue = _lerpKeepHueAngle(a.hue, b.hue, t);
+    return Hct.from(hue, chroma, lstar).color;
+  }
+
+  static double _lerpKeepHueAngle(double a, double b, double t) {
+    double shortestDistance;
+    if ((b - a).abs() <= 180) {
+      shortestDistance = b - a;
+    } else {
+      shortestDistance = (360 - b) + a;
+    }
+    final interpolatedDistance = shortestDistance * t;
+    double interpolatedAngle;
+    if (a + interpolatedDistance >= 360) {
+      interpolatedAngle = a + interpolatedDistance - 360;
+    } else {
+      interpolatedAngle = a + interpolatedDistance;
+    }
+    return interpolatedAngle;
+  }
+
   /// A number, in degrees, representing ex. red, orange, yellow, etc.
   /// Ranges from 0 <= [hue] < 360
   double get hue {

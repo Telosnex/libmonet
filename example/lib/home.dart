@@ -12,6 +12,23 @@ import 'package:image_picker/image_picker.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 
+enum BrighnessSetting {
+  light,
+  dark,
+  auto;
+
+  Brightness brightness(BuildContext context) {
+    switch (this) {
+      case BrighnessSetting.light:
+        return Brightness.light;
+      case BrighnessSetting.dark:
+        return Brightness.dark;
+      case BrighnessSetting.auto:
+        return MediaQuery.platformBrightnessOf(context);
+    }
+  }
+}
+
 class Home extends HookConsumerWidget {
   const Home({super.key});
 
@@ -21,16 +38,34 @@ class Home extends HookConsumerWidget {
     final images = useState(<ImageProvider>[]);
     final contrast = useState(0.5);
     final algo = useState(Algo.apca);
+    final brightnessSetting = useState(BrighnessSetting.auto);
+    final brightness = brightnessSetting.value.brightness(context);
     return MonetTheme.fromColor(
-      brightness: Theme.of(context).brightness,
+      brightness: brightness,
       algo: algo.value,
       contrast: contrast.value,
       color: color.value,
-      surfaceLstar: Theme.of(context).brightness == Brightness.light ? 93 : 10,
+      surfaceLstar: brightness == Brightness.light ? 93 : 10,
       child: Builder(builder: (context) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Monet Studio'),
+            actions: [
+              ToggleButtons(
+                  isSelected: [
+                    brightnessSetting.value == BrighnessSetting.light,
+                    brightnessSetting.value == BrighnessSetting.dark,
+                    brightnessSetting.value == BrighnessSetting.auto,
+                  ],
+                  onPressed: (index) {
+                    brightnessSetting.value = BrighnessSetting.values[index];
+                  },
+                  children: const [
+                    Text('Light'),
+                    Text('Dark'),
+                    Text('Auto'),
+                  ])
+            ],
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -44,7 +79,6 @@ class Home extends HookConsumerWidget {
                 ),
                 _contrastWidgets(algo, contrast),
                 const ComponentsWidget(),
-
                 ElevatedButton.icon(
                   onPressed: () => _uploadImagePressed(images),
                   icon: const Icon(Icons.photo),

@@ -2,6 +2,7 @@ import 'package:example/padding.dart';
 
 import 'package:flutter/material.dart';
 import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/theming/button_style.dart';
 
 
 class SafeColorsPreviewRow extends StatelessWidget {
@@ -26,20 +27,28 @@ class SafeColorsPreviewRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(onPressed: () {}, child: const Text('Elevated')),
+                ElevatedButton(
+                    style: elevatedButtonStyleFromColors(colors),
+                    onPressed: () {},
+                    child: const Text('Elevated')),
                 const HorizontalPadding(),
-
                 FilledButton(
-                  // style: buttonStylefromSafeColorsColor(colors),
+                  style: filledButtonStyleFromColors(colors),
                   onPressed: () {},
                   child: const Text('Filled'),
                 ),
                 const HorizontalPadding(),
-
-                OutlinedButton(onPressed: () {}, child: const Text('Outline')),
+                OutlinedButton(
+                  onPressed: () {},
+                  style: outlineButtonStyleFromColors(safeColors),
+                  child: const Text('Outline'),
+                ),
                 const HorizontalPadding(),
-
-                TextButton(onPressed: () {}, child: const Text('Text')),
+                TextButton(
+                  onPressed: () {},
+                  style: textButtonStyleFromColors(safeColors),
+                  child: const Text('Text'),
+                ),
               ],
             ))
       ],

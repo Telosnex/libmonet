@@ -23,8 +23,8 @@ class MonetTheme extends StatelessWidget {
   static const double touchSize = 36.0;
   static final InteractiveInkFeatureFactory splashFactory =
       defaultTargetPlatform == TargetPlatform.android && !kIsWeb
-          ? InkRipple.splashFactory
-          : InkSparkle.splashFactory;
+          ? InkSparkle.splashFactory
+          : InkRipple.splashFactory;
 
   factory MonetTheme.fromColor({
     required Color color,
@@ -93,10 +93,6 @@ class MonetTheme extends StatelessWidget {
     final _MonetInheritedTheme? inheritedTheme =
         context.dependOnInheritedWidgetOfExactType<_MonetInheritedTheme>();
     return inheritedTheme!.theme;
-    // final MaterialLocalizations? localizations = Localizations.of<MaterialLocalizations>(context, MaterialLocalizations);
-    // final ScriptCategory category = localizations?.scriptCategory ?? ScriptCategory.englishLike;
-    // final ThemeData theme = inheritedTheme?.theme.data ?? ThemeData.fallback();
-    // return ThemeData.localize(theme, theme.typography.geometryThemeFor(category));
   }
 
   @override
@@ -108,7 +104,6 @@ class MonetTheme extends StatelessWidget {
     final primaryColorDark = primaryColorLight == primarySafeColors.fill
         ? primarySafeColors.color
         : primarySafeColors.fill;
-
     final colorScheme = _monetColorScheme(
       brightness,
       primarySafeColors,
@@ -119,34 +114,26 @@ class MonetTheme extends StatelessWidget {
       Hct.from(0, 0, surfaceLstar).color,
     );
     final typographyData = typography(colorScheme);
-    final textThemeIntermediate = createTextTheme(typographyData);
-    final textTheme = textThemeIntermediate.copyWith(
-      displayLarge: textThemeIntermediate.displayLarge!.copyWith(
-        fontSize: 24,
-        color: primarySafeColors.backgroundText,
-      ),
-      displayMedium: textThemeIntermediate.displayMedium!
-          .copyWith(fontSize: 22, color: primarySafeColors.backgroundText),
-      displaySmall: textThemeIntermediate.displaySmall!
-          .copyWith(fontSize: 20, color: primarySafeColors.backgroundText),
-      headlineLarge: textThemeIntermediate.headlineLarge!
-          .copyWith(fontSize: 20, color: primarySafeColors.backgroundText),
-      headlineMedium: textThemeIntermediate.headlineMedium!
-          .copyWith(fontSize: 18, color: primarySafeColors.backgroundText),
-      headlineSmall: textThemeIntermediate.headlineSmall!
-          .copyWith(fontSize: 16, color: primarySafeColors.backgroundText),
-      bodyLarge: textThemeIntermediate.bodyLarge!
-          .copyWith(fontSize: 16, color: primarySafeColors.backgroundText),
-      bodyMedium: textThemeIntermediate.bodyMedium!
-          .copyWith(fontSize: 14, color: primarySafeColors.backgroundText),
-      bodySmall: textThemeIntermediate.bodySmall!
-          .copyWith(fontSize: 12, color: primarySafeColors.backgroundText),
-      labelLarge: textThemeIntermediate.labelLarge!
-          .copyWith(fontSize: 14, color: primarySafeColors.backgroundText),
-      labelMedium: textThemeIntermediate.labelMedium!
-          .copyWith(fontSize: 14, color: primarySafeColors.backgroundText),
-      labelSmall: textThemeIntermediate.labelSmall!
-          .copyWith(fontSize: 12, color: primarySafeColors.backgroundText),
+    final tt = createTextTheme(typographyData);
+    final txtC = primarySafeColors.backgroundText;
+    final textTheme = tt.copyWith(
+      displayLarge: tt.displayLarge!.copyWith(
+          fontSize: 24,
+          color: primarySafeColors.backgroundText,
+          fontWeight: FontWeight.w500),
+      displayMedium: tt.displayMedium!
+          .copyWith(fontSize: 22, color: txtC, fontWeight: FontWeight.w500),
+      displaySmall: tt.displaySmall!
+          .copyWith(fontSize: 20, color: txtC, fontWeight: FontWeight.w500),
+      headlineLarge: tt.headlineLarge!.copyWith(fontSize: 20, color: txtC),
+      headlineMedium: tt.headlineMedium!.copyWith(fontSize: 18, color: txtC),
+      headlineSmall: tt.headlineSmall!.copyWith(fontSize: 16, color: txtC),
+      bodyLarge: tt.bodyLarge!.copyWith(fontSize: 16, color: txtC),
+      bodyMedium: tt.bodyMedium!.copyWith(fontSize: 14, color: txtC),
+      bodySmall: tt.bodySmall!.copyWith(fontSize: 12, color: txtC),
+      labelLarge: tt.labelLarge!.copyWith(fontSize: 14, color: txtC),
+      labelMedium: tt.labelMedium!.copyWith(fontSize: 14, color: txtC),
+      labelSmall: tt.labelSmall!.copyWith(fontSize: 12, color: txtC),
     );
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
@@ -207,7 +194,7 @@ class MonetTheme extends StatelessWidget {
       typography: typographyData,
       // BEGIN ALL THE ACCOUTREMENTS
       actionIconTheme: actionIconTheme(),
-      appBarTheme: appBarTheme(),
+      appBarTheme: appBarTheme(textTheme),
       badgeTheme: badgeThemeData(context, textTheme),
       bannerTheme: bannerThemeData(),
       bottomAppBarTheme: bottomAppBarTheme(),
@@ -258,7 +245,7 @@ class MonetTheme extends StatelessWidget {
 
     return _MonetInheritedTheme(
       theme: this,
-      child: Theme(
+      child: AnimatedTheme(
         data: themeData.copyWith(
           cupertinoOverrideTheme: cupertinoOverrideTheme,
         ),
@@ -272,10 +259,11 @@ class MonetTheme extends StatelessWidget {
     return const ActionIconThemeData();
   }
 
-  AppBarTheme appBarTheme() {
+  AppBarTheme appBarTheme(TextTheme textTheme) {
     return AppBarTheme(
-      backgroundColor: primarySafeColors.color,
-      foregroundColor: primarySafeColors.colorText,
+      titleTextStyle: textTheme.displayLarge,
+      backgroundColor: primarySafeColors.background,
+      foregroundColor: primarySafeColors.backgroundText,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
     );
@@ -624,7 +612,15 @@ class MonetTheme extends StatelessWidget {
           return primarySafeColors.colorText;
         }
       }),
-      backgroundColor: primarySafeColors.color,
+      backgroundColor: MaterialStateColor.resolveWith((states) {
+        if (states.contains(MaterialState.pressed)) {
+          return primarySafeColors.colorSplash;
+        } else if (states.contains(MaterialState.hovered)) {
+          return primarySafeColors.colorHover;
+        } else {
+          return primarySafeColors.color;
+        }
+      }),
       focusColor: primarySafeColors.colorHover,
       hoverColor: primarySafeColors.colorHover,
       splashColor: primarySafeColors.colorSplash,
@@ -755,7 +751,7 @@ class MonetTheme extends StatelessWidget {
       }),
       iconTheme: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return IconThemeData(color: primarySafeColors.fillText);
+          return IconThemeData(color: primarySafeColors.background);
         } else if (states.contains(MaterialState.hovered)) {
           // not supported
         }
@@ -842,7 +838,7 @@ class MonetTheme extends StatelessWidget {
 
   OutlinedButtonThemeData outlinedButtonTheme() {
     return OutlinedButtonThemeData(
-      style: outlinedButtonStyleFromColors(primarySafeColors),
+      style: outlineButtonStyleFromColors(primarySafeColors),
     );
   }
 
@@ -1174,7 +1170,7 @@ class MonetTheme extends StatelessWidget {
   TimePickerThemeData timePickerThemeData(TextTheme textTheme) {
     return TimePickerThemeData(
       backgroundColor: primarySafeColors.background,
-      cancelButtonStyle: outlinedButtonStyleFromColors(tertiarySafeColors),
+      cancelButtonStyle: outlineButtonStyleFromColors(tertiarySafeColors),
       confirmButtonStyle: filledButtonStyleFromColors(primarySafeColors),
       dayPeriodBorderSide: BorderSide(
         color: primarySafeColors.fill,
@@ -1359,7 +1355,8 @@ class MonetTheme extends StatelessWidget {
       thickness: const MaterialStatePropertyAll(thickness),
       trackVisibility: const MaterialStatePropertyAll(true),
       radius: const Radius.circular(thickness / 2.0),
-      thumbColor: MaterialStatePropertyAll(primarySafeColors.backgroundText),
+      thumbColor:
+          MaterialStatePropertyAll(tertiarySafeColors.fill.withOpacity(0.8)),
       trackColor: const MaterialStatePropertyAll(Colors.transparent),
       trackBorderColor: const MaterialStatePropertyAll(Colors.transparent),
       interactive: true,
