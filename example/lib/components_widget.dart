@@ -199,7 +199,8 @@ class ComponentsWidget extends HookConsumerWidget {
               context: context,
               initialDate: DateTime.now(),
               firstDate: DateTime(2001),
-              lastDate: DateTime(2101)),
+            lastDate: DateTime(2101),
+          ),
         ),
         const H3('Dialog'),
         TextButton(

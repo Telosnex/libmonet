@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/theming/monet_theme.dart';
 
 extension SafeColorsButtonStyle on ButtonStyle {
   static ButtonStyle fromSafeColorsColor(SafeColors safeColors) {
@@ -37,10 +38,11 @@ MaterialStateProperty<Color> stateColors(
   });
 }
 
-ButtonStyle elevatedButtonStyleFromColors(SafeColors safeColors) {
+ButtonStyle elevatedButtonStyleFromColors(SafeColors safeColors,
+    {double elevation = MonetTheme.buttonElevation}) {
   return filledButtonStyleFromColors(safeColors)
       .copyWith(
-    elevation: const MaterialStatePropertyAll(16),
+    elevation: MaterialStatePropertyAll(elevation),
   );
 }
 
@@ -141,6 +143,7 @@ ButtonStyle outlineButtonStyleFromColors(SafeColors safeColors) {
 ButtonStyle textButtonStyleFromColors(SafeColors safeColors) {
   return outlineButtonStyleFromColors(safeColors).copyWith(
     side: MaterialStateProperty.all(BorderSide.none),
+    backgroundColor: MaterialStateProperty.all(Colors.transparent),
   );
 }
 

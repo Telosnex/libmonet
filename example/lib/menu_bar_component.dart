@@ -68,15 +68,6 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
   ShortcutRegistryEntry? _shortcutsEntry;
   String? _lastSelection;
 
-  Color get backgroundColor => _backgroundColor;
-  Color _backgroundColor = Colors.red;
-  set backgroundColor(Color value) {
-    if (_backgroundColor != value) {
-      setState(() {
-        _backgroundColor = value;
-      });
-    }
-  }
 
   bool get showingMessage => _showMessage;
   bool _showMessage = false;
@@ -97,38 +88,21 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Expanded(
-              child: MenuBar(
-                children: MenuEntry.build(_getMenus()),
-              ),
+            MenuBar(
+              children: MenuEntry.build(_getMenus()),
             ),
           ],
         ),
-        Expanded(
-          child: Container(
-            alignment: Alignment.center,
-            color: backgroundColor,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(
-                    showingMessage ? widget.message : '',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ),
-                Text(_lastSelection != null
-                    ? 'Last Selected: $_lastSelection'
-                    : ''),
-              ],
-            ),
-          ),
+        Text(
+          showingMessage ? widget.message : '',
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
+        Text(_lastSelection != null ? 'Last Selected: $_lastSelection' : ''),
       ],
     );
   }
@@ -183,10 +157,7 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
               MenuEntry(
                 label: 'Red Background',
                 onPressed: () {
-                  setState(() {
-                    _lastSelection = 'Red Background';
-                    backgroundColor = Colors.red;
-                  });
+              
                 },
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyR,
                     control: true),
@@ -195,8 +166,7 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
                 label: 'Green Background',
                 onPressed: () {
                   setState(() {
-                    _lastSelection = 'Green Background';
-                    backgroundColor = Colors.green;
+        
                   });
                 },
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyG,
@@ -206,8 +176,7 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
                 label: 'Blue Background',
                 onPressed: () {
                   setState(() {
-                    _lastSelection = 'Blue Background';
-                    backgroundColor = Colors.blue;
+ 
                   });
                 },
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyB,

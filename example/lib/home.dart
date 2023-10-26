@@ -11,6 +11,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/theming/monet_theme.dart';
+import 'package:libmonet/theming/slider_flat.dart';
 
 enum BrighnessSetting {
   light,
@@ -68,24 +69,31 @@ class Home extends HookConsumerWidget {
             ],
           ),
           body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ColorPicker(
-                  color: color.value,
-                  onColorChanged: (newColor) {
-                    color.value = newColor;
-                  },
+            child: Center(
+              child: ConstrainedBox(
+                constraints:
+                    const BoxConstraints(maxWidth: MonetTheme.maxPanelWidth),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ColorPicker(
+                      color: color.value,
+                      onColorChanged: (newColor) {
+                        color.value = newColor;
+                      },
+                    ),
+                    _contrastWidgets(context, algo, contrast),
+                    const ComponentsWidget(),
+                    ElevatedButton.icon(
+                      onPressed: () => _uploadImagePressed(images),
+                      icon: const Icon(Icons.photo),
+                      label: const Text('Upload Image'),
+                    ),
+                    for (final image in images.value)
+                      ExtractedWidget(image: image),
+                  ],
                 ),
-                _contrastWidgets(algo, contrast),
-                const ComponentsWidget(),
-                ElevatedButton.icon(
-                  onPressed: () => _uploadImagePressed(images),
-                  icon: const Icon(Icons.photo),
-                  label: const Text('Upload Image'),
-                ),
-                for (final image in images.value) ExtractedWidget(image: image),
-              ],
+              ),
             ),
           ),
         );
@@ -93,7 +101,7 @@ class Home extends HookConsumerWidget {
     );
   }
 
-  Widget _contrastWidgets(
+  Widget _contrastWidgets(BuildContext context, 
       ValueNotifier<Algo> algo, ValueNotifier<double> contrast) {
     return Row(
       children: [
@@ -106,13 +114,19 @@ class Home extends HookConsumerWidget {
           children: const [Text('APCA'), Text('WCAG 2.1')],
         ),
         Flexible(
-          child: Slider(
-            value: contrast.value,
-            min: 0.0,
-            max: 1.0,
-            onChanged: (value) {
-              contrast.value = value;
-            },
+          child: SliderFlat(
+            borderColor: MonetTheme.of(context).primarySafeColors.colorBorder,
+            borderWidth: 2,
+            slider: Slider(
+              label: 'Contrast: ${(contrast.value * 100.0).round()}%',
+              divisions: 9,
+              value: contrast.value.clamp(0.1, 1.0),
+              min: 0.1,
+              max: 1.0,
+              onChanged: (value) {
+                contrast.value = value;
+              },
+            ),
           ),
         ),
       ],
