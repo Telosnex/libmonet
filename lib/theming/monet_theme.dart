@@ -19,6 +19,12 @@ class MonetTheme extends StatelessWidget {
   final double contrast;
   static const double buttonElevation = 16.0;
   static const double modalElevation = 2.0;
+  static Color shadowFor(Color color) {
+    return lstarFromArgb(color.value).round() >= 60
+        ? Colors.black
+        : Colors.white;
+  }
+
   final Algo algo;
 
   final Brightness brightness;
@@ -345,16 +351,15 @@ class MonetTheme extends StatelessWidget {
     return CardTheme(
       clipBehavior: Clip.none, // match default
       color: primarySafeColors.background,
-      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60
-          ? Colors.black
-          : Colors.white,
+      shadowColor: shadowFor(primarySafeColors.background),
       surfaceTintColor: primarySafeColors.background,
-      elevation: 8,
+      elevation: modalElevation,
       margin: const EdgeInsets.all(0), // match default
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
           side: BorderSide(
-              color: primarySafeColors.fill, width: 2)), // match default
+              color: primarySafeColors.fill, width: 2),
+      ), // match default
     );
   }
 
@@ -485,9 +490,7 @@ class MonetTheme extends StatelessWidget {
         }
       },
     );
-    final shadowColor = lstarFromArgb(primarySafeColors.background.value) > 60
-        ? Colors.black
-        : Colors.white;
+    final shadowColor = shadowFor(primarySafeColors.background);
     return DatePickerThemeData(
       backgroundColor: primarySafeColors.background,
       elevation: null /* will match Dialog.elevation */,
@@ -537,9 +540,7 @@ class MonetTheme extends StatelessWidget {
     return DialogTheme(
       backgroundColor: primarySafeColors.background,
       elevation: modalElevation,
-      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60
-          ? Colors.black
-          : Colors.white,
+      shadowColor: shadowFor(primarySafeColors.background),
       surfaceTintColor: primarySafeColors.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -574,7 +575,7 @@ class MonetTheme extends StatelessWidget {
     return ExpansionTileThemeData(
       backgroundColor: primarySafeColors.background,
       collapsedBackgroundColor: primarySafeColors.background,
-      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+      tilePadding: const EdgeInsets.symmetric(horizontal: 8),
       /* Match default */
       expandedAlignment: Alignment.center,
       childrenPadding: EdgeInsets.zero,
@@ -650,7 +651,8 @@ class MonetTheme extends StatelessWidget {
 
   IconButtonThemeData iconButtonThemeData() {
     return IconButtonThemeData(
-        style: iconButtonStyleFromColors(primarySafeColors));
+      style: iconButtonStyleFromColors(primarySafeColors),
+    );
   }
 
   ListTileThemeData listTileThemeData(TextTheme textTheme) {
@@ -862,9 +864,7 @@ class MonetTheme extends StatelessWidget {
         ),
       ),
       elevation: modalElevation, // Popup outline elevation
-      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60
-          ? Colors.black
-          : Colors.white,
+      shadowColor: shadowFor(primarySafeColors.background),
       surfaceTintColor: primarySafeColors.background,
       textStyle: textTheme.bodyMedium,
       labelTextStyle: MaterialStateProperty.resolveWith((states) {
@@ -920,11 +920,7 @@ class MonetTheme extends StatelessWidget {
     return SearchBarThemeData(
       elevation: const MaterialStatePropertyAll(2),
       backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
-      shadowColor: MaterialStatePropertyAll(
-        lstarFromArgb(primarySafeColors.background.value) > 60
-            ? Colors.black
-            : Colors.white.withOpacity(0.54),
-      ),
+      shadowColor: MaterialStatePropertyAll(primarySafeColors.background),
       surfaceTintColor: MaterialStatePropertyAll(primarySafeColors.background),
       overlayColor: MaterialStatePropertyAll(primarySafeColors.background),
       side: MaterialStatePropertyAll(
@@ -1027,6 +1023,13 @@ class MonetTheme extends StatelessWidget {
 
   SliderThemeData sliderThemeData(TextTheme textTheme) {
     return SliderThemeData(
+      overlayShape: const RoundSliderOverlayShape(),
+      tickMarkShape: const RoundSliderTickMarkShape(),
+      thumbShape: SliderFlatThumb(
+        borderWidth: 2,
+        borderColor: primarySafeColors.colorBorder,
+      ),
+      trackShape: SliderFlatShape(),
       trackHeight: touchSize,
       activeTrackColor: primarySafeColors.color,
       // This is a _nice_ touch: ex. if an elevated button is above this slider,
@@ -1046,10 +1049,7 @@ class MonetTheme extends StatelessWidget {
       disabledThumbColor: primarySafeColors.color,
       overlayColor: Colors.transparent,
       valueIndicatorColor: primarySafeColors.color,
-      overlayShape: const RoundSliderOverlayShape(),
-      tickMarkShape: const RoundSliderTickMarkShape(),
-      thumbShape: SliderFlatThumb(),
-      trackShape: SliderFlatShape(),
+
       valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
       rangeTickMarkShape: const RoundRangeSliderTickMarkShape(),
       rangeThumbShape: const RoundRangeSliderThumbShape(),
@@ -1078,7 +1078,7 @@ class MonetTheme extends StatelessWidget {
           width: 2,
         ),
       ),
-      
+
       behavior: SnackBarBehavior.floating,
       width: null, // allows use of margin instead
       insetPadding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 10.0),
@@ -1269,7 +1269,7 @@ class MonetTheme extends StatelessWidget {
       textStyle: textTheme.bodyMedium,
       constraints: const BoxConstraints(
         minWidth: touchSize,
-        minHeight: touchSize,
+        minHeight: touchSize - 4,
       ),
       color: MaterialStateColor.resolveWith((states) {
         // Color is not selected.
@@ -1408,9 +1408,7 @@ class MonetTheme extends StatelessWidget {
     return DrawerThemeData(
       backgroundColor: primarySafeColors.backgroundText,
       scrimColor: Colors.black.withOpacity(0.54),
-      shadowColor: lstarFromArgb(primarySafeColors.background.value) > 60.0
-          ? Colors.black
-          : Colors.white,
+      shadowColor: shadowFor(primarySafeColors.background),
       surfaceTintColor: primarySafeColors.background,
       shape: null,
       endShape: null,

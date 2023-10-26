@@ -5,9 +5,16 @@ import 'package:libmonet/hct.dart';
 
 class HueTonePicker extends HookConsumerWidget {
   final Color color;
+  // Even if the color has lower chroma, ex. the user dragged to tone 0/tone 100
+  // we want to respect the selected chroma.
+  final double chromaIntent;
   final Function(double hue, double tone) onChanged;
-  const HueTonePicker(
-      {super.key, required this.color, required this.onChanged});
+  const HueTonePicker({
+    super.key,
+    required this.color,
+    required this.chromaIntent,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +56,7 @@ class HueTonePicker extends HookConsumerWidget {
         fit: StackFit.expand,
         children: [
           CustomPaint(
-            painter: _HueTone(chroma: chroma),
+            painter: _HueTone(chroma: chromaIntent),
           ),
           Positioned.fill(
             child: CustomPaint(
