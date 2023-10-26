@@ -104,7 +104,7 @@ class HctSolverNoAlloc {
 
   static double _inverseChromaticAdaptation(double adapted) {
     final adaptedAbs = adapted.abs();
-    final base = max(0, 27.13 * adaptedAbs / (400.0 - adaptedAbs));
+    final base = max(0.0, 27.13 * adaptedAbs / (400.0 - adaptedAbs));
     return signum(adapted) * pow(base, 1.0 / 0.42).toDouble();
   }
 
