@@ -1036,8 +1036,9 @@ class MonetTheme extends StatelessWidget {
       disabledActiveTrackColor: primarySafeColors.color,
       disabledInactiveTrackColor: primarySafeColors.background,
       disabledSecondaryActiveTrackColor: primarySafeColors.color,
-      activeTickMarkColor: primarySafeColors.colorText,
-      inactiveTickMarkColor: primarySafeColors.backgroundText,
+      // Tick marks mess up SliderFlat, aka a Slider with a border.
+      activeTickMarkColor: Colors.transparent,
+      inactiveTickMarkColor: Colors.transparent,
       disabledActiveTickMarkColor: primarySafeColors.colorText,
       disabledInactiveTickMarkColor: primarySafeColors.backgroundText,
       thumbColor: primarySafeColors.color,
