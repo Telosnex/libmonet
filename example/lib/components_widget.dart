@@ -13,7 +13,10 @@ class H3 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Text(text, style: Theme.of(context).textTheme.headlineSmall);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(text, style: Theme.of(context).textTheme.headlineMedium),
+    );
   }
 }
 

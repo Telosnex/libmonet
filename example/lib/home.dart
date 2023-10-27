@@ -74,7 +74,13 @@ class Home extends HookConsumerWidget {
                       ExpansionTile(
                         title: Text(
                           'Contrast',
-                          style: Theme.of(context).textTheme.headlineLarge,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .copyWith(
+                                  color: MonetTheme.of(context)
+                                      .primarySafeColors
+                                      .text),
                         ),
                         children: [
                           Padding(
@@ -92,7 +98,13 @@ class Home extends HookConsumerWidget {
                       ExpansionTile(
                         title: Text(
                           'Mode',
-                          style: Theme.of(context).textTheme.headlineLarge,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .copyWith(
+                                  color: MonetTheme.of(context)
+                                      .primarySafeColors
+                                      .text),
                         ),
                         trailing: ToggleButtons(
                             isSelected: [
@@ -128,7 +140,13 @@ class Home extends HookConsumerWidget {
                       ExpansionTile(
                         title: Text(
                           'Components',
-                          style: Theme.of(context).textTheme.headlineLarge,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .copyWith(
+                                  color: MonetTheme.of(context)
+                                      .primarySafeColors
+                                      .text),
                         ),
                         children: const [
                           Padding(
@@ -138,6 +156,7 @@ class Home extends HookConsumerWidget {
 
                         ],
                       ),
+                      const VerticalPadding(),
                       // ElevatedButton.icon(
                       //   onPressed: () => _uploadImagePressed(images),
                       //   icon: const Icon(Icons.photo),

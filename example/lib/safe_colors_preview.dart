@@ -28,21 +28,16 @@ class SafeColorsPreviewRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                    style: elevatedButtonStyleFromColors(colors),
+                    style: filledButtonFromColor(colors),
                     onPressed: () {},
-                    child: const Text('Elevated')),
+                    child: const Text('Color')),
                 const HorizontalPadding(),
                 FilledButton(
-                  style: filledButtonStyleFromColors(colors),
+                  style: filledButtonFromFill(colors),
                   onPressed: () {},
-                  child: const Text('Filled'),
+                  child: const Text('Fill'),
                 ),
-                const HorizontalPadding(),
-                OutlinedButton(
-                  onPressed: () {},
-                  style: outlineButtonStyleFromColors(safeColors),
-                  child: const Text('Outline'),
-                ),
+
                 const HorizontalPadding(),
                 TextButton(
                   onPressed: () {},

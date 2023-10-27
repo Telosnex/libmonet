@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:example/brand_colors.dart';
 import 'package:example/hue_tone_picker.dart';
 import 'package:example/padding.dart';
 import 'package:flutter/material.dart';
@@ -24,15 +25,44 @@ class ColorPicker extends HookConsumerWidget {
 
   static const chromaMax = 120.0;
 
+  static String _colorToHex(Color color) {
+    return color.value
+        .toRadixString(16)
+        .padLeft(8, '0')
+        .toUpperCase()
+        .replaceFirst('FF', '');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mutableChroma = useState(Hct.fromColor(color).chroma);
+    final hct = useMemoized(() => Hct.fromColor(color), [color]);
+    final mutableChroma = useState(hct.chroma);
+    final hexController = useTextEditingController(text: _colorToHex(color));
+
+    final hueController = useTextEditingController(
+        text: Hct.fromColor(color).hue.round().toString());
+    final chromaController = useTextEditingController(
+        text: Hct.fromColor(color).chroma.round().toString());
+    final toneController = useTextEditingController(
+        text: Hct.fromColor(color).tone.round().toString());
+    useEffect(() {
+      hexController.text = _colorToHex(color);
+      hueController.text = hct.hue.round().toString();
+      chromaController.text = hct.chroma.round().toString();
+      toneController.text = hct.tone.round().toString();
+      return null;
+    }, [color]);
+
+
     return ExpansionTile(
       title: Row(
         children: [
           Text(
             'Color',
-            style: Theme.of(context).textTheme.headlineLarge,
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge!
+                .copyWith(color: MonetTheme.of(context).primarySafeColors.text),
           ),
           IconButton(
             style: iconButtonStyleFromColors(
@@ -44,6 +74,19 @@ class ColorPicker extends HookConsumerWidget {
             },
             icon: const Icon(Icons.shuffle),
           ),
+          BrandColorsPopupMenuButton(
+            onChanged: (color) => onColorChanged(color),
+          ),
+          // IconButton(
+          //   style: iconButtonStyleFromColors(
+          //       MonetTheme.of(context).primarySafeColors),
+          //   onPressed: () {
+          //     final randomColor = Color.fromARGB(255, random.nextInt(256),
+          //         random.nextInt(256), random.nextInt(256));
+          //     onColorChanged(randomColor);
+          //   },
+          //   icon: const Icon(Icons.shuffle),
+          // ),
         ],
       ),
       children: [
@@ -54,6 +97,102 @@ class ColorPicker extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                TextField(
+                  onSubmitted: (value) {
+                    final color = Color(int.parse('FF$value', radix: 16));
+                    onColorChanged(color);
+                  },
+                  controller: hexController,
+                  decoration: const InputDecoration(
+                    labelText: 'RGB | HEX',
+                    border: OutlineInputBorder(),
+                  ),
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                      color: MonetTheme.of(context).primarySafeColors.text),
+                ),
+                const VerticalPadding(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onSubmitted: (value) {
+                          final hue = double.tryParse(value);
+                          if (hue == null) {
+                            return;
+                          }
+                          final color =
+                              Hct.from(hue, hct.chroma, hct.tone).color;
+                          onColorChanged(color);
+                        },
+                        controller: hueController,
+                        decoration: const InputDecoration(
+                          labelText: 'HUE',
+                          border: OutlineInputBorder(),
+                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge!
+                            .copyWith(
+                                color: MonetTheme.of(context)
+                                    .primarySafeColors
+                                    .text),
+                      ),
+                    ),
+                    const HorizontalPadding(),
+                    Expanded(
+                      child: TextField(
+                        onSubmitted: (value) {
+                          final chroma = double.tryParse(value);
+                          if (chroma == null) {
+                            return;
+                          }
+                          final color =
+                              Hct.from(hct.hue, chroma, hct.tone).color;
+                          onColorChanged(color);
+                        },
+                        controller: chromaController,
+                        decoration: const InputDecoration(
+                          labelText: 'CHROMA',
+                          border: OutlineInputBorder(),
+                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge!
+                            .copyWith(
+                                color: MonetTheme.of(context)
+                                    .primarySafeColors
+                                    .text),
+                      ),
+                    ),
+                    const HorizontalPadding(),
+                    Expanded(
+                      child: TextField(
+                        onSubmitted: (value) {
+                          final tone = double.tryParse(value);
+                          if (tone == null) {
+                            return;
+                          }
+                          final color =
+                              Hct.from(hct.hue, hct.chroma, tone).color;
+                          onColorChanged(color);
+                        },
+                        controller: toneController,
+                        decoration: const InputDecoration(
+                          labelText: 'TONE',
+                          border: OutlineInputBorder(),
+                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge!
+                            .copyWith(
+                                color: MonetTheme.of(context)
+                                    .primarySafeColors
+                                    .text),
+                      ),
+                    ),
+                  ],
+                ),
+                const VerticalPadding(),
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),

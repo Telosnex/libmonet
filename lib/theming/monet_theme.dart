@@ -136,13 +136,17 @@ class MonetTheme extends StatelessWidget {
           .copyWith(fontSize: 22, color: txtC, fontWeight: FontWeight.w500),
       displaySmall: tt.displaySmall!
           .copyWith(fontSize: 20, color: txtC, fontWeight: FontWeight.w500),
-      headlineLarge: tt.headlineLarge!.copyWith(fontSize: 20, color: txtC),
-      headlineMedium: tt.headlineMedium!.copyWith(fontSize: 18, color: txtC),
-      headlineSmall: tt.headlineSmall!.copyWith(fontSize: 16, color: txtC),
+      headlineLarge: tt.headlineLarge!
+          .copyWith(fontSize: 20, color: txtC, fontWeight: FontWeight.w500),
+      headlineMedium: tt.headlineMedium!
+          .copyWith(fontSize: 18, color: txtC, fontWeight: FontWeight.w500),
+      headlineSmall: tt.headlineSmall!
+          .copyWith(fontSize: 16, color: txtC, fontWeight: FontWeight.w500),
       bodyLarge: tt.bodyLarge!.copyWith(fontSize: 16, color: txtC),
       bodyMedium: tt.bodyMedium!.copyWith(fontSize: 14, color: txtC),
       bodySmall: tt.bodySmall!.copyWith(fontSize: 12, color: txtC),
-      labelLarge: tt.labelLarge!.copyWith(fontSize: 14, color: txtC),
+      labelLarge: tt.labelLarge!
+          .copyWith(fontSize: 16, color: txtC, fontWeight: FontWeight.w500),
       labelMedium: tt.labelMedium!.copyWith(fontSize: 14, color: txtC),
       labelSmall: tt.labelSmall!.copyWith(fontSize: 12, color: txtC),
     );
@@ -159,7 +163,7 @@ class MonetTheme extends StatelessWidget {
           tertiary: tertiarySafeColors,
         ),
       ],
-      inputDecorationTheme: inputDecorationTheme(),
+      inputDecorationTheme: inputDecorationTheme(textTheme),
       // Not sure this is used all that much, it's not affecting buttons on
       // macOS at all. Default to shrinkWrap, because the components tend to
       // be excessively large due to being designed for touch.
@@ -182,7 +186,7 @@ class MonetTheme extends StatelessWidget {
       focusColor: primarySafeColors.fillHover,
       highlightColor: primarySafeColors.fillSplash,
       hintColor: primarySafeColors.backgroundText,
-      hoverColor: primarySafeColors.fillHover,
+      hoverColor: primarySafeColors.textHover,
       // ThemeData uses white if primary = secondary, otherwise, secondary
       primaryColor: primarySafeColors.color,
       primaryColorDark: primaryColorDark,
@@ -193,7 +197,7 @@ class MonetTheme extends StatelessWidget {
       // Avoid setting a default, as each widget may be a different color and
       // thus should be set explicitly.
       shadowColor: Colors.transparent,
-      splashColor: primarySafeColors.fillSplash,
+      splashColor: primarySafeColors.textSplash,
       // Material uses 70% white in dark mode, 54% black in light mode
       // Is transparency important? Where is this used?
       // For now, treat it like text
@@ -256,7 +260,10 @@ class MonetTheme extends StatelessWidget {
 
     return _MonetInheritedTheme(
       theme: this,
-      child: AnimatedTheme(
+      // Animated theme is actually worse for design, ex. when switching theme
+      // color, the InputDecoration of a text field only acquires the correct
+      // background color and text color at the end of animating.
+      child: Theme(
         data: themeData.copyWith(
           cupertinoOverrideTheme: cupertinoOverrideTheme,
         ),
@@ -356,9 +363,8 @@ class MonetTheme extends StatelessWidget {
       elevation: modalElevation,
       margin: const EdgeInsets.all(0), // match default
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-          side: BorderSide(
-              color: primarySafeColors.fill, width: 2),
+        borderRadius: BorderRadius.circular(4),
+        side: BorderSide(color: primarySafeColors.fill, width: 2),
       ), // match default
     );
   }
@@ -586,14 +592,14 @@ class MonetTheme extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.colorBorder,
+          color: primarySafeColors.fill,
           width: 2,
         ),
       ),
       collapsedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.colorBorder,
+          color: primarySafeColors.fill,
           width: 2,
         ),
       ),
@@ -602,7 +608,7 @@ class MonetTheme extends StatelessWidget {
 
   FilledButtonThemeData filledButtonTheme() {
     return FilledButtonThemeData(
-      style: filledButtonStyleFromColors(primarySafeColors),
+      style: filledButtonFromColor(primarySafeColors),
     );
   }
 
@@ -1065,7 +1071,7 @@ class MonetTheme extends StatelessWidget {
 
   SnackBarThemeData snackBarThemeData(TextTheme textTheme) {
     return SnackBarThemeData(
-      backgroundColor: primarySafeColors.color,
+      backgroundColor: primarySafeColors.background,
       actionTextColor: primarySafeColors.colorText,
       disabledActionTextColor: primarySafeColors.colorText,
       contentTextStyle:
@@ -1179,7 +1185,10 @@ class MonetTheme extends StatelessWidget {
   TextSelectionThemeData textSelectionThemeData() {
     return TextSelectionThemeData(
       cursorColor: primarySafeColors.fill,
-      selectionColor: primarySafeColors.textHover,
+      // Can't induce text to use textHoverText, so instead, use opacity to
+      // introduce some effect, but not so much so that contrast between
+      // text and the selection color is jarringly low.
+      selectionColor: primarySafeColors.text.withOpacity(0.4),
       selectionHandleColor: primarySafeColors.fill,
     );
   }
@@ -1188,7 +1197,7 @@ class MonetTheme extends StatelessWidget {
     return TimePickerThemeData(
       backgroundColor: primarySafeColors.background,
       cancelButtonStyle: outlineButtonStyleFromColors(tertiarySafeColors),
-      confirmButtonStyle: filledButtonStyleFromColors(primarySafeColors),
+      confirmButtonStyle: filledButtonFromColor(primarySafeColors),
       dayPeriodBorderSide: BorderSide(
         color: primarySafeColors.fill,
         width: 2,
@@ -1210,9 +1219,10 @@ class MonetTheme extends StatelessWidget {
       }),
       dayPeriodTextStyle: textTheme.labelLarge,
       dialBackgroundColor: primarySafeColors.fill,
-      dialHandColor: primarySafeColors.fillText,
-      dialTextColor: primarySafeColors.text,
-      dialTextStyle: textTheme.labelLarge,
+      dialHandColor: primarySafeColors.fillText.withOpacity(0.4),
+      dialTextColor: primarySafeColors.fillText,
+      dialTextStyle:
+          textTheme.labelLarge!.copyWith(color: primarySafeColors.fillText),
       elevation: modalElevation,
       entryModeIconColor: primarySafeColors.fill,
       helpTextStyle: textTheme.headlineSmall,
@@ -1269,18 +1279,17 @@ class MonetTheme extends StatelessWidget {
       textStyle: textTheme.bodyMedium,
       constraints: const BoxConstraints(
         minWidth: touchSize,
-        minHeight: touchSize - 4,
+        minHeight: touchSize - 8,
       ),
       color: MaterialStateColor.resolveWith((states) {
-        // Color is not selected.
         // States are always empty.
         return primarySafeColors.text;
       }),
       selectedColor: MaterialStateColor.resolveWith((states) {
-        return primarySafeColors.textSplashText;
+        return primarySafeColors.colorText;
       }),
       disabledColor: primarySafeColors.text,
-      fillColor: primarySafeColors.textSplash,
+      fillColor: primarySafeColors.color,
       focusColor: primarySafeColors.colorHover,
       highlightColor: primarySafeColors.fillHover,
       hoverColor: MaterialStateColor.resolveWith((states) {
@@ -1341,14 +1350,33 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  InputDecorationTheme inputDecorationTheme() {
+  InputDecorationTheme inputDecorationTheme(TextTheme textTheme) {
+    final border = OutlineInputBorder(
+      borderSide: BorderSide(width: 2, color: primarySafeColors.fill),
+      borderRadius: BorderRadius.circular(8),
+    );
+    final focusedBorder = OutlineInputBorder(
+      borderSide: BorderSide(width: 3, color: primarySafeColors.text),
+      borderRadius: BorderRadius.circular(8),
+    );
     return InputDecorationTheme(
+      isCollapsed: true,
+      isDense: true,
       fillColor: primarySafeColors.background,
       filled: true,
-      border: OutlineInputBorder(
-        borderSide: BorderSide(width: 2, color: primarySafeColors.colorBorder),
-        borderRadius: BorderRadius.circular(8),
-      ),
+      border: border,
+      focusedBorder: focusedBorder,
+      enabledBorder: border,
+      hintStyle: textTheme.labelLarge!.copyWith(color: primarySafeColors.text),
+      helperStyle:
+          textTheme.labelLarge!.copyWith(color: primarySafeColors.text),
+      labelStyle: textTheme.labelMedium!
+          .copyWith(color: primarySafeColors.text)
+          .copyWith(fontWeight: FontWeight.w700),
+      // Can't specify text in hover state: introduce some change in the
+      // background, but not so much as to make the text unreadable, as
+      // primarySafeColors.textHover would do.
+      hoverColor: primarySafeColors.text.withOpacity(0.2),
     );
   }
 
