@@ -27,7 +27,7 @@ class SafeColorsPreviewRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
+                FilledButton(
                     style: filledButtonFromColor(colors),
                     onPressed: () {},
                     child: const Text('Color')),

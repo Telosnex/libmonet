@@ -1,7 +1,6 @@
 import 'package:example/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/slider_flat.dart';
@@ -9,18 +8,25 @@ import 'package:libmonet/theming/slider_flat_thumb.dart';
 
 class ContrastPicker extends HookConsumerWidget {
   final double contrast;
+  final Algo algo;
   final Function(double newContrast) onContrastChanged;
+  final Function(Algo newAlgo) onAlgoChanged;
   const ContrastPicker(
-      {required this.contrast, required this.onContrastChanged, super.key});
+      {
+    required this.algo,
+    required this.contrast,
+    required this.onAlgoChanged,
+    required this.onContrastChanged,
+    super.key,
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final algo = useState(Algo.apca);
     return Row(
       children: [
         ToggleButtons(
-          isSelected: [algo.value == Algo.apca, algo.value == Algo.wcag21],
+          isSelected: [algo == Algo.apca, algo == Algo.wcag21],
           onPressed: (index) {
-            algo.value = index == 0 ? Algo.apca : Algo.wcag21;
+            onAlgoChanged(index == 0 ? Algo.apca : Algo.wcag21);
           },
           children: const [Text('APCA'), Text('WCAG 2.1')]
               .map((e) => Padding(

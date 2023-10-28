@@ -86,6 +86,10 @@ class Home extends HookConsumerWidget {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ContrastPicker(
+                              algo: algo.value,
+                              onAlgoChanged: (newAlgo) {
+                                algo.value = newAlgo;
+                              },
                               contrast: contrast.value,
                               onContrastChanged: (newContrast) {
                                 contrast.value = newContrast;
@@ -139,7 +143,7 @@ class Home extends HookConsumerWidget {
                       ),
                       ExpansionTile(
                         title: Text(
-                          'Components',
+                          'Material Components',
                           style: Theme.of(context)
                               .textTheme
                               .headlineLarge!

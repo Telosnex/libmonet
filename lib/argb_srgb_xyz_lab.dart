@@ -73,6 +73,23 @@ double lumaFromLstar(double lstar) {
   return lumaFromArgb(argbFromLstar(lstar));
 }
 
+double yFromArgb(int argb) {
+  return yFromLstar(lstarFromArgb(argb));
+  // double linear(int rgbComponent) {
+  //   final normalized = rgbComponent / 255.0;
+  //   if (normalized <= 0.040449936) {
+  //     return normalized / 12.92 * 100.0;
+  //   } else {
+  //     return pow((normalized + 0.055) / 1.055, 2.4).toDouble() * 100.0;
+  //   }
+  // }
+  // final linearR = linear(redFromArgb(argb));
+  // final linearG = linear(greenFromArgb(argb));
+  // final linearB = linear(blueFromArgb(argb));
+  // final y = 0.2126 * linearR + 0.7152 * linearG + 0.0722 * linearB;
+  // return y;
+}
+
 double lumaFromArgb(int argb) {
   final r = redFromArgb(argb).toDouble() / 255.0;
   final g = greenFromArgb(argb).toDouble() / 255.0;
