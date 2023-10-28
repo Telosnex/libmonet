@@ -69,10 +69,6 @@ int blueFromArgb(int argb) {
   return argb & 255;
 }
 
-double lumaFromLstar(double lstar) {
-  return lumaFromArgb(argbFromLstar(lstar));
-}
-
 double yFromArgb(int argb) {
   return yFromLstar(lstarFromArgb(argb));
   // double linear(int rgbComponent) {
@@ -90,12 +86,6 @@ double yFromArgb(int argb) {
   // return y;
 }
 
-double lumaFromArgb(int argb) {
-  final r = redFromArgb(argb).toDouble() / 255.0;
-  final g = greenFromArgb(argb).toDouble() / 255.0;
-  final b = blueFromArgb(argb).toDouble() / 255.0;
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) * 100.0;
-}
 
 /// Converts a color from ARGB to XYZ.
 int argbFromXyz(double x, double y, double z) {

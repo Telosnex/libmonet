@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/apca.dart';
+import 'package:libmonet/apca_contrast.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 
 void main() {

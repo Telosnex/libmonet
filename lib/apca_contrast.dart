@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:libmonet/apca.dart';
+import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/complex.dart';
 import 'package:libmonet/debug_print.dart';
 
@@ -290,4 +291,147 @@ double darkerTextApcaY(double backgroundApcaY, double apca,
       )
       .toDouble();
   return textApcaY;
+}
+
+List<double> apcaYToLstarRange(double apcaY, {bool debug = false}) {
+  if (apcaY < inputClampMin) {
+    final asIfGrayscale =
+        lstarFromArgb(apcaYToGrayscaleArgb(apcaY, debug: debug));
+    return [asIfGrayscale, asIfGrayscale];
+  }
+  final argbs = findBoundaryArgbsForApcaY(apcaY);
+  final ys = argbs.map((e) => yFromArgb(e)).toList(growable: false);
+  final minY = ys.reduce(math.min);
+  final maxY = ys.reduce(math.max);
+  final minLstar = lstarFromY(minY);
+  final maxLstar = lstarFromY(maxY);
+  return [
+    (minLstar - 0.08747562332222003).clamp(0, 100),
+    (maxLstar + 0.23986207179298447).clamp(0, 100)
+  ];
+}
+
+List<int> findBoundaryArgbsForApcaY(double apcaY) {
+  /// Find the R/G/B whole number that will generate the most progress towards
+  /// fulfilling the apcaY.
+  ///
+  /// Note this has built-in error: R/G/B are whole numbers, and sometimes to
+  /// fulfill the apcaY, we'd need ex. 250.2 of a channel, but we can't have
+  /// 0.2 of a channel.
+  ///
+  /// The maximum error is 0.003369962535303306, calculated by iterating over
+  /// all possible values of R/G/B and finding the maximum difference between
+  /// [apcaYNeeded] and APCA Y contribution produced by [answer]
+  double calculateContribution(
+    double apcaY,
+    double apcaYAlreadyFulfilled,
+    double sCO,
+  ) {
+    final apcaYNeeded = apcaY - apcaYAlreadyFulfilled;
+    final answer =
+        (255.0 * math.pow(apcaYNeeded / sCO, 1.0 / 2.4)).roundToDouble();
+    if (answer.isNaN) {
+      assert(apcaYAlreadyFulfilled >= apcaY);
+      return 0.0;
+    }
+    return answer;
+  }
+
+  final boundaryInts = <int>[apcaYToGrayscaleArgb(apcaY)];
+  void addAnswer(int argb) {
+    boundaryInts.add(argb);
+  }
+
+  // apcaY = sRCO * simpleExp(R) + sGCO * simpleExp(G) + sBCO * simpleExp(B) = apcaY
+  //
+  // We have to find R, G, B coordinates that generate the apcaY.
+  // Let's say we have R = 255, G = 0, B = 0 and still more apcaY to consume.
+  // We can't increase R, so we have to spill over to another channel.
+  // Since there are two other channels, we have to work through two cases,
+  // where we spill over to one channel, then the other.
+  // Then, if we have more apcaY to consume, we have to spill over to the
+  // remaining channel.
+  // So, we have 6 cases:
+
+  // R => spill G => spill B
+  // First, determine what R would lead to apcaY given G = 0, B = 0.
+  // apcaY = sRCO * simpleExp(R)
+  // simpleExp(R) = apcaY / sRCO
+  // (R / 255) ^ 2.4 = apcaY / sRCO
+  // R / 255 = (apcaY / sRCO) ^ (1/2.4)
+  // R = 255 * (apcaY / sRCO) ^ (1/2.4)
+  final maxR = (255.0 * math.pow(apcaY / sRco, 1.0 / 2.4)).toDouble();
+  if (maxR <= 255) {
+    addAnswer(argbFromRgb(maxR.round(), 0, 0));
+  } else {
+    const redContribution = sRco;
+    final g1 = calculateContribution(apcaY, redContribution, sGco);
+    if (g1 <= 255) {
+      addAnswer(argbFromRgb(255, g1.round(), 0));
+    } else {
+      const greenContribution = sGco;
+      final b1 = calculateContribution(
+          apcaY, redContribution + greenContribution, sBco);
+      addAnswer(argbFromRgb(255, 255, b1.round()));
+    }
+    final b2 = calculateContribution(apcaY, redContribution, sBco);
+    if (b2 <= 255) {
+      addAnswer(argbFromRgb(255, 0, b2.round()));
+    } else {
+      const blueContribution = sBco;
+      final g2 = calculateContribution(
+          apcaY, redContribution + blueContribution, sGco);
+      addAnswer(argbFromRgb(255, g2.round(), 255));
+    }
+  }
+  final maxG = (255.0 * math.pow(apcaY / sGco, 1.0 / 2.4)).toDouble();
+  if (maxG <= 255) {
+    addAnswer(argbFromRgb(0, maxG.round(), 0));
+  } else {
+    const greenContribution = sGco;
+    final r1 = calculateContribution(apcaY, greenContribution, sRco);
+    if (r1 <= 255) {
+      addAnswer(argbFromRgb(r1.round(), 255, 0));
+    } else {
+      const redContribution = sRco;
+      final b1 = calculateContribution(
+          apcaY, greenContribution + redContribution, sBco);
+      addAnswer(argbFromRgb(255, 255, b1.round()));
+    }
+    final b2 = calculateContribution(apcaY, greenContribution, sBco);
+    if (b2 <= 255) {
+      addAnswer(argbFromRgb(0, 255, b2.round()));
+    } else {
+      const blueContribution = sBco;
+      final r2 = calculateContribution(
+          apcaY, greenContribution + blueContribution, sRco);
+      addAnswer(argbFromRgb(r2.round(), 255, 255));
+    }
+  }
+  final maxB = (255.0 * math.pow(apcaY / sBco, 1.0 / 2.4)).roundToDouble();
+  if (maxB <= 255) {
+    addAnswer(argbFromRgb(0, 0, maxB.round()));
+  } else {
+    const blueContribution = sBco;
+    final r1 = calculateContribution(apcaY, blueContribution, sRco);
+    if (r1 <= 255) {
+      addAnswer(argbFromRgb(r1.round(), 0, 255));
+    } else {
+      const redContribution = sRco;
+      final g1 = calculateContribution(
+          apcaY, blueContribution + redContribution, sGco);
+      addAnswer(argbFromRgb(255, g1.round(), 255));
+    }
+    final g2 = calculateContribution(apcaY, blueContribution, sGco);
+    if (g2 <= 255) {
+      addAnswer(argbFromRgb(0, g2.round(), 255));
+    } else {
+      const greenContribution = sGco;
+      final r2 = calculateContribution(
+          apcaY, blueContribution + greenContribution, sRco);
+      addAnswer(argbFromRgb(r2.round(), 255, 255));
+    }
+  }
+
+  return boundaryInts;
 }

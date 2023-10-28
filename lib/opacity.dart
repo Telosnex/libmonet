@@ -2,6 +2,7 @@ import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/debug_print.dart';
 import 'package:libmonet/hex_codes.dart';
+import 'package:libmonet/luma.dart';
 import 'package:libmonet/wcag.dart';
 
 class OpacityResult {
