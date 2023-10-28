@@ -34,7 +34,7 @@ List<int> findBoundaryArgbsForLuma(double luma) {
   ///
   /// The maximum error is 0.003369962535303306, calculated by iterating over
   /// all possible values of R/G/B and finding the maximum difference between
-  /// [apcaYNeeded] and APCA Y contribution produced by [answer]
+  /// [lumaNeeded] and luma contribution produced by [answer]
   double getChannel(
     double lumaRequired,
     double lumaCreatedSoFar,
