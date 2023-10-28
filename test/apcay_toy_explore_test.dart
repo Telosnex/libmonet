@@ -7,93 +7,36 @@ import 'package:libmonet/apca.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 
 void main() {
-  test('integer RGB', () {
-    var maxRYDiff = -1.0;
-    var maxRDiffRgbTriple = <int>[];
+  test('all RGBs are in range of L* produced from their APCA Y', () {
     for (int r = 0; r <= 255; r += 1) {
-      final yDiff = findDiffBetweenYsFoundFromGrayscaleApcaAndTrueApca(
-          argbFromRgb(r, 0, 0));
-      if (yDiff > maxRYDiff) {
-        maxRYDiff = yDiff;
-        maxRDiffRgbTriple = [r, 0, 0];
-      }
-    }
-    print(
-        'maxRYDiff: $maxRYDiff @ ${maxRDiffRgbTriple[0]}, ${maxRDiffRgbTriple[1]}, ${maxRDiffRgbTriple[2]}');
-
-    var maxGYDiff = -1.0;
-    var maxGDiffRgbTriple = <int>[];
-    for (int g = 0; g <= 255; g += 1) {
-      final yDiff = findDiffBetweenYsFoundFromGrayscaleApcaAndTrueApca(
-          argbFromRgb(0, g, 0));
-
-      if (yDiff > maxGYDiff) {
-        maxGYDiff = yDiff;
-        maxGDiffRgbTriple = [0, g, 0];
-      }
-    }
-    print(
-        'maxGYDiff: $maxGYDiff @ ${maxGDiffRgbTriple[0]}, ${maxGDiffRgbTriple[1]}, ${maxGDiffRgbTriple[2]}');
-
-    var maxBYDiff = -1.0;
-    var maxBDiffRgbTriple = <int>[];
-    for (int b = 0; b <= 255; b += 1) {
-      final yDiff = findDiffBetweenYsFoundFromGrayscaleApcaAndTrueApca(
-          argbFromRgb(0, 0, b));
-
-      if (yDiff > maxBYDiff) {
-        maxBYDiff = yDiff;
-        maxBDiffRgbTriple = [0, 0, b];
-      }
-    }
-    print(
-        'maxBYDiff: $maxBYDiff @ ${maxBDiffRgbTriple[0]}, ${maxBDiffRgbTriple[1]}, ${maxBDiffRgbTriple[2]}');
-
-    var maxOverallDiff = -100.0;
-    var maxOverallDiffRgbTriple = <int>[];
-    for (int r = 0; r <= 1; r += 1) {
-      print('r = $r');
       for (int g = 0; g <= 255; g += 1) {
         for (int b = 0; b <= 255; b += 1) {
-          final yDiff = findDiffBetweenYsFoundFromGrayscaleApcaAndTrueApca(
-              argbFromRgb(r, g, b));
-          final yDiff2 = findYToApcaYDiffUsingBoundary(argbFromRgb(r, g, b));
-          if (yDiff2 < yDiff) {
-            print(
-                'underestimate @ $r, $g, $b: ${yDiff2.toStringAsFixed(4)} < ${yDiff.toStringAsFixed(4)}');
-          } else if (yDiff2 > yDiff) {
-            print(
-                'overestimate @ $r, $g, $b: ${yDiff2.toStringAsFixed(4)} > ${yDiff.toStringAsFixed(4)}');
-          }
-          if (yDiff > maxOverallDiff) {
-            maxOverallDiff = yDiff;
-            maxOverallDiffRgbTriple = [r, g, b];
-          }
+          final argb = argbFromRgb(r, g, b);
+          final lstar = lstarFromArgb(argb);
+          final apcaY = apcaYFromArgb(argb);
+          final lstarRange = apcaYToLstarRange(apcaY);
+          expect(lstar, inInclusiveRange(lstarRange[0], lstarRange[1]));
         }
       }
     }
-    print(
-        'maxOverallDiff: $maxOverallDiff. @ ${maxOverallDiffRgbTriple[0]}, ${maxOverallDiffRgbTriple[1]}, ${maxOverallDiffRgbTriple[2]}');
   });
-
-  test('simpler RGB', () {
-    var maxOverallDiff = -100.0;
+ 
+  test('Explorer',
+      skip:
+          'important diagnostic code for producing error tolerances needed due to RGB being whole numbers, but not a test',
+      () {
+    var maxOverallDiff = -1.0;
     var maxOverallDiffRgbTriple = <int>[];
     var maxError = -1.0;
     var maxErrorRgbTriple = <int>[];
+    var maxArgbToApcaToApcsToArgbsApcaError = -1.0;
+    var minBoundaryErrorLstar = -1.0;
+    var minBoundaryErrors = 0;
+    var maxBoundaryErrorLstar = -1.0;
+    var maxBoundaryErrors = 0;
     for (int r = 0; r <= 255; r += 1) {
       for (int g = 0; g <= 255; g += 1) {
         for (int b = 0; b <= 255; b += 1) {
-          // This keeps track of the maximum difference APCA Y => grayscale ARGB => XYZ Y
-          // and the actual APCA Y => XYZ Y.
-          if (false) {
-            final yDiff = findDiffBetweenYsFoundFromGrayscaleApcaAndTrueApca(
-                argbFromRgb(r, g, b));
-            if (yDiff > maxOverallDiff) {
-              maxOverallDiff = yDiff;
-              maxOverallDiffRgbTriple = [r, g, b];
-            }
-          }
           // This verifies that when we go from apcaY => ARGB by assuming
           // grayscale, that the apcaY of the grayscale ARGB is close to the original.
           if (false) {
@@ -107,51 +50,67 @@ void main() {
 
           // This verifies that when we go from apcaY => ARGBs, the ARGBs
           // have apcaYs that are close to the original apcaY.
+          //
+          // Error is expected, due to RGB being whole numbers, so if APCA Y
+          // needed, say, 250.2 to be represented, it would be rounded to 250.
+          //
+          // Another test was used to identify that the maximum per-channel error is
+          // 0.003369962535303306.
+          //
+          // This test is used to find the maximum APCA Y error when combining
+          // all 3 channels, which is 0.004683538862013781.
           if (false) {
             final trueApcaY = apcaYFromArgb(argbFromRgb(r, g, b));
             final boundaryArgbs = findBoundaryArgbsForApcaY(trueApcaY);
-            final boundaryArgbsApcaYs = boundaryArgbs.map((triple) {
-              try {
-                return apcaYFromArgb(argbFromRgb(
-                    triple[0].round(), triple[1].round(), triple[1].round()));
-              } catch (e) {
-                return 0.0;
-              }
-            }).toList();
-
-            // print('true apcaY: $trueApcaY');
-            // print('apcaYs of boundary argbs: $boundaryArgbsApcaYs');
-            // Check if true apcaY falls in range of boundaryArgbsApcaYs
-            final maxBoundaryApcaY = boundaryArgbsApcaYs.reduce(math.max);
-            final minBoundaryApcaY = boundaryArgbsApcaYs.reduce(math.min);
-            expect(trueApcaY,
-                inInclusiveRange(minBoundaryApcaY, maxBoundaryApcaY + .0001));
+            final boundaryArgbsApcaYs =
+                boundaryArgbs.map((e) => apcaYFromArgb(e)).toList();
+            for (final boundaryArgbApcaY in boundaryArgbsApcaYs) {
+              final diffFromTrueApcaY = (boundaryArgbApcaY - trueApcaY).abs();
+              maxArgbToApcaToApcsToArgbsApcaError = math.max(
+                  maxArgbToApcaToApcsToArgbsApcaError, diffFromTrueApcaY);
+            }
           }
 
           // This verifies that given a RGB => APCA Y => boundary ARGBs = Ys,
           // the Y of the RGB falls in the range of the Ys.
-          if (true) {
+          //
+          // Due to quantization of ARGB, not all APCA Ys can be accurately
+          // reversed. ex. it may require a red channel of 250.2, but R/G/B
+          // channels are whole numbers.
+          //
+          // This test is used to identify the error in the lstar range due to
+          // this effect.
+          //
+          // minBoundaryError: 0.08747562332222003. total errors: 12234
+          // maxBoundaryError: 0.23986207179298447. total errors: 1341645
+          if (false) {
             final trueApcaY = apcaYFromArgb(argbFromRgb(r, g, b));
             final boundaryArgbsForTrueApcaY =
                 findBoundaryArgbsForApcaY(trueApcaY);
             final trueY = yFromArgb(argbFromRgb(r, g, b));
 
-            final boundaryYs = boundaryArgbsForTrueApcaY.map((triple) {
-              int argb = 0;
-              try {
-                argb = argbFromRgb(
-                    triple[0].round(), triple[1].round(), triple[1].round());
-              } catch (e) {
-                print('failed to convert $triple to argb');
-                rethrow;
-              }
-              return yFromArgb(argb);
-            }).toList();
+            final boundaryYs =
+                boundaryArgbsForTrueApcaY.map((e) => yFromArgb(e)).toList();
             final maxBoundaryY = boundaryYs.reduce(math.max);
             final minBoundaryY = boundaryYs.reduce(math.min);
+
+            final trueLstar = lstarFromY(trueY);
+            final minBoundaryLstar = lstarFromY(minBoundaryY);
+            final maxBoundaryLstar = lstarFromY(maxBoundaryY);
             expect(
-                trueY, inInclusiveRange(minBoundaryY - 0.1, maxBoundaryY + 0.1),
+                trueLstar,
+                inInclusiveRange(minBoundaryLstar - 0.08747562332222003,
+                    maxBoundaryLstar + 0.23986207179298447),
                 reason: 'tried $r, $g, $b');
+            if (trueY < minBoundaryY) {
+              minBoundaryErrors++;
+              minBoundaryErrorLstar = math.max(minBoundaryErrorLstar,
+                  (lstarFromY(minBoundaryY) - lstarFromY(trueY)).abs());
+            } else if (trueY > maxBoundaryY) {
+              maxBoundaryErrors++;
+              maxBoundaryErrorLstar = math.max(maxBoundaryErrorLstar,
+                  (lstarFromY(maxBoundaryY) - lstarFromY(trueY)).abs());
+            }
             final minError = (trueY - minBoundaryY).abs();
             final maxError2 = (trueY - maxBoundaryY).abs();
             final error = math.max(minError, maxError2);
@@ -160,131 +119,52 @@ void main() {
               maxErrorRgbTriple = [r, g, b];
             }
           }
+
+          // This calculates the difference between L* of a color and the L*
+          // range we'd calculate if we only had the APCA Y.
+          //
+          // 4.7867847389446965 @ 0, 0, 95
+          if (false) {
+            final yDiff = _findDiffBetweenTrueLstarAndLstarRangeFromApcaY(
+                argbFromRgb(r, g, b));
+            if (yDiff > maxOverallDiff) {
+              maxOverallDiff = yDiff;
+              maxOverallDiffRgbTriple = [r, g, b];
+            }
+          }
         }
       }
+    }
+
+    if (maxArgbToApcaToApcsToArgbsApcaError > -1) {
+      print(
+          'maxArgbToApcaToApcsToArgbsApcaError: $maxArgbToApcaToApcsToArgbsApcaError');
+    }
+    if (maxOverallDiff > -1) {
+      print(
+          'maxOverallDiff: $maxOverallDiff. @ ${maxOverallDiffRgbTriple[0]}, ${maxOverallDiffRgbTriple[1]}, ${maxOverallDiffRgbTriple[2]}');
+    }
+    if (minBoundaryErrorLstar > -1) {
+      print(
+          'minBoundaryError: $minBoundaryErrorLstar. total errors: $minBoundaryErrors');
+      print(
+          'maxBoundaryError: $maxBoundaryErrorLstar. total errors: $maxBoundaryErrors');
     }
     if (maxError > -1) {
       print(
           'maxError: $maxError. @ ${maxErrorRgbTriple[0]}, ${maxErrorRgbTriple[1]}, ${maxErrorRgbTriple[2]}');
     }
-    // print(
-    // 'maxOverallDiff: $maxOverallDiff. @ ${maxOverallDiffRgbTriple[0]}, ${maxOverallDiffRgbTriple[1]}, ${maxOverallDiffRgbTriple[2]}');
   });
 }
 
-double findYDiffFromBoundaryYs(double apcaY) {
-  final grayscaleArgb = apcaYToGrayscaleArgb(apcaY);
-  final grayscaleY = yFromArgb(grayscaleArgb);
-  final boundaryYs = apcaYToBoundaryYs(apcaY);
-  final diffs = boundaryYs.map((boundaryY) => (boundaryY - grayscaleY).abs());
-  return diffs.reduce(math.max);
-}
 
-List<double> apcaYToBoundaryYs(double apcaY) {
-  return findBoundaryArgbsForApcaY(apcaY).map((triple) {
-    try {
-      return yFromArgb(
-          argbFromRgb(triple[0].round(), triple[1].round(), triple[1].round()));
-    } catch (e) {
-      return 0.0;
-    }
-  }).toList();
-}
-
-
-double apcaYFromRgbComponents(int red, int green, int blue) {
-  const double mainTrc = 2.4;
-
-// sRGB coefficients
-  const double sRco = 0.2126729;
-  const double sGco = 0.7151522;
-  const double sBco = 0.0721750;
-  double simpleExp(int channel) {
-    return math.pow(channel.toDouble() / 255.0, mainTrc).toDouble();
-  }
-
-  return sRco * simpleExp(red) +
-      sGco * simpleExp(green) +
-      sBco * simpleExp(blue);
-}
-
-double findDiffBetweenYsFoundFromGrayscaleApcaAndTrueApca(int argb) {
+double _findDiffBetweenTrueLstarAndLstarRangeFromApcaY(int argb) {
+  final lstar = lstarFromArgb(argb);
   final apcaY = apcaYFromArgb(argb);
-  final yIfGrayscale = apcaYToGrayscaleY(apcaY);
-  final y = yFromArgb(argb);
-  final yDiff = (y - yIfGrayscale).abs();
-  return yDiff;
+  final lstarRange = apcaYToLstarRange(apcaY);
+  final diffFromMin = (lstar - lstarRange[0]).abs();
+  final diffFromMax = (lstar - lstarRange[1]).abs();
+  final lstarDiff = math.max(diffFromMin, diffFromMax);
+  return lstarDiff;
 }
 
-double apcaYToGrayscaleY(double apcaY, {bool debug = false}) {
-  return yFromArgb(apcaYToGrayscaleArgb(apcaY, debug: debug));
-}
-
-double findYToApcaYDiffUsingBoundary(int argb) {
-  final apcaY = apcaYFromArgb(argb);
-  final grayscaleY = apcaYToGrayscaleY(apcaY);
-  final boundaryYs = apcaYToBoundaryYs(apcaY);
-  final diffs = boundaryYs.map((boundaryY) => (boundaryY - grayscaleY).abs());
-  return diffs.reduce(math.max);
-}
-
-// final redContribution = sRco * math.pow(255.0, 2.4);
-
-// // We have two cases, each enclosed in blocks.
-// // First case: spill to G, then spill to B if needed
-// {
-//   // Spill to G
-//   // apcaY = redContribution + sGCO * simpleExp(G)
-//   // apcaY - redContribution = sGCO * simpleExp(G)
-//   // (apcaY - redContribution) / sGCO = simpleExp(G)
-//   // (apcaY - redContribution) / sGCO = (G / 255) ^ 2.4
-//   // ((apcaY - redContribution) / sGCO) ^ (1/2.4) = (G / 255)
-//   // 255 * (((apcaY - redContribution) / sGCO) ^ (1/2.4)) = G
-//   final g = 255.0 * math.pow((apcaY - redContribution) / sGco, 1.0 / 2.4);
-//   if (g <= 255) {
-//     boundaryTriples.add([255, g, 0]);
-//   } else {
-//     final greenContribution = sGco * math.pow(255.0, 2.4);
-
-//     // Spill to B
-//     // apcaY = redContribution + greenContribution + sBCO * simpleExp(B)
-//     // apcaY - redContribution - greenContribution = sBCO * simpleExp(B)
-//     // (apcaY - redContribution - greenContribution) / sBCO = simpleExp(B)
-//     // (apcaY - redContribution - greenContribution) / sBCO = (B / 255) ^ 2.4
-//     // ((apcaY - redContribution - greenContribution) / sBCO) ^ (1/2.4) = (B / 255)
-//     // 255 * (((apcaY - redContribution - sGCO * simpleExp(G)) / sBCO) ^ (1/2.4)) = B
-//     final b = 255.0 *
-//         math.pow((apcaY - redContribution - greenContribution) / sBco,
-//             1.0 / 2.4);
-//     boundaryTriples.add([255, 255, b]);
-//   }
-// }
-
-// // Second case: spill to B, then spill to G if needed
-// {
-//   // Spill to B
-//   // apcaY = redContribution + sBCO * simpleExp(B)
-//   // apcaY - redContribution = sBCO * simpleExp(B)
-//   // (apcaY - redContribution) / sBCO = simpleExp(B)
-//   // (apcaY - redContribution) / sBCO = (B / 255) ^ 2.4
-//   // ((apcaY - redContribution) / sBCO) ^ (1/2.4) = (B / 255)
-//   // 255 * (((apcaY - redContribution) / sBCO) ^ (1/2.4)) = B
-//   final b = 255.0 * math.pow((apcaY - redContribution) / sBco, 1.0 / 2.4);
-//   if (b <= 255) {
-//     boundaryTriples.add([255, 0, b]);
-//   } else {
-//     final blueContribution = sBco * math.pow(255.0, 2.4);
-
-//     // Spill to G
-//     // apcaY = redContribution + blueContribution + sGCO * simpleExp(G)
-//     // apcaY - redContribution - blueContribution = sGCO * simpleExp(G)
-//     // (apcaY - redContribution - blueContribution) / sGCO = simpleExp(G)
-//     // (apcaY - redContribution - blueContribution) / sGCO = (G / 255) ^ 2.4
-//     // ((apcaY - redContribution - blueContribution) / sGCO) ^ (1/2.4) = (G / 255)
-//     // 255 * (((apcaY - redContribution - blueContribution) / sGCO) ^ (1/2.4)) = G
-//     final g = 255.0 *
-//         math.pow(
-//             (apcaY - redContribution - blueContribution) / sGco, 1.0 / 2.4);
-//     boundaryTriples.add([255, g, 255]);
-//   }
-// }

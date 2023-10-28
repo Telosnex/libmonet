@@ -104,15 +104,15 @@ List<double> apcaYToLstarRange(double apcaY, {bool debug = false}) {
     return [asIfGrayscale, asIfGrayscale];
   }
   final argbs = findBoundaryArgbsForApcaY(apcaY);
-  final ys = argbs
-      .map((e) => yFromArgb(
-          argbFromRgb((e[0]).round(), (e[1]).round(), (e[2]).round())))
-      .toList(growable: false);
+  final ys = argbs.map((e) => yFromArgb(e)).toList(growable: false);
   final minY = ys.reduce(math.min);
   final maxY = ys.reduce(math.max);
   final minLstar = lstarFromY(minY);
   final maxLstar = lstarFromY(maxY);
-  return [minLstar, maxLstar];
+  return [
+    (minLstar - 0.08747562332222003).clamp(0, 100),
+    (maxLstar + 0.23986207179298447).clamp(0, 100)
+  ];
 }
 
 double lstarToApcaY(double lstar) {
@@ -199,10 +199,25 @@ double apcaContrastOfArgb(int textArgb, int backgroundArgb) {
   );
 }
 
-List<List<double>> findBoundaryArgbsForApcaY(double apcaY) {
-  double calculateContribution(apcaY, apcaYAlreadyFulfilled, sCO) {
+List<int> findBoundaryArgbsForApcaY(double apcaY) {
+  /// Find the R/G/B whole number that will generate the most progress towards
+  /// fulfilling the apcaY.
+  ///
+  /// Note this has built-in error: R/G/B are whole numbers, and sometimes to
+  /// fulfill the apcaY, we'd need ex. 250.2 of a channel, but we can't have
+  /// 0.2 of a channel.
+  ///
+  /// The maximum error is 0.003369962535303306, calculated by iterating over
+  /// all possible values of R/G/B and finding the maximum difference between
+  /// [apcaYNeeded] and APCA Y contribution produced by [answer]
+  double calculateContribution(
+    double apcaY,
+    double apcaYAlreadyFulfilled,
+    double sCO,
+  ) {
+    final apcaYNeeded = apcaY - apcaYAlreadyFulfilled;
     final answer =
-        255.0 * math.pow((apcaY - apcaYAlreadyFulfilled) / sCO, 1.0 / 2.4);
+        (255.0 * math.pow(apcaYNeeded / sCO, 1.0 / 2.4)).roundToDouble();
     if (answer.isNaN) {
       assert(apcaYAlreadyFulfilled >= apcaY);
       return 0.0;
@@ -210,7 +225,11 @@ List<List<double>> findBoundaryArgbsForApcaY(double apcaY) {
     return answer;
   }
 
-  final boundaryTriples = <List<double>>[];
+  final boundaryInts = <int>[apcaYToGrayscaleArgb(apcaY)];
+  void addAnswer(int argb) {
+    boundaryInts.add(argb);
+  }
+
   // apcaY = sRCO * simpleExp(R) + sGCO * simpleExp(G) + sBCO * simpleExp(B) = apcaY
   //
   // We have to find R, G, B coordinates that generate the apcaY.
@@ -231,76 +250,76 @@ List<List<double>> findBoundaryArgbsForApcaY(double apcaY) {
   // R = 255 * (apcaY / sRCO) ^ (1/2.4)
   final maxR = (255.0 * math.pow(apcaY / sRco, 1.0 / 2.4)).toDouble();
   if (maxR <= 255) {
-    boundaryTriples.add([maxR, 0.0, 0.0]);
+    addAnswer(argbFromRgb(maxR.round(), 0, 0));
   } else {
     const redContribution = sRco;
     final g1 = calculateContribution(apcaY, redContribution, sGco);
     if (g1 <= 255) {
-      boundaryTriples.add([255, g1, 0]);
+      addAnswer(argbFromRgb(255, g1.round(), 0));
     } else {
       const greenContribution = sGco;
       final b1 = calculateContribution(
           apcaY, redContribution + greenContribution, sBco);
-      boundaryTriples.add([255, 255, b1]);
+      addAnswer(argbFromRgb(255, 255, b1.round()));
     }
     final b2 = calculateContribution(apcaY, redContribution, sBco);
     if (b2 <= 255) {
-      boundaryTriples.add([255, 0, b2]);
+      addAnswer(argbFromRgb(255, 0, b2.round()));
     } else {
       const blueContribution = sBco;
       final g2 = calculateContribution(
           apcaY, redContribution + blueContribution, sGco);
-      boundaryTriples.add([255, g2, 255]);
+      addAnswer(argbFromRgb(255, g2.round(), 255));
     }
   }
   final maxG = (255.0 * math.pow(apcaY / sGco, 1.0 / 2.4)).toDouble();
   if (maxG <= 255) {
-    boundaryTriples.add([0.0, maxG, 0.0]);
+    addAnswer(argbFromRgb(0, maxG.round(), 0));
   } else {
     const greenContribution = sGco;
     final r1 = calculateContribution(apcaY, greenContribution, sRco);
     if (r1 <= 255) {
-      boundaryTriples.add([r1, 255, 0]);
+      addAnswer(argbFromRgb(r1.round(), 255, 0));
     } else {
       const redContribution = sRco;
       final b1 = calculateContribution(
           apcaY, greenContribution + redContribution, sBco);
-      boundaryTriples.add([255, 255, b1]);
+      addAnswer(argbFromRgb(255, 255, b1.round()));
     }
     final b2 = calculateContribution(apcaY, greenContribution, sBco);
     if (b2 <= 255) {
-      boundaryTriples.add([0, 255, b2]);
+      addAnswer(argbFromRgb(0, 255, b2.round()));
     } else {
       const blueContribution = sBco;
       final r2 = calculateContribution(
           apcaY, greenContribution + blueContribution, sRco);
-      boundaryTriples.add([r2, 255, 255]);
+      addAnswer(argbFromRgb(r2.round(), 255, 255));
     }
   }
-  final maxB = (255.0 * math.pow(apcaY / sBco, 1.0 / 2.4)).toDouble();
+  final maxB = (255.0 * math.pow(apcaY / sBco, 1.0 / 2.4)).roundToDouble();
   if (maxB <= 255) {
-    boundaryTriples.add([0.0, 0.0, maxB]);
+    addAnswer(argbFromRgb(0, 0, maxB.round()));
   } else {
     const blueContribution = sBco;
     final r1 = calculateContribution(apcaY, blueContribution, sRco);
     if (r1 <= 255) {
-      boundaryTriples.add([r1, 0, 255]);
+      addAnswer(argbFromRgb(r1.round(), 0, 255));
     } else {
       const redContribution = sRco;
       final g1 = calculateContribution(
           apcaY, blueContribution + redContribution, sGco);
-      boundaryTriples.add([255, g1, 255]);
+      addAnswer(argbFromRgb(255, g1.round(), 255));
     }
     final g2 = calculateContribution(apcaY, blueContribution, sGco);
     if (g2 <= 255) {
-      boundaryTriples.add([0, g2, 255]);
+      addAnswer(argbFromRgb(0, g2.round(), 255));
     } else {
       const greenContribution = sGco;
       final r2 = calculateContribution(
           apcaY, blueContribution + greenContribution, sRco);
-      boundaryTriples.add([r2, 255, 255]);
+      addAnswer(argbFromRgb(r2.round(), 255, 255));
     }
   }
 
-  return boundaryTriples;
+  return boundaryInts;
 }
