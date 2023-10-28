@@ -84,19 +84,6 @@ int apcaYToGrayscaleArgb(double apcaY, {bool debug = false}) {
   return argbFromRgb(channel, channel, channel);
 }
 
-double apcaYToLstar(double apcaY, {bool debug = false}) {
-  final range = apcaYToLstarRange(apcaY, debug: debug);
-
-  if (apcaY > 0.55) {
-    return range[1];
-  }
-
-  return range[0];
-  // final answer = lstarFromArgb(apcaYToGrayscaleArgb(apcaY, debug: debug));
-  // print('range: $range actual: $answer');
-  // return answer;
-}
-
 List<double> apcaYToLstarRange(double apcaY, {bool debug = false}) {
   if (apcaY < inputClampMin) {
     final asIfGrayscale =

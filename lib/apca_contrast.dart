@@ -9,7 +9,7 @@ double lighterBackgroundLstar(double textLstar, double apca,
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* ENTER');
   final lighterBackgroundApcaYValue =
       lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
-  return apcaYToLstar(lighterBackgroundApcaYValue);
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).last;
 }
 
 double lighterTextLstar(double backgroundLstar, double apca,
@@ -17,13 +17,15 @@ double lighterTextLstar(double backgroundLstar, double apca,
   monetDebug(debug, () => 'LIGHTER TEXT L* ENTER');
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
   monetDebug(debug, () => 'apcaY: $backgroundApcaY');
-  final lighterTextApcaYValue = lighterTextApcaY(backgroundApcaY, apca, debug: debug);
+  final lighterTextApcaYValue =
+      lighterTextApcaY(backgroundApcaY, apca, debug: debug);
   if (lighterTextApcaYValue > 1.0) {
-    monetDebug(debug, () => 'lighter text has $lighterTextApcaYValue, lets check darker');
-    final darkerTextApcaYValue = darkerTextApcaY(backgroundApcaY, apca, debug: debug);
+    monetDebug(debug,
+        () => 'lighter text has $lighterTextApcaYValue, lets check darker');
+    final darkerTextApcaYValue =
+        darkerTextApcaY(backgroundApcaY, apca, debug: debug);
     if (darkerTextApcaYValue < 0) {
-      final distanceFromNeededLightToMaxLight =
-          lighterTextApcaYValue - 1.0;
+      final distanceFromNeededLightToMaxLight = lighterTextApcaYValue - 1.0;
       final distanceFromNeededDarkToMaxDark = 0.0 - darkerTextApcaYValue;
       if (distanceFromNeededLightToMaxLight > distanceFromNeededDarkToMaxDark) {
         monetDebug(
@@ -40,10 +42,10 @@ double lighterTextLstar(double backgroundLstar, double apca,
           debug,
           () =>
               'asked for lighter, but darker is in bounds. darkerTextApcaYValue: $darkerTextApcaYValue');
-      return apcaYToLstar(darkerTextApcaYValue);
+      return apcaYToLstarRange(darkerTextApcaYValue).last;
     }
   }
-  return apcaYToLstar(lighterTextApcaYValue);
+  return apcaYToLstarRange(lighterTextApcaYValue).first;
 }
 
 double darkerBackgroundLstar(double textLstar, double apca,
@@ -76,9 +78,12 @@ double darkerBackgroundLstar(double textLstar, double apca,
         return 100.0;
       }
     }
-    return apcaYToLstar(lighterBackgroundApcaYValue);
+    // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
+    return apcaYToLstarRange(lighterBackgroundApcaYValue).first;
   }
-  return apcaYToLstar(darkerBackgroundApcaYValue, debug: debug);
+
+  // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).last;
 }
 
 double darkerTextLstar(double backgroundYLstar, double apca,
@@ -109,14 +114,17 @@ double darkerTextLstar(double backgroundYLstar, double apca,
         return 100.0;
       }
     } else {
+
       monetDebug(
           debug,
           () =>
               'asked for darker, but lighter is in bounds. lighterTextApcaYValue: $lighterTextApcaYValue');
-      return apcaYToLstar(lighterTextApcaYValue);
+      // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
+      return apcaYToLstarRange(lighterTextApcaYValue).first;
     }
   }
-  return apcaYToLstar(darkerTextApcaYValue);
+  // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
+  return apcaYToLstarRange(darkerTextApcaYValue).last;
 }
 
 double lighterBackgroundApcaY(double textApcaY, double apca,
