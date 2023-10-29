@@ -67,8 +67,7 @@ class ColorPicker extends HookConsumerWidget {
                 .copyWith(color: MonetTheme.of(context).primary.text),
           ),
           IconButton(
-            style: iconButtonStyleFromColors(
-                MonetTheme.of(context).tertiary),
+   
             onPressed: () {
               final randomColor = Color.fromARGB(255, random.nextInt(256),
                   random.nextInt(256), random.nextInt(256));

@@ -106,7 +106,7 @@ class BrandColorsPopupMenuButton extends HookConsumerWidget {
           );
         }).toList();
       },
-      child: const Icon(Icons.explore),
+      icon: const Icon(Icons.explore),
     );
   }
 }

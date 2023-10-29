@@ -445,8 +445,8 @@ class MonetTheme extends StatelessWidget {
       headingRowColor: MaterialStateProperty.all(Colors.transparent),
       dataRowMinHeight: touchSize,
       dataRowMaxHeight: double.infinity,
-      headingRowHeight: textTheme.headlineMedium!.fontSize! *
-          (textTheme.headlineMedium!.height ?? 1.0),
+      headingRowHeight: (textTheme.headlineMedium!.fontSize! *
+          (textTheme.headlineMedium!.height ?? 1.0)) + 8 /* 4 dp vertical adding */,
     );
   }
 
