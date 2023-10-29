@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:example/background_expansion_tile.dart';
 import 'package:example/color_picker.dart';
 import 'package:example/components_widget.dart';
 import 'package:example/contrast_picker.dart';
 import 'package:example/extracted_widget.dart';
 import 'package:example/padding.dart';
 import 'package:example/safe_colors_preview.dart';
+import 'package:example/tokens_expansion_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,18 +16,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 
-enum BrighnessSetting {
+enum BrightnessSetting {
   light,
   dark,
   auto;
 
   Brightness brightness(BuildContext context) {
     switch (this) {
-      case BrighnessSetting.light:
+      case BrightnessSetting.light:
         return Brightness.light;
-      case BrighnessSetting.dark:
+      case BrightnessSetting.dark:
         return Brightness.dark;
-      case BrighnessSetting.auto:
+      case BrightnessSetting.auto:
         return MediaQuery.platformBrightnessOf(context);
     }
   }
@@ -40,14 +42,18 @@ class Home extends HookConsumerWidget {
     final images = useState(<ImageProvider>[]);
     final contrast = useState(0.5);
     final algo = useState(Algo.apca);
-    final brightnessSetting = useState(BrighnessSetting.auto);
+    final brightnessSetting = useState(BrightnessSetting.auto);
     final brightness = brightnessSetting.value.brightness(context);
+    final darkSurfaceLstar = useState(10.0);
+    final lightSurfaceLstar = useState(93.0);
     return MonetTheme.fromColor(
       brightness: brightness,
       algo: algo.value,
       contrast: contrast.value,
       color: color.value,
-      surfaceLstar: brightness == Brightness.light ? 93 : 10,
+      surfaceLstar: brightness == Brightness.light
+          ? lightSurfaceLstar.value
+          : darkSurfaceLstar.value,
       child: Builder(builder: (context) {
         return Scaffold(
           appBar: AppBar(
@@ -64,6 +70,12 @@ class Home extends HookConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      BackgroundExpansionTile(
+                        darkModeLstarNotifier: darkSurfaceLstar,
+                        lightModeLstarNotifier: lightSurfaceLstar,
+                        brightnessSettingNotifier: brightnessSetting,
+                      ),
+                      VerticalPadding(),
                       ColorPicker(
                         color: color.value,
                         onColorChanged: (newColor) {
@@ -80,7 +92,8 @@ class Home extends HookConsumerWidget {
                               .copyWith(
                                   color: MonetTheme.of(context)
                                       .primarySafeColors
-                                      .text),
+                                    .text,
+                              ),
                         ),
                         children: [
                           Padding(
@@ -98,40 +111,7 @@ class Home extends HookConsumerWidget {
                           )
                         ],
                       ),
-                      const VerticalPadding(),
-                      ExpansionTile(
-                        title: Text(
-                          'Mode',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineLarge!
-                              .copyWith(
-                                  color: MonetTheme.of(context)
-                                      .primarySafeColors
-                                      .text),
-                        ),
-                        trailing: ToggleButtons(
-                            isSelected: [
-                              brightnessSetting.value == BrighnessSetting.light,
-                              brightnessSetting.value == BrighnessSetting.dark,
-                              brightnessSetting.value == BrighnessSetting.auto,
-                            ],
-                            onPressed: (index) {
-                              brightnessSetting.value =
-                                  BrighnessSetting.values[index];
-                            },
-                            children: const [
-                              Text('Light'),
-                              Text('Dark'),
-                              Text('Auto'),
-                            ]
-                                .map((e) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
-                                      child: e,
-                                    ))
-                                .toList()),
-                      ),
+            
                       SafeColorsPreviewRow(
                         safeColors: MonetTheme.of(context).primarySafeColors,
                       ),
@@ -141,6 +121,8 @@ class Home extends HookConsumerWidget {
                       SafeColorsPreviewRow(
                         safeColors: MonetTheme.of(context).tertiarySafeColors,
                       ),
+                      const TokensExpansionTile(),
+                      const VerticalPadding(),
                       ExpansionTile(
                         title: Text(
                           'Material Components',

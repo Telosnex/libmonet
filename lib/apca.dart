@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/debug_print.dart';
@@ -84,8 +85,6 @@ int apcaYToGrayscaleArgb(double apcaY, {bool debug = false}) {
   return argbFromRgb(channel, channel, channel);
 }
 
-
-
 double lstarToApcaY(double lstar) {
   return apcaYFromArgb(argbFromLstar(lstar));
 }
@@ -163,9 +162,14 @@ double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
   return outputContrast * 100.0;
 }
 
-double apcaContrastOfArgb(int textArgb, int backgroundArgb) {
+double apcaFromArgbs(int textArgb, int backgroundArgb) {
   return apcaContrastOfApcaY(
     apcaYFromArgb(textArgb),
     apcaYFromArgb(backgroundArgb),
   );
+}
+
+double apcaFromColors(
+    {required Color textColor, required Color backgroundColor}) {
+  return apcaFromArgbs(textColor.value, backgroundColor.value);
 }

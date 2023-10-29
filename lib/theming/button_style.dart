@@ -97,9 +97,9 @@ ButtonStyle filledButtonFromColor(SafeColors safeColors) {
 
 ButtonStyle iconButtonStyleFromColors(SafeColors safeColors) {
   final foregroundAndIcon = stateColors(
-    color: safeColors.fill,
-    hover: safeColors.fillHoverText,
-    splash: safeColors.fillSplashText,
+    color: safeColors.text,
+    hover: safeColors.textHoverText,
+    splash: safeColors.textSplashText,
   );
   return ButtonStyle(
     backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
@@ -113,7 +113,7 @@ ButtonStyle iconButtonStyleFromColors(SafeColors safeColors) {
     side: MaterialStateProperty.all(
       const BorderSide(color: Colors.transparent, width: 0),
     ),
-    iconColor: foregroundAndIcon,
+    // iconColor: foregroundAndIcon,
   );
 }
 

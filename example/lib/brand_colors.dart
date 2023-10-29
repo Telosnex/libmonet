@@ -1,5 +1,7 @@
+import 'package:example/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:libmonet/theming/monet_theme.dart';
 
 enum BrandColors {
   starbucksGreen,
@@ -77,9 +79,29 @@ class BrandColorsPopupMenuButton extends HookConsumerWidget {
           return PopupMenuItem<BrandColors>(
             onTap: () => onChanged(e.color),
             value: e,
-            child: Text(
-              e.name,
-              style: Theme.of(context).textTheme.labelLarge,
+            child: MonetTheme.fromColor(
+              color: e.color,
+              brightness: MonetTheme.of(context).brightness,
+              surfaceLstar: MonetTheme.of(context).surfaceLstar,
+              child: Builder(builder: (context) {
+                return Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: e.color,
+                      ),
+                      width: 16,
+                      height: 16,
+                    ),
+                    HorizontalPadding(),
+                    Text(
+                      e.name,
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ],
+                );
+              }),
             ),
           );
         }).toList();

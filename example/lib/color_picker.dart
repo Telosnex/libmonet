@@ -37,6 +37,8 @@ class ColorPicker extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hct = useMemoized(() => Hct.fromColor(color), [color]);
     final mutableChroma = useState(hct.chroma);
+    final mutableHue = useState(hct.hue);
+    final mutableTone = useState(hct.tone);
     final hexController = useTextEditingController(text: _colorToHex(color));
 
     final hueController = useTextEditingController(
@@ -66,7 +68,7 @@ class ColorPicker extends HookConsumerWidget {
           ),
           IconButton(
             style: iconButtonStyleFromColors(
-                MonetTheme.of(context).primarySafeColors),
+                MonetTheme.of(context).tertiarySafeColors),
             onPressed: () {
               final randomColor = Color.fromARGB(255, random.nextInt(256),
                   random.nextInt(256), random.nextInt(256));
@@ -77,23 +79,13 @@ class ColorPicker extends HookConsumerWidget {
           BrandColorsPopupMenuButton(
             onChanged: (color) => onColorChanged(color),
           ),
-          // IconButton(
-          //   style: iconButtonStyleFromColors(
-          //       MonetTheme.of(context).primarySafeColors),
-          //   onPressed: () {
-          //     final randomColor = Color.fromARGB(255, random.nextInt(256),
-          //         random.nextInt(256), random.nextInt(256));
-          //     onColorChanged(randomColor);
-          //   },
-          //   icon: const Icon(Icons.shuffle),
-          // ),
         ],
       ),
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
-            height: 240,
+            height: 360,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -178,7 +170,7 @@ class ColorPicker extends HookConsumerWidget {
                         },
                         controller: toneController,
                         decoration: const InputDecoration(
-                          labelText: 'TONE',
+                          labelText: 'TONE | L*',
                           border: OutlineInputBorder(),
                         ),
                         style: Theme.of(context)
@@ -211,6 +203,36 @@ class ColorPicker extends HookConsumerWidget {
                 ),
                 const VerticalPadding(),
                 SliderFlat(
+                  slider: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      thumbShape: SliderFlatThumb(
+                          borderWidth: 2,
+                          borderColor: MonetTheme.of(context)
+                              .primarySafeColors
+                              .colorBorder,
+                          iconColor: MonetTheme.of(context)
+                              .primarySafeColors
+                              .colorIcon,
+                          iconData: Icons.ramen_dining),
+                    ),
+                    child: Slider(
+                      value: mutableHue.value,
+                      label: 'Hue ${mutableHue.value.round()}',
+                      min: 0,
+                      max: 360,
+                      onChanged: (double value) {
+                        mutableHue.value = value;
+                        final hct = Hct.fromColor(color);
+                        hct.hue = value;
+                        onColorChanged(hct.color);
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 2,
+                ),
+                SliderFlat(
                   borderColor:
                       MonetTheme.of(context).primarySafeColors.colorBorder,
                   borderWidth: 2,
@@ -236,6 +258,39 @@ class ColorPicker extends HookConsumerWidget {
                         mutableChroma.value = value;
                         final hct = Hct.fromColor(color);
                         hct.chroma = value;
+                        onColorChanged(hct.color);
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 2,
+                ),
+                SliderFlat(
+                  borderColor:
+                      MonetTheme.of(context).primarySafeColors.colorBorder,
+                  borderWidth: 2,
+                  slider: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      thumbShape: SliderFlatThumb(
+                          borderWidth: 2,
+                          borderColor: MonetTheme.of(context)
+                              .primarySafeColors
+                              .colorBorder,
+                          iconColor: MonetTheme.of(context)
+                              .primarySafeColors
+                              .colorIcon,
+                          iconData: Icons.table_bar),
+                    ),
+                    child: Slider(
+                      value: mutableTone.value,
+                      label: 'Tone ${mutableTone.value.round()}',
+                      min: 0,
+                      max: 100,
+                      onChanged: (double value) {
+                        mutableTone.value = value;
+                        final hct = Hct.fromColor(color);
+                        hct.tone = value;
                         onColorChanged(hct.color);
                       },
                     ),

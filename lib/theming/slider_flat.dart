@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:libmonet/theming/monet_theme.dart';
 
 class SliderFlat extends StatelessWidget {
-  final Color borderColor;
-  final double borderWidth;
+  final Color? borderColor;
+  final double? borderWidth;
   final Widget slider;
   const SliderFlat({
     super.key,
-    required this.borderColor,
-    required this.borderWidth,
+    this.borderColor,
+    this.borderWidth,
     required this.slider,
   });
 
   @override
   Widget build(BuildContext context) {
+    final borderColor = this.borderColor ??
+        MonetTheme.of(context).primarySafeColors.colorBorder;
+    final borderWidth = this.borderWidth ?? 2;
     final sliderTheme = Theme.of(context).sliderTheme;
     final trackHeight = sliderTheme.trackHeight!;
     final activeTrackColor = sliderTheme.activeTrackColor;

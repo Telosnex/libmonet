@@ -28,7 +28,7 @@ class ContrastPicker extends HookConsumerWidget {
           onPressed: (index) {
             onAlgoChanged(index == 0 ? Algo.apca : Algo.wcag21);
           },
-          children: const [Text('APCA'), Text('WCAG 2.1')]
+          children: const [Text('APCA'), Text('WCAG')]
               .map((e) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: e))
@@ -50,11 +50,14 @@ class ContrastPicker extends HookConsumerWidget {
                     iconData: Icons.brightness_6),
               ),
               child: Slider(
-                label: 'Contrast: ${(contrast * 100.0).round()}%',
+                label: '${(contrast * 100.0).round()}%',
                 value: contrast.clamp(0.1, 1.0),
                 min: 0.1,
                 max: 1.0,
                 onChanged: (value) {
+                  if ((value * 100).round() == 50) {
+                    value = 0.5;
+                  }
                   onContrastChanged(value);
                 },
               ),

@@ -46,7 +46,7 @@ double lighterTextLstar(double backgroundLstar, double apca,
       return apcaYToLstarRange(darkerTextApcaYValue).last;
     }
   }
-  return apcaYToLstarRange(lighterTextApcaYValue).first;
+  return apcaYToLstarRange(lighterTextApcaYValue).last;
 }
 
 double darkerBackgroundLstar(double textLstar, double apca,
@@ -124,8 +124,7 @@ double darkerTextLstar(double backgroundYLstar, double apca,
       return apcaYToLstarRange(lighterTextApcaYValue).first;
     }
   }
-  // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
-  return apcaYToLstarRange(darkerTextApcaYValue).last;
+  return apcaYToLstarRange(darkerTextApcaYValue).first;
 }
 
 double lighterBackgroundApcaY(double textApcaY, double apca,

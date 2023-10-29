@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
@@ -127,28 +129,32 @@ class MonetTheme extends StatelessWidget {
     final typographyData = typography(colorScheme);
     final tt = createTextTheme(typographyData);
     final txtC = primarySafeColors.backgroundText;
+    final h = 1.0;
+    final med = FontWeight.w500;
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
           fontSize: 24,
           color: primarySafeColors.backgroundText,
-          fontWeight: FontWeight.w500),
+          fontWeight: FontWeight.w500,
+          height: 1.5),
       displayMedium: tt.displayMedium!
-          .copyWith(fontSize: 22, color: txtC, fontWeight: FontWeight.w500),
+          .copyWith(fontSize: 22, color: txtC, fontWeight: med, height: h),
       displaySmall: tt.displaySmall!
-          .copyWith(fontSize: 20, color: txtC, fontWeight: FontWeight.w500),
+          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
       headlineLarge: tt.headlineLarge!
-          .copyWith(fontSize: 20, color: txtC, fontWeight: FontWeight.w500),
+          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
       headlineMedium: tt.headlineMedium!
-          .copyWith(fontSize: 18, color: txtC, fontWeight: FontWeight.w500),
+          .copyWith(fontSize: 18, color: txtC, fontWeight: med, height: h),
       headlineSmall: tt.headlineSmall!
-          .copyWith(fontSize: 16, color: txtC, fontWeight: FontWeight.w500),
-      bodyLarge: tt.bodyLarge!.copyWith(fontSize: 16, color: txtC),
-      bodyMedium: tt.bodyMedium!.copyWith(fontSize: 14, color: txtC),
-      bodySmall: tt.bodySmall!.copyWith(fontSize: 12, color: txtC),
-      labelLarge: tt.labelLarge!
-          .copyWith(fontSize: 16, color: txtC, fontWeight: FontWeight.w500),
-      labelMedium: tt.labelMedium!.copyWith(fontSize: 14, color: txtC),
-      labelSmall: tt.labelSmall!.copyWith(fontSize: 12, color: txtC),
+          .copyWith(fontSize: 16, color: txtC, fontWeight: med, height: h),
+      bodyLarge: tt.bodyLarge!.copyWith(fontSize: 16, color: txtC, height: h),
+      bodyMedium: tt.bodyMedium!.copyWith(fontSize: 14, color: txtC, height: h),
+      bodySmall: tt.bodySmall!.copyWith(fontSize: 12, color: txtC, height: h),
+      labelLarge: tt.labelLarge!.copyWith(
+          fontSize: 16, color: txtC, fontWeight: FontWeight.w500, height: h),
+      labelMedium:
+          tt.labelMedium!.copyWith(fontSize: 14, color: txtC, height: h),
+      labelSmall: tt.labelSmall!.copyWith(fontSize: 12, color: txtC, height: h),
     );
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
@@ -294,7 +300,7 @@ class MonetTheme extends StatelessWidget {
       // defaults, see badge.dart
       smallSize: 6.0,
       largeSize: 16.0,
-      textStyle: textTheme.labelSmall,
+      textStyle: textTheme.labelSmall!,
       padding: const EdgeInsets.symmetric(horizontal: 4),
       alignment: AlignmentDirectional.topEnd,
       offset: Directionality.of(context) == TextDirection.ltr
@@ -447,13 +453,18 @@ class MonetTheme extends StatelessWidget {
 
   DataTableThemeData dataTableThemeData(TextTheme textTheme) {
     return DataTableThemeData(
-      dataTextStyle: textTheme.bodyMedium,
-      dividerThickness: 2.0,
+      columnSpacing: 16, // Material default is __56__
+      dataTextStyle: textTheme.bodyMedium!.copyWith(fontFeatures: [
+        const FontFeature.tabularFigures(),
+        const FontFeature.slashedZero()
+      ]),
+      dividerThickness: 1.0,
       headingTextStyle: textTheme.headlineMedium,
       headingRowColor: MaterialStateProperty.all(Colors.transparent),
       dataRowMinHeight: touchSize,
       dataRowMaxHeight: double.infinity,
-      headingRowHeight: 0,
+      headingRowHeight: textTheme.headlineMedium!.fontSize! *
+          textTheme.headlineMedium!.height!,
     );
   }
 
@@ -585,21 +596,21 @@ class MonetTheme extends StatelessWidget {
       /* Match default */
       expandedAlignment: Alignment.center,
       childrenPadding: EdgeInsets.zero,
-      iconColor: primarySafeColors.fill,
-      collapsedIconColor: primarySafeColors.fill,
+      iconColor: tertiarySafeColors.text,
+      collapsedIconColor: tertiarySafeColors.text,
       textColor: primarySafeColors.text,
       collapsedTextColor: primarySafeColors.text,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.fill,
+          color: secondarySafeColors.fill,
           width: 2,
         ),
       ),
       collapsedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.fill,
+          color: secondarySafeColors.fill,
           width: 2,
         ),
       ),
@@ -785,12 +796,15 @@ class MonetTheme extends StatelessWidget {
       backgroundColor: primarySafeColors.background,
       elevation: 0,
       type: BottomNavigationBarType.fixed,
+      // If this isn't specified, text becomes tertiary something...
+      selectedItemColor: primarySafeColors.text,
+      unselectedItemColor: primarySafeColors.backgroundText,
       selectedIconTheme:
           iconThemeData().copyWith(color: primarySafeColors.fill),
       unselectedIconTheme:
           iconThemeData().copyWith(color: primarySafeColors.backgroundText),
       selectedLabelStyle:
-          textTheme.labelSmall!.copyWith(color: primarySafeColors.fill),
+          textTheme.labelSmall!.copyWith(color: primarySafeColors.fillText),
       unselectedLabelStyle: textTheme.labelSmall!
           .copyWith(color: primarySafeColors.backgroundText),
       showSelectedLabels: true,
@@ -887,9 +901,9 @@ class MonetTheme extends StatelessWidget {
   ProgressIndicatorThemeData progressIndicatorThemeData() {
     return ProgressIndicatorThemeData(
       color: primarySafeColors.fill,
-      linearTrackColor: primarySafeColors.fillText,
+      linearTrackColor: primarySafeColors.background,
       linearMinHeight: 4,
-      circularTrackColor: primarySafeColors.fillText,
+      circularTrackColor: primarySafeColors.background,
       refreshBackgroundColor: primarySafeColors.background,
     );
   }
@@ -1030,7 +1044,7 @@ class MonetTheme extends StatelessWidget {
   SliderThemeData sliderThemeData(TextTheme textTheme) {
     return SliderThemeData(
       overlayShape: const RoundSliderOverlayShape(),
-      tickMarkShape: const RoundSliderTickMarkShape(),
+      tickMarkShape: SliderTickMarkShape.noTickMark,
       thumbShape: SliderFlatThumb(
         borderWidth: 2,
         borderColor: primarySafeColors.colorBorder,
@@ -1048,22 +1062,22 @@ class MonetTheme extends StatelessWidget {
       // Tick marks mess up SliderFlat, aka a Slider with a border.
       activeTickMarkColor: Colors.transparent,
       inactiveTickMarkColor: Colors.transparent,
-      disabledActiveTickMarkColor: primarySafeColors.colorText,
-      disabledInactiveTickMarkColor: primarySafeColors.backgroundText,
+      disabledActiveTickMarkColor: Colors.transparent,
+      disabledInactiveTickMarkColor: Colors.transparent,
       thumbColor: primarySafeColors.color,
       overlappingShapeStrokeColor: primarySafeColors.fillText,
       disabledThumbColor: primarySafeColors.color,
       overlayColor: Colors.transparent,
       valueIndicatorColor: primarySafeColors.color,
-
-      valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
+      valueIndicatorShape: const DropSliderValueIndicatorShape(),
       rangeTickMarkShape: const RoundRangeSliderTickMarkShape(),
       rangeThumbShape: const RoundRangeSliderThumbShape(),
       rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
       rangeValueIndicatorShape: const PaddleRangeSliderValueIndicatorShape(),
       showValueIndicator: ShowValueIndicator.always,
-      valueIndicatorTextStyle:
-          textTheme.labelLarge!.copyWith(color: primarySafeColors.colorText),
+      valueIndicatorTextStyle: textTheme.labelLarge!.copyWith(
+        color: primarySafeColors.colorText,
+      ),
       minThumbSeparation: 8,
       allowedInteraction: SliderInteraction.tapAndSlide,
     );
@@ -1071,7 +1085,7 @@ class MonetTheme extends StatelessWidget {
 
   SnackBarThemeData snackBarThemeData(TextTheme textTheme) {
     return SnackBarThemeData(
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: primarySafeColors.color,
       actionTextColor: primarySafeColors.colorText,
       disabledActionTextColor: primarySafeColors.colorText,
       contentTextStyle:
@@ -1394,14 +1408,14 @@ class MonetTheme extends StatelessWidget {
   }
 
   ScrollbarThemeData scrollbarThemeData() {
-    const thickness = 8.0;
+    const thickness = 4.0;
     return ScrollbarThemeData(
       thumbVisibility: const MaterialStatePropertyAll(true),
       thickness: const MaterialStatePropertyAll(thickness),
       trackVisibility: const MaterialStatePropertyAll(true),
       radius: const Radius.circular(thickness / 2.0),
       thumbColor:
-          MaterialStatePropertyAll(tertiarySafeColors.fill.withOpacity(0.8)),
+          MaterialStatePropertyAll(secondarySafeColors.fill.withOpacity(0.8)),
       trackColor: const MaterialStatePropertyAll(Colors.transparent),
       trackBorderColor: const MaterialStatePropertyAll(Colors.transparent),
       interactive: true,

@@ -34,6 +34,8 @@ class ComponentsWidget extends HookConsumerWidget {
     final checkboxValue = useState(false);
     final navigationBarSelectedValue = useState<int>(0);
     final navigationRailSelectedValue = useState<int>(0);
+    final bottomNavBarSelectedValue = useState<int>(0);
+
     onRadioValueChanged(int? value) {
       radioValue.value = value;
     }
@@ -284,6 +286,10 @@ class ComponentsWidget extends HookConsumerWidget {
         ),
         const H3('Bottom Navigation Bar'),
         BottomNavigationBar(
+          currentIndex: bottomNavBarSelectedValue.value,
+          onTap: (int index) {
+            bottomNavBarSelectedValue.value = index;
+          },
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -325,6 +331,13 @@ class ComponentsWidget extends HookConsumerWidget {
         OutlinedButton(onPressed: () {}, child: const Text('Outlined Button')),
         const H3('Progress Indicator'),
         const CircularProgressIndicator(),
+        VerticalPadding(),
+        LinearProgressIndicator(
+          value: 0.66,
+        ),
+        VerticalPadding(),
+        const LinearProgressIndicator(),
+   
         const H3('Radio'),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -377,6 +390,7 @@ class ComponentsWidget extends HookConsumerWidget {
           child: const Text('Show Snackbar'),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+
               content: Text('Hello, Snackbar'),
             ));
           },
