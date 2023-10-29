@@ -64,11 +64,11 @@ class ColorPicker extends HookConsumerWidget {
             style: Theme.of(context)
                 .textTheme
                 .headlineLarge!
-                .copyWith(color: MonetTheme.of(context).primarySafeColors.text),
+                .copyWith(color: MonetTheme.of(context).primary.text),
           ),
           IconButton(
             style: iconButtonStyleFromColors(
-                MonetTheme.of(context).tertiarySafeColors),
+                MonetTheme.of(context).tertiary),
             onPressed: () {
               final randomColor = Color.fromARGB(255, random.nextInt(256),
                   random.nextInt(256), random.nextInt(256));
@@ -100,7 +100,7 @@ class ColorPicker extends HookConsumerWidget {
                     border: OutlineInputBorder(),
                   ),
                   style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                      color: MonetTheme.of(context).primarySafeColors.text),
+                      color: MonetTheme.of(context).primary.text),
                 ),
                 const VerticalPadding(),
                 Row(
@@ -126,7 +126,7 @@ class ColorPicker extends HookConsumerWidget {
                             .headlineLarge!
                             .copyWith(
                                 color: MonetTheme.of(context)
-                                    .primarySafeColors
+                                    .primary
                                     .text),
                       ),
                     ),
@@ -152,7 +152,7 @@ class ColorPicker extends HookConsumerWidget {
                             .headlineLarge!
                             .copyWith(
                                 color: MonetTheme.of(context)
-                                    .primarySafeColors
+                                    .primary
                                     .text),
                       ),
                     ),
@@ -178,7 +178,7 @@ class ColorPicker extends HookConsumerWidget {
                             .headlineLarge!
                             .copyWith(
                                 color: MonetTheme.of(context)
-                                    .primarySafeColors
+                                    .primary
                                     .text),
                       ),
                     ),
@@ -208,10 +208,10 @@ class ColorPicker extends HookConsumerWidget {
                       thumbShape: SliderFlatThumb(
                           borderWidth: 2,
                           borderColor: MonetTheme.of(context)
-                              .primarySafeColors
+                              .primary
                               .colorBorder,
                           iconColor: MonetTheme.of(context)
-                              .primarySafeColors
+                              .primary
                               .colorIcon,
                           iconData: Icons.ramen_dining),
                     ),
@@ -234,17 +234,17 @@ class ColorPicker extends HookConsumerWidget {
                 ),
                 SliderFlat(
                   borderColor:
-                      MonetTheme.of(context).primarySafeColors.colorBorder,
+                      MonetTheme.of(context).primary.colorBorder,
                   borderWidth: 2,
                   slider: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       thumbShape: SliderFlatThumb(
                           borderWidth: 2,
                           borderColor: MonetTheme.of(context)
-                              .primarySafeColors
+                              .primary
                               .colorBorder,
                           iconColor: MonetTheme.of(context)
-                              .primarySafeColors
+                              .primary
                               .colorIcon,
                           iconData: Icons.color_lens_outlined),
                     ),
@@ -268,17 +268,17 @@ class ColorPicker extends HookConsumerWidget {
                 ),
                 SliderFlat(
                   borderColor:
-                      MonetTheme.of(context).primarySafeColors.colorBorder,
+                      MonetTheme.of(context).primary.colorBorder,
                   borderWidth: 2,
                   slider: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       thumbShape: SliderFlatThumb(
                           borderWidth: 2,
                           borderColor: MonetTheme.of(context)
-                              .primarySafeColors
+                              .primary
                               .colorBorder,
                           iconColor: MonetTheme.of(context)
-                              .primarySafeColors
+                              .primary
                               .colorIcon,
                           iconData: Icons.table_bar),
                     ),

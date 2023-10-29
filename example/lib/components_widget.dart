@@ -93,13 +93,13 @@ class ComponentsWidget extends HookConsumerWidget {
         MaterialBanner(content: const Text('Banner'), actions: [
           TextButton.icon(
             onPressed: () {},
-            style: onFillButtonStyleFromColors(monetTheme.primarySafeColors),
+            style: onFillButtonStyleFromColors(monetTheme.primary),
             label: const Text('Action'),
             icon: const Icon(Icons.abc),
           ),
           TextButton.icon(
             onPressed: () {},
-            style: onFillButtonStyleFromColors(monetTheme.primarySafeColors),
+            style: onFillButtonStyleFromColors(monetTheme.primary),
             label: const Text('Another action'),
             icon: const Icon(Icons.ac_unit),
           ),

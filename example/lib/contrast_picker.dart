@@ -37,16 +37,16 @@ class ContrastPicker extends HookConsumerWidget {
         const HorizontalPadding(),
         Flexible(
           child: SliderFlat(
-            borderColor: MonetTheme.of(context).primarySafeColors.colorBorder,
+            borderColor: MonetTheme.of(context).primary.colorBorder,
             borderWidth: 2,
             slider: SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 thumbShape: SliderFlatThumb(
                     borderWidth: 2,
                     borderColor:
-                        MonetTheme.of(context).primarySafeColors.colorBorder,
+                        MonetTheme.of(context).primary.colorBorder,
                     iconColor:
-                        MonetTheme.of(context).primarySafeColors.colorIcon,
+                        MonetTheme.of(context).primary.colorIcon,
                     iconData: Icons.brightness_6),
               ),
               child: Slider(

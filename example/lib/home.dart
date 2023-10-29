@@ -7,6 +7,7 @@ import 'package:example/contrast_picker.dart';
 import 'package:example/extracted_widget.dart';
 import 'package:example/padding.dart';
 import 'package:example/safe_colors_preview.dart';
+import 'package:example/scrim_expansion_tile.dart';
 import 'package:example/tokens_expansion_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +92,7 @@ class Home extends HookConsumerWidget {
                               .headlineLarge!
                               .copyWith(
                                   color: MonetTheme.of(context)
-                                      .primarySafeColors
+                                      .primary
                                     .text,
                               ),
                         ),
@@ -113,16 +114,21 @@ class Home extends HookConsumerWidget {
                       ),
             
                       SafeColorsPreviewRow(
-                        safeColors: MonetTheme.of(context).primarySafeColors,
+                        safeColors: MonetTheme.of(context).primary,
                       ),
                       SafeColorsPreviewRow(
-                        safeColors: MonetTheme.of(context).secondarySafeColors,
+                        safeColors: MonetTheme.of(context).secondary,
                       ),
                       SafeColorsPreviewRow(
-                        safeColors: MonetTheme.of(context).tertiarySafeColors,
+                        safeColors: MonetTheme.of(context).tertiary,
                       ),
                       const TokensExpansionTile(),
                       const VerticalPadding(),
+                      ScrimExpansionTile(
+                        contrast: contrast.value,
+                      ),
+                      const VerticalPadding(),
+
                       ExpansionTile(
                         title: Text(
                           'Material Components',
@@ -131,7 +137,7 @@ class Home extends HookConsumerWidget {
                               .headlineLarge!
                               .copyWith(
                                   color: MonetTheme.of(context)
-                                      .primarySafeColors
+                                      .primary
                                       .text),
                         ),
                         children: const [

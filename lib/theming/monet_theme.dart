@@ -13,26 +13,24 @@ import 'package:libmonet/theming/slider_flat_shape.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
 
 class MonetTheme extends StatelessWidget {
-  final SafeColors primarySafeColors;
-  final SafeColors secondarySafeColors;
-  final SafeColors tertiarySafeColors;
+  final SafeColors primary;
+  final SafeColors secondary;
+  final SafeColors tertiary;
 
   final double surfaceLstar;
   final double contrast;
-  static const double buttonElevation = 16.0;
-  static const double modalElevation = 2.0;
-  static Color shadowFor(Color color) {
-    return lstarFromArgb(color.value).round() >= 60
-        ? Colors.black
-        : Colors.white;
-  }
-
   final Algo algo;
 
   final Brightness brightness;
   final Widget child;
-  static const double maxPanelWidth =
-      1040.0; // 8.5" - 1" margins * 160 dp / in.
+
+  static const double buttonElevation = 16.0;
+  static const double modalElevation = 2.0;
+
+  /// The maximum width of any content panel.
+  ///
+  /// 1040 dp; 8.5" - 1" margins = 6.5" * 160 dp / in.
+  static const double maxPanelWidth = 1040.0;
   static const double touchSize = 36.0;
   static final InteractiveInkFeatureFactory splashFactory =
       defaultTargetPlatform == TargetPlatform.android && !kIsWeb
@@ -80,9 +78,9 @@ class MonetTheme extends StatelessWidget {
         backgroundLstar: surfaceLstar, contrast: contrast, algo: algo);
     return MonetTheme(
       brightness: brightness,
-      primarySafeColors: primarySafeColors,
-      secondarySafeColors: secondarySafeColors,
-      tertiarySafeColors: tertiarySafeColors,
+      primary: primarySafeColors,
+      secondary: secondarySafeColors,
+      tertiary: tertiarySafeColors,
       surfaceLstar: surfaceLstar,
       algo: algo,
       contrast: contrast,
@@ -93,9 +91,9 @@ class MonetTheme extends StatelessWidget {
   const MonetTheme({
     super.key,
     required this.brightness,
-    required this.primarySafeColors,
-    required this.secondarySafeColors,
-    required this.tertiarySafeColors,
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
     required this.surfaceLstar,
     this.contrast = 0.5,
     this.algo = Algo.apca,
@@ -110,52 +108,38 @@ class MonetTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColorLight = Hct.fromColor(primarySafeColors.fill).tone >
-            Hct.fromColor(primarySafeColors.color).tone
-        ? primarySafeColors.fill
-        : primarySafeColors.color;
-    final primaryColorDark = primaryColorLight == primarySafeColors.fill
-        ? primarySafeColors.color
-        : primarySafeColors.fill;
-    final colorScheme = _monetColorScheme(
+    return _MonetInheritedTheme(
+      theme: this,
+      // Animated theme is actually worse for design, ex. when switching theme
+      // color, the InputDecoration of a text field only acquires the correct
+      // background color and text color at the end of animating.
+      child: Theme(
+        data: createThemeData(context),
+        child: child,
+      ),
+    );
+  }
+
+  ThemeData createThemeData(BuildContext context) {
+    final primaryColorLight =
+        Hct.fromColor(primary.fill).tone > Hct.fromColor(primary.color).tone
+            ? primary.fill
+            : primary.color;
+    final primaryColorDark =
+        primaryColorLight == primary.fill ? primary.color : primary.fill;
+    final colorScheme = _createColorScheme(
       brightness,
-      primarySafeColors,
-      secondarySafeColors,
-      tertiarySafeColors,
+      primary,
+      secondary,
+      tertiary,
       contrast,
       algo,
       Hct.from(0, 0, surfaceLstar).color,
     );
+
     final typographyData = typography(colorScheme);
-    final tt = createTextTheme(typographyData);
-    final txtC = primarySafeColors.backgroundText;
-    const h = 1.0;
-    const med = FontWeight.w500;
-    final textTheme = tt.copyWith(
-      displayLarge: tt.displayLarge!.copyWith(
-          fontSize: 24,
-          color: primarySafeColors.backgroundText,
-          fontWeight: FontWeight.w500,
-          height: 1.5),
-      displayMedium: tt.displayMedium!
-          .copyWith(fontSize: 22, color: txtC, fontWeight: med, height: h),
-      displaySmall: tt.displaySmall!
-          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
-      headlineLarge: tt.headlineLarge!
-          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
-      headlineMedium: tt.headlineMedium!
-          .copyWith(fontSize: 18, color: txtC, fontWeight: med, height: h),
-      headlineSmall: tt.headlineSmall!
-          .copyWith(fontSize: 16, color: txtC, fontWeight: med, height: h),
-      bodyLarge: tt.bodyLarge!.copyWith(fontSize: 16, color: txtC, height: h),
-      bodyMedium: tt.bodyMedium!.copyWith(fontSize: 14, color: txtC, height: h),
-      bodySmall: tt.bodySmall!.copyWith(fontSize: 12, color: txtC, height: h),
-      labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 16, color: txtC, fontWeight: FontWeight.w500, height: h),
-      labelMedium:
-          tt.labelMedium!.copyWith(fontSize: 14, color: txtC, height: h),
-      labelSmall: tt.labelSmall!.copyWith(fontSize: 12, color: txtC, height: h),
-    );
+    final textTheme = createTextTheme(typographyData);
+
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
       // with opacity to surface to make elevated surfaces lighter. Doesn't
@@ -164,12 +148,11 @@ class MonetTheme extends StatelessWidget {
       cupertinoOverrideTheme: null,
       extensions: [
         MonetColorScheme.fromSafeColors(
-          primary: primarySafeColors,
-          secondary: secondarySafeColors,
-          tertiary: tertiarySafeColors,
+          primary: primary,
+          secondary: secondary,
+          tertiary: tertiary,
         ),
       ],
-      inputDecorationTheme: inputDecorationTheme(textTheme),
       // Not sure this is used all that much, it's not affecting buttons on
       // macOS at all. Default to shrinkWrap, because the components tend to
       // be excessively large due to being designed for touch.
@@ -182,121 +165,114 @@ class MonetTheme extends StatelessWidget {
       useMaterial3: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       brightness: brightness,
-      canvasColor: primarySafeColors.background,
-      cardColor: primarySafeColors.background,
+      canvasColor: primary.background,
+      cardColor: primary.background,
       colorScheme: colorScheme,
-      dialogBackgroundColor: primarySafeColors.background,
-      disabledColor: primarySafeColors.color,
-      dividerColor: primarySafeColors.backgroundText,
+      dialogBackgroundColor: primary.background,
+      disabledColor: primary.color,
+      dividerColor: primary.backgroundText,
       // colorHover only guarantees contrast with colorBorder
-      focusColor: primarySafeColors.fillHover,
-      highlightColor: primarySafeColors.fillSplash,
-      hintColor: primarySafeColors.backgroundText,
-      hoverColor: primarySafeColors.textHover,
+      focusColor: primary.fillHover,
+      highlightColor: primary.fillSplash,
+      hintColor: primary.backgroundText,
+      hoverColor: primary.textHover,
       // ThemeData uses white if primary = secondary, otherwise, secondary
-      primaryColor: primarySafeColors.color,
+      primaryColor: primary.color,
       primaryColorDark: primaryColorDark,
       primaryColorLight: primaryColorLight,
-      indicatorColor: secondarySafeColors.fill,
-      scaffoldBackgroundColor: primarySafeColors.background,
-      secondaryHeaderColor: secondarySafeColors.backgroundText,
+      indicatorColor: secondary.fill,
+      scaffoldBackgroundColor: primary.background,
+      secondaryHeaderColor: secondary.backgroundText,
       // Avoid setting a default, as each widget may be a different color and
       // thus should be set explicitly.
       shadowColor: Colors.transparent,
-      splashColor: primarySafeColors.textSplash,
+      splashColor: primary.textSplash,
       // Material uses 70% white in dark mode, 54% black in light mode
       // Is transparency important? Where is this used?
       // For now, treat it like text
-      unselectedWidgetColor: primarySafeColors.backgroundText,
-      iconTheme: iconThemeData(),
-      primaryIconTheme: iconThemeData(),
+      unselectedWidgetColor: primary.backgroundText,
+      iconTheme: iconThemeData(primary),
+      primaryIconTheme: iconThemeData(primary),
       primaryTextTheme: textTheme,
       textTheme: textTheme,
       typography: typographyData,
       // BEGIN ALL THE ACCOUTREMENTS
       actionIconTheme: actionIconTheme(),
-      appBarTheme: appBarTheme(textTheme),
-      badgeTheme: badgeThemeData(context, textTheme),
-      bannerTheme: bannerThemeData(),
-      bottomAppBarTheme: bottomAppBarTheme(),
-      bottomNavigationBarTheme: bottomNavigationBarThemeData(textTheme),
-      bottomSheetTheme: bottomSheetThemeData(),
+      appBarTheme: appBarTheme(primary, textTheme),
+      badgeTheme: badgeThemeData(context, primary, textTheme),
+      bannerTheme: bannerThemeData(primary, textTheme),
+      bottomAppBarTheme: bottomAppBarTheme(primary),
+      bottomNavigationBarTheme:
+          bottomNavigationBarThemeData(primary, textTheme),
+      bottomSheetTheme: bottomSheetThemeData(primary),
       buttonBarTheme: buttonBarThemeData(),
       buttonTheme: buttonThemeData(),
-      cardTheme: cardTheme(),
-      checkboxTheme: checkboxThemeData(),
-      chipTheme: chipThemeData(brightness, textTheme),
+      cardTheme: cardTheme(primary),
+      checkboxTheme: checkboxThemeData(primary),
+      chipTheme: chipThemeData(brightness, primary, textTheme),
       dataTableTheme: dataTableThemeData(textTheme),
-      datePickerTheme: datePickerThemeData(brightness, textTheme),
-      dialogTheme: createDialogTheme(textTheme),
-      dividerTheme: dividerThemeData(),
-      drawerTheme: drawerThemeData(),
-      elevatedButtonTheme: elevatedButtonTheme(),
-      expansionTileTheme: expansionTileThemeData(),
-      filledButtonTheme: filledButtonTheme(),
-      floatingActionButtonTheme: floatingActionButtonThemeData(textTheme),
-      iconButtonTheme: iconButtonThemeData(),
-      listTileTheme: listTileThemeData(textTheme),
-      menuBarTheme: menuBarThemeData(),
-      menuButtonTheme: menuButtonThemeData(),
-      menuTheme: menuThemeData(),
-      navigationBarTheme: navigationBarThemeData(textTheme),
-      navigationDrawerTheme: navigationDrawerThemeData(textTheme),
-      navigationRailTheme: navigationRailThemeData(textTheme),
-      outlinedButtonTheme: outlinedButtonTheme(),
-      popupMenuTheme: popupMenuThemeData(textTheme),
-      progressIndicatorTheme: progressIndicatorThemeData(),
-      radioTheme: radioThemeData(),
-      searchBarTheme: searchBarThemeData(textTheme),
-      searchViewTheme: searchViewThemeData(textTheme),
-      segmentedButtonTheme: segmentedButtonThemeData(),
-      sliderTheme: sliderThemeData(textTheme),
-      snackBarTheme: snackBarThemeData(textTheme),
-      switchTheme: switchThemeData(),
-      tabBarTheme: createTabBarTheme(textTheme),
-      textButtonTheme: textButtonTheme(),
-      textSelectionTheme: textSelectionThemeData(),
-      timePickerTheme: timePickerThemeData(textTheme),
-      toggleButtonsTheme: toggleButtonsThemeData(textTheme),
-      tooltipTheme: tooltipThemeData(textTheme),
+      datePickerTheme: datePickerThemeData(brightness, primary, textTheme),
+      dialogTheme: createDialogTheme(primary, textTheme),
+      dividerTheme: dividerThemeData(primary),
+      drawerTheme: drawerThemeData(primary),
+      dropdownMenuTheme: dropdownMenuThemeData(primary, textTheme),
+      elevatedButtonTheme: elevatedButtonTheme(primary),
+      expansionTileTheme: expansionTileThemeData(primary),
+      filledButtonTheme: filledButtonTheme(primary),
+      floatingActionButtonTheme: fabThemeData(primary, textTheme),
+      iconButtonTheme: iconButtonThemeData(primary),
+      inputDecorationTheme: inputDecorationTheme(primary, textTheme),
+      listTileTheme: listTileThemeData(primary, textTheme),
+      menuBarTheme: menuBarThemeData(primary),
+      menuButtonTheme: menuButtonThemeData(primary),
+      menuTheme: menuThemeData(primary),
+      navigationBarTheme: navigationBarThemeData(primary, textTheme),
+      navigationDrawerTheme: navigationDrawerThemeData(primary, textTheme),
+      navigationRailTheme: navigationRailThemeData(primary, textTheme),
+      outlinedButtonTheme: outlinedButtonTheme(primary),
+      popupMenuTheme: popupMenuThemeData(primary, textTheme),
+      progressIndicatorTheme: progressIndicatorThemeData(primary),
+      radioTheme: radioThemeData(primary),
+      searchBarTheme: searchBarThemeData(primary, textTheme),
+      searchViewTheme: searchViewThemeData(primary, textTheme),
+      segmentedButtonTheme: segmentedButtonThemeData(primary),
+      sliderTheme: sliderThemeData(primary, textTheme),
+      snackBarTheme: snackBarThemeData(primary, textTheme),
+      switchTheme: switchThemeData(primary),
+      tabBarTheme: createTabBarTheme(primary, textTheme),
+      textButtonTheme: textButtonTheme(primary),
+      textSelectionTheme: textSelectionThemeData(primary),
+      timePickerTheme: timePickerThemeData(primary, textTheme),
+      toggleButtonsTheme: toggleButtonsThemeData(primary, textTheme),
+      tooltipTheme: tooltipThemeData(primary, textTheme),
     );
-
     final cupertinoOverrideTheme =
         MaterialBasedCupertinoThemeData(materialTheme: themeData);
-
-    return _MonetInheritedTheme(
-      theme: this,
-      // Animated theme is actually worse for design, ex. when switching theme
-      // color, the InputDecoration of a text field only acquires the correct
-      // background color and text color at the end of animating.
-      child: Theme(
-        data: themeData.copyWith(
-          cupertinoOverrideTheme: cupertinoOverrideTheme,
-        ),
-        child: child,
-      ),
+    return themeData.copyWith(
+      cupertinoOverrideTheme: cupertinoOverrideTheme,
     );
   }
 
-  ActionIconThemeData actionIconTheme() {
+  static ActionIconThemeData actionIconTheme() {
     // Provides platform default icons, just use default.
     return const ActionIconThemeData();
   }
 
-  AppBarTheme appBarTheme(TextTheme textTheme) {
+  static AppBarTheme appBarTheme(SafeColors colors, TextTheme textTheme) {
     return AppBarTheme(
       titleTextStyle: textTheme.displayLarge,
-      backgroundColor: primarySafeColors.background,
-      foregroundColor: primarySafeColors.backgroundText,
+      backgroundColor: colors.background,
+      foregroundColor: colors.backgroundText,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
     );
   }
 
-  BadgeThemeData badgeThemeData(BuildContext context, TextTheme textTheme) {
+  static BadgeThemeData badgeThemeData(
+      BuildContext context, SafeColors colors, TextTheme textTheme) {
     return BadgeThemeData(
-      backgroundColor: primarySafeColors.fill,
-      textColor: primarySafeColors.fillText,
+      backgroundColor: colors.fill,
+      textColor: colors.fillText,
       // defaults, see badge.dart
       smallSize: 6.0,
       largeSize: 16.0,
@@ -309,25 +285,25 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  MaterialBannerThemeData bannerThemeData() {
+  static MaterialBannerThemeData bannerThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return MaterialBannerThemeData(
-      backgroundColor: primarySafeColors.fill,
-      surfaceTintColor: primarySafeColors.fill,
+      backgroundColor: colors.fill,
+      surfaceTintColor: colors.fill,
       shadowColor: Colors.transparent,
       dividerColor: Colors.transparent,
       // Copy defaults from Banner.dart
-      contentTextStyle: TextStyle(
-        color: primarySafeColors.fillText,
-        fontSize: 10.2,
+      contentTextStyle: textTheme.bodyLarge!.copyWith(
+        color: colors.fillText,
         fontWeight: FontWeight.w900,
         height: 1.0,
       ),
     );
   }
 
-  BottomAppBarTheme bottomAppBarTheme() {
+  static BottomAppBarTheme bottomAppBarTheme(SafeColors colors) {
     return BottomAppBarTheme(
-      color: primarySafeColors.background,
+      color: colors.background,
       elevation: 0,
       shape: const AutomaticNotchedShape(
           RoundedRectangleBorder()), // bottom_app_bar.dart _BottomAppBarDefaultsM3
@@ -339,63 +315,63 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  BottomSheetThemeData bottomSheetThemeData() {
+  static BottomSheetThemeData bottomSheetThemeData(SafeColors colors) {
     return BottomSheetThemeData(
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: 0,
-      modalBackgroundColor: primarySafeColors.background,
+      modalBackgroundColor: colors.background,
       modalElevation: 0,
       shape: const RoundedRectangleBorder(),
       clipBehavior: Clip.none,
     );
   }
 
-  ButtonBarThemeData buttonBarThemeData() {
+  static ButtonBarThemeData buttonBarThemeData() {
     // Go with defaults, most of the properties are about padding and spacing.
     return const ButtonBarThemeData(alignment: MainAxisAlignment.center);
   }
 
-  ButtonThemeData buttonThemeData() {
+  static ButtonThemeData buttonThemeData() {
     // Go with defaults, most of the properties are about padding and spacing.
     return const ButtonThemeData();
   }
 
-  CardTheme cardTheme() {
+  static CardTheme cardTheme(SafeColors colors) {
     return CardTheme(
       clipBehavior: Clip.none, // match default
-      color: primarySafeColors.background,
-      shadowColor: shadowFor(primarySafeColors.background),
-      surfaceTintColor: primarySafeColors.background,
+      color: colors.background,
+      shadowColor: _singleShadowColorFor(colors.background),
+      surfaceTintColor: colors.background,
       elevation: modalElevation,
       margin: const EdgeInsets.all(0), // match default
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4),
-        side: BorderSide(color: primarySafeColors.fill, width: 2),
+        side: BorderSide(color: colors.fill, width: 2),
       ), // match default
     );
   }
 
-  CheckboxThemeData checkboxThemeData() {
+  static CheckboxThemeData checkboxThemeData(SafeColors colors) {
     return CheckboxThemeData(
       mouseCursor: const MaterialStatePropertyAll(
           null), // allows widget to default to clickable
       fillColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fill;
+          return colors.fill;
         } else if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.textHover;
+          return colors.textHover;
         } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.textSplash;
+          return colors.textSplash;
         } else {
-          return primarySafeColors.background;
+          return colors.background;
         }
       }),
       // Even though it is an icon, it is displayed very small, text is a better
       // fit (icon implies a height of 40 dp / 18 pt in parlance of WCAG 2.1)
-      checkColor: MaterialStateProperty.all(primarySafeColors.fillText),
+      checkColor: MaterialStateProperty.all(colors.fillText),
       overlayColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.textHover;
+          return colors.textHover;
 
           // Note 1:
           // Even though this is "wrong", i.e. the checkbox is filled,
@@ -406,11 +382,11 @@ class MonetTheme extends StatelessWidget {
           // Note 2: Other states aren't respected here, even if supplied. Ex.
           // selected doesn't distinguish between being hovered and pressed.
         } else if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.textHover;
+          return colors.textHover;
         } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.textSplash;
+          return colors.textSplash;
         } else {
-          return primarySafeColors.background;
+          return colors.background;
         }
       }),
       splashRadius: 20.0, // match M3 default
@@ -421,37 +397,43 @@ class MonetTheme extends StatelessWidget {
       ), // match default
       side: BorderSide(
         width: 2.0,
-        color: primarySafeColors.fill,
+        color: colors.fill,
       ), // match default
     );
   }
 
-  ChipThemeData chipThemeData(Brightness brightness, TextTheme textTheme) {
+  static ChipThemeData chipThemeData(
+    Brightness brightness,
+    SafeColors colors,
+    TextTheme textTheme,
+  ) {
     return ChipThemeData.fromDefaults(
       brightness: brightness,
-      secondaryColor: secondarySafeColors.color,
+      secondaryColor: colors.color,
       labelStyle: textTheme.bodyMedium!.copyWith(
-        color: secondarySafeColors.colorText,
+        color: colors.colorText,
       ),
     ).copyWith(
-        checkmarkColor: MaterialStateColor.resolveWith((states) {
-          return primarySafeColors.fill;
-        }),
-        surfaceTintColor: MaterialStateColor.resolveWith((states) {
-          return primarySafeColors.background;
-        }),
-        selectedColor: Colors
-            .transparent, // messes everything up because FG can't be set based on state
-        secondarySelectedColor: primarySafeColors.textHover,
-        secondaryLabelStyle: textTheme.labelLarge!
-            .copyWith(color: primarySafeColors.textHoverText),
-        side: BorderSide(width: 2, color: primarySafeColors.fill),
-        backgroundColor: primarySafeColors.background,
-        labelStyle:
-            textTheme.labelLarge!.copyWith(color: primarySafeColors.text));
+      checkmarkColor: MaterialStateColor.resolveWith((states) {
+        return colors.fill;
+      }),
+      surfaceTintColor: MaterialStateColor.resolveWith((states) {
+        return colors.background;
+      }),
+      selectedColor: Colors
+          .transparent, // messes everything up because FG can't be set based on state
+      secondarySelectedColor: colors.textHover,
+      secondaryLabelStyle:
+          textTheme.labelLarge!.copyWith(color: colors.textHoverText),
+      side: BorderSide(width: 2, color: colors.fill),
+      backgroundColor: colors.background,
+      labelStyle: textTheme.labelLarge!.copyWith(
+        color: colors.text,
+      ),
+    );
   }
 
-  DataTableThemeData dataTableThemeData(TextTheme textTheme) {
+  static DataTableThemeData dataTableThemeData(TextTheme textTheme) {
     return DataTableThemeData(
       columnSpacing: 16, // Material default is __56__
       dataTextStyle: textTheme.bodyMedium!.copyWith(fontFeatures: [
@@ -464,22 +446,23 @@ class MonetTheme extends StatelessWidget {
       dataRowMinHeight: touchSize,
       dataRowMaxHeight: double.infinity,
       headingRowHeight: textTheme.headlineMedium!.fontSize! *
-          textTheme.headlineMedium!.height!,
+          (textTheme.headlineMedium!.height ?? 1.0),
     );
   }
 
-  DatePickerThemeData datePickerThemeData(
+  static DatePickerThemeData datePickerThemeData(
     Brightness brightness,
+    SafeColors colors,
     TextTheme textTheme,
   ) {
     final background = MaterialStateProperty.resolveWith(
       (states) {
         if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.textHover;
+          return colors.textHover;
         } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.textSplash;
+          return colors.textSplash;
         } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.color;
+          return colors.color;
         } else {
           return Colors.transparent;
         }
@@ -488,36 +471,36 @@ class MonetTheme extends StatelessWidget {
     final foreground = MaterialStateProperty.resolveWith(
       (states) {
         if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.colorText;
+          return colors.colorText;
         } else {
-          return primarySafeColors.backgroundText;
+          return colors.backgroundText;
         }
       },
     );
     final fillText = MaterialStateProperty.resolveWith(
       (states) {
         if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.fillHoverText;
+          return colors.fillHoverText;
         } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.fillSplashText;
+          return colors.fillSplashText;
         } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fillSplashText;
+          return colors.fillSplashText;
         } else {
-          return primarySafeColors.fillText;
+          return colors.fillText;
         }
       },
     );
-    final shadowColor = shadowFor(primarySafeColors.background);
+    final shadowColor = _singleShadowColorFor(colors.background);
     return DatePickerThemeData(
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: null /* will match Dialog.elevation */,
       shadowColor: shadowColor,
-      surfaceTintColor: primarySafeColors.background,
+      surfaceTintColor: colors.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      headerBackgroundColor: primarySafeColors.color,
-      headerForegroundColor: primarySafeColors.colorText,
+      headerBackgroundColor: colors.color,
+      headerForegroundColor: colors.colorText,
       headerHeadlineStyle: textTheme.headlineMedium,
       headerHelpStyle: textTheme.headlineSmall,
       weekdayStyle: textTheme.bodyLarge,
@@ -529,41 +512,41 @@ class MonetTheme extends StatelessWidget {
       todayBackgroundColor: background,
       todayBorder: BorderSide(
         width: 2.0,
-        color: primarySafeColors.fill,
+        color: colors.fill,
       ),
       yearStyle: textTheme.headlineMedium,
       yearBackgroundColor: background,
       yearForegroundColor: foreground,
       yearOverlayColor: background,
-      rangePickerBackgroundColor: primarySafeColors.background,
+      rangePickerBackgroundColor: colors.background,
       rangePickerElevation: 0,
       rangePickerShadowColor: shadowColor,
-      rangePickerSurfaceTintColor: primarySafeColors.background,
+      rangePickerSurfaceTintColor: colors.background,
       rangePickerShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      rangePickerHeaderBackgroundColor: primarySafeColors.color,
-      rangePickerHeaderForegroundColor: primarySafeColors.colorText,
+      rangePickerHeaderBackgroundColor: colors.color,
+      rangePickerHeaderForegroundColor: colors.colorText,
       rangePickerHeaderHeadlineStyle: textTheme.headlineMedium,
       rangePickerHeaderHelpStyle: textTheme.headlineSmall,
-      rangeSelectionBackgroundColor: primarySafeColors.fill,
+      rangeSelectionBackgroundColor: colors.fill,
       rangeSelectionOverlayColor: fillText,
       dividerColor: Colors.transparent,
       inputDecorationTheme: null, // if null, uses ThemeData's
     );
   }
 
-  DialogTheme createDialogTheme(TextTheme textTheme) {
+  static DialogTheme createDialogTheme(SafeColors colors, TextTheme textTheme) {
     return DialogTheme(
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: modalElevation,
-      shadowColor: shadowFor(primarySafeColors.background),
-      surfaceTintColor: primarySafeColors.background,
+      shadowColor: _singleShadowColorFor(colors.background),
+      surfaceTintColor: colors.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: null,
-      iconColor: primarySafeColors.fill,
+      iconColor: colors.fill,
       titleTextStyle: textTheme.headlineMedium,
       contentTextStyle: textTheme.bodyMedium,
       actionsPadding:
@@ -571,82 +554,83 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  DropdownMenuThemeData dropdownMenuThemeData(TextTheme textTheme) {
+  static DropdownMenuThemeData dropdownMenuThemeData(
+    SafeColors colors,
+    TextTheme textTheme,
+  ) {
     return DropdownMenuThemeData(
       inputDecorationTheme: const InputDecorationTheme(
         fillColor: Colors.red,
         filled: true,
       ),
-      textStyle: textTheme.bodyMedium!.copyWith(color: primarySafeColors.text),
-      menuStyle: createMenuStyleForDropdown(),
+      textStyle: textTheme.bodyMedium!.copyWith(color: colors.text),
+      menuStyle: createMenuStyleForDropdown(colors),
     );
   }
 
-  ElevatedButtonThemeData elevatedButtonTheme() {
+  static ElevatedButtonThemeData elevatedButtonTheme(SafeColors colors) {
     return ElevatedButtonThemeData(
-      style: elevatedButtonStyleFromColors(primarySafeColors),
+      style: elevatedButtonStyleFromColors(colors),
     );
   }
 
-  ExpansionTileThemeData expansionTileThemeData() {
+  static ExpansionTileThemeData expansionTileThemeData(SafeColors colors) {
     return ExpansionTileThemeData(
-      backgroundColor: primarySafeColors.background,
-      collapsedBackgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
+      collapsedBackgroundColor: colors.background,
       tilePadding: const EdgeInsets.symmetric(horizontal: 8),
       /* Match default */
       expandedAlignment: Alignment.center,
       childrenPadding: EdgeInsets.zero,
-      iconColor: tertiarySafeColors.text,
-      collapsedIconColor: tertiarySafeColors.text,
-      textColor: primarySafeColors.text,
-      collapsedTextColor: primarySafeColors.text,
+      iconColor: colors.text,
+      collapsedIconColor: colors.text,
+      textColor: colors.text,
+      collapsedTextColor: colors.text,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: secondarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
       collapsedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: secondarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
     );
   }
 
-  FilledButtonThemeData filledButtonTheme() {
-    return FilledButtonThemeData(
-      style: filledButtonFromColor(primarySafeColors),
-    );
+  static FilledButtonThemeData filledButtonTheme(SafeColors colors) {
+    return FilledButtonThemeData(style: filledButtonFromColor(colors));
   }
 
-  FloatingActionButtonThemeData floatingActionButtonThemeData(
-      TextTheme textTheme) {
+  static FloatingActionButtonThemeData fabThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return FloatingActionButtonThemeData(
       foregroundColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.colorSplashText;
+          return colors.colorSplashText;
         } else if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.colorHoverText;
+          return colors.colorHoverText;
         } else {
-          return primarySafeColors.colorText;
+          return colors.colorText;
         }
       }),
       backgroundColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.colorSplash;
+          return colors.colorSplash;
         } else if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.colorHover;
+          return colors.colorHover;
         } else {
-          return primarySafeColors.color;
+          return colors.color;
         }
       }),
-      focusColor: primarySafeColors.colorHover,
-      hoverColor: primarySafeColors.colorHover,
-      splashColor: primarySafeColors.colorSplash,
+      focusColor: colors.colorHover,
+      hoverColor: colors.colorHover,
+      splashColor: colors.colorSplash,
       elevation: buttonElevation,
       focusElevation: buttonElevation,
       hoverElevation: buttonElevation,
@@ -654,41 +638,40 @@ class MonetTheme extends StatelessWidget {
       disabledElevation: buttonElevation,
       shape: CircleBorder(
         side: BorderSide(
-          color: primarySafeColors.colorBorder,
+          color: colors.colorBorder,
           width: 2,
         ),
       ),
       enableFeedback: true,
       iconSize: 24,
       extendedTextStyle:
-          textTheme.bodyMedium!.copyWith(color: primarySafeColors.colorText),
+          textTheme.bodyMedium!.copyWith(color: colors.colorText),
       /* size constraints not included */
     );
   }
 
-  IconButtonThemeData iconButtonThemeData() {
+  static IconButtonThemeData iconButtonThemeData(SafeColors colors) {
     return IconButtonThemeData(
-      style: iconButtonStyleFromColors(primarySafeColors),
+      style: iconButtonStyleFromColors(colors),
     );
   }
 
-  ListTileThemeData listTileThemeData(TextTheme textTheme) {
+  static ListTileThemeData listTileThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return ListTileThemeData(
       dense: true,
       shape: null,
       style: ListTileStyle.list,
-      selectedColor: primarySafeColors.fillHover,
-      iconColor: primarySafeColors.fill,
-      textColor: primarySafeColors.text,
-      titleTextStyle:
-          textTheme.titleSmall!.copyWith(color: primarySafeColors.text),
-      subtitleTextStyle:
-          textTheme.bodyLarge!.copyWith(color: primarySafeColors.text),
+      selectedColor: colors.fillHover,
+      iconColor: colors.fill,
+      textColor: colors.text,
+      titleTextStyle: textTheme.titleSmall!.copyWith(color: colors.text),
+      subtitleTextStyle: textTheme.bodyLarge!.copyWith(color: colors.text),
       leadingAndTrailingTextStyle:
-          textTheme.bodyMedium!.copyWith(color: primarySafeColors.text),
+          textTheme.bodyMedium!.copyWith(color: colors.text),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-      tileColor: primarySafeColors.background,
-      selectedTileColor: primarySafeColors.fillHover,
+      tileColor: colors.background,
+      selectedTileColor: colors.fillHover,
       horizontalTitleGap: 16,
       minVerticalPadding: 4,
       minLeadingWidth: 40,
@@ -697,21 +680,21 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  MenuBarThemeData menuBarThemeData() {
+  static MenuBarThemeData menuBarThemeData(SafeColors colors) {
     return MenuBarThemeData(
-      style: createMenuStyleForMenuBar(),
+      style: createMenuStyleForMenuBar(colors),
     );
   }
 
-  MenuStyle createMenuStyleForDropdown() {
+  static MenuStyle createMenuStyleForDropdown(SafeColors colors) {
     return MenuStyle(
-      backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
+      backgroundColor: MaterialStatePropertyAll(colors.background),
       shadowColor: MaterialStateProperty.all(Colors.transparent),
-      surfaceTintColor: MaterialStatePropertyAll(primarySafeColors.background),
+      surfaceTintColor: MaterialStatePropertyAll(colors.background),
       elevation: const MaterialStatePropertyAll(modalElevation),
       side: MaterialStatePropertyAll(
         BorderSide(
-          color: primarySafeColors.colorBorder,
+          color: colors.colorBorder,
           width: 2,
         ),
       ),
@@ -721,7 +704,7 @@ class MonetTheme extends StatelessWidget {
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: primarySafeColors.colorBorder,
+            color: colors.colorBorder,
             width: 2,
           ),
         ),
@@ -729,20 +712,20 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  MenuStyle createMenuStyleForMenuBar() {
+  static MenuStyle createMenuStyleForMenuBar(SafeColors colors) {
     return MenuStyle(
-      backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
+      backgroundColor: MaterialStatePropertyAll(colors.background),
       shadowColor: MaterialStateProperty.all(Colors.transparent),
-      surfaceTintColor: MaterialStatePropertyAll(primarySafeColors.background),
+      surfaceTintColor: MaterialStatePropertyAll(colors.background),
       elevation: const MaterialStatePropertyAll(modalElevation),
       padding: const MaterialStatePropertyAll(EdgeInsets.zero),
       shape: const MaterialStatePropertyAll(null),
     );
   }
 
-  MenuButtonThemeData menuButtonThemeData() {
+  static MenuButtonThemeData menuButtonThemeData(SafeColors colors) {
     return MenuButtonThemeData(
-      style: textButtonStyleFromColors(primarySafeColors).copyWith(
+      style: textButtonStyleFromColors(colors).copyWith(
         padding: MaterialStateProperty.all(const EdgeInsets.all(4)),
         shape: MaterialStatePropertyAll(
           RoundedRectangleBorder(
@@ -753,60 +736,60 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  MenuThemeData menuThemeData() {
+  static MenuThemeData menuThemeData(SafeColors colors) {
     return MenuThemeData(
-      style: createMenuStyleForDropdown(),
+      style: createMenuStyleForDropdown(colors),
     );
   }
 
-  NavigationBarThemeData navigationBarThemeData(TextTheme textTheme) {
+  static NavigationBarThemeData navigationBarThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return NavigationBarThemeData(
       height: 80, // match default
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: 0,
       shadowColor: Colors.transparent,
-      surfaceTintColor: primarySafeColors.background,
-      indicatorColor: primarySafeColors.fill,
+      surfaceTintColor: colors.background,
+      indicatorColor: colors.fill,
       indicatorShape: const StadiumBorder(), // match default
       labelTextStyle:
           MaterialStateProperty.resolveWith((Set<MaterialState> states) {
         final TextStyle style = textTheme.labelSmall!;
         return style.apply(
           color: states.contains(MaterialState.selected)
-              ? primarySafeColors.text
-              : primarySafeColors.backgroundText,
+              ? colors.text
+              : colors.backgroundText,
         );
       }),
       iconTheme: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return IconThemeData(color: primarySafeColors.fillIcon);
-        } else if (states.contains(MaterialState.hovered)) {
-          // not supported
+          return IconThemeData(color: colors.fillIcon);
+        } else {
+          // not supported by component, i.e. none of the other states are
+          // ever passed via [states]
         }
-        return IconThemeData(color: primarySafeColors.backgroundText);
+        return IconThemeData(color: colors.backgroundText);
       }),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       /* size constraints not included */
     );
   }
 
-  BottomNavigationBarThemeData bottomNavigationBarThemeData(
-      TextTheme textTheme) {
+  static BottomNavigationBarThemeData bottomNavigationBarThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return BottomNavigationBarThemeData(
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: 0,
       type: BottomNavigationBarType.fixed,
       // If this isn't specified, text becomes tertiary something...
-      selectedItemColor: primarySafeColors.text,
-      unselectedItemColor: primarySafeColors.backgroundText,
-      selectedIconTheme:
-          iconThemeData().copyWith(color: primarySafeColors.fill),
-      unselectedIconTheme:
-          iconThemeData().copyWith(color: primarySafeColors.backgroundText),
+      selectedItemColor: colors.text,
+      unselectedItemColor: colors.backgroundText,
+      selectedIconTheme: iconThemeData(colors),
+      unselectedIconTheme: iconThemeData(colors),
       selectedLabelStyle:
-          textTheme.labelSmall!.copyWith(color: primarySafeColors.fillText),
-      unselectedLabelStyle: textTheme.labelSmall!
-          .copyWith(color: primarySafeColors.backgroundText),
+          textTheme.labelSmall!.copyWith(color: colors.fillText),
+      unselectedLabelStyle:
+          textTheme.labelSmall!.copyWith(color: colors.backgroundText),
       showSelectedLabels: true,
       showUnselectedLabels: true,
 
@@ -823,92 +806,94 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  NavigationDrawerThemeData navigationDrawerThemeData(TextTheme textTheme) {
+  static NavigationDrawerThemeData navigationDrawerThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return NavigationDrawerThemeData(
       tileHeight: 56,
       /* match _NavigationDrawerDefaultsM3 */
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: 0,
       shadowColor: Colors.transparent,
-      surfaceTintColor: primarySafeColors.background,
-      indicatorColor: primarySafeColors.fill,
+      surfaceTintColor: colors.background,
+      indicatorColor: colors.fill,
       indicatorShape: const StadiumBorder(), // match default
       labelTextStyle:
           MaterialStateProperty.resolveWith((Set<MaterialState> states) {
         final TextStyle style = textTheme.labelMedium!;
         return style.apply(
           color: states.contains(MaterialState.selected)
-              ? primarySafeColors.text
-              : primarySafeColors.backgroundText,
+              ? colors.text
+              : colors.backgroundText,
         );
       }),
     );
   }
 
-  NavigationRailThemeData navigationRailThemeData(TextTheme textTheme) {
+  static NavigationRailThemeData navigationRailThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return NavigationRailThemeData(
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: 0,
-      unselectedLabelTextStyle: textTheme.labelMedium!
-          .copyWith(color: primarySafeColors.backgroundText),
+      unselectedLabelTextStyle:
+          textTheme.labelMedium!.copyWith(color: colors.backgroundText),
       selectedLabelTextStyle:
-          textTheme.labelMedium!.copyWith(color: primarySafeColors.text),
+          textTheme.labelMedium!.copyWith(color: colors.text),
       unselectedIconTheme:
-          iconThemeData().copyWith(color: primarySafeColors.backgroundText),
-      selectedIconTheme:
-          iconThemeData().copyWith(color: primarySafeColors.fillIcon),
+          iconThemeData(colors).copyWith(color: colors.backgroundText),
+      selectedIconTheme: iconThemeData(colors).copyWith(color: colors.fillIcon),
       groupAlignment: -1.0, // match default, top
       labelType: NavigationRailLabelType.all,
       useIndicator: true,
-      indicatorColor: primarySafeColors.fill,
+      indicatorColor: colors.fill,
       indicatorShape: const StadiumBorder(), // match default
       minWidth: 72, // match default
       minExtendedWidth: 256, // match default
     );
   }
 
-  OutlinedButtonThemeData outlinedButtonTheme() {
+  static OutlinedButtonThemeData outlinedButtonTheme(SafeColors colors) {
     return OutlinedButtonThemeData(
-      style: outlineButtonStyleFromColors(primarySafeColors),
+      style: outlineButtonStyleFromColors(colors),
     );
   }
 
-  PopupMenuThemeData popupMenuThemeData(TextTheme textTheme) {
+  static PopupMenuThemeData popupMenuThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return PopupMenuThemeData(
-      color: primarySafeColors.background, // Popup background
+      color: colors.background, // Popup background
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
       elevation: modalElevation, // Popup outline elevation
-      shadowColor: shadowFor(primarySafeColors.background),
-      surfaceTintColor: primarySafeColors.background,
+      shadowColor: _singleShadowColorFor(colors.background),
+      surfaceTintColor: colors.background,
       textStyle: textTheme.bodyMedium,
       labelTextStyle: MaterialStateProperty.resolveWith((states) {
         // Doesn't support hover or selected, only disabled, which we do not
         // specify.
-        return textTheme.labelMedium!
-            .apply(color: primarySafeColors.backgroundText);
+        return textTheme.labelMedium!.apply(color: colors.backgroundText);
       }),
       enableFeedback: true,
       position: PopupMenuPosition.under,
     );
   }
 
-  ProgressIndicatorThemeData progressIndicatorThemeData() {
+  static ProgressIndicatorThemeData progressIndicatorThemeData(
+      SafeColors colors) {
     return ProgressIndicatorThemeData(
-      color: primarySafeColors.fill,
-      linearTrackColor: primarySafeColors.background,
+      color: colors.fill,
+      linearTrackColor: colors.background,
       linearMinHeight: 4,
-      circularTrackColor: primarySafeColors.background,
-      refreshBackgroundColor: primarySafeColors.background,
+      circularTrackColor: colors.background,
+      refreshBackgroundColor: colors.background,
     );
   }
 
-  RadioThemeData radioThemeData() {
+  static RadioThemeData radioThemeData(SafeColors colors) {
     // States have choices that look odd compared to other components.
     // This component is particularly challenging due to it being essentially
     // a fill with a circle surrounding it for hover state. These were
@@ -917,17 +902,17 @@ class MonetTheme extends StatelessWidget {
       fillColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.hovered)) {
-            return primarySafeColors.textHoverText;
+            return colors.textHoverText;
           }
           if (states.contains(MaterialState.selected)) {
-            return primarySafeColors.text;
+            return colors.text;
           }
-          return primarySafeColors.text;
+          return colors.text;
         },
       ),
       overlayColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
-          return primarySafeColors.textHover;
+          return colors.textHover;
         },
       ),
       splashRadius: 20.0, // match checkbox default,
@@ -936,16 +921,17 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  SearchBarThemeData searchBarThemeData(TextTheme textTheme) {
+  static SearchBarThemeData searchBarThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return SearchBarThemeData(
       elevation: const MaterialStatePropertyAll(2),
-      backgroundColor: MaterialStatePropertyAll(primarySafeColors.background),
-      shadowColor: MaterialStatePropertyAll(primarySafeColors.background),
-      surfaceTintColor: MaterialStatePropertyAll(primarySafeColors.background),
-      overlayColor: MaterialStatePropertyAll(primarySafeColors.background),
+      backgroundColor: MaterialStatePropertyAll(colors.background),
+      shadowColor: MaterialStatePropertyAll(colors.background),
+      surfaceTintColor: MaterialStatePropertyAll(colors.background),
+      overlayColor: MaterialStatePropertyAll(colors.background),
       side: MaterialStatePropertyAll(
         BorderSide(
-          color: primarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
@@ -953,7 +939,7 @@ class MonetTheme extends StatelessWidget {
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: primarySafeColors.fill,
+            color: colors.fill,
             width: 2,
           ),
         ),
@@ -970,40 +956,40 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  SearchViewThemeData searchViewThemeData(TextTheme textTheme) {
+  static SearchViewThemeData searchViewThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return SearchViewThemeData(
-      backgroundColor: primarySafeColors.background,
+      backgroundColor: colors.background,
       elevation: modalElevation,
-      surfaceTintColor: primarySafeColors.background,
+      surfaceTintColor: colors.background,
       constraints: const BoxConstraints(
           minWidth: 360.0, maxWidth: 800.0, minHeight: 56.0),
-      side: BorderSide(color: primarySafeColors.fill, width: 2),
+      side: BorderSide(color: colors.fill, width: 2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
       headerTextStyle: textTheme.headlineMedium,
       headerHintStyle: textTheme.headlineSmall,
-      dividerColor: primarySafeColors.backgroundText,
+      dividerColor: colors.backgroundText,
     );
   }
 
-  SegmentedButtonThemeData segmentedButtonThemeData() {
+  static SegmentedButtonThemeData segmentedButtonThemeData(SafeColors colors) {
     // Button style in-lined due to unique requirements, essentially, a text
     // button when not selected, fillbutton when selected.
-    final safeColors = primarySafeColors;
     final selectedBackground = stateColors(
-      color: safeColors.fill,
-      hover: safeColors.fillHover,
-      splash: safeColors.fillSplash,
+      color: colors.fill,
+      hover: colors.fillHover,
+      splash: colors.fillSplash,
     );
     final unselectedBackground = stateColors(
-      color: safeColors.background,
-      hover: safeColors.textHover,
-      splash: safeColors.textSplash,
+      color: colors.background,
+      hover: colors.textHover,
+      splash: colors.textSplash,
     );
     final background = MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
@@ -1013,14 +999,14 @@ class MonetTheme extends StatelessWidget {
       }
     });
     final selectedForeground = stateColors(
-      color: safeColors.fillText,
-      hover: safeColors.fillHoverText,
-      splash: safeColors.fillSplashText,
+      color: colors.fillText,
+      hover: colors.fillHoverText,
+      splash: colors.fillSplashText,
     );
     final unselectedForeground = stateColors(
-      color: safeColors.backgroundText,
-      hover: safeColors.textHoverText,
-      splash: safeColors.textSplashText,
+      color: colors.backgroundText,
+      hover: colors.textHoverText,
+      splash: colors.textSplashText,
     );
     final foreground = MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
@@ -1036,39 +1022,40 @@ class MonetTheme extends StatelessWidget {
       overlayColor: background,
       foregroundColor: foreground,
       side: MaterialStateProperty.all(
-        BorderSide(color: safeColors.colorBorder, width: 2),
+        BorderSide(color: colors.colorBorder, width: 2),
       ),
     ));
   }
 
-  SliderThemeData sliderThemeData(TextTheme textTheme) {
+  static SliderThemeData sliderThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return SliderThemeData(
       overlayShape: const RoundSliderOverlayShape(),
       tickMarkShape: SliderTickMarkShape.noTickMark,
       thumbShape: SliderFlatThumb(
         borderWidth: 2,
-        borderColor: primarySafeColors.colorBorder,
+        borderColor: colors.colorBorder,
       ),
       trackShape: SliderFlatShape(),
       trackHeight: touchSize,
-      activeTrackColor: primarySafeColors.color,
+      activeTrackColor: colors.color,
       // This is a _nice_ touch: ex. if an elevated button is above this slider,
       // the shadow isn't cut off
       inactiveTrackColor: Colors.transparent,
-      secondaryActiveTrackColor: primarySafeColors.color,
-      disabledActiveTrackColor: primarySafeColors.color,
-      disabledInactiveTrackColor: primarySafeColors.background,
-      disabledSecondaryActiveTrackColor: primarySafeColors.color,
+      secondaryActiveTrackColor: colors.color,
+      disabledActiveTrackColor: colors.color,
+      disabledInactiveTrackColor: colors.background,
+      disabledSecondaryActiveTrackColor: colors.color,
       // Tick marks mess up SliderFlat, aka a Slider with a border.
       activeTickMarkColor: Colors.transparent,
       inactiveTickMarkColor: Colors.transparent,
       disabledActiveTickMarkColor: Colors.transparent,
       disabledInactiveTickMarkColor: Colors.transparent,
-      thumbColor: primarySafeColors.color,
-      overlappingShapeStrokeColor: primarySafeColors.fillText,
-      disabledThumbColor: primarySafeColors.color,
+      thumbColor: colors.color,
+      overlappingShapeStrokeColor: colors.fillText,
+      disabledThumbColor: colors.color,
       overlayColor: Colors.transparent,
-      valueIndicatorColor: primarySafeColors.color,
+      valueIndicatorColor: colors.color,
       valueIndicatorShape: const DropSliderValueIndicatorShape(),
       rangeTickMarkShape: const RoundRangeSliderTickMarkShape(),
       rangeThumbShape: const RoundRangeSliderThumbShape(),
@@ -1076,25 +1063,25 @@ class MonetTheme extends StatelessWidget {
       rangeValueIndicatorShape: const PaddleRangeSliderValueIndicatorShape(),
       showValueIndicator: ShowValueIndicator.always,
       valueIndicatorTextStyle: textTheme.labelLarge!.copyWith(
-        color: primarySafeColors.colorText,
+        color: colors.colorText,
       ),
       minThumbSeparation: 8,
       allowedInteraction: SliderInteraction.tapAndSlide,
     );
   }
 
-  SnackBarThemeData snackBarThemeData(TextTheme textTheme) {
+  static SnackBarThemeData snackBarThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return SnackBarThemeData(
-      backgroundColor: primarySafeColors.color,
-      actionTextColor: primarySafeColors.colorText,
-      disabledActionTextColor: primarySafeColors.colorText,
-      contentTextStyle:
-          textTheme.bodyMedium!.copyWith(color: primarySafeColors.colorText),
+      backgroundColor: colors.color,
+      actionTextColor: colors.colorText,
+      disabledActionTextColor: colors.colorText,
+      contentTextStyle: textTheme.bodyMedium!.copyWith(color: colors.colorText),
       elevation: modalElevation,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.colorBorder,
+          color: colors.colorBorder,
           width: 2,
         ),
       ),
@@ -1103,32 +1090,32 @@ class MonetTheme extends StatelessWidget {
       width: null, // allows use of margin instead
       insetPadding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 10.0),
       showCloseIcon: true,
-      closeIconColor: primarySafeColors.colorIcon,
+      closeIconColor: colors.colorIcon,
       actionOverflowThreshold:
           0.25, // match default,  the percentage threshold for action widget's width before it overflows  to a new line.
-      actionBackgroundColor: primarySafeColors.color,
-      disabledActionBackgroundColor: primarySafeColors.color,
+      actionBackgroundColor: colors.color,
+      disabledActionBackgroundColor: colors.color,
     );
   }
 
-  SwitchThemeData switchThemeData() {
+  static SwitchThemeData switchThemeData(SafeColors colors) {
     return SwitchThemeData(
-      thumbColor: MaterialStatePropertyAll(primarySafeColors.fill),
-      trackColor: MaterialStatePropertyAll(primarySafeColors.background),
-      trackOutlineColor: MaterialStatePropertyAll(primarySafeColors.fill),
+      thumbColor: MaterialStatePropertyAll(colors.fill),
+      trackColor: MaterialStatePropertyAll(colors.background),
+      trackOutlineColor: MaterialStatePropertyAll(colors.fill),
       trackOutlineWidth: const MaterialStatePropertyAll(2.0),
       materialTapTargetSize: null, // let Theme manage it
       mouseCursor: null, // let Theme manage it
       overlayColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.selected)) {
-            return primarySafeColors.fillSplash;
+            return colors.fillSplash;
           } else if (states.contains(MaterialState.hovered)) {
-            return primarySafeColors.fillHover;
+            return colors.fillHover;
           } else if (states.contains(MaterialState.pressed)) {
-            return primarySafeColors.fillSplash;
+            return colors.fillSplash;
           } else {
-            return primarySafeColors.fill;
+            return colors.fill;
           }
         },
       ),
@@ -1138,7 +1125,7 @@ class MonetTheme extends StatelessWidget {
           if (states.contains(MaterialState.selected)) {
             return Icon(
               Icons.check_outlined,
-              color: primarySafeColors.colorSplashText,
+              color: colors.colorSplashText,
             );
           } else {
             return null;
@@ -1148,39 +1135,39 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  TabBarTheme createTabBarTheme(TextTheme textTheme) {
+  static TabBarTheme createTabBarTheme(SafeColors colors, TextTheme textTheme) {
     final labelColor = MaterialStateColor.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
-        return primarySafeColors.text;
+        return colors.text;
       } else if (states.contains(MaterialState.hovered)) {
-        return primarySafeColors.textHoverText;
+        return colors.textHoverText;
       } else if (states.contains(MaterialState.pressed)) {
-        return primarySafeColors.textSplashText;
+        return colors.textSplashText;
       } else {
-        return primarySafeColors.backgroundText;
+        return colors.backgroundText;
       }
     });
     return TabBarTheme(
       // Oddly, this still is required even if indicatorColor is set.
       indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(color: primarySafeColors.fill, width: 2)),
-      indicatorColor: primarySafeColors.fill,
+          borderSide: BorderSide(color: colors.fill, width: 2)),
+      indicatorColor: colors.fill,
       indicatorSize: TabBarIndicatorSize.label,
       dividerColor: Colors.transparent,
-      labelColor: primarySafeColors.fill,
+      labelColor: colors.fill,
       labelStyle: textTheme.labelMedium,
       unselectedLabelColor: labelColor,
       unselectedLabelStyle: textTheme.labelMedium,
       overlayColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.selected)) {
-            return primarySafeColors.textSplash;
+            return colors.textSplash;
           } else if (states.contains(MaterialState.hovered)) {
-            return primarySafeColors.textHover;
+            return colors.textHover;
           } else if (states.contains(MaterialState.pressed)) {
-            return primarySafeColors.textSplash;
+            return colors.textSplash;
           } else {
-            return primarySafeColors.background;
+            return colors.background;
           }
         },
       ),
@@ -1190,90 +1177,90 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  TextButtonThemeData textButtonTheme() {
+  TextButtonThemeData textButtonTheme(SafeColors colors) {
     return TextButtonThemeData(
-      style: textButtonStyleFromColors(primarySafeColors),
+      style: textButtonStyleFromColors(colors),
     );
   }
 
-  TextSelectionThemeData textSelectionThemeData() {
+  static TextSelectionThemeData textSelectionThemeData(SafeColors colors) {
     return TextSelectionThemeData(
-      cursorColor: primarySafeColors.fill,
+      cursorColor: colors.fill,
       // Can't induce text to use textHoverText, so instead, use opacity to
       // introduce some effect, but not so much so that contrast between
       // text and the selection color is jarringly low.
-      selectionColor: primarySafeColors.text.withOpacity(0.4),
-      selectionHandleColor: primarySafeColors.fill,
+      selectionColor: colors.text.withOpacity(0.4),
+      selectionHandleColor: colors.fill,
     );
   }
 
-  TimePickerThemeData timePickerThemeData(TextTheme textTheme) {
+  static TimePickerThemeData timePickerThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return TimePickerThemeData(
-      backgroundColor: primarySafeColors.background,
-      cancelButtonStyle: outlineButtonStyleFromColors(tertiarySafeColors),
-      confirmButtonStyle: filledButtonFromColor(primarySafeColors),
+      backgroundColor: colors.background,
+      cancelButtonStyle: outlineButtonStyleFromColors(colors),
+      confirmButtonStyle: filledButtonFromColor(colors),
       dayPeriodBorderSide: BorderSide(
-        color: primarySafeColors.fill,
+        color: colors.fill,
         width: 2,
       ),
 
       dayPeriodShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
       dayPeriodTextColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fillText;
+          return colors.fillText;
         } else {
-          return primarySafeColors.backgroundText;
+          return colors.backgroundText;
         }
       }),
       dayPeriodTextStyle: textTheme.labelLarge,
-      dialBackgroundColor: primarySafeColors.fill,
-      dialHandColor: primarySafeColors.fillText.withOpacity(0.4),
-      dialTextColor: primarySafeColors.fillText,
-      dialTextStyle:
-          textTheme.labelLarge!.copyWith(color: primarySafeColors.fillText),
+      dialBackgroundColor: colors.fill,
+      dialHandColor: colors.fillText.withOpacity(0.4),
+      dialTextColor: colors.fillText,
+      dialTextStyle: textTheme.labelLarge!.copyWith(color: colors.fillText),
       elevation: modalElevation,
-      entryModeIconColor: primarySafeColors.fill,
+      entryModeIconColor: colors.fill,
       helpTextStyle: textTheme.headlineSmall,
       dayPeriodColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fill;
+          return colors.fill;
         } else {
-          return primarySafeColors.background;
+          return colors.background;
         }
       }),
       hourMinuteColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.fillHover;
+          return colors.fillHover;
         } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.fillSplash;
+          return colors.fillSplash;
         } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fill;
+          return colors.fill;
         } else {
-          return primarySafeColors.background;
+          return colors.background;
         }
       }),
       hourMinuteShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
       hourMinuteTextColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.hovered)) {
-          return primarySafeColors.fillHoverText;
+          return colors.fillHoverText;
         } else if (states.contains(MaterialState.pressed)) {
-          return primarySafeColors.fillSplashText;
+          return colors.fillSplashText;
         } else if (states.contains(MaterialState.selected)) {
-          return primarySafeColors.fillText;
+          return colors.fillText;
         } else {
-          return primarySafeColors.backgroundText;
+          return colors.backgroundText;
         }
       }),
       inputDecorationTheme: null, // let picker use its defaults
@@ -1281,14 +1268,15 @@ class MonetTheme extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: primarySafeColors.fill,
+          color: colors.fill,
           width: 2,
         ),
       ),
     );
   }
 
-  ToggleButtonsThemeData toggleButtonsThemeData(TextTheme textTheme) {
+  static ToggleButtonsThemeData toggleButtonsThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return ToggleButtonsThemeData(
       textStyle: textTheme.bodyMedium,
       constraints: const BoxConstraints(
@@ -1297,28 +1285,29 @@ class MonetTheme extends StatelessWidget {
       ),
       color: MaterialStateColor.resolveWith((states) {
         // States are always empty.
-        return primarySafeColors.text;
+        return colors.text;
       }),
       selectedColor: MaterialStateColor.resolveWith((states) {
-        return primarySafeColors.colorText;
+        return colors.colorText;
       }),
-      disabledColor: primarySafeColors.text,
-      fillColor: primarySafeColors.color,
-      focusColor: primarySafeColors.colorHover,
-      highlightColor: primarySafeColors.fillHover,
+      disabledColor: colors.text,
+      fillColor: colors.color,
+      focusColor: colors.colorHover,
+      highlightColor: colors.fillHover,
       hoverColor: MaterialStateColor.resolveWith((states) {
-        return primarySafeColors.textHover;
+        return colors.textHover;
       }),
-      splashColor: primarySafeColors.fillSplash,
-      borderColor: primarySafeColors.colorBorder,
-      selectedBorderColor: primarySafeColors.colorBorder,
-      disabledBorderColor: primarySafeColors.colorBorder,
+      splashColor: colors.fillSplash,
+      borderColor: colors.colorBorder,
+      selectedBorderColor: colors.colorBorder,
+      disabledBorderColor: colors.colorBorder,
       borderRadius: BorderRadius.circular(8),
       borderWidth: 2,
     );
   }
 
-  TooltipThemeData tooltipThemeData(TextTheme textTheme) {
+  static TooltipThemeData tooltipThemeData(
+      SafeColors colors, TextTheme textTheme) {
     return TooltipThemeData(
       height: switch (defaultTargetPlatform) {
         TargetPlatform.macOS ||
@@ -1348,14 +1337,13 @@ class MonetTheme extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: primarySafeColors.colorBorder,
+            color: colors.colorBorder,
             width: 2,
           ),
         ),
-        color: primarySafeColors.color,
+        color: colors.color,
       ),
-      textStyle:
-          textTheme.bodyMedium!.copyWith(color: primarySafeColors.colorText),
+      textStyle: textTheme.bodyMedium!.copyWith(color: colors.colorText),
       textAlign: TextAlign.center,
       showDuration: const Duration(seconds: 2),
       waitDuration: const Duration(seconds: 1),
@@ -1364,37 +1352,37 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  InputDecorationTheme inputDecorationTheme(TextTheme textTheme) {
+  static InputDecorationTheme inputDecorationTheme(
+      SafeColors colors, TextTheme textTheme) {
     final border = OutlineInputBorder(
-      borderSide: BorderSide(width: 2, color: primarySafeColors.fill),
+      borderSide: BorderSide(width: 2, color: colors.fill),
       borderRadius: BorderRadius.circular(8),
     );
     final focusedBorder = OutlineInputBorder(
-      borderSide: BorderSide(width: 3, color: primarySafeColors.text),
+      borderSide: BorderSide(width: 3, color: colors.text),
       borderRadius: BorderRadius.circular(8),
     );
     return InputDecorationTheme(
       isCollapsed: true,
       isDense: true,
-      fillColor: primarySafeColors.background,
+      fillColor: colors.background,
       filled: true,
       border: border,
       focusedBorder: focusedBorder,
       enabledBorder: border,
-      hintStyle: textTheme.labelLarge!.copyWith(color: primarySafeColors.text),
-      helperStyle:
-          textTheme.labelLarge!.copyWith(color: primarySafeColors.text),
+      hintStyle: textTheme.labelLarge!.copyWith(color: colors.text),
+      helperStyle: textTheme.labelLarge!.copyWith(color: colors.text),
       labelStyle: textTheme.labelMedium!
-          .copyWith(color: primarySafeColors.text)
+          .copyWith(color: colors.text)
           .copyWith(fontWeight: FontWeight.w700),
       // Can't specify text in hover state: introduce some change in the
       // background, but not so much as to make the text unreadable, as
       // primarySafeColors.textHover would do.
-      hoverColor: primarySafeColors.text.withOpacity(0.2),
+      hoverColor: colors.text.withOpacity(0.2),
     );
   }
 
-  IconThemeData iconThemeData() {
+  static IconThemeData iconThemeData(SafeColors colors) {
     return IconThemeData(
       size: 24.0,
       fill: 0.0,
@@ -1402,7 +1390,7 @@ class MonetTheme extends StatelessWidget {
       grade: 0.0,
       opticalSize: 48.0,
       shadows: const [],
-      color: primarySafeColors.fill,
+      color: colors.fill,
       opacity: 1,
     );
   }
@@ -1414,8 +1402,7 @@ class MonetTheme extends StatelessWidget {
       thickness: const MaterialStatePropertyAll(thickness),
       trackVisibility: const MaterialStatePropertyAll(true),
       radius: const Radius.circular(thickness / 2.0),
-      thumbColor:
-          MaterialStatePropertyAll(secondarySafeColors.fill.withOpacity(0.8)),
+      thumbColor: MaterialStatePropertyAll(secondary.fill.withOpacity(0.8)),
       trackColor: const MaterialStatePropertyAll(Colors.transparent),
       trackBorderColor: const MaterialStatePropertyAll(Colors.transparent),
       interactive: true,
@@ -1430,15 +1417,45 @@ class MonetTheme extends StatelessWidget {
   }
 
   TextTheme createTextTheme(Typography typography) {
-    return switch (brightness) {
+    final tt = switch (brightness) {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
     };
+
+    final txtC = primary.backgroundText;
+    const h = null;
+    const med = FontWeight.w500;
+    final textTheme = tt.copyWith(
+      displayLarge: tt.displayLarge!.copyWith(
+          fontSize: 24,
+          color: primary.backgroundText,
+          fontWeight: FontWeight.w500,
+          height: 1.5),
+      displayMedium: tt.displayMedium!
+          .copyWith(fontSize: 22, color: txtC, fontWeight: med, height: h),
+      displaySmall: tt.displaySmall!
+          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
+      headlineLarge: tt.headlineLarge!
+          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
+      headlineMedium: tt.headlineMedium!
+          .copyWith(fontSize: 18, color: txtC, fontWeight: med, height: h),
+      headlineSmall: tt.headlineSmall!
+          .copyWith(fontSize: 16, color: txtC, fontWeight: med, height: h),
+      bodyLarge: tt.bodyLarge!.copyWith(fontSize: 16, color: txtC, height: h),
+      bodyMedium: tt.bodyMedium!.copyWith(fontSize: 14, color: txtC, height: h),
+      bodySmall: tt.bodySmall!.copyWith(fontSize: 12, color: txtC, height: h),
+      labelLarge: tt.labelLarge!.copyWith(
+          fontSize: 16, color: txtC, fontWeight: FontWeight.w500, height: h),
+      labelMedium:
+          tt.labelMedium!.copyWith(fontSize: 14, color: txtC, height: h),
+      labelSmall: tt.labelSmall!.copyWith(fontSize: 12, color: txtC, height: h),
+    );
+    return textTheme;
   }
 
-  DividerThemeData dividerThemeData() {
+  DividerThemeData dividerThemeData(SafeColors colors) {
     return DividerThemeData(
-      color: primarySafeColors.backgroundText,
+      color: colors.backgroundText,
       space: 4,
       thickness: 2,
       indent: 4,
@@ -1446,12 +1463,12 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  DrawerThemeData drawerThemeData() {
+  DrawerThemeData drawerThemeData(SafeColors colors) {
     return DrawerThemeData(
-      backgroundColor: primarySafeColors.backgroundText,
+      backgroundColor: colors.backgroundText,
       scrimColor: Colors.black.withOpacity(0.54),
-      shadowColor: shadowFor(primarySafeColors.background),
-      surfaceTintColor: primarySafeColors.background,
+      shadowColor: _singleShadowColorFor(colors.background),
+      surfaceTintColor: colors.background,
       shape: null,
       endShape: null,
       width: null /* use default value of Drawer.width */,
@@ -1471,9 +1488,9 @@ class _MonetInheritedTheme extends InheritedTheme {
   Widget wrap(BuildContext context, Widget child) {
     return MonetTheme(
       brightness: theme.brightness,
-      primarySafeColors: theme.primarySafeColors,
-      secondarySafeColors: theme.secondarySafeColors,
-      tertiarySafeColors: theme.tertiarySafeColors,
+      primary: theme.primary,
+      secondary: theme.secondary,
+      tertiary: theme.tertiary,
       surfaceLstar: theme.surfaceLstar,
       contrast: theme.contrast,
       algo: theme.algo,
@@ -1485,7 +1502,7 @@ class _MonetInheritedTheme extends InheritedTheme {
   bool updateShouldNotify(_MonetInheritedTheme old) => theme != old.theme;
 }
 
-ColorScheme _monetColorScheme(
+ColorScheme _createColorScheme(
   Brightness brightness,
   SafeColors primary,
   SafeColors secondary,
@@ -1533,4 +1550,8 @@ ColorScheme _monetColorScheme(
     onSurface: onSurface,
     surfaceTint: Colors.transparent,
   );
+}
+
+Color _singleShadowColorFor(Color color) {
+  return lstarFromArgb(color.value).round() >= 60 ? Colors.black : Colors.white;
 }

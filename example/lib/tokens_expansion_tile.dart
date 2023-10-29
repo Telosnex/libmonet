@@ -13,7 +13,7 @@ class TokensExpansionTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final monetTheme = MonetTheme.of(context);
-    final primaryColors = monetTheme.primarySafeColors;
+    final primaryColors = monetTheme.primary;
     final algo = monetTheme.algo;
     return ExpansionTile(
       title: Text(
@@ -27,7 +27,7 @@ class TokensExpansionTile extends ConsumerWidget {
       children: [
         DividerTheme(
           data: DividerThemeData(
-            color: monetTheme.secondarySafeColors.fill,
+            color: monetTheme.secondary.fill,
           ),
           child: DataTable(columns: const [
             DataColumn(label: Text('')),

@@ -171,9 +171,9 @@ void expectOpacity(double opacity,
   final fgColor = Color(argbFromLstar(fgL));
   final contrastExpected = algo.getAbsoluteContrast(0.5, Usage.text);
   final contrastMin =
-      algo.getContrastBetweenLstars(lstarFromArgb(minBlended.value), fgL);
+      algo.getContrastBetweenLstars(bg: lstarFromArgb(minBlended.value), fg: fgL);
   final contrastMax =
-      algo.getContrastBetweenLstars(lstarFromArgb(maxBlended.value), fgL);
+      algo.getContrastBetweenLstars(bg: lstarFromArgb(maxBlended.value), fg: fgL);
   if (debug) {
     // Double-nesting avoids compiler warning because it sees if (kDebugMode)
     if (kDebugMode) {

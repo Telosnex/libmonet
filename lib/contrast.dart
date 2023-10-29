@@ -12,19 +12,18 @@ enum Algo {
   double getAbsoluteContrast(double interpolation, Usage usage) {
     switch (this) {
       case Algo.wcag21:
-        return contrastRatioInterpolation(
-            percent: interpolation, usage: usage);
+        return contrastRatioInterpolation(percent: interpolation, usage: usage);
       case Algo.apca:
         return apcaInterpolation(percent: interpolation, usage: usage);
     }
   }
 
-  double getContrastBetweenLstars(double a, double b) {
+  double getContrastBetweenLstars({required double bg, required double fg}) {
     switch (this) {
       case Algo.wcag21:
-        return contrastRatioOfLstars(a, b);
+        return contrastRatioOfLstars(bg, fg);
       case Algo.apca:
-        return apcaContrastOfApcaY(lstarToApcaY(a), lstarToApcaY(b));
+        return apcaContrastOfApcaY(lstarToApcaY(bg), lstarToApcaY(fg));
     }
   }
 }

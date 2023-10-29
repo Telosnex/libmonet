@@ -29,7 +29,7 @@ class BackgroundExpansionTile extends ConsumerWidget {
           Text(
             'Background',
             style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                  color: MonetTheme.of(context).primarySafeColors.text,
+                  color: MonetTheme.of(context).primary.text,
                 ),
           ),
           const HorizontalPadding(),

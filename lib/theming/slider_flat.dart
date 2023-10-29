@@ -15,7 +15,7 @@ class SliderFlat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = this.borderColor ??
-        MonetTheme.of(context).primarySafeColors.colorBorder;
+        MonetTheme.of(context).primary.colorBorder;
     final borderWidth = this.borderWidth ?? 2;
     final sliderTheme = Theme.of(context).sliderTheme;
     final trackHeight = sliderTheme.trackHeight!;
