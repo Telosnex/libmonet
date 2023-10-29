@@ -129,8 +129,8 @@ class MonetTheme extends StatelessWidget {
     final typographyData = typography(colorScheme);
     final tt = createTextTheme(typographyData);
     final txtC = primarySafeColors.backgroundText;
-    final h = 1.0;
-    final med = FontWeight.w500;
+    const h = 1.0;
+    const med = FontWeight.w500;
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
           fontSize: 24,

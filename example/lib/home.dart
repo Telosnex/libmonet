@@ -75,7 +75,7 @@ class Home extends HookConsumerWidget {
                         lightModeLstarNotifier: lightSurfaceLstar,
                         brightnessSettingNotifier: brightnessSetting,
                       ),
-                      VerticalPadding(),
+                      const VerticalPadding(),
                       ColorPicker(
                         color: color.value,
                         onColorChanged: (newColor) {

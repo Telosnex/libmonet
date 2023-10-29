@@ -331,11 +331,11 @@ class ComponentsWidget extends HookConsumerWidget {
         OutlinedButton(onPressed: () {}, child: const Text('Outlined Button')),
         const H3('Progress Indicator'),
         const CircularProgressIndicator(),
-        VerticalPadding(),
-        LinearProgressIndicator(
+        const VerticalPadding(),
+        const LinearProgressIndicator(
           value: 0.66,
         ),
-        VerticalPadding(),
+        const VerticalPadding(),
         const LinearProgressIndicator(),
    
         const H3('Radio'),

@@ -263,7 +263,7 @@ class ColorPicker extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 SliderFlat(

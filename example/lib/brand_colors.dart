@@ -94,7 +94,7 @@ class BrandColorsPopupMenuButton extends HookConsumerWidget {
                       width: 16,
                       height: 16,
                     ),
-                    HorizontalPadding(),
+                    const HorizontalPadding(),
                     Text(
                       e.name,
                       style: Theme.of(context).textTheme.labelLarge,
