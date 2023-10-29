@@ -53,7 +53,19 @@ void main() {
     expect(grayscaleArgbFromLuma(0.0), isColor(0xff000000));
   });
 
-  test('Explorer',
+  test('CSV of range', () {
+    final tsv = StringBuffer();
+    for (int i = 0; i <= 100; i++) {
+      final luma = i.toDouble();
+      final lstarRange = lumaToLstarRange(luma);
+      final first = lstarRange[0];
+      final last = lstarRange[1];
+      tsv.writeln('$luma,$first,$last');
+    }
+    print(tsv.toString());
+  });
+
+  test('Full RGB Explorer',
       skip:
           'important diagnostic code for producing error tolerances needed due to RGB being whole numbers, but not a test',
       () {

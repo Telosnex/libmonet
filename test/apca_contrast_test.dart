@@ -21,8 +21,20 @@ void main() {
       }
     }
   });
- 
-  test('Explorer',
+
+  test('CSV of range', skip: 'data generator', () {
+    final tsv = StringBuffer();
+    for (int i = 0; i <= 100; i++) {
+      final apcaY = i.toDouble() / 100.0;
+      final lstarRange = apcaYToLstarRange(apcaY);
+      final first = lstarRange[0];
+      final last = lstarRange[1];
+      tsv.writeln('$apcaY,$first,$last');
+    }
+    print(tsv.toString());
+  });
+
+  test('Full RGB Explorer',
       skip:
           'important diagnostic code for producing error tolerances needed due to RGB being whole numbers, but not a test',
       () {
@@ -156,6 +168,8 @@ void main() {
           'maxError: $maxError. @ ${maxErrorRgbTriple[0]}, ${maxErrorRgbTriple[1]}, ${maxErrorRgbTriple[2]}');
     }
   });
+
+
 }
 
 
