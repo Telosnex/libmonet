@@ -82,7 +82,9 @@ class ColorPicker extends HookConsumerWidget {
           .headlineLarge!
           .copyWith(color: MonetTheme.of(context).primary.text),
     );
-
+    final letterTextStyle = Theme.of(context).textTheme.headlineLarge!.copyWith(
+        fontWeight: FontWeight.w500, // medium
+        color: MonetTheme.of(context).primary.colorIcon);
     return ExpansionTile(
       title: Row(
         children: [
@@ -118,10 +120,28 @@ class ColorPicker extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: HueTonePicker(
+                      chromaIntent: mutableChroma.value,
+                      color: color,
+                      onChanged: (double hue, double tone) {
+                        final hct = Hct.fromColor(color);
+                        hct.hue = hue;
+                        hct.tone = tone;
+                        hct.chroma = mutableChroma.value;
+                        onColorChanged(hct.color);
+                      },
+                    ),
+                  ),
+                ),
                 const VerticalPadding(),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
+                    Flexible(
+                      flex: 1,
                       child: TextField(
                         onSubmitted: (value) {
                           final hue = double.tryParse(value);
@@ -145,7 +165,41 @@ class ColorPicker extends HookConsumerWidget {
                       ),
                     ),
                     const HorizontalPadding(),
-                    Expanded(
+                    Flexible(
+                      flex: 3,
+                      child: SliderFlat(
+                        slider: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            thumbShape: SliderFlatThumb(
+                              borderWidth: 2,
+                              borderColor:
+                                  MonetTheme.of(context).primary.colorBorder,
+                              letterTextStyle: letterTextStyle,
+                              letter: 'H',
+                            ),
+                          ),
+                          child: Slider(
+                            value: mutableHue.value,
+                            label: 'Hue ${mutableHue.value.round()}',
+                            min: 0,
+                            max: 360,
+                            onChanged: (double value) {
+                              mutableHue.value = value;
+                              final hct = Hct.fromColor(color);
+                              hct.hue = value;
+                              onColorChanged(hct.color);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const VerticalPadding(),
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 1,
                       child: TextField(
                         onSubmitted: (value) {
                           final chroma = double.tryParse(value);
@@ -169,7 +223,44 @@ class ColorPicker extends HookConsumerWidget {
                       ),
                     ),
                     const HorizontalPadding(),
-                    Expanded(
+                    Flexible(
+                      flex: 3,
+                      child: SliderFlat(
+                        borderColor: MonetTheme.of(context).primary.colorBorder,
+                        borderWidth: 2,
+                        slider: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            thumbShape: SliderFlatThumb(
+                              borderWidth: 2,
+                              borderColor:
+                                  MonetTheme.of(context).primary.colorBorder,
+                              letterTextStyle: letterTextStyle,
+                              letter: 'C',
+                            ),
+                          ),
+                          child: Slider(
+                            value: mutableChroma.value,
+                            label:
+                                'Chroma ${(mutableChroma.value / chromaMax * 100.0).round()}%',
+                            min: 0,
+                            max: chromaMax,
+                            onChanged: (double value) {
+                              mutableChroma.value = value;
+                              final hct = Hct.fromColor(color);
+                              hct.chroma = value;
+                              onColorChanged(hct.color);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const VerticalPadding(),
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 1,
                       child: TextField(
                         onSubmitted: (value) {
                           final tone = double.tryParse(value);
@@ -192,108 +283,38 @@ class ColorPicker extends HookConsumerWidget {
                                 color: MonetTheme.of(context).primary.text),
                       ),
                     ),
+                    const HorizontalPadding(),
+                    Flexible(
+                      flex: 3,
+                      child: SliderFlat(
+                        borderColor: MonetTheme.of(context).primary.colorBorder,
+                        borderWidth: 2,
+                        slider: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            thumbShape: SliderFlatThumb(
+                              borderWidth: 2,
+                              borderColor:
+                                  MonetTheme.of(context).primary.colorBorder,
+                              letterTextStyle: letterTextStyle,
+                              letter: 'T',
+                            ),
+                          ),
+                          child: Slider(
+                            value: mutableTone.value,
+                            label: 'Tone ${mutableTone.value.round()}',
+                            min: 0,
+                            max: 100,
+                            onChanged: (double value) {
+                              mutableTone.value = value;
+                              final hct = Hct.fromColor(color);
+                              hct.tone = value;
+                              onColorChanged(hct.color);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-                const VerticalPadding(),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: HueTonePicker(
-                      chromaIntent: mutableChroma.value,
-                      color: color,
-                      onChanged: (double hue, double tone) {
-                        final hct = Hct.fromColor(color);
-                        hct.hue = hue;
-                        hct.tone = tone;
-                        hct.chroma = mutableChroma.value;
-                        onColorChanged(hct.color);
-                      },
-                    ),
-                  ),
-                ),
-                const VerticalPadding(),
-                SliderFlat(
-                  slider: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      thumbShape: SliderFlatThumb(
-                          borderWidth: 2,
-                          borderColor:
-                              MonetTheme.of(context).primary.colorBorder,
-                          iconColor: MonetTheme.of(context).primary.colorIcon,
-                          iconData: Icons.ramen_dining),
-                    ),
-                    child: Slider(
-                      value: mutableHue.value,
-                      label: 'Hue ${mutableHue.value.round()}',
-                      min: 0,
-                      max: 360,
-                      onChanged: (double value) {
-                        mutableHue.value = value;
-                        final hct = Hct.fromColor(color);
-                        hct.hue = value;
-                        onColorChanged(hct.color);
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                SliderFlat(
-                  borderColor: MonetTheme.of(context).primary.colorBorder,
-                  borderWidth: 2,
-                  slider: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      thumbShape: SliderFlatThumb(
-                          borderWidth: 2,
-                          borderColor:
-                              MonetTheme.of(context).primary.colorBorder,
-                          iconColor: MonetTheme.of(context).primary.colorIcon,
-                          iconData: Icons.color_lens_outlined),
-                    ),
-                    child: Slider(
-                      value: mutableChroma.value,
-                      label:
-                          'Chroma ${(mutableChroma.value / chromaMax * 100.0).round()}%',
-                      min: 0,
-                      max: chromaMax,
-                      onChanged: (double value) {
-                        mutableChroma.value = value;
-                        final hct = Hct.fromColor(color);
-                        hct.chroma = value;
-                        onColorChanged(hct.color);
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                SliderFlat(
-                  borderColor: MonetTheme.of(context).primary.colorBorder,
-                  borderWidth: 2,
-                  slider: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      thumbShape: SliderFlatThumb(
-                          borderWidth: 2,
-                          borderColor:
-                              MonetTheme.of(context).primary.colorBorder,
-                          iconColor: MonetTheme.of(context).primary.colorIcon,
-                          iconData: Icons.table_bar),
-                    ),
-                    child: Slider(
-                      value: mutableTone.value,
-                      label: 'Tone ${mutableTone.value.round()}',
-                      min: 0,
-                      max: 100,
-                      onChanged: (double value) {
-                        mutableTone.value = value;
-                        final hct = Hct.fromColor(color);
-                        hct.tone = value;
-                        onColorChanged(hct.color);
-                      },
-                    ),
-                  ),
                 ),
               ],
             ),
