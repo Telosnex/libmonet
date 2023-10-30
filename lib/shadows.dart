@@ -168,7 +168,7 @@ ShadowResult getShadowOpacities({
           : lumaFromLstar(maxBgLstar),
       effectiveOpacity);
   monetDebug(
-      true, () => 'raw math says $rawMath, turns says ${allOpacities.length}');
+      debug, () => 'raw math says $rawMath, turns says ${allOpacities.length}');
   return ShadowResult(
     blurRadius: blurRadius,
     lstar: opacityResult.lstar,

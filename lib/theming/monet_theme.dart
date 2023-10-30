@@ -1111,7 +1111,7 @@ class MonetTheme extends StatelessWidget {
       overlayColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.selected)) {
-            return colors.fillSplash;
+            return colors.fill;
           } else if (states.contains(MaterialState.hovered)) {
             return colors.fillHover;
           } else if (states.contains(MaterialState.pressed)) {
@@ -1127,7 +1127,7 @@ class MonetTheme extends StatelessWidget {
           if (states.contains(MaterialState.selected)) {
             return Icon(
               Icons.check_outlined,
-              color: colors.colorSplashText,
+              color: colors.fillText,
             );
           } else {
             return null;
