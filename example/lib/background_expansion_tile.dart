@@ -38,7 +38,7 @@ class BackgroundExpansionTile extends ConsumerWidget {
         ],
       ),
       children: [
-        const Text('Dark Mode L*'),
+        const Text('Dark'),
         SliderFlat(
           slider: Slider(
             value: darkModeLstar,
@@ -50,7 +50,7 @@ class BackgroundExpansionTile extends ConsumerWidget {
             },
           ),
         ),
-        const Text('Light Mode L*'),
+        const Text('Light'),
         SliderFlat(
           slider: Slider(
             value: lightModeLstar,
