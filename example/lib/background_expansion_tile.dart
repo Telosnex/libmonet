@@ -24,7 +24,8 @@ class BackgroundExpansionTile extends ConsumerWidget {
     return ExpansionTile(
       childrenPadding: const EdgeInsets.symmetric(horizontal: 8),
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
-      title: Row(
+      title: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(
             'Background',
@@ -33,7 +34,7 @@ class BackgroundExpansionTile extends ConsumerWidget {
                 ),
           ),
           const HorizontalPadding(),
-          _brightnessToggleButtons()
+          FittedBox(child: _brightnessToggleButtons())
         ],
       ),
       children: [

@@ -25,107 +25,115 @@ class TokensExpansionTile extends ConsumerWidget {
       ),
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DividerTheme(
-          data: DividerThemeData(
-            color: monetTheme.secondary.fill,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: DividerTheme(
+            data: DividerThemeData(
+              color: monetTheme.secondary.fill,
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: DataTable(columns: const [
+                DataColumn(label: Text('Name')),
+                    
+                DataColumn(label: Text('')),
+                DataColumn(label: Text('Hex'), numeric: true),
+                DataColumn(label: Text('H'), numeric: true),
+                DataColumn(label: Text('C'), numeric: true),
+                DataColumn(label: Text('T'), numeric: true),
+                DataColumn(label: Text('K'), numeric: true),
+              ], rows: [
+                DataRow(
+                  cells: _colorCells(
+                      context, primaryColors.background, 'BG', null),
+                ),
+                DataRow(
+                  cells: _colorCells(
+                    context,
+                    primaryColors.backgroundText,
+                    'BG Text',
+                    _contrast(
+                      fg: primaryColors.backgroundText,
+                      bg: primaryColors.background,
+                      algo: algo,
+                    ),
+                  ),
+                ),
+                DataRow(
+                  cells: _colorCells(
+                    context,
+                    primaryColors.colorBorder,
+                    'Color Border',
+                    _contrast(
+                      fg: primaryColors.colorBorder,
+                      bg: primaryColors.background,
+                      algo: algo,
+                    ),
+                  ),
+                ),
+                DataRow(
+                  cells: _colorCells(
+                    context,
+                    primaryColors.color,
+                    'Color',
+                    _contrast(
+                      fg: primaryColors.color,
+                      bg: primaryColors.background,
+                      algo: algo,
+                    ),
+                  ),
+                ),
+                DataRow(
+                  cells: _colorCells(
+                    context,
+                    primaryColors.colorText,
+                    'Color Text',
+                    _contrast(
+                      fg: primaryColors.colorText,
+                      bg: primaryColors.color,
+                      algo: algo,
+                    ),
+                  ),
+                ),
+                DataRow(
+                  cells: _colorCells(
+                    context,
+                    primaryColors.fill,
+                    'Fill',
+                    _contrast(
+                      fg: primaryColors.fill,
+                      bg: primaryColors.background,
+                      algo: algo,
+                    ),
+                  ),
+                ),
+                DataRow(
+                  cells: _colorCells(
+                    context,
+                    primaryColors.fillText,
+                    'Fill Text',
+                    _contrast(
+                      fg: primaryColors.fillText,
+                      bg: primaryColors.fill,
+                      algo: algo,
+                    ),
+                  ),
+                ),
+                DataRow(
+                  cells: _colorCells(
+                    context,
+                    primaryColors.text,
+                    'Text',
+                    _contrast(
+                      fg: primaryColors.text,
+                      bg: primaryColors.background,
+                      algo: algo,
+                    ),
+                  ),
+                ),
+              ]),
+            ),
           ),
-          child: DataTable(columns: const [
-            DataColumn(label: Text('')),
-            DataColumn(label: Text('Name')),
-            DataColumn(label: Text('Hex'), numeric: true),
-            DataColumn(label: Text('H'), numeric: true),
-            DataColumn(label: Text('C'), numeric: true),
-            DataColumn(label: Text('T'), numeric: true),
-            DataColumn(label: Text('K'), numeric: true),
-          ], rows: [
-            DataRow(
-              cells: _colorCells(context, primaryColors.background, 'BG', null),
-            ),
-            DataRow(
-              cells: _colorCells(
-                context,
-                primaryColors.backgroundText,
-                'BG Text',
-                _contrast(
-                  fg: primaryColors.backgroundText,
-                  bg: primaryColors.background,
-                  algo: algo,
-                ),
-              ),
-            ),
-            DataRow(
-              cells: _colorCells(
-                context,
-                primaryColors.colorBorder,
-                'Color Border',
-                _contrast(
-                  fg: primaryColors.colorBorder,
-                  bg: primaryColors.background,
-                  algo: algo,
-                ),
-              ),
-            ),
-            DataRow(
-              cells: _colorCells(
-                context,
-                primaryColors.color,
-                'Color',
-                _contrast(
-                  fg: primaryColors.color,
-                  bg: primaryColors.background,
-                  algo: algo,
-                ),
-              ),
-            ),
-            DataRow(
-              cells: _colorCells(
-                context,
-                primaryColors.colorText,
-                'Color Text',
-                _contrast(
-                  fg: primaryColors.colorText,
-                  bg: primaryColors.color,
-                  algo: algo,
-                ),
-              ),
-            ),
-            DataRow(
-              cells: _colorCells(
-                context,
-                primaryColors.fill,
-                'Fill',
-                _contrast(
-                  fg: primaryColors.fill,
-                  bg: primaryColors.background,
-                  algo: algo,
-                ),
-              ),
-            ),
-            DataRow(
-              cells: _colorCells(
-                context,
-                primaryColors.fillText,
-                'Fill Text',
-                _contrast(
-                  fg: primaryColors.fillText,
-                  bg: primaryColors.fill,
-                  algo: algo,
-                ),
-              ),
-            ),
-            DataRow(
-              cells: _colorCells(
-                context,
-                primaryColors.text,
-                'Text',
-                _contrast(
-                  fg: primaryColors.text,
-                  bg: primaryColors.background,
-                  algo: algo,
-                ),
-              ),
-            ),
-          ]),
         )
       ],
     );
@@ -148,6 +156,12 @@ class TokensExpansionTile extends ConsumerWidget {
     final hct = Hct.fromColor(color);
     final colorHeight = DataTableTheme.of(context).dataRowMinHeight! - 8.0;
     return [
+
+      DataCell(
+        Text(
+          name,
+        ),
+      ),
       DataCell(Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -156,11 +170,6 @@ class TokensExpansionTile extends ConsumerWidget {
         width: colorHeight,
         height: colorHeight,
       )),
-      DataCell(
-        Text(
-          name,
-        ),
-      ),
       DataCell(
         FittedBox(child: Text(hexFromColor(color))),
       ),

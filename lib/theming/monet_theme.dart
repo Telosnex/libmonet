@@ -159,7 +159,7 @@ class MonetTheme extends StatelessWidget {
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       // Use default (slide on iOS/macOS, zoom on others)
       pageTransitionsTheme: const PageTransitionsTheme(),
-      scrollbarTheme: scrollbarThemeData(),
+      scrollbarTheme: scrollbarThemeData(primary),
       // Copy logic from ThemeData, modulo useMaterial3 always is true
       splashFactory: splashFactory,
       useMaterial3: true,
@@ -436,11 +436,12 @@ class MonetTheme extends StatelessWidget {
   static DataTableThemeData dataTableThemeData(TextTheme textTheme) {
     return DataTableThemeData(
       columnSpacing: 16, // Material default is __56__
-      dataTextStyle: textTheme.bodyMedium!.copyWith(fontFeatures: [
+      dataTextStyle: textTheme.bodyLarge!.copyWith(fontFeatures: [
         const FontFeature.tabularFigures(),
         const FontFeature.slashedZero()
       ]),
-      dividerThickness: 1.0,
+      horizontalMargin: 8,
+      dividerThickness: 2.0,
       headingTextStyle: textTheme.headlineMedium,
       headingRowColor: MaterialStateProperty.all(Colors.transparent),
       dataRowMinHeight: touchSize,
@@ -581,6 +582,7 @@ class MonetTheme extends StatelessWidget {
       tilePadding: const EdgeInsets.symmetric(horizontal: 8),
       /* Match default */
       expandedAlignment: Alignment.center,
+      // Don't enforce minimum padding, let content decide.
       childrenPadding: EdgeInsets.zero,
       iconColor: colors.text,
       collapsedIconColor: colors.text,
@@ -589,7 +591,7 @@ class MonetTheme extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
-          color: colors.fill,
+          color: colors.backgroundText,
           width: 2,
         ),
       ),
@@ -1395,14 +1397,14 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  ScrollbarThemeData scrollbarThemeData() {
-    const thickness = 4.0;
+  ScrollbarThemeData scrollbarThemeData(SafeColors colors) {
+    const thickness = 8.0;
     return ScrollbarThemeData(
       thumbVisibility: const MaterialStatePropertyAll(true),
       thickness: const MaterialStatePropertyAll(thickness),
       trackVisibility: const MaterialStatePropertyAll(true),
       radius: const Radius.circular(thickness / 2.0),
-      thumbColor: MaterialStatePropertyAll(secondary.fill.withOpacity(0.8)),
+      thumbColor: MaterialStatePropertyAll(colors.fill.withOpacity(0.8)),
       trackColor: const MaterialStatePropertyAll(Colors.transparent),
       trackBorderColor: const MaterialStatePropertyAll(Colors.transparent),
       interactive: true,

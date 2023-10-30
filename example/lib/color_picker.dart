@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/hct.dart';
-import 'package:libmonet/theming/button_style.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/slider_flat.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
@@ -55,19 +54,50 @@ class ColorPicker extends HookConsumerWidget {
       return null;
     }, [color]);
 
+    final hexTextField = TextField(
+      onSubmitted: (value) {
+        if (value.length == 6) {
+          final color = Color(int.parse('FF$value', radix: 16));
+          onColorChanged(color);
+        } else if (value.length == 8) {
+          final color = Color(int.parse(value, radix: 16));
+          onColorChanged(color);
+        } else if (value.length == 3) {
+          final color = Color(int.parse(
+              'FF${value[0]}${value[0]}${value[1]}'
+              '${value[1]}${value[2]}${value[2]}',
+              radix: 16));
+          onColorChanged(color);
+        }
+      },
+      controller: hexController,
+      decoration: const InputDecoration(
+        labelText: 'RGB | HEX',
+        border: OutlineInputBorder(),
+        isCollapsed: false,
+        isDense: true,
+      ),
+      style: Theme.of(context)
+          .textTheme
+          .headlineLarge!
+          .copyWith(color: MonetTheme.of(context).primary.text),
+    );
 
     return ExpansionTile(
       title: Row(
         children: [
-          Text(
-            'Color',
-            style: Theme.of(context)
-                .textTheme
-                .headlineLarge!
-                .copyWith(color: MonetTheme.of(context).primary.text),
+          Padding(
+            padding: HorizontalPadding.rightInset,
+            child: Text(
+              'Color',
+              style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                    color: MonetTheme.of(context).primary.text,
+                  ),
+            ),
           ),
+          Flexible(child: hexTextField),
+
           IconButton(
-   
             onPressed: () {
               final randomColor = Color.fromARGB(255, random.nextInt(256),
                   random.nextInt(256), random.nextInt(256));
@@ -88,19 +118,6 @@ class ColorPicker extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
-                  onSubmitted: (value) {
-                    final color = Color(int.parse('FF$value', radix: 16));
-                    onColorChanged(color);
-                  },
-                  controller: hexController,
-                  decoration: const InputDecoration(
-                    labelText: 'RGB | HEX',
-                    border: OutlineInputBorder(),
-                  ),
-                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                      color: MonetTheme.of(context).primary.text),
-                ),
                 const VerticalPadding(),
                 Row(
                   children: [
@@ -124,9 +141,7 @@ class ColorPicker extends HookConsumerWidget {
                             .textTheme
                             .headlineLarge!
                             .copyWith(
-                                color: MonetTheme.of(context)
-                                    .primary
-                                    .text),
+                                color: MonetTheme.of(context).primary.text),
                       ),
                     ),
                     const HorizontalPadding(),
@@ -150,9 +165,7 @@ class ColorPicker extends HookConsumerWidget {
                             .textTheme
                             .headlineLarge!
                             .copyWith(
-                                color: MonetTheme.of(context)
-                                    .primary
-                                    .text),
+                                color: MonetTheme.of(context).primary.text),
                       ),
                     ),
                     const HorizontalPadding(),
@@ -176,9 +189,7 @@ class ColorPicker extends HookConsumerWidget {
                             .textTheme
                             .headlineLarge!
                             .copyWith(
-                                color: MonetTheme.of(context)
-                                    .primary
-                                    .text),
+                                color: MonetTheme.of(context).primary.text),
                       ),
                     ),
                   ],
@@ -206,12 +217,9 @@ class ColorPicker extends HookConsumerWidget {
                     data: SliderTheme.of(context).copyWith(
                       thumbShape: SliderFlatThumb(
                           borderWidth: 2,
-                          borderColor: MonetTheme.of(context)
-                              .primary
-                              .colorBorder,
-                          iconColor: MonetTheme.of(context)
-                              .primary
-                              .colorIcon,
+                          borderColor:
+                              MonetTheme.of(context).primary.colorBorder,
+                          iconColor: MonetTheme.of(context).primary.colorIcon,
                           iconData: Icons.ramen_dining),
                     ),
                     child: Slider(
@@ -232,19 +240,15 @@ class ColorPicker extends HookConsumerWidget {
                   height: 2,
                 ),
                 SliderFlat(
-                  borderColor:
-                      MonetTheme.of(context).primary.colorBorder,
+                  borderColor: MonetTheme.of(context).primary.colorBorder,
                   borderWidth: 2,
                   slider: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       thumbShape: SliderFlatThumb(
                           borderWidth: 2,
-                          borderColor: MonetTheme.of(context)
-                              .primary
-                              .colorBorder,
-                          iconColor: MonetTheme.of(context)
-                              .primary
-                              .colorIcon,
+                          borderColor:
+                              MonetTheme.of(context).primary.colorBorder,
+                          iconColor: MonetTheme.of(context).primary.colorIcon,
                           iconData: Icons.color_lens_outlined),
                     ),
                     child: Slider(
@@ -266,19 +270,15 @@ class ColorPicker extends HookConsumerWidget {
                   height: 2,
                 ),
                 SliderFlat(
-                  borderColor:
-                      MonetTheme.of(context).primary.colorBorder,
+                  borderColor: MonetTheme.of(context).primary.colorBorder,
                   borderWidth: 2,
                   slider: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       thumbShape: SliderFlatThumb(
                           borderWidth: 2,
-                          borderColor: MonetTheme.of(context)
-                              .primary
-                              .colorBorder,
-                          iconColor: MonetTheme.of(context)
-                              .primary
-                              .colorIcon,
+                          borderColor:
+                              MonetTheme.of(context).primary.colorBorder,
+                          iconColor: MonetTheme.of(context).primary.colorIcon,
                           iconData: Icons.table_bar),
                     ),
                     child: Slider(
