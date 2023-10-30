@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:example/background_expansion_tile.dart';
-import 'package:example/chessboard_painter.dart';
-import 'package:example/color_picker.dart';
-import 'package:example/components_widget.dart';
-import 'package:example/contrast_picker.dart';
-import 'package:example/contrast_slider.dart';
-import 'package:example/extracted_widget.dart';
-import 'package:example/padding.dart';
-import 'package:example/safe_colors_preview.dart';
-import 'package:example/scrim_expansion_tile.dart';
-import 'package:example/tokens_expansion_tile.dart';
+import 'package:monet_studio/background_expansion_tile.dart';
+import 'package:monet_studio/chessboard_painter.dart';
+import 'package:monet_studio/color_picker.dart';
+import 'package:monet_studio/components_widget.dart';
+import 'package:monet_studio/contrast_picker.dart';
+import 'package:monet_studio/contrast_slider.dart';
+import 'package:monet_studio/extracted_widget.dart';
+import 'package:monet_studio/padding.dart';
+import 'package:monet_studio/safe_colors_preview.dart';
+import 'package:monet_studio/scrim_expansion_tile.dart';
+import 'package:monet_studio/tokens_expansion_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

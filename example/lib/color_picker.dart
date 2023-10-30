@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:example/brand_colors.dart';
-import 'package:example/hue_tone_picker.dart';
-import 'package:example/padding.dart';
+import 'package:monet_studio/brand_colors.dart';
+import 'package:monet_studio/hue_tone_picker.dart';
+import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

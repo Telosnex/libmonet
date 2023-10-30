@@ -1,4 +1,4 @@
-import 'package:example/padding.dart';
+import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/theming/monet_theme.dart';

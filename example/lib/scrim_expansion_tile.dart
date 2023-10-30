@@ -1,5 +1,5 @@
-import 'package:example/chessboard_painter.dart';
-import 'package:example/padding.dart';
+import 'package:monet_studio/chessboard_painter.dart';
+import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';

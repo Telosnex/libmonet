@@ -1,4 +1,4 @@
-import 'package:example/quantizer_provider.dart';
+import 'package:monet_studio/quantizer_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
