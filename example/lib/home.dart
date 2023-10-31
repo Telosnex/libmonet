@@ -10,6 +10,7 @@ import 'package:monet_studio/extracted_widget.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:monet_studio/quantizer_provider.dart';
 import 'package:monet_studio/safe_colors_preview.dart';
+import 'package:monet_studio/scaling_expansion_tile.dart';
 import 'package:monet_studio/scrim_expansion_tile.dart';
 import 'package:monet_studio/tokens_expansion_tile.dart';
 import 'package:flutter/foundation.dart';
@@ -53,6 +54,7 @@ class Home extends HookConsumerWidget {
     final algo = useState(Algo.apca);
     final darkSurfaceLstar = useState(10.0);
     final lightSurfaceLstar = useState(93.0);
+    final scale = useState(1.0);
     final brightnessSetting = useState(BrightnessSetting.auto);
     final brightness = brightnessSetting.value.brightness(context);
     final ui = Builder(builder: (context) {
@@ -134,6 +136,11 @@ class Home extends HookConsumerWidget {
                           ],
                         ),
                         const VerticalPadding(),
+                        ScalingExpansionTile(
+                          scaleValueNotifier: scale,
+                        ),
+                        const VerticalPadding(),
+
                       ],
                     ),
                   ),
@@ -160,6 +167,7 @@ class Home extends HookConsumerWidget {
           quantizerResult: e,
           contrast: contrast.value,
           algo: algo.value,
+          scale: scale.value,
           child: ui),
       _ => MonetTheme.fromColor(
           brightness: brightness,
@@ -167,6 +175,7 @@ class Home extends HookConsumerWidget {
           contrast: contrast.value,
           color: color.value,
           surfaceLstar: surfaceLstar,
+          scale: scale.value,
           child: ui,
         )
     };

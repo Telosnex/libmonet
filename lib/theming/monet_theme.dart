@@ -21,6 +21,7 @@ class MonetTheme extends StatelessWidget {
 
   final double surfaceLstar;
   final double contrast;
+  final double scale;
   final Algo algo;
 
   final Brightness brightness;
@@ -44,6 +45,7 @@ class MonetTheme extends StatelessWidget {
     required double surfaceLstar,
     required Brightness brightness,
     double contrast = 0.5,
+    double scale = 1.0,
     Algo algo = Algo.apca,
     required Widget child,
   }) {
@@ -58,6 +60,7 @@ class MonetTheme extends StatelessWidget {
       tertiary: complement.color,
       contrast: contrast,
       algo: algo,
+      scale: scale,
       child: child,
     );
   }
@@ -67,6 +70,7 @@ class MonetTheme extends StatelessWidget {
     required double surfaceLstar,
     required QuantizerResult quantizerResult,
     double contrast = 0.5,
+    double scale = 1.0,
     Algo algo = Algo.apca,
     required Widget child,
   }) {
@@ -80,6 +84,7 @@ class MonetTheme extends StatelessWidget {
       tertiary: triad[2].color,
       contrast: contrast,
       algo: algo,
+      scale: scale,
       child: child,
     );
   }
@@ -91,6 +96,7 @@ class MonetTheme extends StatelessWidget {
     required Color secondary,
     required Color tertiary,
     double contrast = 0.5,
+    double scale = 1.0,
     Algo algo = Algo.apca,
     required Widget child,
   }) {
@@ -108,6 +114,7 @@ class MonetTheme extends StatelessWidget {
       surfaceLstar: surfaceLstar,
       algo: algo,
       contrast: contrast,
+      scale: scale,
       child: child,
     );
   }
@@ -120,6 +127,7 @@ class MonetTheme extends StatelessWidget {
     required this.tertiary,
     required this.surfaceLstar,
     this.contrast = 0.5,
+    this.scale = 1.0,
     this.algo = Algo.apca,
     required this.child,
   });
@@ -162,7 +170,7 @@ class MonetTheme extends StatelessWidget {
     );
 
     final typographyData = typography(colorScheme);
-    final textTheme = createTextTheme(typographyData);
+    final textTheme = createTextTheme(typographyData, scale);
 
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
@@ -215,8 +223,8 @@ class MonetTheme extends StatelessWidget {
       // Is transparency important? Where is this used?
       // For now, treat it like text
       unselectedWidgetColor: primary.backgroundText,
-      iconTheme: iconThemeData(primary),
-      primaryIconTheme: iconThemeData(primary),
+      iconTheme: iconThemeData(primary, scale),
+      primaryIconTheme: iconThemeData(primary, scale),
       primaryTextTheme: textTheme,
       textTheme: textTheme,
       typography: typographyData,
@@ -227,7 +235,7 @@ class MonetTheme extends StatelessWidget {
       bannerTheme: bannerThemeData(primary, textTheme),
       bottomAppBarTheme: bottomAppBarTheme(primary),
       bottomNavigationBarTheme:
-          bottomNavigationBarThemeData(primary, textTheme),
+          bottomNavigationBarThemeData(primary, scale, textTheme),
       bottomSheetTheme: bottomSheetThemeData(primary),
       buttonBarTheme: buttonBarThemeData(),
       buttonTheme: buttonThemeData(),
@@ -252,7 +260,7 @@ class MonetTheme extends StatelessWidget {
       menuTheme: menuThemeData(primary),
       navigationBarTheme: navigationBarThemeData(primary, textTheme),
       navigationDrawerTheme: navigationDrawerThemeData(primary, textTheme),
-      navigationRailTheme: navigationRailThemeData(primary, textTheme),
+      navigationRailTheme: navigationRailThemeData(primary, scale, textTheme),
       outlinedButtonTheme: outlinedButtonTheme(primary),
       popupMenuTheme: popupMenuThemeData(primary, textTheme),
       progressIndicatorTheme: progressIndicatorThemeData(primary),
@@ -803,7 +811,7 @@ class MonetTheme extends StatelessWidget {
   }
 
   static BottomNavigationBarThemeData bottomNavigationBarThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      SafeColors colors, double scale, TextTheme textTheme) {
     return BottomNavigationBarThemeData(
       backgroundColor: colors.background,
       elevation: 0,
@@ -811,8 +819,8 @@ class MonetTheme extends StatelessWidget {
       // If this isn't specified, text becomes tertiary something...
       selectedItemColor: colors.text,
       unselectedItemColor: colors.backgroundText,
-      selectedIconTheme: iconThemeData(colors),
-      unselectedIconTheme: iconThemeData(colors),
+      selectedIconTheme: iconThemeData(colors, scale),
+      unselectedIconTheme: iconThemeData(colors, scale),
       selectedLabelStyle:
           textTheme.labelSmall!.copyWith(color: colors.fillText),
       unselectedLabelStyle:
@@ -857,7 +865,7 @@ class MonetTheme extends StatelessWidget {
   }
 
   static NavigationRailThemeData navigationRailThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      SafeColors colors, double scale, TextTheme textTheme) {
     return NavigationRailThemeData(
       backgroundColor: colors.background,
       elevation: 0,
@@ -866,8 +874,9 @@ class MonetTheme extends StatelessWidget {
       selectedLabelTextStyle:
           textTheme.labelMedium!.copyWith(color: colors.text),
       unselectedIconTheme:
-          iconThemeData(colors).copyWith(color: colors.backgroundText),
-      selectedIconTheme: iconThemeData(colors).copyWith(color: colors.fillIcon),
+          iconThemeData(colors, scale).copyWith(color: colors.backgroundText),
+      selectedIconTheme:
+          iconThemeData(colors, scale).copyWith(color: colors.fillIcon),
       groupAlignment: -1.0, // match default, top
       labelType: NavigationRailLabelType.all,
       useIndicator: true,
@@ -1409,9 +1418,9 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  static IconThemeData iconThemeData(SafeColors colors) {
+  static IconThemeData iconThemeData(SafeColors colors, double scale) {
     return IconThemeData(
-      size: 24.0,
+      size: 24.0 * scale,
       fill: 0.0,
       weight: 400.0,
       grade: 0.0,
@@ -1443,7 +1452,7 @@ class MonetTheme extends StatelessWidget {
     );
   }
 
-  TextTheme createTextTheme(Typography typography) {
+  TextTheme createTextTheme(Typography typography, double scale) {
     final tt = switch (brightness) {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
@@ -1457,25 +1466,38 @@ class MonetTheme extends StatelessWidget {
           fontSize: 24,
           color: primary.backgroundText,
           fontWeight: FontWeight.w500,
-          height: 1.5),
+          height: h),
       displayMedium: tt.displayMedium!
-          .copyWith(fontSize: 22, color: txtC, fontWeight: med, height: h),
+          .copyWith(
+          fontSize: 22 * scale, color: txtC, fontWeight: med, height: h),
       displaySmall: tt.displaySmall!
-          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
+          .copyWith(
+          fontSize: 20 * scale, color: txtC, fontWeight: med, height: h),
       headlineLarge: tt.headlineLarge!
-          .copyWith(fontSize: 20, color: txtC, fontWeight: med, height: h),
+          .copyWith(
+          fontSize: 20 * scale, color: txtC, fontWeight: med, height: h),
       headlineMedium: tt.headlineMedium!
-          .copyWith(fontSize: 18, color: txtC, fontWeight: med, height: h),
+          .copyWith(
+          fontSize: 18 * scale, color: txtC, fontWeight: med, height: h),
       headlineSmall: tt.headlineSmall!
-          .copyWith(fontSize: 16, color: txtC, fontWeight: med, height: h),
-      bodyLarge: tt.bodyLarge!.copyWith(fontSize: 16, color: txtC, height: h),
-      bodyMedium: tt.bodyMedium!.copyWith(fontSize: 14, color: txtC, height: h),
-      bodySmall: tt.bodySmall!.copyWith(fontSize: 12, color: txtC, height: h),
+          .copyWith(
+          fontSize: 16 * scale, color: txtC, fontWeight: med, height: h),
+      bodyLarge:
+          tt.bodyLarge!.copyWith(fontSize: 16 * scale, color: txtC, height: h),
+      bodyMedium:
+          tt.bodyMedium!.copyWith(fontSize: 14 * scale, color: txtC, height: h),
+      bodySmall:
+          tt.bodySmall!.copyWith(fontSize: 12 * scale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 16, color: txtC, fontWeight: FontWeight.w500, height: h),
+          fontSize: 16 * scale,
+          color: txtC,
+          fontWeight: FontWeight.w500,
+          height: h),
       labelMedium:
-          tt.labelMedium!.copyWith(fontSize: 14, color: txtC, height: h),
-      labelSmall: tt.labelSmall!.copyWith(fontSize: 12, color: txtC, height: h),
+          tt.labelMedium!
+          .copyWith(fontSize: 14 * scale, color: txtC, height: h),
+      labelSmall:
+          tt.labelSmall!.copyWith(fontSize: 12 * scale, color: txtC, height: h),
     );
     return textTheme;
   }
