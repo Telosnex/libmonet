@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/hct.dart';
 
 class HueTonePicker extends HookConsumerWidget {
-  final Color color;
   // Even if the color has lower chroma, ex. the user dragged to tone 0/tone 100
   // we want to respect the selected chroma.
   final double hueIntent;
@@ -12,7 +12,6 @@ class HueTonePicker extends HookConsumerWidget {
   final Function(double hue, double tone) onChanged;
   const HueTonePicker({
     super.key,
-    required this.color,
     required this.hueIntent,
     required this.chromaIntent,
     required this.toneIntent,
@@ -21,33 +20,38 @@ class HueTonePicker extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final painter =
+        useMemoized(() => _HueTone(chroma: chromaIntent), [chromaIntent]);
     return GestureDetector(
       onPanDown: (details) => _handleDrag(
         context,
         details.localPosition,
-
       ),
       onPanUpdate: (details) {
         _handleDrag(
           context,
           details.localPosition,
-
         );
       },
       child: Stack(
-        fit: StackFit.expand,
         children: [
-          CustomPaint(
-            painter: _HueTone(chroma: chromaIntent),
-          ),
-          Positioned.fill(
+          RepaintBoundary(
             child: CustomPaint(
-              painter: _Marker(
-                hue: hueIntent,
-                tone: toneIntent,
-              ),
+              size: const Size(double.infinity, 320),
+              isComplex: true,
+              painter: painter,
             ),
-          )
+          ),
+          CustomPaint(
+            size: const Size(double.infinity, 320),
+            isComplex: false,
+            willChange: true,
+            painter: _Marker(
+              hue: hueIntent,
+              tone: toneIntent,
+            ),
+          ),
+          // foregroundPainter:
         ],
       ),
     );
@@ -117,7 +121,6 @@ class _HueTone extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height));
     const numberOfHues = 360 ~/ hueResolution;
     const numberOfTones = 100 ~/ toneResolution;
     final cellWidth = size.width / numberOfHues;

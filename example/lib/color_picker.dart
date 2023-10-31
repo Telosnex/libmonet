@@ -30,14 +30,8 @@ class ColorPicker extends StatefulHookConsumerWidget {
 class _ColorPickerState extends ConsumerState<ColorPicker> {
   static const chromaMax = 120.0;
 
-  late var color = widget.color;
   final random = Random.secure();
 
-  @override
-  void initState() {
-    color = widget.color;
-    super.initState();
-  }
 
   static String _colorToHex(Color color) {
     return color.value
@@ -47,48 +41,51 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
         .replaceFirst('FF', '');
   }
 
-  void onColorChanged(Color newColor) {
-    color = newColor;
-    widget.onColorChanged(newColor);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final hct = useMemoized(() => Hct.fromColor(color), [color]);
-    final mutableChroma = useState(hct.chroma);
-    final mutableHue = useState(hct.hue);
-    final mutableTone = useState(hct.tone);
-    final hexController = useTextEditingController(text: _colorToHex(color));
-
+    final hctDANGERDANGER = useMemoized(() => Hct.fromColor(widget.color), []);
+    final mutableChroma = useState(hctDANGERDANGER.chroma);
+    final mutableHue = useState(hctDANGERDANGER.hue);
+    final mutableTone = useState(hctDANGERDANGER.tone);
+    final hexController =
+        useTextEditingController(text: _colorToHex(widget.color));
     final hueController = useTextEditingController(
-        text: Hct.fromColor(color).hue.round().toString());
+        text: mutableHue.value.round().toString());
     final chromaController = useTextEditingController(
-        text: Hct.fromColor(color).chroma.round().toString());
+        text: mutableChroma.value.round().toString());
     final toneController = useTextEditingController(
-        text: Hct.fromColor(color).tone.round().toString());
+        text: mutableTone.value.round().toString());
     useEffect(() {
-      hexController.text = _colorToHex(color);
+      hexController.text = _colorToHex(widget.color);
       hueController.text = mutableHue.value.round().toString();
       chromaController.text = mutableChroma.value.round().toString();
       toneController.text = mutableTone.value.round().toString();
+      hexController.text = _colorToHex(
+          Hct.from(mutableHue.value, mutableChroma.value, mutableTone.value)
+              .color);
       return null;
-    }, [color, mutableHue.value, mutableChroma.value, mutableTone.value]);
+    }, [mutableHue.value, mutableChroma.value, mutableTone.value]);
 
     final hexTextField = TextField(
       onSubmitted: (value) {
+        int? argb;
         if (value.length == 6) {
-          final color = Color(int.parse('FF$value', radix: 16));
-          widget.onColorChanged(color);
+          argb = int.tryParse('FF$value', radix: 16);
         } else if (value.length == 8) {
-          final color = Color(int.parse(value, radix: 16));
-          widget.onColorChanged(color);
+          argb = int.tryParse(value, radix: 16);
         } else if (value.length == 3) {
-          final color = Color(int.parse(
-              'FF${value[0]}${value[0]}${value[1]}'
-              '${value[1]}${value[2]}${value[2]}',
-              radix: 16));
-          onColorChanged(color);
+          argb = int.tryParse(
+              'FF${value[0]}${value[0]}${value[1]}${value[1]}${value[2]}${value[2]}',
+              radix: 16);
         }
+        if (argb == null) {
+          return;
+        }
+        final hct = Hct.fromInt(argb);
+        mutableHue.value = hct.hue;
+        mutableChroma.value = hct.chroma;
+        mutableTone.value = hct.tone;
+        widget.onColorChanged(hct.color);
       },
       controller: hexController,
       decoration: const InputDecoration(
@@ -122,20 +119,26 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
             onPressed: () {
               final randomColor = Color.fromARGB(255, random.nextInt(256),
                   random.nextInt(256), random.nextInt(256));
+              final hct = Hct.fromColor(randomColor);
+              mutableHue.value = hct.hue;
+              mutableChroma.value = hct.chroma;
+              mutableTone.value = hct.tone;
               widget.onColorChanged(randomColor);
-              color = randomColor;
             },
             icon: const Icon(Icons.shuffle),
           ),
+          BrandColorsPopupMenuButton(onChanged: (newColor) {
+            final hct = Hct.fromColor(newColor);
+            mutableHue.value = hct.hue;
+            mutableChroma.value = hct.chroma;
+            mutableTone.value = hct.tone;
+            widget.onColorChanged(newColor);
+          }),
           if (widget.onPhotoLibraryTapped != null)
             IconButton(
               onPressed: widget.onPhotoLibraryTapped,
               icon: const Icon(Icons.photo_library),
             ),
-          BrandColorsPopupMenuButton(onChanged: (newColor) {
-            color = newColor;
-            widget.onColorChanged(newColor);
-          }),
         ],
       ),
       children: [
@@ -153,15 +156,11 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
                       hueIntent: mutableHue.value,
                       chromaIntent: mutableChroma.value,
                       toneIntent: mutableTone.value,
-                      color: color,
                       onChanged: (double hue, double tone) {
-                        final hct = Hct.fromColor(color);
-                        hct.hue = hue;
-                        hct.tone = tone;
-                        hct.chroma = mutableChroma.value;
                         mutableHue.value = hue;
                         mutableTone.value = tone;
-                        onColorChanged(hct.color);
+                        final hct = Hct.from(hue, mutableChroma.value, tone);
+                        widget.onColorChanged(hct.color);
                       },
                     ),
                   ),
@@ -178,8 +177,10 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
                           if (hue == null) {
                             return;
                           }
-                          final color =
-                              Hct.from(hue, hct.chroma, hct.tone).color;
+                          final color = Hct.from(
+                                  hue, mutableChroma.value, mutableTone.value)
+                              .color;
+                          mutableHue.value = hue;
                           widget.onColorChanged(color);
                         },
                         controller: hueController,
@@ -215,8 +216,9 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
                             max: 360,
                             onChanged: (double value) {
                               mutableHue.value = value;
-                              final hct = Hct.fromColor(color);
-                              hct.hue = value;
+
+                              final hct = Hct.from(value, mutableChroma.value,
+                                  mutableTone.value);
                               widget.onColorChanged(hct.color);
                             },
                           ),
@@ -236,8 +238,10 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
                           if (chroma == null) {
                             return;
                           }
-                          final color =
-                              Hct.from(hct.hue, chroma, hct.tone).color;
+                          mutableChroma.value = chroma;
+                          final color = Hct.from(
+                                  mutableHue.value, chroma, mutableTone.value)
+                              .color;
                           widget.onColorChanged(color);
                         },
                         controller: chromaController,
@@ -276,8 +280,8 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
                             max: chromaMax,
                             onChanged: (double value) {
                               mutableChroma.value = value;
-                              final hct = Hct.fromColor(color);
-                              hct.chroma = value;
+                              final hct = Hct.from(
+                                  mutableHue.value, value, mutableTone.value);
                               widget.onColorChanged(hct.color);
                             },
                           ),
@@ -297,8 +301,10 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
                           if (tone == null) {
                             return;
                           }
-                          final color =
-                              Hct.from(hct.hue, hct.chroma, tone).color;
+                          mutableTone.value = tone;
+                          final color = Hct.from(
+                                  mutableHue.value, mutableChroma.value, tone)
+                              .color;
                           widget.onColorChanged(color);
                         },
                         controller: toneController,
@@ -336,8 +342,8 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
                             max: 100,
                             onChanged: (double value) {
                               mutableTone.value = value;
-                              final hct = Hct.fromColor(color);
-                              hct.tone = value;
+                              final hct = Hct.from(
+                                  mutableHue.value, mutableChroma.value, value);
                               widget.onColorChanged(hct.color);
                             },
                           ),
