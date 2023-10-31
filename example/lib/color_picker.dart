@@ -11,20 +11,33 @@ import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/slider_flat.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
 
-class ColorPicker extends HookConsumerWidget {
-  ColorPicker({
+class ColorPicker extends StatefulHookConsumerWidget {
+  const ColorPicker({
     super.key,
     required this.color,
     required this.onColorChanged,
     this.onPhotoLibraryTapped,
   });
 
-  final random = Random.secure();
   final Color color;
   final void Function(Color) onColorChanged;
   final void Function()? onPhotoLibraryTapped;
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ColorPickerState();
+}
+
+class _ColorPickerState extends ConsumerState<ColorPicker> {
   static const chromaMax = 120.0;
+
+  late var color = widget.color;
+  final random = Random.secure();
+
+  @override
+  void initState() {
+    color = widget.color;
+    super.initState();
+  }
 
   static String _colorToHex(Color color) {
     return color.value
@@ -34,8 +47,13 @@ class ColorPicker extends HookConsumerWidget {
         .replaceFirst('FF', '');
   }
 
+  void onColorChanged(Color newColor) {
+    color = newColor;
+    widget.onColorChanged(newColor);
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final hct = useMemoized(() => Hct.fromColor(color), [color]);
     final mutableChroma = useState(hct.chroma);
     final mutableHue = useState(hct.hue);
@@ -50,20 +68,20 @@ class ColorPicker extends HookConsumerWidget {
         text: Hct.fromColor(color).tone.round().toString());
     useEffect(() {
       hexController.text = _colorToHex(color);
-      hueController.text = hct.hue.round().toString();
-      chromaController.text = hct.chroma.round().toString();
-      toneController.text = hct.tone.round().toString();
+      hueController.text = mutableHue.value.round().toString();
+      chromaController.text = mutableChroma.value.round().toString();
+      toneController.text = mutableTone.value.round().toString();
       return null;
-    }, [color]);
+    }, [color, mutableHue.value, mutableChroma.value, mutableTone.value]);
 
     final hexTextField = TextField(
       onSubmitted: (value) {
         if (value.length == 6) {
           final color = Color(int.parse('FF$value', radix: 16));
-          onColorChanged(color);
+          widget.onColorChanged(color);
         } else if (value.length == 8) {
           final color = Color(int.parse(value, radix: 16));
-          onColorChanged(color);
+          widget.onColorChanged(color);
         } else if (value.length == 3) {
           final color = Color(int.parse(
               'FF${value[0]}${value[0]}${value[1]}'
@@ -100,23 +118,24 @@ class ColorPicker extends HookConsumerWidget {
             ),
           ),
           Flexible(child: hexTextField),
-
           IconButton(
             onPressed: () {
               final randomColor = Color.fromARGB(255, random.nextInt(256),
                   random.nextInt(256), random.nextInt(256));
-              onColorChanged(randomColor);
+              widget.onColorChanged(randomColor);
+              color = randomColor;
             },
             icon: const Icon(Icons.shuffle),
           ),
-          if (onPhotoLibraryTapped != null)
+          if (widget.onPhotoLibraryTapped != null)
             IconButton(
-              onPressed: onPhotoLibraryTapped,
+              onPressed: widget.onPhotoLibraryTapped,
               icon: const Icon(Icons.photo_library),
             ),
-          BrandColorsPopupMenuButton(
-            onChanged: (color) => onColorChanged(color),
-          ),
+          BrandColorsPopupMenuButton(onChanged: (newColor) {
+            color = newColor;
+            widget.onColorChanged(newColor);
+          }),
         ],
       ),
       children: [
@@ -131,13 +150,17 @@ class ColorPicker extends HookConsumerWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: HueTonePicker(
+                      hueIntent: mutableHue.value,
                       chromaIntent: mutableChroma.value,
+                      toneIntent: mutableTone.value,
                       color: color,
                       onChanged: (double hue, double tone) {
                         final hct = Hct.fromColor(color);
                         hct.hue = hue;
                         hct.tone = tone;
                         hct.chroma = mutableChroma.value;
+                        mutableHue.value = hue;
+                        mutableTone.value = tone;
                         onColorChanged(hct.color);
                       },
                     ),
@@ -157,7 +180,7 @@ class ColorPicker extends HookConsumerWidget {
                           }
                           final color =
                               Hct.from(hue, hct.chroma, hct.tone).color;
-                          onColorChanged(color);
+                          widget.onColorChanged(color);
                         },
                         controller: hueController,
                         decoration: const InputDecoration(
@@ -194,7 +217,7 @@ class ColorPicker extends HookConsumerWidget {
                               mutableHue.value = value;
                               final hct = Hct.fromColor(color);
                               hct.hue = value;
-                              onColorChanged(hct.color);
+                              widget.onColorChanged(hct.color);
                             },
                           ),
                         ),
@@ -215,7 +238,7 @@ class ColorPicker extends HookConsumerWidget {
                           }
                           final color =
                               Hct.from(hct.hue, chroma, hct.tone).color;
-                          onColorChanged(color);
+                          widget.onColorChanged(color);
                         },
                         controller: chromaController,
                         decoration: const InputDecoration(
@@ -255,7 +278,7 @@ class ColorPicker extends HookConsumerWidget {
                               mutableChroma.value = value;
                               final hct = Hct.fromColor(color);
                               hct.chroma = value;
-                              onColorChanged(hct.color);
+                              widget.onColorChanged(hct.color);
                             },
                           ),
                         ),
@@ -276,7 +299,7 @@ class ColorPicker extends HookConsumerWidget {
                           }
                           final color =
                               Hct.from(hct.hue, hct.chroma, tone).color;
-                          onColorChanged(color);
+                          widget.onColorChanged(color);
                         },
                         controller: toneController,
                         decoration: const InputDecoration(
@@ -315,7 +338,7 @@ class ColorPicker extends HookConsumerWidget {
                               mutableTone.value = value;
                               final hct = Hct.fromColor(color);
                               hct.tone = value;
-                              onColorChanged(hct.color);
+                              widget.onColorChanged(hct.color);
                             },
                           ),
                         ),

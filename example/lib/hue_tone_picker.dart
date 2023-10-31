@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/hct.dart';
 
@@ -7,49 +6,32 @@ class HueTonePicker extends HookConsumerWidget {
   final Color color;
   // Even if the color has lower chroma, ex. the user dragged to tone 0/tone 100
   // we want to respect the selected chroma.
+  final double hueIntent;
   final double chromaIntent;
+  final double toneIntent;
   final Function(double hue, double tone) onChanged;
   const HueTonePicker({
     super.key,
     required this.color,
+    required this.hueIntent,
     required this.chromaIntent,
+    required this.toneIntent,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hct = useMemoized(() => Hct.fromColor(color), [color]);
-    final chroma = hct.chroma;
-    final panningHue = useState(hct.hue);
-    final panningTone = useState(hct.tone);
-    final panningHct = Hct.from(panningHue.value, chroma, panningTone.value);
-    // If hue / chroma / tone aren't within 3.0 / 3.0 / 3.0 of the original
-    // color, then we need to update the panningHue and panningTone.
-    //
-    // Reminder: for hue, handle edge cases from wrapping
-    final hueDelta = hct.hue - panningHct.hue;
-    final hueDeltaWrapped =
-        hueDelta.abs() > 180 ? 360 - hueDelta.abs() : hueDelta.abs();
-    final toneDelta = (hct.tone - panningHct.tone).abs();
-    final chromaDelta = (hct.chroma - panningHct.chroma).abs();
-    if ((hueDeltaWrapped > 3.0 && toneDelta > 3.0) || chromaDelta > 3.0) {
-      panningHue.value = hct.hue;
-      panningTone.value = hct.tone;
-    }
-
     return GestureDetector(
       onPanDown: (details) => _handleDrag(
         context,
         details.localPosition,
-        panningHue,
-        panningTone,
+
       ),
       onPanUpdate: (details) {
         _handleDrag(
           context,
           details.localPosition,
-          panningHue,
-          panningTone,
+
         );
       },
       child: Stack(
@@ -61,8 +43,8 @@ class HueTonePicker extends HookConsumerWidget {
           Positioned.fill(
             child: CustomPaint(
               painter: _Marker(
-                hue: panningHue.value,
-                tone: panningTone.value,
+                hue: hueIntent,
+                tone: toneIntent,
               ),
             ),
           )
@@ -74,8 +56,6 @@ class HueTonePicker extends HookConsumerWidget {
   void _handleDrag(
     BuildContext context,
     Offset localPosition,
-    ValueNotifier<double> panningHue,
-    ValueNotifier<double> panningTone,
   ) {
     final RenderBox box = context.findRenderObject() as RenderBox;
     final double width = box.size.width;
@@ -85,9 +65,7 @@ class HueTonePicker extends HookConsumerWidget {
     final double value = (1 - localPosition.dy / height).clamp(0.0, 1.0);
     final panningHueValue = hue * 360.0;
     final panningToneValue = value * 100.0;
-    panningHue.value = panningHueValue;
-    panningTone.value = panningToneValue;
-    onChanged(panningHue.value, panningTone.value);
+    onChanged(panningHueValue, panningToneValue);
   }
 }
 

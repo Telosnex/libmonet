@@ -101,6 +101,7 @@ class Home extends HookConsumerWidget {
                           color: color.value,
                           onColorChanged: (newColor) {
                             color.value = newColor;
+                            backgroundImage.value = null;
                           },
                           onPhotoLibraryTapped: () {
                             _uploadImagePressed(
