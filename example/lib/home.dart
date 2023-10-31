@@ -81,6 +81,7 @@ class Home extends HookConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
+                        const VerticalPadding(),
                         BackgroundExpansionTile(
                           darkModeLstarNotifier: darkSurfaceLstar,
                           lightModeLstarNotifier: lightSurfaceLstar,
@@ -90,8 +91,8 @@ class Home extends HookConsumerWidget {
                         for (final image in images.value)
                           ExtractedWidget(
                             image: image,
-                            onColorTapped: (newColor) {
-                              color.value = newColor;
+                            onTapped: () {
+
                               backgroundImage.value = image;
                             },
                           ),

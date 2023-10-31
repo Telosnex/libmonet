@@ -8,39 +8,52 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ExtractedWidget extends HookConsumerWidget {
   final ImageProvider image;
-  final Function(Color) onColorTapped;
+  final Function() onTapped;
 
   const ExtractedWidget({
     super.key,
     required this.image,
-    required this.onColorTapped,
+    required this.onTapped,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final quantizerResult = ref.watch(quantizerResultProvider(image));
-    return SizedBox(
-      height: 80,
-      child: Row(
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: Image(
-              fit: BoxFit.cover,
-              image: image,
-            ),
-          ),
-          Expanded(
-            child: switch (quantizerResult) {
-              AsyncData(:final value) => _ColorToCountRow(
-                  quantizerResult: value,
-                  onColorTapped: onColorTapped,
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: onTapped,
+      child: Tooltip(
+        message: 'Press to use this image for theme.\n\n'
+            'Row 1: image colors sorted by count\n'
+            'Row 2: image colors sorted by hue\n'
+            'Row 3: image colors sorted by hue, filtered by tone and chroma\n'
+            'Row 4: three colors from triad algorithm',
+        child: SizedBox(
+          height: 80,
+          child: Row(
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: Image(
+                  fit: BoxFit.cover,
+                  image: image,
                 ),
-              AsyncError() => const Text('Oops, something unexpected happened'),
-              _ => const CircularProgressIndicator(),
-            },
+              ),
+              Expanded(
+                child: Center(
+                  child: switch (quantizerResult) {
+                    AsyncData(:final value) => _ColorToCountRow(
+                        quantizerResult: value,
+                      ),
+                    AsyncError() =>
+                      const Text('Oops, something unexpected happened'),
+                    _ => const CircularProgressIndicator(),
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -51,11 +64,10 @@ class _ColorToCountRow extends StatelessWidget {
   final Map<int, int> colorToCount;
   final Map<int, int> sortedColorToCount;
   final int totalCount;
-  final Function(Color) onColorTapped;
 
   _ColorToCountRow({
     required this.quantizerResult,
-    required this.onColorTapped,
+
   })  : colorToCount = quantizerResult.argbToCount,
         sortedColorToCount = _sortColorToCount(quantizerResult.argbToCount),
         totalCount = quantizerResult.argbToCount.values.reduce((a, b) => a + b);
@@ -131,13 +143,8 @@ class _ColorToCountRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: threeHcts.map((hct) {
               return Flexible(
-
-                child: GestureDetector(
-                  onTap: () {
-                    onColorTapped(hct.color);
-                  },
-                  child: Container(color: hct.color),
-                ),
+    
+                child: Container(color: hct.color),
               );
             }).toList(),
           ),
