@@ -59,7 +59,7 @@ class ScrimExpansionTile extends ConsumerWidget {
 
     return ExpansionTile(
       title: Text(
-        'Scrim',
+        'Scrim & Shadows',
         style: Theme.of(context)
             .textTheme
             .headlineLarge!

@@ -10,7 +10,6 @@ class ScorerTriad {
     bool isLight,
     QuantizerResult result,
   ) {
-    const smearDistance = 7.0;
     const minHueDistance = 45.0;
     final scorer = Scorer(result);
 

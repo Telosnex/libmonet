@@ -130,9 +130,8 @@ class _ColorToCountRow extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             children: threeHcts.map((hct) {
-              double flex = 1;
-              return Expanded(
-                flex: 1,
+              return Flexible(
+
                 child: GestureDetector(
                   onTap: () {
                     onColorTapped(hct.color);

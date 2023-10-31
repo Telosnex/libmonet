@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:libmonet/extract/extract.dart';
+import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/color_picker.dart';
 import 'package:monet_studio/components_widget.dart';
-import 'package:monet_studio/contrast_picker.dart';
-import 'package:monet_studio/contrast_slider.dart';
+import 'package:monet_studio/contrast_expansion_tile.dart';
 import 'package:monet_studio/extracted_widget.dart';
 import 'package:monet_studio/padding.dart';
+import 'package:monet_studio/quantizer_provider.dart';
 import 'package:monet_studio/safe_colors_preview.dart';
 import 'package:monet_studio/scrim_expansion_tile.dart';
 import 'package:monet_studio/tokens_expansion_tile.dart';
@@ -47,159 +47,128 @@ class Home extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final color = useState(const Color(0xff335147));
+    final backgroundImage = useState<ImageProvider?>(null);
     final images = useState(<ImageProvider>[]);
     final contrast = useState(0.5);
     final algo = useState(Algo.apca);
-    final brightnessSetting = useState(BrightnessSetting.auto);
-    final brightness = brightnessSetting.value.brightness(context);
     final darkSurfaceLstar = useState(10.0);
     final lightSurfaceLstar = useState(93.0);
-
-    return MonetTheme.fromColor(
-      brightness: brightness,
-      algo: algo.value,
-      contrast: contrast.value,
-      color: color.value,
-      surfaceLstar: brightness == Brightness.light
-          ? lightSurfaceLstar.value
-          : darkSurfaceLstar.value,
-      child: Builder(builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            title: const Text('Monet Studio'),
-          ),
-          body: Stack(
-            children: [
-              if (images.value.isNotEmpty)
-                Positioned.fill(
-                  child: Image(
-                    image: images.value.last,
-                    fit: BoxFit.none,
-                  ),
+    final brightnessSetting = useState(BrightnessSetting.auto);
+    final brightness = brightnessSetting.value.brightness(context);
+    final ui = Builder(builder: (context) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          title: const Text('Monet Studio'),
+        ),
+        body: Stack(
+          children: [
+            if (backgroundImage.value != null)
+              Positioned.fill(
+                child: Image(
+                  image: backgroundImage.value!,
+                  fit: BoxFit.none,
                 ),
-              SingleChildScrollView(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                        maxWidth: MonetTheme.maxPanelWidth),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          BackgroundExpansionTile(
-                            darkModeLstarNotifier: darkSurfaceLstar,
-                            lightModeLstarNotifier: lightSurfaceLstar,
-                            brightnessSettingNotifier: brightnessSetting,
-                          ),
-                          const VerticalPadding(),
-                          for (final image in images.value)
-                            ExtractedWidget(
-                              image: image,
-                              onColorTapped: (newColor) {
-                                color.value = newColor;
-                                if (images.value.indexOf(image) !=
-                                    images.value.length - 1) {
-                                  final newList =
-                                      List<ImageProvider>.from(images.value);
-                                  final currentIndex = newList.indexOf(image);
-                                  newList.removeAt(currentIndex);
-                                  newList.add(image);
-
-                                  images.value = newList;
-                                }
-                              },
-                            ),
-                          const VerticalPadding(),
-                          ColorPicker(
-                            color: color.value,
-                            onColorChanged: (newColor) {
+              ),
+            SingleChildScrollView(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints:
+                      const BoxConstraints(maxWidth: MonetTheme.maxPanelWidth),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        BackgroundExpansionTile(
+                          darkModeLstarNotifier: darkSurfaceLstar,
+                          lightModeLstarNotifier: lightSurfaceLstar,
+                          brightnessSettingNotifier: brightnessSetting,
+                        ),
+                        const VerticalPadding(),
+                        for (final image in images.value)
+                          ExtractedWidget(
+                            image: image,
+                            onColorTapped: (newColor) {
                               color.value = newColor;
-                            },
-                            onPhotoLibraryTapped: () {
-                              _uploadImagePressed(ref, images, color);
+                              backgroundImage.value = image;
                             },
                           ),
-                          const VerticalPadding(),
-                          ExpansionTile(
-                            title: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Text(
-                                  'Contrast',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineLarge!
-                                      .copyWith(
-                                        color:
-                                            MonetTheme.of(context).primary.text,
-                                      ),
-                                ),
-                                Padding(
-                                  padding: VerticalPadding.inset,
-                                  child: ContrastSlider(
-                                    contrast: contrast.value,
-                                    onContrastChanged: ((newContrast) {
-                                      contrast.value = newContrast;
-                                    }),
-                                  ),
-                                ),
-                              ],
+                        const VerticalPadding(),
+                        ColorPicker(
+                          color: color.value,
+                          onColorChanged: (newColor) {
+                            color.value = newColor;
+                          },
+                          onPhotoLibraryTapped: () {
+                            _uploadImagePressed(
+                                ref, images, backgroundImage, color);
+                          },
+                        ),
+                        const VerticalPadding(),
+                        ContrastExpansionTile(contrast: contrast, algo: algo),
+                        _buildComponentPreview(context, contrast, images),
+                        const TokensExpansionTile(),
+                        const VerticalPadding(),
+                        ScrimExpansionTile(
+                          contrast: contrast.value,
+                        ),
+                        const VerticalPadding(),
+                        ExpansionTile(
+                          title: Text(
+                            'Material Components',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineLarge!
+                                .copyWith(
+                                    color: MonetTheme.of(context).primary.text),
+                          ),
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: ComponentsWidget(),
                             ),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ContrastPicker(
-                                  algo: algo.value,
-                                  onAlgoChanged: (newAlgo) {
-                                    algo.value = newAlgo;
-                                  },
-                                  contrast: contrast.value,
-                                  onContrastChanged: (newContrast) {
-                                    contrast.value = newContrast;
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                          _buildComponentPreview(context, contrast, images),
-                          const TokensExpansionTile(),
-                          const VerticalPadding(),
-                          ScrimExpansionTile(
-                            contrast: contrast.value,
-                          ),
-                          const VerticalPadding(),
-                          ExpansionTile(
-                            title: Text(
-                              'Material Components',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge!
-                                  .copyWith(
-                                      color:
-                                          MonetTheme.of(context).primary.text),
-                            ),
-                            children: const [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: ComponentsWidget(),
-                              ),
-                            ],
-                          ),
-                          const VerticalPadding(),
-                        ],
-                      ),
+                          ],
+                        ),
+                        const VerticalPadding(),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
-        );
-      }),
-    );
+            ),
+          ],
+        ),
+      );
+    });
+
+    final imageQuantizerResult = backgroundImage.value == null
+        ? null
+        : ref
+            .watch(quantizerResultProvider(backgroundImage.value!))
+            .valueOrNull;
+    final surfaceLstar = brightness == Brightness.light
+        ? lightSurfaceLstar.value
+        : darkSurfaceLstar.value;
+    final answer = switch (imageQuantizerResult) {
+      (QuantizerResult e) => MonetTheme.fromQuantizerResult(
+          brightness: brightness,
+          surfaceLstar: surfaceLstar,
+          quantizerResult: e,
+          contrast: contrast.value,
+          algo: algo.value,
+          child: ui),
+      _ => MonetTheme.fromColor(
+          brightness: brightness,
+          algo: algo.value,
+          contrast: contrast.value,
+          color: color.value,
+          surfaceLstar: surfaceLstar,
+          child: ui,
+        )
+    };
+    return answer;
   }
 
   Stack _buildComponentPreview(
@@ -341,20 +310,14 @@ class Home extends HookConsumerWidget {
   void _uploadImagePressed(
       WidgetRef ref,
       ValueNotifier<List<ImageProvider<Object>>> images,
+      ValueNotifier<ImageProvider?> backgroundImage,
       ValueNotifier<Color> color) async {
     final imageProvider = await _pickImage();
     if (imageProvider == null) {
       return;
     }
-
     images.value = List.from(images.value)..add(imageProvider);
-
-    final quantizerResult = await Extract.quantize(imageProvider, 64);
-    final entriesSortedByCountDescending = quantizerResult.argbToCount.entries
-        .toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    final topColor = entriesSortedByCountDescending.first.key;
-    color.value = Color(topColor);
+    backgroundImage.value = imageProvider;
   }
 
   Future<ImageProvider<Object>?> _pickImage() async {

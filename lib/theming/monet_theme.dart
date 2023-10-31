@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
+import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:libmonet/extract/scorer_triad.dart';
 import 'package:libmonet/full_color_scheme.dart';
 import 'package:libmonet/hct.dart';
 import 'package:libmonet/safe_colors.dart';
@@ -54,6 +56,28 @@ class MonetTheme extends StatelessWidget {
       primary: color,
       secondary: analogous.color,
       tertiary: complement.color,
+      contrast: contrast,
+      algo: algo,
+      child: child,
+    );
+  }
+
+  factory MonetTheme.fromQuantizerResult({
+    required Brightness brightness,
+    required double surfaceLstar,
+    required QuantizerResult quantizerResult,
+    double contrast = 0.5,
+    Algo algo = Algo.apca,
+    required Widget child,
+  }) {
+    final triad = ScorerTriad.threeColorsFromQuantizer(
+        brightness == Brightness.light, quantizerResult);
+    return MonetTheme.fromColors(
+      brightness: brightness,
+      surfaceLstar: surfaceLstar,
+      primary: triad[0].color,
+      secondary: triad[1].color,
+      tertiary: triad[2].color,
       contrast: contrast,
       algo: algo,
       child: child,
@@ -447,7 +471,8 @@ class MonetTheme extends StatelessWidget {
       dataRowMinHeight: touchSize,
       dataRowMaxHeight: double.infinity,
       headingRowHeight: (textTheme.headlineMedium!.fontSize! *
-          (textTheme.headlineMedium!.height ?? 1.0)) + 8 /* 4 dp vertical adding */,
+              (textTheme.headlineMedium!.height ?? 1.0)) +
+          8 /* 4 dp vertical adding */,
     );
   }
 
