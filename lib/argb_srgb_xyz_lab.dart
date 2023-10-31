@@ -255,3 +255,7 @@ double _labInvf(double ft) {
     return (116 * ft - 16) / kappa;
   }
 }
+
+double differenceDegrees(double a, double b) {
+  return 180.0 - ((a - b).abs() - 180.0).abs();
+}

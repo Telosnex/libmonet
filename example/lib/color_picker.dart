@@ -16,11 +16,13 @@ class ColorPicker extends HookConsumerWidget {
     super.key,
     required this.color,
     required this.onColorChanged,
+    this.onPhotoLibraryTapped,
   });
 
   final random = Random.secure();
   final Color color;
   final void Function(Color) onColorChanged;
+  final void Function()? onPhotoLibraryTapped;
 
   static const chromaMax = 120.0;
 
@@ -107,6 +109,11 @@ class ColorPicker extends HookConsumerWidget {
             },
             icon: const Icon(Icons.shuffle),
           ),
+          if (onPhotoLibraryTapped != null)
+            IconButton(
+              onPressed: onPhotoLibraryTapped,
+              icon: const Icon(Icons.photo_library),
+            ),
           BrandColorsPopupMenuButton(
             onChanged: (color) => onColorChanged(color),
           ),

@@ -139,6 +139,7 @@ class _HueTone extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height));
     const numberOfHues = 360 ~/ hueResolution;
     const numberOfTones = 100 ~/ toneResolution;
     final cellWidth = size.width / numberOfHues;

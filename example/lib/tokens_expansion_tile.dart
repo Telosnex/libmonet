@@ -29,7 +29,7 @@ class TokensExpansionTile extends ConsumerWidget {
           alignment: Alignment.centerLeft,
           child: DividerTheme(
             data: DividerThemeData(
-              color: monetTheme.secondary.fill,
+              color: monetTheme.primary.fill,
             ),
             child: SizedBox(
               width: double.infinity,

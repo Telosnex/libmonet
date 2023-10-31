@@ -11,6 +11,6 @@ part 'quantizer_provider.g.dart';
 @riverpod
 Future<QuantizerResult> quantizerResult(
     QuantizerResultRef ref, ImageProvider imageProvider) async {
-  final result = await Extract.quantize(imageProvider, 64);
+  final result = await Extract.quantize(imageProvider, 32);
   return result;
 }

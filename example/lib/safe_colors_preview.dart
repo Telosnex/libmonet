@@ -1,16 +1,21 @@
+import 'package:libmonet/opacity.dart';
+import 'package:libmonet/shadows.dart';
 import 'package:monet_studio/padding.dart';
 
 import 'package:flutter/material.dart';
 import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/theming/button_style.dart';
 
-
 class SafeColorsPreviewRow extends StatelessWidget {
   final SafeColors safeColors;
+  final OpacityResult? scrim;
+  final ShadowResult? shadows;
 
   const SafeColorsPreviewRow({
     required this.safeColors,
     super.key,
+    this.scrim,
+    this.shadows,
   });
 
   @override
@@ -19,6 +24,17 @@ class SafeColorsPreviewRow extends StatelessWidget {
   }
 
   Widget _safeColorsRow(BuildContext context, SafeColors colors) {
+    final textButtonStyleBase = textButtonStyleFromColors(safeColors);
+    final textButtonStyle = textButtonStyleBase.copyWith(
+        textStyle: MaterialStateProperty.resolveWith((states) {
+      final base = textButtonStyleBase.textStyle?.resolve(states);
+      if (shadows == null) {
+        return base;
+      }
+      return base?.copyWith(
+        shadows: shadows!.shadows,
+      );
+    }));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -37,12 +53,13 @@ class SafeColorsPreviewRow extends StatelessWidget {
                   onPressed: () {},
                   child: const Text('Fill'),
                 ),
-
                 const HorizontalPadding(),
                 TextButton(
                   onPressed: () {},
-                  style: textButtonStyleFromColors(safeColors),
-                  child: const Text('Text'),
+                  style: textButtonStyle,
+                  child: const Text(
+                    'Text',
+                  ),
                 ),
               ],
             ))

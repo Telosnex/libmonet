@@ -167,6 +167,12 @@ ButtonStyle textButtonStyleFromColors(SafeColors safeColors) {
   return outlineButtonStyleFromColors(safeColors).copyWith(
     side: MaterialStateProperty.all(BorderSide.none),
     backgroundColor: MaterialStateProperty.all(Colors.transparent),
+    textStyle: MaterialStateProperty.all(
+      TextStyle(
+        color: safeColors.text,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
   );
 }
 

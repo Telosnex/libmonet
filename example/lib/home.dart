@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:libmonet/extract/extract.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/color_picker.dart';
@@ -54,7 +55,6 @@ class Home extends HookConsumerWidget {
     final darkSurfaceLstar = useState(10.0);
     final lightSurfaceLstar = useState(93.0);
 
-
     return MonetTheme.fromColor(
       brightness: brightness,
       algo: algo.value,
@@ -64,142 +64,149 @@ class Home extends HookConsumerWidget {
           ? lightSurfaceLstar.value
           : darkSurfaceLstar.value,
       child: Builder(builder: (context) {
-
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
             title: const Text('Monet Studio'),
           ),
-          body: SingleChildScrollView(
-            child: Center(
-              child: ConstrainedBox(
-                constraints:
-                    const BoxConstraints(maxWidth: MonetTheme.maxPanelWidth),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      BackgroundExpansionTile(
-                        darkModeLstarNotifier: darkSurfaceLstar,
-                        lightModeLstarNotifier: lightSurfaceLstar,
-                        brightnessSettingNotifier: brightnessSetting,
-                      ),
-                      const VerticalPadding(),
-                      ColorPicker(
-                        color: color.value,
-                        onColorChanged: (newColor) {
-                          color.value = newColor;
-                        },
-                      ),
-                      const VerticalPadding(),
-                      ExpansionTile(
-                        title: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Text(
-                              'Contrast',
+          body: Stack(
+            children: [
+              if (images.value.isNotEmpty)
+                Positioned.fill(
+                  child: Image(
+                    image: images.value.last,
+                    fit: BoxFit.none,
+                  ),
+                ),
+              SingleChildScrollView(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                        maxWidth: MonetTheme.maxPanelWidth),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          BackgroundExpansionTile(
+                            darkModeLstarNotifier: darkSurfaceLstar,
+                            lightModeLstarNotifier: lightSurfaceLstar,
+                            brightnessSettingNotifier: brightnessSetting,
+                          ),
+                          const VerticalPadding(),
+                          for (final image in images.value)
+                            ExtractedWidget(
+                              image: image,
+                              onColorTapped: (newColor) {
+                                color.value = newColor;
+                                if (images.value.indexOf(image) !=
+                                    images.value.length - 1) {
+                                  final newList =
+                                      List<ImageProvider>.from(images.value);
+                                  final currentIndex = newList.indexOf(image);
+                                  newList.removeAt(currentIndex);
+                                  newList.add(image);
+
+                                  images.value = newList;
+                                }
+                              },
+                            ),
+                          const VerticalPadding(),
+                          ColorPicker(
+                            color: color.value,
+                            onColorChanged: (newColor) {
+                              color.value = newColor;
+                            },
+                            onPhotoLibraryTapped: () {
+                              _uploadImagePressed(ref, images, color);
+                            },
+                          ),
+                          const VerticalPadding(),
+                          ExpansionTile(
+                            title: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Text(
+                                  'Contrast',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineLarge!
+                                      .copyWith(
+                                        color:
+                                            MonetTheme.of(context).primary.text,
+                                      ),
+                                ),
+                                Padding(
+                                  padding: VerticalPadding.inset,
+                                  child: ContrastSlider(
+                                    contrast: contrast.value,
+                                    onContrastChanged: ((newContrast) {
+                                      contrast.value = newContrast;
+                                    }),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ContrastPicker(
+                                  algo: algo.value,
+                                  onAlgoChanged: (newAlgo) {
+                                    algo.value = newAlgo;
+                                  },
+                                  contrast: contrast.value,
+                                  onContrastChanged: (newContrast) {
+                                    contrast.value = newContrast;
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                          _buildComponentPreview(context, contrast, images),
+                          const TokensExpansionTile(),
+                          const VerticalPadding(),
+                          ScrimExpansionTile(
+                            contrast: contrast.value,
+                          ),
+                          const VerticalPadding(),
+                          ExpansionTile(
+                            title: Text(
+                              'Material Components',
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineLarge!
                                   .copyWith(
-                                    color: MonetTheme.of(context).primary.text,
-                                  ),
+                                      color:
+                                          MonetTheme.of(context).primary.text),
                             ),
-                            Padding(
-                              padding: VerticalPadding.inset,
-                              child: ContrastSlider(
-                                contrast: contrast.value,
-                                onContrastChanged: ((newContrast) {
-                                  contrast.value = newContrast;
-                                }),
-                              ),
-                            ),
-                          ],
-                        ),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ContrastPicker(
-                              algo: algo.value,
-                              onAlgoChanged: (newAlgo) {
-                                algo.value = newAlgo;
-                              },
-                              contrast: contrast.value,
-                              onContrastChanged: (newContrast) {
-                                contrast.value = newContrast;
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              SafeColorsPreviewRow(
-                                safeColors: MonetTheme.of(context).primary,
-                              ),
-                              SafeColorsPreviewRow(
-                                safeColors: MonetTheme.of(context).secondary,
-                              ),
-                              SafeColorsPreviewRow(
-                                safeColors: MonetTheme.of(context).tertiary,
+                            children: const [
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: ComponentsWidget(),
                               ),
                             ],
                           ),
-                          const HorizontalPadding(),
-                          buildScrimShadows(context, contrast.value),
+                          const VerticalPadding(),
                         ],
                       ),
-
-                      const TokensExpansionTile(),
-                      const VerticalPadding(),
-                      ScrimExpansionTile(
-                        contrast: contrast.value,
-                      ),
-                      const VerticalPadding(),
-
-                      ExpansionTile(
-                        title: Text(
-                          'Material Components',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineLarge!
-                              .copyWith(
-                                  color: MonetTheme.of(context).primary.text),
-                        ),
-                        children: const [
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: ComponentsWidget(),
-                          ),
-                        ],
-                      ),
-                      const VerticalPadding(),
-                      // ElevatedButton.icon(
-                      //   onPressed: () => _uploadImagePressed(images),
-                      //   icon: const Icon(Icons.photo),
-                      //   label: const Text('Upload Image'),
-                      // ),
-                      for (final image in images.value)
-                        ExtractedWidget(image: image),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       }),
     );
   }
 
-  Widget buildScrimShadows(BuildContext context, double contrast) {
+  Stack _buildComponentPreview(
+    BuildContext context,
+    ValueNotifier<double> contrast,
+    ValueNotifier<List<ImageProvider>> images,
+  ) {
     final monetTheme = MonetTheme.of(context);
     final primaryColors = monetTheme.primary;
     final scrimOpacity = getOpacity(
@@ -207,17 +214,60 @@ class Home extends HookConsumerWidget {
       maxBgLstar: 100,
       algo: monetTheme.algo,
       foregroundLstar: lstarFromArgb(primaryColors.backgroundText.value),
-      contrast: contrast,
+      contrast: contrast.value,
     );
     final shadows = getShadowOpacities(
       minBgLstar: 0,
       maxBgLstar: 100,
       algo: monetTheme.algo,
       foregroundLstar: lstarFromArgb(primaryColors.backgroundText.value),
-      contrast: contrast,
+      contrast: contrast.value,
       blurRadius: 5,
       contentRadius: 3,
     );
+    final previewRowScrim = images.value.isEmpty ? null : scrimOpacity;
+    final previewRowShadows = images.value.isEmpty ? null : shadows;
+
+    return Stack(
+      children: [
+        Wrap(
+          alignment: WrapAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              children: [
+                SafeColorsPreviewRow(
+                  safeColors: MonetTheme.of(context).primary,
+                  scrim: previewRowScrim,
+                  shadows: previewRowShadows,
+                ),
+                SafeColorsPreviewRow(
+                  safeColors: MonetTheme.of(context).secondary,
+                  scrim: previewRowScrim,
+                  shadows: previewRowShadows,
+                ),
+                SafeColorsPreviewRow(
+                  safeColors: MonetTheme.of(context).tertiary,
+                  scrim: previewRowScrim,
+                  shadows: previewRowShadows,
+                ),
+              ],
+            ),
+            const HorizontalPadding(),
+            buildScrimShadows(context, contrast.value, scrimOpacity, shadows),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildScrimShadows(
+    BuildContext context,
+    double contrast,
+    OpacityResult scrimOpacity,
+    ShadowResult shadows,
+  ) {
+    final primaryColors = MonetTheme.of(context).primary;
     final shadowString = StringBuffer();
     shadowString.write('Shadows: ');
     if (shadows.opacities.isEmpty) {
@@ -289,7 +339,9 @@ class Home extends HookConsumerWidget {
   }
 
   void _uploadImagePressed(
-      ValueNotifier<List<ImageProvider<Object>>> images) async {
+      WidgetRef ref,
+      ValueNotifier<List<ImageProvider<Object>>> images,
+      ValueNotifier<Color> color) async {
     final imageProvider = await _pickImage();
     if (imageProvider == null) {
       return;
@@ -297,13 +349,12 @@ class Home extends HookConsumerWidget {
 
     images.value = List.from(images.value)..add(imageProvider);
 
-    // final sw = Stopwatch()..start();
-    // final quantizerResult = await Extract.quantize(imageProvider, 64);
-    // debugPrint('Quantization took ${sw.elapsedMilliseconds}ms');
-    // final entriesSortedByCountDescending = quantizerResult.argbToCount.entries
-    //     .toList()
-    //   ..sort((a, b) => b.value.compareTo(a.value));
-    // final topColor = entriesSortedByCountDescending.first.key;
+    final quantizerResult = await Extract.quantize(imageProvider, 64);
+    final entriesSortedByCountDescending = quantizerResult.argbToCount.entries
+        .toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final topColor = entriesSortedByCountDescending.first.key;
+    color.value = Color(topColor);
   }
 
   Future<ImageProvider<Object>?> _pickImage() async {

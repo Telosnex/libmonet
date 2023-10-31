@@ -5,4 +5,5 @@ export 'cam16_viewing_conditions.dart';
 export 'theming/monet_theme.dart';
 export 'theming/slider_flat.dart';
 export 'opacity.dart';
+export 'extract/scorer_triad.dart';
 export 'shadows.dart';

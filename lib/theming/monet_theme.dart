@@ -1405,7 +1405,7 @@ class MonetTheme extends StatelessWidget {
       trackVisibility: const MaterialStatePropertyAll(true),
       radius: const Radius.circular(thickness / 2.0),
       thumbColor: MaterialStatePropertyAll(colors.fill.withOpacity(0.8)),
-      trackColor: const MaterialStatePropertyAll(Colors.transparent),
+      trackColor: MaterialStatePropertyAll(colors.fillText.withOpacity(0.8)),
       trackBorderColor: const MaterialStatePropertyAll(Colors.transparent),
       interactive: true,
     );
