@@ -1467,20 +1467,15 @@ class MonetTheme extends StatelessWidget {
           color: primary.backgroundText,
           fontWeight: FontWeight.w500,
           height: h),
-      displayMedium: tt.displayMedium!
-          .copyWith(
+      displayMedium: tt.displayMedium!.copyWith(
           fontSize: 22 * scale, color: txtC, fontWeight: med, height: h),
-      displaySmall: tt.displaySmall!
-          .copyWith(
+      displaySmall: tt.displaySmall!.copyWith(
           fontSize: 20 * scale, color: txtC, fontWeight: med, height: h),
-      headlineLarge: tt.headlineLarge!
-          .copyWith(
+      headlineLarge: tt.headlineLarge!.copyWith(
           fontSize: 20 * scale, color: txtC, fontWeight: med, height: h),
-      headlineMedium: tt.headlineMedium!
-          .copyWith(
+      headlineMedium: tt.headlineMedium!.copyWith(
           fontSize: 18 * scale, color: txtC, fontWeight: med, height: h),
-      headlineSmall: tt.headlineSmall!
-          .copyWith(
+      headlineSmall: tt.headlineSmall!.copyWith(
           fontSize: 16 * scale, color: txtC, fontWeight: med, height: h),
       bodyLarge:
           tt.bodyLarge!.copyWith(fontSize: 16 * scale, color: txtC, height: h),
@@ -1493,8 +1488,7 @@ class MonetTheme extends StatelessWidget {
           color: txtC,
           fontWeight: FontWeight.w500,
           height: h),
-      labelMedium:
-          tt.labelMedium!
+      labelMedium: tt.labelMedium!
           .copyWith(fontSize: 14 * scale, color: txtC, height: h),
       labelSmall:
           tt.labelSmall!.copyWith(fontSize: 12 * scale, color: txtC, height: h),

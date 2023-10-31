@@ -1,3 +1,4 @@
+import 'package:libmonet/theming/slider_flat_thumb.dart';
 import 'package:monet_studio/home.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
@@ -39,27 +40,47 @@ class BackgroundExpansionTile extends ConsumerWidget {
       ),
       children: [
         const Text('Dark'),
-        SliderFlat(
-          slider: Slider(
-            value: darkModeLstar,
-            label: 'Tone ${darkModeLstar.round()}',
-            min: 0,
-            max: 100,
-            onChanged: (double value) {
-              darkModeLstarNotifier.value = value;
-            },
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            thumbShape: SliderFlatThumb(
+              borderWidth: 2,
+              borderColor: MonetTheme.of(context).primary.colorBorder,
+              iconColor: MonetTheme.of(context).primary.colorIcon,
+              iconData: Icons.brightness_2,
+            ),
+          ),
+          child: SliderFlat(
+            slider: Slider(
+              value: darkModeLstar,
+              label: 'Tone ${darkModeLstar.round()}',
+              min: 0,
+              max: 100,
+              onChanged: (double value) {
+                darkModeLstarNotifier.value = value;
+              },
+            ),
           ),
         ),
         const Text('Light'),
-        SliderFlat(
-          slider: Slider(
-            value: lightModeLstar,
-            label: 'Tone ${lightModeLstar.round()}',
-            min: 0,
-            max: 100,
-            onChanged: (double value) {
-              lightModeLstarNotifier.value = value;
-            },
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            thumbShape: SliderFlatThumb(
+              borderWidth: 2,
+              borderColor: MonetTheme.of(context).primary.colorBorder,
+              iconColor: MonetTheme.of(context).primary.colorIcon,
+              iconData: Icons.brightness_7,
+            ),
+          ),
+          child: SliderFlat(
+            slider: Slider(
+              value: lightModeLstar,
+              label: 'Tone ${lightModeLstar.round()}',
+              min: 0,
+              max: 100,
+              onChanged: (double value) {
+                lightModeLstarNotifier.value = value;
+              },
+            ),
           ),
         ),
         const VerticalPadding()
