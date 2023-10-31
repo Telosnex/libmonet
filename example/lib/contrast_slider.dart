@@ -29,8 +29,14 @@ class ContrastSlider extends HookConsumerWidget {
           min: 0.1,
           max: 1.0,
           onChanged: (value) {
-            if ((value * 100).round() == 50) {
-              value = 0.5;
+            int rounded = (value * 100).round();
+            int base = (rounded ~/ 25) * 25;
+            if (rounded < base + 3) {
+              value = base / 100.0;
+            } else if (rounded > base + 22) {
+              value = (base + 25) / 100.0;
+            } else {
+              value = rounded / 100.0;
             }
             onContrastChanged(value);
           },
