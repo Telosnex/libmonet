@@ -36,5 +36,9 @@ String hexFromArgb(int argb, {bool leadingHashSign = true}) {
 }
 
 int? argbFromHex(String hex) {
-  return int.tryParse(hex.replaceAll('#', ''), radix: 16);
+  hex = hex.replaceAll('#', '');
+  if (hex.length == 6) {
+    hex = 'FF$hex'; // add alpha if it's missing
+  }
+  return int.tryParse(hex, radix: 16);
 }
