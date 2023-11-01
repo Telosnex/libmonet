@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,20 @@ import 'package:libmonet/temperature.dart';
 import 'package:libmonet/theming/button_style.dart';
 import 'package:libmonet/theming/slider_flat_shape.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
+
+extension on double {
+  /// Returns an adjusted scale value for width and height.
+  ///
+  /// This method adjusts a scale between 0.00 and 1.00 to be perceptually more
+  /// accurate when it comes to scaling two-dimensional areas like rectangles.
+  /// When you scale both width and height by a certain factor, the resulting
+  /// area is scaled by the square of this factor. To give the intuitive effect
+  /// of "half as big" when scaling, this method computes the square root of the
+  /// input scale.
+  double get sizeScale {
+    return math.sqrt(this);
+  }
+}
 
 class MonetTheme extends StatelessWidget {
   final SafeColors primary;
@@ -1420,7 +1435,7 @@ class MonetTheme extends StatelessWidget {
 
   static IconThemeData iconThemeData(SafeColors colors, double scale) {
     return IconThemeData(
-      size: 24.0 * scale,
+      size: 24.0 * scale.sizeScale,
       fill: 0.0,
       weight: 400.0,
       grade: 0.0,
@@ -1457,7 +1472,7 @@ class MonetTheme extends StatelessWidget {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
     };
-
+    scale = scale.sizeScale;
     final txtC = primary.backgroundText;
     const h = null; // Respect font's settings. This is much better than setting
     // it, it feels like playing whack-a-mole even with one font to tune it for
