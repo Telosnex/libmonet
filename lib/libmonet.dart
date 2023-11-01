@@ -7,3 +7,4 @@ export 'theming/slider_flat.dart';
 export 'opacity.dart';
 export 'extract/scorer_triad.dart';
 export 'shadows.dart';
+export 'hex_codes.dart';
