@@ -1459,14 +1459,13 @@ class MonetTheme extends StatelessWidget {
     };
 
     final txtC = primary.backgroundText;
-    const h = null;
+    const h = null; // Respect font's settings. This is much better than setting
+    // it, it feels like playing whack-a-mole even with one font to tune it for
+    // all the components.
     const med = FontWeight.w500;
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
-          fontSize: 24,
-          color: primary.backgroundText,
-          fontWeight: FontWeight.w500,
-          height: h),
+          fontSize: 24 * scale, color: txtC, fontWeight: med, height: h),
       displayMedium: tt.displayMedium!.copyWith(
           fontSize: 22 * scale, color: txtC, fontWeight: med, height: h),
       displaySmall: tt.displaySmall!.copyWith(
