@@ -146,6 +146,20 @@ List<double> labFromArgb(int argb) {
   return [l, a, b];
 }
 
+List<double> xyzFromArgb(int argb) {
+  final linearR = linear(redFromArgb(argb));
+  final linearG = linear(greenFromArgb(argb));
+  final linearB = linear(blueFromArgb(argb));
+  const matrix = kSrgbToXyz;
+  final x =
+      matrix[0][0] * linearR + matrix[0][1] * linearG + matrix[0][2] * linearB;
+  final y =
+      matrix[1][0] * linearR + matrix[1][1] * linearG + matrix[1][2] * linearB;
+  final z =
+      matrix[2][0] * linearR + matrix[2][1] * linearG + matrix[2][2] * linearB;
+  return [x, y, z];
+}
+
 /// Converts an L* value to an ARGB representation.
 ///
 /// [lstar] L* in L*a*b*
