@@ -28,7 +28,7 @@ class Extract {
       ImageProvider imageProvider, int count,
       {bool debug = false}) async {
     final sw = Stopwatch()..start();
-    final byteData = await _imageProviderScaledRgba(imageProvider, 96);
+    final byteData = await imageProviderToScaledRgba(imageProvider, 96);
     monetDebug(
         debug, () => '[Extract] downscaled in ${sw.elapsedMilliseconds}ms');
     if (byteData.lengthInBytes == 0) {
@@ -41,7 +41,7 @@ class Extract {
 
     sw.reset();
     final argbBytes =
-        bytes.map(_rgbaToArgb).where((e) => alphaFromArgb(e) == 255).toList();
+        bytes.map(rgbaToArgb).where((e) => alphaFromArgb(e) == 255).toList();
     monetDebug(debug, () => '[Extract] ARGB in ${sw.elapsedMilliseconds}ms');
 
     sw.reset();
@@ -58,7 +58,7 @@ class Extract {
   }
 }
 
-int _rgbaToArgb(int rgba) {
+int rgbaToArgb(int rgba) {
   int r = (rgba >> 0) & 0xFF;
   int g = (rgba >> 8) & 0xFF;
   int b = (rgba >> 16) & 0xFF;
@@ -74,7 +74,7 @@ class ImageToBytesResponse {
   ImageToBytesResponse(this.byteData, this.imageInfo);
 }
 
-Future<ByteData> _imageProviderScaledRgba(
+Future<ByteData> imageProviderToScaledRgba(
     ImageProvider imageProvider, double maxDimension) {
   final stream = imageProvider
       .resolve(ImageConfiguration(size: Size(maxDimension, maxDimension)));
