@@ -145,7 +145,7 @@ OpacityResult getOpacity({
   final oPMaxRaw = (lPFMax - lBMax) / (lPMax - lBMax);
 
   double? cleanRawOpacity(double rawOpacity) {
-    if (rawOpacity.isInfinite || rawOpacity.isNaN) {
+    if (rawOpacity.isInfinite || rawOpacity.isNaN || rawOpacity < 0) {
       return null;
     }
     final clamped = rawOpacity.clamp(0.0, 1.0);
