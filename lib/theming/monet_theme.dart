@@ -3,11 +3,12 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:libmonet/extract/scorer_triad.dart';
 import 'package:libmonet/full_color_scheme.dart';
 import 'package:libmonet/hct.dart';
-import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/temperature.dart';
 import 'package:libmonet/theming/button_style.dart';
@@ -150,11 +151,6 @@ class MonetTheme extends StatelessWidget {
     final _MonetInheritedTheme? inheritedTheme =
         context.dependOnInheritedWidgetOfExactType<_MonetInheritedTheme>();
     return inheritedTheme!.theme;
-  }
-
-  List<Shadow> shadowsForColor(Color color, double blurRadius) {
-    return getShadowsForColor(color,
-        contrast: contrast, algo: algo, blurRadius: blurRadius).shadows;
   }
 
   @override
