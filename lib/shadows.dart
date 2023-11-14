@@ -38,6 +38,25 @@ class ShadowResult {
   }
 }
 
+ShadowResult getShadowsForColor(
+  Color color, {
+  required double contrast,
+  required Algo algo,
+  required double blurRadius,
+  double contentRadius = -1.0,
+}) {
+  final foregroundLstar = lstarFromArgb(color.value);
+  return getShadowOpacities(
+    minBgLstar: foregroundLstar,
+    maxBgLstar: foregroundLstar,
+    foregroundLstar: foregroundLstar,
+    contrast: contrast,
+    algo: algo,
+    blurRadius: blurRadius,
+    contentRadius: contentRadius,
+  );
+}
+
 ShadowResult getShadowOpacities({
   required double minBgLstar,
   required double maxBgLstar,
@@ -77,10 +96,10 @@ ShadowResult getShadowOpacities({
       debug,
       () =>
           'shadow is color ${hexFromArgb(argbFromLstar(opacityResult.lstar))}');
-  final sigma = convertRadiusToSigma(blurRadius);
+  final sigma = _convertRadiusToSigma(blurRadius);
   final gaussians = List.generate(blurRadius.round() * 2 + 1, (index) {
     final i = index - blurRadius;
-    return gauss1d(i, sigma);
+    return _gauss1d(i, sigma);
   });
   final total = gaussians.reduce((a, b) => a + b);
   final normalizedGaussians = gaussians.map((e) => e / total).toList();
@@ -160,7 +179,7 @@ ShadowResult getShadowOpacities({
       break;
     }
   }
-  final rawMath = numApplications(
+  final rawMath = _numApplications(
       lumaFromLstar(opacityResult.requiredLstar),
       lumaFromLstar(opacityResult.lstar),
       opacityResult.lstar > minBgLstar
@@ -176,17 +195,17 @@ ShadowResult getShadowOpacities({
   );
 }
 
-double numApplications(double finalBg, double fg, double bg, double opacity) {
+double _numApplications(double finalBg, double fg, double bg, double opacity) {
   return math.log((finalBg - fg) / (bg - fg)) / math.log(1.0 - opacity);
 }
 
-double gauss1d(double x, double sigma) {
+double _gauss1d(double x, double sigma) {
   return (1 / (sigma * math.sqrt(2 * math.pi))) *
       math.exp(-(x * x) / (2 * sigma * sigma));
 }
 
 // See SkBlurMask::ConvertRadiusToSigma().
 // <https://github.com/google/skia/blob/bb5b77db51d2e149ee66db284903572a5aac09be/src/effects/SkBlurMask.cpp#L23>
-double convertRadiusToSigma(double radius) {
+double _convertRadiusToSigma(double radius) {
   return radius > 0 ? radius * 0.57735 + 0.5 : 0;
 }
