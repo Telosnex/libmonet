@@ -1454,7 +1454,14 @@ class MonetTheme extends StatelessWidget {
       trackVisibility: const MaterialStatePropertyAll(true),
       radius: const Radius.circular(thickness / 2.0),
       thumbColor: MaterialStatePropertyAll(colors.fill),
-      trackColor: MaterialStatePropertyAll(colors.background),
+      // Protecting the thumb from the background color is a bit tricky.
+      // ex. text fields become scrollable when their content exceeds maxLines
+      // and if a background color is specified, it clips over something in the
+      // text field (can't remember what) and looks odd.
+      //
+      // Instead, ScrollbarThemeData should be overriden in cases with a
+      // unknown background color.
+      trackColor: const MaterialStatePropertyAll(Colors.transparent),
       trackBorderColor: const MaterialStatePropertyAll(Colors.transparent),
       interactive: true,
     );
