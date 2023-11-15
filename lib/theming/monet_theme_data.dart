@@ -76,7 +76,7 @@ class MonetThemeData {
       typography: typography ?? this.typography,
     );
   }
-  
+
   factory MonetThemeData.fromColor({
     required double backgroundTone,
     required Brightness brightness,
@@ -159,6 +159,7 @@ class MonetThemeData {
   ThemeData? _cachedThemeData;
   ThemeData createThemeData(BuildContext context) {
     if (_cachedThemeData != null) {
+      print('avoided recomputing theme data');
       return _cachedThemeData!;
     }
     final primaryColorLight =
@@ -1520,14 +1521,12 @@ class MonetThemeData {
           color: txtC,
           fontWeight: med,
           height: h),
-      bodyLarge: tt.bodyLarge!
-          .copyWith(
+      bodyLarge: tt.bodyLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
           fontSize: 14 * ptsToDp * scale,
           color: txtC,
           height: h),
-      bodyMedium: tt.bodyMedium!
-          .copyWith(
+      bodyMedium: tt.bodyMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
           fontSize: 12 * ptsToDp * scale,
           color: txtC,
@@ -1539,14 +1538,12 @@ class MonetThemeData {
           color: txtC,
           fontWeight: FontWeight.w500,
           height: h),
-      labelMedium: tt.labelMedium!
-          .copyWith(
+      labelMedium: tt.labelMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
           fontSize: 12 * ptsToDp * scale,
           color: txtC,
           height: h),
-      labelSmall: tt.labelSmall!
-          .copyWith(
+      labelSmall: tt.labelSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
           fontSize: 10 * ptsToDp * scale,
           color: txtC,
