@@ -53,6 +53,30 @@ class MonetThemeData {
     this.typography,
   });
 
+  MonetThemeData copyWith({
+    SafeColors? primary,
+    SafeColors? secondary,
+    SafeColors? tertiary,
+    Algo? algo,
+    double? backgroundTone,
+    Brightness? brightness,
+    double? contrast,
+    double? scale,
+    Typography Function(ColorScheme)? typography,
+  }) {
+    return MonetThemeData(
+      primary: primary ?? this.primary,
+      secondary: secondary ?? this.secondary,
+      tertiary: tertiary ?? this.tertiary,
+      algo: algo ?? this.algo,
+      backgroundTone: backgroundTone ?? this.backgroundTone,
+      brightness: brightness ?? this.brightness,
+      contrast: contrast ?? this.contrast,
+      scale: scale ?? this.scale,
+      typography: typography ?? this.typography,
+    );
+  }
+  
   factory MonetThemeData.fromColor({
     required double backgroundTone,
     required Brightness brightness,
