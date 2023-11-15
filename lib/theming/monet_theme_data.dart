@@ -1542,11 +1542,13 @@ class MonetThemeData {
       labelMedium: tt.labelMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
           fontSize: 12 * ptsToDp * scale,
+          fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
       labelSmall: tt.labelSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
           fontSize: 10 * ptsToDp * scale,
+          fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
     );
