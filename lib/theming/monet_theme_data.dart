@@ -29,6 +29,7 @@ class MonetThemeData {
   final Typography Function(ColorScheme)? typography;
 
   static const double buttonElevation = 16.0;
+
   /// The maximum width of any content panel.
   ///
   /// 1040 dp; 8.5" - 1" margins = 6.5" * 160 dp / in.
@@ -154,7 +155,8 @@ class MonetThemeData {
 
     final typographyData =
         typography?.call(colorScheme) ?? _typography(colorScheme);
-    final textTheme = createTextTheme(typographyData, scale);
+    final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
+    final textTheme = createTextTheme(typographyData, scale, devicePixelRatio);
 
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
@@ -1444,12 +1446,13 @@ class MonetThemeData {
     );
   }
 
-  TextTheme createTextTheme(Typography typography, double scale) {
+  TextTheme createTextTheme(
+      Typography typography, double scale, double devicePixelRatio) {
     final tt = switch (brightness) {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
     };
-    scale = scale.sizeScale;
+    scale = scale.sizeScale / devicePixelRatio;
     final txtC = primary.backgroundText;
     const h = null; // Respect font's settings. This is much better than setting
     // it, it feels like playing whack-a-mole even with one font to tune it for
@@ -1487,14 +1490,11 @@ class MonetThemeData {
           color: txtC,
           fontWeight: med,
           height: h),
-      bodyLarge:
-          tt.bodyLarge!
+      bodyLarge: tt.bodyLarge!
           .copyWith(fontSize: 14 * ptsToDp * scale, color: txtC, height: h),
-      bodyMedium:
-          tt.bodyMedium!
+      bodyMedium: tt.bodyMedium!
           .copyWith(fontSize: 12 * ptsToDp * scale, color: txtC, height: h),
-      bodySmall:
-          tt.bodySmall!
+      bodySmall: tt.bodySmall!
           .copyWith(fontSize: 10 * ptsToDp * scale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
           fontSize: 12 * ptsToDp * scale,
@@ -1503,8 +1503,7 @@ class MonetThemeData {
           height: h),
       labelMedium: tt.labelMedium!
           .copyWith(fontSize: 10 * ptsToDp * scale, color: txtC, height: h),
-      labelSmall:
-          tt.labelSmall!
+      labelSmall: tt.labelSmall!
           .copyWith(fontSize: 8 * ptsToDp * scale, color: txtC, height: h),
     );
     return textTheme;
