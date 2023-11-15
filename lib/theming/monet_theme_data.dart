@@ -1461,50 +1461,72 @@ class MonetThemeData {
     const ptsToDp = 160.0 / 72.0;
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 30 * ptsToDp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       displayMedium: tt.displayMedium!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 26 * ptsToDp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       displaySmall: tt.displaySmall!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 24 * ptsToDp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineLarge: tt.headlineLarge!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 22 * ptsToDp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineMedium: tt.headlineMedium!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 20 * ptsToDp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineSmall: tt.headlineSmall!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 18 * ptsToDp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       bodyLarge: tt.bodyLarge!
-          .copyWith(fontSize: 14 * ptsToDp * scale, color: txtC, height: h),
+          .copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
+          fontSize: 14 * ptsToDp * scale,
+          color: txtC,
+          height: h),
       bodyMedium: tt.bodyMedium!
-          .copyWith(fontSize: 12 * ptsToDp * scale, color: txtC, height: h),
+          .copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
+          fontSize: 12 * ptsToDp * scale,
+          color: txtC,
+          height: h),
       bodySmall: tt.bodySmall!
           .copyWith(fontSize: 10 * ptsToDp * scale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 12 * ptsToDp * scale,
+          fontSize: 14 * ptsToDp * scale,
           color: txtC,
           fontWeight: FontWeight.w500,
           height: h),
       labelMedium: tt.labelMedium!
-          .copyWith(fontSize: 10 * ptsToDp * scale, color: txtC, height: h),
+          .copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
+          fontSize: 12 * ptsToDp * scale,
+          color: txtC,
+          height: h),
       labelSmall: tt.labelSmall!
-          .copyWith(fontSize: 8 * ptsToDp * scale, color: txtC, height: h),
+          .copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
+          fontSize: 10 * ptsToDp * scale,
+          color: txtC,
+          height: h),
     );
     return textTheme;
   }
