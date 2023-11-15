@@ -11,6 +11,10 @@ class MonetTheme extends StatelessWidget {
   SafeColors get secondary => monetThemeData.secondary;
   SafeColors get tertiary => monetThemeData.tertiary;
   Algo get algo => monetThemeData.algo;
+  Brightness get brightness => monetThemeData.brightness;
+  double get contrast => monetThemeData.contrast;
+  double get scale => monetThemeData.scale;
+  double get backgroundTone => monetThemeData.backgroundTone;
   
   const MonetTheme({
     super.key,
