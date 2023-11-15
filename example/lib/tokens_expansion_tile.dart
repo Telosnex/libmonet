@@ -35,7 +35,6 @@ class TokensExpansionTile extends ConsumerWidget {
               width: double.infinity,
               child: DataTable(columns: const [
                 DataColumn(label: Text('Name')),
-                    
                 DataColumn(label: Text('')),
                 DataColumn(label: Text('Hex'), numeric: true),
                 DataColumn(label: Text('H'), numeric: true),

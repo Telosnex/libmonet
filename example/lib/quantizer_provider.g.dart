@@ -6,7 +6,7 @@ part of 'quantizer_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$quantizerResultHash() => r'abf2880f5547cf2c92374c5e13866aeaf3d6f96e';
+String _$quantizerResultHash() => r'28fdc7a6d0bba59cd2456e24f8ee7a0573fb309f';
 
 /// Copied from Dart SDK
 class _SystemHash {

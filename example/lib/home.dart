@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/color_picker.dart';
@@ -77,7 +78,8 @@ class Home extends HookConsumerWidget {
               child: Center(
                 child: ConstrainedBox(
                   constraints:
-                      const BoxConstraints(maxWidth: MonetTheme.maxPanelWidth),
+                      const BoxConstraints(
+                      maxWidth: MonetThemeData.maxPanelWidth),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
@@ -161,21 +163,25 @@ class Home extends HookConsumerWidget {
         ? lightSurfaceLstar.value
         : darkSurfaceLstar.value;
     final answer = switch (imageQuantizerResult) {
-      (QuantizerResult e) => MonetTheme.fromQuantizerResult(
+      (QuantizerResult e) => MonetTheme(
+          monetThemeData: MonetThemeData.fromQuantizerResult(
           brightness: brightness,
-          surfaceLstar: surfaceLstar,
+            backgroundTone: surfaceLstar,
           quantizerResult: e,
           contrast: contrast.value,
           algo: algo.value,
-          scale: scale.value,
+            scale: scale.value,
+          ),
           child: ui),
-      _ => MonetTheme.fromColor(
+      _ => MonetTheme(
+          monetThemeData: MonetThemeData.fromColor(
           brightness: brightness,
           algo: algo.value,
           contrast: contrast.value,
           color: color.value,
-          surfaceLstar: surfaceLstar,
-          scale: scale.value,
+            backgroundTone: surfaceLstar,
+            scale: scale.value,
+          ),
           child: ui,
         )
     };
