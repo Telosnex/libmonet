@@ -159,7 +159,8 @@ class MonetThemeData {
   ThemeData? _cachedThemeData;
   ThemeData createThemeData(BuildContext context) {
     if (_cachedThemeData != null) {
-      print('avoided recomputing theme data');
+      // This is surprisingly helpful: when a popup menu is opened, it would
+      // otherwise have to create a ThemeData.
       return _cachedThemeData!;
     }
     final primaryColorLight =
