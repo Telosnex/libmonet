@@ -1484,88 +1484,88 @@ class MonetThemeData {
     // it, it feels like playing whack-a-mole even with one font to tune it for
     // all the components.
     const med = FontWeight.w500;
-    const ptsToDp = 1.0;
+    const ptsToLp = 96.0 / 72.0;
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 30 * ptsToDp * scale,
+          fontSize: 30 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       displayMedium: tt.displayMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 26 * ptsToDp * scale,
+          fontSize: 26 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       displaySmall: tt.displaySmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 24 * ptsToDp * scale,
+          fontSize: 24 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleLarge: tt.headlineLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 22 * ptsToDp * scale,
+          fontSize: 22 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleMedium: tt.headlineMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 20 * ptsToDp * scale,
+          fontSize: 20 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleSmall: tt.headlineSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 18 * ptsToDp * scale,
+          fontSize: 18 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineLarge: tt.headlineLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 22 * ptsToDp * scale,
+          fontSize: 22 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineMedium: tt.headlineMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 20 * ptsToDp * scale,
+          fontSize: 20 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineSmall: tt.headlineSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 18 * ptsToDp * scale,
+          fontSize: 18 * ptsToLp * scale,
           color: txtC,
           fontWeight: med,
           height: h),
       bodyLarge: tt.bodyLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 14 * ptsToDp * scale,
+          fontSize: 14 * ptsToLp * scale,
           color: txtC,
           height: h),
       bodyMedium: tt.bodyMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 12 * ptsToDp * scale,
+          fontSize: 12 * ptsToLp * scale,
           color: txtC,
           height: h),
       bodySmall: tt.bodySmall!
-          .copyWith(fontSize: 10 * ptsToDp * scale, color: txtC, height: h),
+          .copyWith(fontSize: 10 * ptsToLp * scale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 14 * ptsToDp * scale,
+          fontSize: 14 * ptsToLp * scale,
           color: txtC,
           fontWeight: FontWeight.w500,
           height: h),
       labelMedium: tt.labelMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 12 * ptsToDp * scale,
+          fontSize: 12 * ptsToLp * scale,
           fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
       labelSmall: tt.labelSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 10 * ptsToDp * scale,
+          fontSize: 10 * ptsToLp * scale,
           fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
