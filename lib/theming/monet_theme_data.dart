@@ -1478,7 +1478,7 @@ class MonetThemeData {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
     };
-    scale = scale.sizeScale / devicePixelRatio;
+    scale = scale.sizeScale;
     final txtC = primary.backgroundText;
     const h = null; // Respect font's settings. This is much better than setting
     // it, it feels like playing whack-a-mole even with one font to tune it for
