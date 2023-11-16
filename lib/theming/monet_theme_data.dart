@@ -1484,7 +1484,7 @@ class MonetThemeData {
     // it, it feels like playing whack-a-mole even with one font to tune it for
     // all the components.
     const med = FontWeight.w500;
-    const ptsToDp = 160.0 / 72.0;
+    const ptsToDp = 1.0;
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
