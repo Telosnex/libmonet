@@ -1412,7 +1412,7 @@ class MonetThemeData {
       borderRadius: BorderRadius.circular(8),
     );
     return InputDecorationTheme(
-      isCollapsed: true,
+      isCollapsed: false,
       isDense: true,
       fillColor: colors.background,
       filled: true,
