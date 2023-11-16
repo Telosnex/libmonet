@@ -1504,6 +1504,24 @@ class MonetThemeData {
           color: txtC,
           fontWeight: med,
           height: h),
+      titleLarge: tt.headlineLarge!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
+          fontSize: 22 * ptsToDp * scale,
+          color: txtC,
+          fontWeight: med,
+          height: h),
+      titleMedium: tt.headlineMedium!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
+          fontSize: 20 * ptsToDp * scale,
+          color: txtC,
+          fontWeight: med,
+          height: h),
+      titleSmall: tt.headlineSmall!.copyWith(
+          leadingDistribution: TextLeadingDistribution.even,
+          fontSize: 18 * ptsToDp * scale,
+          color: txtC,
+          fontWeight: med,
+          height: h),
       headlineLarge: tt.headlineLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
           fontSize: 22 * ptsToDp * scale,
