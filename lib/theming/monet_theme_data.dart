@@ -625,7 +625,7 @@ class MonetThemeData {
     return ExpansionTileThemeData(
       backgroundColor: colors.background,
       collapsedBackgroundColor: colors.background,
-      tilePadding: const EdgeInsets.symmetric(horizontal: 8),
+      tilePadding: EdgeInsets.zero,
       /* Match default */
       expandedAlignment: Alignment.center,
       // Don't enforce minimum padding, let content decide.
@@ -641,6 +641,7 @@ class MonetThemeData {
           width: 2,
         ),
       ),
+      
       collapsedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
