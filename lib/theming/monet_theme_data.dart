@@ -868,7 +868,7 @@ class MonetThemeData {
       indicatorShape: const StadiumBorder(), // match default
       labelTextStyle:
           MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-        final TextStyle style = textTheme.labelMedium!;
+        final TextStyle style = textTheme.labelLarge!;
         return style.apply(
           color: states.contains(MaterialState.selected)
               ? colors.text
@@ -884,9 +884,9 @@ class MonetThemeData {
       backgroundColor: colors.background,
       elevation: 0,
       unselectedLabelTextStyle:
-          textTheme.labelMedium!.copyWith(color: colors.backgroundText),
+          textTheme.labelLarge!.copyWith(color: colors.backgroundText),
       selectedLabelTextStyle:
-          textTheme.labelMedium!.copyWith(color: colors.text),
+          textTheme.labelLarge!.copyWith(color: colors.text),
       unselectedIconTheme:
           iconThemeData(colors, scale).copyWith(color: colors.backgroundText),
       selectedIconTheme:
@@ -1000,7 +1000,7 @@ class MonetThemeData {
         ),
       ),
       textStyle: MaterialStatePropertyAll(textTheme.bodyMedium),
-      hintStyle: MaterialStatePropertyAll(textTheme.labelMedium),
+      hintStyle: MaterialStatePropertyAll(textTheme.labelLarge),
       constraints: const BoxConstraints(
           minWidth: 360.0, maxWidth: 800.0, minHeight: 56.0), // match default
     );
@@ -1204,10 +1204,10 @@ class MonetThemeData {
       indicatorColor: colors.fill,
       indicatorSize: TabBarIndicatorSize.label,
       dividerColor: Colors.transparent,
-      labelColor: colors.fill,
+      labelColor: colors.text,
       labelStyle: textTheme.labelLarge,
       unselectedLabelColor: labelColor,
-      unselectedLabelStyle: textTheme.labelMedium,
+      unselectedLabelStyle: textTheme.labelLarge,
       overlayColor: MaterialStateProperty.resolveWith(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.selected)) {
