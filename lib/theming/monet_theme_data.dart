@@ -1205,7 +1205,7 @@ class MonetThemeData {
       indicatorSize: TabBarIndicatorSize.label,
       dividerColor: Colors.transparent,
       labelColor: colors.fill,
-      labelStyle: textTheme.labelMedium,
+      labelStyle: textTheme.labelLarge,
       unselectedLabelColor: labelColor,
       unselectedLabelStyle: textTheme.labelMedium,
       overlayColor: MaterialStateProperty.resolveWith(
