@@ -1328,7 +1328,7 @@ class MonetThemeData {
   static ToggleButtonsThemeData toggleButtonsThemeData(
       SafeColors colors, TextTheme textTheme) {
     return ToggleButtonsThemeData(
-      textStyle: textTheme.bodyMedium,
+      textStyle: textTheme.labelLarge,
       constraints: const BoxConstraints(
         minWidth: touchSize,
         minHeight: touchSize - 8,
