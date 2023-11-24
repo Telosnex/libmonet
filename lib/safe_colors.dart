@@ -103,7 +103,7 @@ class SafeColors {
     final colorBorder = !needBorder
         ? colorHct.tone
         : contrastingLstar(
-            withLstar: backgroundLstar,
+            withLstar: colorHct.tone,
             usage: Usage.fill,
             by: algo,
             contrast: contrast,
