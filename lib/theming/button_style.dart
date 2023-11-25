@@ -45,7 +45,7 @@ ButtonStyle elevatedButtonStyleFromColors(SafeColors safeColors,
   );
 }
 
-ButtonStyle filledButtonFromFill(SafeColors safeColors) {
+ButtonStyle filledButtonFromFill(SafeColors safeColors, {TextStyle? textStyle}) {
   final alwaysSurface = stateColors(
     color: safeColors.fill,
     hover: safeColors.fill,
@@ -64,13 +64,16 @@ ButtonStyle filledButtonFromFill(SafeColors safeColors) {
       hover: safeColors.fillHoverText,
       splash: safeColors.fillSplashText,
     ),
+    textStyle: textStyle != null
+        ? MaterialStateProperty.all(textStyle)
+        : MaterialStateProperty.all(null),
     side: MaterialStateProperty.all(
       BorderSide(color: safeColors.colorBorder, width: 2),
     ),
   );
 }
 
-ButtonStyle filledButtonFromColor(SafeColors safeColors) {
+ButtonStyle filledButtonFromColor(SafeColors safeColors, {TextStyle? textStyle}) {
   final alwaysSurface = stateColors(
     color: safeColors.color,
     hover: safeColors.color,
@@ -89,6 +92,9 @@ ButtonStyle filledButtonFromColor(SafeColors safeColors) {
       hover: safeColors.colorHoverText,
       splash: safeColors.colorSplashText,
     ),
+    textStyle: textStyle != null
+        ? MaterialStateProperty.all(textStyle)
+        : MaterialStateProperty.all(null),
     side: MaterialStateProperty.all(
       BorderSide(color: safeColors.colorBorder, width: 2),
     ),
