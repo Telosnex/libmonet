@@ -44,12 +44,12 @@ class SafeColorsPreviewRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FilledButton(
-                    style: filledButtonFromColor(colors),
+                    style: filledButtonBackgroundIsColor(colors),
                     onPressed: () {},
                     child: const Text('Color')),
                 const HorizontalPadding(),
                 FilledButton(
-                  style: filledButtonFromFill(colors),
+                  style: filledButtonBackgroundIsFill(colors),
                   onPressed: () {},
                   child: const Text('Fill'),
                 ),

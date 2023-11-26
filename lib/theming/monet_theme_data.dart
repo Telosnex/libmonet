@@ -653,7 +653,7 @@ class MonetThemeData {
   }
 
   static FilledButtonThemeData filledButtonTheme(SafeColors colors) {
-    return FilledButtonThemeData(style: filledButtonFromColor(colors));
+    return FilledButtonThemeData(style: filledButtonBackgroundIsColor(colors));
   }
 
   static FloatingActionButtonThemeData fabThemeData(
@@ -1249,7 +1249,7 @@ class MonetThemeData {
     return TimePickerThemeData(
       backgroundColor: colors.background,
       cancelButtonStyle: outlineButtonStyleFromColors(colors),
-      confirmButtonStyle: filledButtonFromColor(colors),
+      confirmButtonStyle: filledButtonBackgroundIsColor(colors),
       dayPeriodBorderSide: BorderSide(
         color: colors.fill,
         width: 2,

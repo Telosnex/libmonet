@@ -40,12 +40,42 @@ MaterialStateProperty<Color> stateColors(
 
 ButtonStyle elevatedButtonStyleFromColors(SafeColors safeColors,
     {double elevation = MonetThemeData.buttonElevation}) {
-  return filledButtonFromColor(safeColors).copyWith(
+  return filledButtonBackgroundIsColor(safeColors).copyWith(
     elevation: MaterialStatePropertyAll(elevation),
   );
 }
 
-ButtonStyle filledButtonFromFill(SafeColors safeColors, {TextStyle? textStyle}) {
+ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
+    {TextStyle? textStyle}) {
+  final alwaysSurface = stateColors(
+    color: safeColors.background,
+    hover: safeColors.background,
+    splash: safeColors.background,
+  );
+  return ButtonStyle(
+    backgroundColor: alwaysSurface,
+    surfaceTintColor: alwaysSurface,
+    overlayColor: stateColors(
+      color: safeColors.background,
+      hover: safeColors.textHover,
+      splash: safeColors.textSplash,
+    ),
+    foregroundColor: stateColors(
+      color: safeColors.text,
+      hover: safeColors.textHoverText,
+      splash: safeColors.textSplashText,
+    ),
+    textStyle: textStyle != null
+        ? MaterialStateProperty.all(textStyle)
+        : MaterialStateProperty.all(null),
+    side: MaterialStateProperty.all(
+      BorderSide(color: safeColors.colorBorder, width: 2),
+    ),
+  );
+}
+
+ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
+    {TextStyle? textStyle}) {
   final alwaysSurface = stateColors(
     color: safeColors.fill,
     hover: safeColors.fill,
@@ -73,7 +103,8 @@ ButtonStyle filledButtonFromFill(SafeColors safeColors, {TextStyle? textStyle}) 
   );
 }
 
-ButtonStyle filledButtonFromColor(SafeColors safeColors, {TextStyle? textStyle}) {
+ButtonStyle filledButtonBackgroundIsColor(SafeColors safeColors,
+    {TextStyle? textStyle}) {
   final alwaysSurface = stateColors(
     color: safeColors.color,
     hover: safeColors.color,
