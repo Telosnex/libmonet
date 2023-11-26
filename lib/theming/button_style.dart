@@ -69,7 +69,7 @@ ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
         ? MaterialStateProperty.all(textStyle)
         : MaterialStateProperty.all(null),
     side: MaterialStateProperty.all(
-      BorderSide(color: safeColors.colorBorder, width: 2),
+      BorderSide(color: safeColors.fill, width: 2),
     ),
   );
 }
@@ -98,7 +98,7 @@ ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
         ? MaterialStateProperty.all(textStyle)
         : MaterialStateProperty.all(null),
     side: MaterialStateProperty.all(
-      BorderSide(color: safeColors.fill, width: 2),
+      BorderSide(color: safeColors.colorBorder, width: 2),
     ),
   );
 }
