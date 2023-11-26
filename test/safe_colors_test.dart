@@ -11,7 +11,7 @@ void main() {
     test('light mode', () {
       final colors = SafeColors.from(
         const Color(0xff334157),
-        backgroundLstar: 100.0,
+        backgroundTone: 100.0,
       );
       expect(colors.color, isColor(0xff334157));
       expect(colors.colorBorder, isColor(0xff334157));
@@ -38,7 +38,7 @@ void main() {
     test('dark mode', () {
       final colors = SafeColors.from(
         const Color(0xff334157),
-        backgroundLstar: 0.0,
+        backgroundTone: 0.0,
       );
       expect(colors.color, isColor(0xff334157));
       expect(colors.colorBorder, isColor(0xff8391AA));
@@ -67,7 +67,7 @@ void main() {
     const color = Color(0xff334157);
 
     test('generate light mode test code', () {
-      final answers = SafeColors.from(color, backgroundLstar: 100.0);
+      final answers = SafeColors.from(color, backgroundTone: 100.0);
       final code = '''
       expect(colors.color, isColor(${hexFromArgb(color.value).replaceAll('#', '0xff')}));
       expect(colors.colorBorder, isColor(${hexFromArgb(answers.colorBorder.value).replaceAll('#', '0xff')}));
@@ -95,7 +95,7 @@ void main() {
     });
 
     test('generate dark mode test code', () {
-      final answers = SafeColors.from(color, backgroundLstar: 0.0);
+      final answers = SafeColors.from(color, backgroundTone: 0.0);
       final code = '''
       expect(colors.color, isColor(${hexFromArgb(color.value).replaceAll('#', '0xff')}));
       expect(colors.colorBorder, isColor(${hexFromArgb(answers.colorBorder.value).replaceAll('#', '0xff')}));

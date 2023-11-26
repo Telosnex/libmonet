@@ -63,7 +63,7 @@ class SafeColors {
 
   factory SafeColors.from(
     Color color, {
-    required double backgroundLstar,
+    required double backgroundTone,
     double contrast = 0.5,
     Algo algo = Algo.apca,
   }) {
@@ -76,14 +76,14 @@ class SafeColors {
         final requiredContrastRatio =
             contrastRatioInterpolation(percent: contrast, usage: Usage.fill);
         final actualContrastRatio =
-            contrastRatioOfLstars(colorHct.tone, backgroundLstar);
+            contrastRatioOfLstars(colorHct.tone, backgroundTone);
         if (actualContrastRatio < requiredContrastRatio) {
           needBorder = true;
         }
         break;
       case Algo.apca:
         final apca = apcaContrastOfApcaY(
-            lstarToApcaY(colorHct.tone), lstarToApcaY(backgroundLstar));
+            lstarToApcaY(colorHct.tone), lstarToApcaY(backgroundTone));
         final requiredApca =
             apcaInterpolation(percent: contrast, usage: Usage.fill);
         if (apca.abs() < requiredApca.abs()) {
@@ -93,9 +93,9 @@ class SafeColors {
     }
 
     final backgroundHct =
-        Hct.from(colorHct.hue, math.min(16, colorHct.chroma), backgroundLstar);
+        Hct.from(colorHct.hue, math.min(16, colorHct.chroma), backgroundTone);
     final backgroundTextTone = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: backgroundTone,
       usage: Usage.text,
       by: algo,
       contrast: contrast,
@@ -103,7 +103,7 @@ class SafeColors {
     final colorBorder = !needBorder
         ? colorHct.tone
         : contrastingLstar(
-            withLstar: colorHct.tone,
+            withLstar: backgroundTone,
             usage: Usage.fill,
             by: algo,
             contrast: contrast,
@@ -185,19 +185,19 @@ class SafeColors {
     );
 
     final text = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: backgroundTone,
       usage: Usage.text,
       by: algo,
       contrast: contrast,
     );
     final textHover = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: backgroundTone,
       usage: Usage.text,
       by: algo,
       contrast: hoverContrast,
     );
     final textSplash = contrastingLstar(
-      withLstar: backgroundLstar,
+      withLstar: backgroundTone,
       usage: Usage.text,
       by: algo,
       contrast: splashContrast,

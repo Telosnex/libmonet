@@ -138,11 +138,11 @@ class MonetThemeData {
     Typography Function(ColorScheme)? typography,
   }) {
     final primarySafeColors = SafeColors.from(primary,
-        backgroundLstar: backgroundTone, contrast: contrast, algo: algo);
+        backgroundTone: backgroundTone, contrast: contrast, algo: algo);
     final secondarySafeColors = SafeColors.from(secondary,
-        backgroundLstar: backgroundTone, contrast: contrast, algo: algo);
+        backgroundTone: backgroundTone, contrast: contrast, algo: algo);
     final tertiarySafeColors = SafeColors.from(tertiary,
-        backgroundLstar: backgroundTone, contrast: contrast, algo: algo);
+        backgroundTone: backgroundTone, contrast: contrast, algo: algo);
     return MonetThemeData(
       brightness: brightness,
       primary: primarySafeColors,
@@ -1610,7 +1610,7 @@ ColorScheme _createColorScheme(
 
   final error = SafeColors.from(
     Colors.red,
-    backgroundLstar: surfaceHct.tone,
+    backgroundTone: surfaceHct.tone,
     contrast: contrast,
   );
 
