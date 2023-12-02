@@ -182,7 +182,8 @@ class MonetThemeData {
     final typographyData =
         typography?.call(colorScheme) ?? _typography(colorScheme);
     final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
-    final textTheme = createTextTheme(typographyData, scale, devicePixelRatio);
+    final textTheme = createTextTheme(typographyData,
+        MediaQuery.textScalerOf(context), scale, devicePixelRatio);
 
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
@@ -641,7 +642,7 @@ class MonetThemeData {
           width: 2,
         ),
       ),
-      
+
       collapsedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
@@ -1473,8 +1474,60 @@ class MonetThemeData {
     );
   }
 
-  TextTheme createTextTheme(
-      Typography typography, double scale, double devicePixelRatio) {
+  static const ptsToLp = 96.0 / 72.0;
+  static const lpToDp = 160.0 / 96.0;
+  static const ptsToDp = 160 / 72.0;
+  double searchForFontSizeReachingPts(double pts, String fontFamily) {
+    final targetHeightDp = pts * ptsToLp * lpToDp;
+
+    double minFontSize = pts * ptsToLp * 1.0 / 3.0; // assuming 1/3 is a reasonable min size.
+    var fontSize = pts * ptsToLp;
+    double maxFontSize =
+        3 * pts * ptsToLp; // assuming 3x is a reasonable max size.
+
+    // The threshold within which we consider the height "close enough".
+    const double threshold = 0.5;
+
+    // The maximum number of iterations to prevent infinite loops.
+    const int maxIterations = 10;
+    // The loop to adjust the font size.
+    for (int i = 0; i < maxIterations; i++) {
+      // Define the text style using the current font size.
+      var textStyle = TextStyle(
+        fontFamily: fontFamily,
+        fontSize: fontSize,
+        height: null,
+      );
+
+      // Layout the text.
+      final layout = TextPainter(
+        // String is designed to be short and do a good job of capturing an accurate picture
+        // of the extremes of the font's letter heights.
+        text: TextSpan(text: 'YAyli', style: textStyle),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      // Compare the rendered text height with the target height.
+      if ((layout.size.height - targetHeightDp).abs() <= threshold) {
+        // We've found a font size close enough to the expected height.
+        break;
+      } else if (layout.size.height < targetHeightDp) {
+        // If the rendered height is less than the target, adjust font size up.
+        minFontSize = fontSize;
+      } else {
+        // If the rendered height is greater than the target, adjust font size down.
+        maxFontSize = fontSize;
+      }
+
+      // Calculate the new font size.
+      fontSize = (minFontSize + maxFontSize) / 2;
+    }
+    return fontSize;
+  }
+
+  TextTheme createTextTheme(Typography typography, TextScaler textScaler,
+      double scale, double devicePixelRatio) {
     final tt = switch (brightness) {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
@@ -1485,88 +1538,95 @@ class MonetThemeData {
     // it, it feels like playing whack-a-mole even with one font to tune it for
     // all the components.
     const med = FontWeight.w500;
-    const ptsToLp = 96.0 / 72.0;
+
+    // The bodyMedium font size is used as a reference point for scaling the
+    final displayScale = searchForFontSizeReachingPts(26, tt.displayMedium!.fontFamily!) / (26 * ptsToLp);
+    final headlineScale = searchForFontSizeReachingPts(20, tt.headlineMedium!.fontFamily!) / (20 * ptsToLp);
+    final titleScale = headlineScale;
+    final bodyScale = searchForFontSizeReachingPts(12, tt.bodyMedium!.fontFamily!) / (12 * ptsToLp);
+    final labelScale = searchForFontSizeReachingPts(12, tt.labelMedium!.fontFamily!) / (12 * ptsToLp);
+
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 30 * ptsToLp * scale,
+          fontSize: 30 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       displayMedium: tt.displayMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 26 * ptsToLp * scale,
+          fontSize: 26 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       displaySmall: tt.displaySmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 24 * ptsToLp * scale,
+          fontSize: 24 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleLarge: tt.headlineLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 22 * ptsToLp * scale,
+          fontSize: 22 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleMedium: tt.headlineMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 20 * ptsToLp * scale,
+          fontSize: 20 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleSmall: tt.headlineSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 18 * ptsToLp * scale,
+          fontSize: 18 * ptsToLp * scale  * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineLarge: tt.headlineLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 22 * ptsToLp * scale,
+          fontSize: 22 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineMedium: tt.headlineMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 20 * ptsToLp * scale,
+          fontSize: 20 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineSmall: tt.headlineSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 18 * ptsToLp * scale,
+          fontSize: 18 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       bodyLarge: tt.bodyLarge!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 14 * ptsToLp * scale,
+          fontSize: 14 * ptsToLp * scale * bodyScale,
           color: txtC,
           height: h),
       bodyMedium: tt.bodyMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 12 * ptsToLp * scale,
+          fontSize: 12 * ptsToLp * scale * bodyScale,
           color: txtC,
           height: h),
       bodySmall: tt.bodySmall!
-          .copyWith(fontSize: 10 * ptsToLp * scale, color: txtC, height: h),
+          .copyWith(fontSize: 10 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 14 * ptsToLp * scale,
+          fontSize: 14 * ptsToLp * scale * labelScale,
           color: txtC,
           fontWeight: FontWeight.w500,
           height: h),
       labelMedium: tt.labelMedium!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 12 * ptsToLp * scale,
+          fontSize: 12 * ptsToLp * scale * labelScale,
           fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
       labelSmall: tt.labelSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 10 * ptsToLp * scale,
+          fontSize: 10 * ptsToLp * scale * labelScale,
           fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
