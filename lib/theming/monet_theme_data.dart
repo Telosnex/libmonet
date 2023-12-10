@@ -15,6 +15,7 @@ import 'package:libmonet/temperature.dart';
 import 'package:libmonet/theming/button_style.dart';
 import 'package:libmonet/theming/slider_flat_shape.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
+import 'package:libmonet/util/lru_cache.dart';
 
 class MonetThemeData {
   final SafeColors primary;
@@ -1477,10 +1478,22 @@ class MonetThemeData {
   static const ptsToLp = 96.0 / 72.0;
   static const lpToDp = 160.0 / 96.0;
   static const ptsToDp = 160 / 72.0;
+  // 2x expected # for a theme.
+  // 2x to help avoid undesierable step chance in behavior due to a client
+  static final fontSizeForFamilyAndPts = LruCache<String, double>(capacity: 8);
+
   double searchForFontSizeReachingPts(double pts, String fontFamily) {
+    final key = '$fontFamily-${pts.toStringAsFixed(3)}';
+    final cached = fontSizeForFamilyAndPts[key];
+    if (cached != null) {
+      return cached;
+    }
+
+    // needing the old heights and new ones in memory simultaneously.
     final targetHeightDp = pts * ptsToLp * lpToDp;
 
-    double minFontSize = pts * ptsToLp * 1.0 / 3.0; // assuming 1/3 is a reasonable min size.
+    double minFontSize =
+        pts * ptsToLp * 1.0 / 3.0; // assuming 1/3 is a reasonable min size.
     var fontSize = pts * ptsToLp;
     double maxFontSize =
         3 * pts * ptsToLp; // assuming 3x is a reasonable max size.
@@ -1523,6 +1536,7 @@ class MonetThemeData {
       // Calculate the new font size.
       fontSize = (minFontSize + maxFontSize) / 2;
     }
+    fontSizeForFamilyAndPts[key] = fontSize;
     return fontSize;
   }
 
@@ -1540,11 +1554,19 @@ class MonetThemeData {
     const med = FontWeight.w500;
 
     // The bodyMedium font size is used as a reference point for scaling the
-    final displayScale = searchForFontSizeReachingPts(26, tt.displayMedium!.fontFamily!) / (26 * ptsToLp);
-    final headlineScale = searchForFontSizeReachingPts(20, tt.headlineMedium!.fontFamily!) / (20 * ptsToLp);
+    final displayScale =
+        searchForFontSizeReachingPts(26, tt.displayMedium!.fontFamily!) /
+            (26 * ptsToLp);
+    final headlineScale =
+        searchForFontSizeReachingPts(20, tt.headlineMedium!.fontFamily!) /
+            (20 * ptsToLp);
     final titleScale = headlineScale;
-    final bodyScale = searchForFontSizeReachingPts(12, tt.bodyMedium!.fontFamily!) / (12 * ptsToLp);
-    final labelScale = searchForFontSizeReachingPts(12, tt.labelMedium!.fontFamily!) / (12 * ptsToLp);
+    final bodyScale =
+        searchForFontSizeReachingPts(12, tt.bodyMedium!.fontFamily!) /
+            (12 * ptsToLp);
+    final labelScale =
+        searchForFontSizeReachingPts(12, tt.labelMedium!.fontFamily!) /
+            (12 * ptsToLp);
 
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
@@ -1579,7 +1601,7 @@ class MonetThemeData {
           height: h),
       titleSmall: tt.headlineSmall!.copyWith(
           leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 18 * ptsToLp * scale  * titleScale,
+          fontSize: 18 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
@@ -1611,8 +1633,8 @@ class MonetThemeData {
           fontSize: 12 * ptsToLp * scale * bodyScale,
           color: txtC,
           height: h),
-      bodySmall: tt.bodySmall!
-          .copyWith(fontSize: 10 * ptsToLp * scale * bodyScale, color: txtC, height: h),
+      bodySmall: tt.bodySmall!.copyWith(
+          fontSize: 10 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
           fontSize: 14 * ptsToLp * scale * labelScale,
           color: txtC,
