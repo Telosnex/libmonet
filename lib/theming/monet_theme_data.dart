@@ -222,7 +222,6 @@ class MonetThemeData {
       focusColor: primary.fill.withOpacity(0.4),
       highlightColor: Colors.transparent,
       hintColor: primary.backgroundText,
-      hoverColor: primary.textHover,
       // ThemeData uses white if primary = secondary, otherwise, secondary
       primaryColor: primary.color,
       primaryColorDark: primaryColorDark,
