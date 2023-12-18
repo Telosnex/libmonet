@@ -217,9 +217,10 @@ class MonetThemeData {
       dialogBackgroundColor: primary.background,
       disabledColor: primary.color,
       dividerColor: primary.backgroundText,
-      // colorHover only guarantees contrast with colorBorder
-      focusColor: primary.fillHover,
-      highlightColor: primary.fillSplash,
+      hoverColor: primary.fill.withOpacity(0.2),
+      splashColor: primary.fill.withOpacity(0.4),
+      focusColor: primary.fill.withOpacity(0.4),
+      highlightColor: Colors.transparent,
       hintColor: primary.backgroundText,
       hoverColor: primary.textHover,
       // ThemeData uses white if primary = secondary, otherwise, secondary
@@ -232,7 +233,6 @@ class MonetThemeData {
       // Avoid setting a default, as each widget may be a different color and
       // thus should be set explicitly.
       shadowColor: Colors.transparent,
-      splashColor: primary.textSplash,
       // Material uses 70% white in dark mode, 54% black in light mode
       // Is transparency important? Where is this used?
       // For now, treat it like text
@@ -1345,7 +1345,7 @@ class MonetThemeData {
       disabledColor: colors.text,
       fillColor: colors.color,
       focusColor: colors.colorHover,
-      highlightColor: colors.fillHover,
+      highlightColor: Colors.transparent,
       hoverColor: MaterialStateColor.resolveWith((states) {
         return colors.textHover;
       }),
