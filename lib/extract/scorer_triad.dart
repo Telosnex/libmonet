@@ -12,6 +12,10 @@ class ScorerTriad {
     bool isLight,
     QuantizerResult result,
   ) {
+    if (result.argbToCount.isEmpty) {
+      return [];
+    }
+    
     const minHueDistance = 45.0;
     final scorer = Scorer(result);
 
