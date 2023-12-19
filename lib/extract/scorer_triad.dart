@@ -5,6 +5,8 @@ import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:libmonet/extract/scorer.dart';
 import 'package:libmonet/hct.dart';
 
+/// Returns 3 HCTs if [result.argbToCount] is not empty, otherwise returns an
+/// empty list.
 class ScorerTriad {
   static List<Hct> threeColorsFromQuantizer(
     bool isLight,
