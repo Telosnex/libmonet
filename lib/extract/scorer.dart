@@ -14,6 +14,9 @@ class Scorer {
 
     // 1. Get all colors that are not too dark or too light
     final argbToCount = quantizerResult.argbToCount;
+    if (argbToCount.isEmpty) {
+      return;
+    }
     final filteredHcts = argbToCount.keys
         .map((color) {
           final hct = Hct.fromInt(color);
