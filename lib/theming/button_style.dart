@@ -60,6 +60,9 @@ ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
       hover: safeColors.textHover,
       splash: safeColors.textSplash,
     ),
+    padding: MaterialStateProperty.all(
+      const EdgeInsets.symmetric(vertical: 2),
+    ),
     foregroundColor: stateColors(
       color: safeColors.text,
       hover: safeColors.textHoverText,
@@ -89,6 +92,9 @@ ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
       hover: safeColors.fillHover,
       splash: safeColors.fillSplash,
     ),
+    padding: MaterialStateProperty.all(
+      const EdgeInsets.symmetric(vertical: 2),
+    ),
     foregroundColor: stateColors(
       color: safeColors.fillText,
       hover: safeColors.fillHoverText,
@@ -117,6 +123,9 @@ ButtonStyle filledButtonBackgroundIsColor(SafeColors safeColors,
       color: safeColors.color,
       hover: safeColors.colorHover,
       splash: safeColors.colorSplash,
+    ),
+    padding: MaterialStateProperty.all(
+      const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
     ),
     foregroundColor: stateColors(
       color: safeColors.colorText,
@@ -194,17 +203,22 @@ ButtonStyle outlineButtonStyleFromColors(SafeColors safeColors) {
       hover: safeColors.textHoverText,
       splash: safeColors.textSplashText,
     ),
+    padding: MaterialStateProperty.all(
+      const EdgeInsets.symmetric(vertical: 2),
+    ),
     side: MaterialStateProperty.all(
       BorderSide(color: safeColors.fill, width: 2),
     ),
   );
 }
 
-ButtonStyle textButtonStyleFromColors(SafeColors safeColors) {
+ButtonStyle textButtonStyleFromColors(SafeColors safeColors,
+    {TextStyle? textStyle}) {
   return outlineButtonStyleFromColors(safeColors).copyWith(
     side: MaterialStateProperty.all(BorderSide.none),
     backgroundColor: MaterialStateProperty.all(Colors.transparent),
     textStyle: MaterialStateProperty.all(
+      textStyle ??
       TextStyle(
         color: safeColors.text,
         fontWeight: FontWeight.w500,
