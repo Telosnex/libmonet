@@ -190,11 +190,11 @@ class ScorerTriad {
         final tertiaryHcts = scorer.hcts.where((hct) {
           final hue = hct.hue;
           if (tertiaryHueAvoidsPrimaryHue &&
-              differenceDegrees(hue, primary.hue) < 15) {
+              differenceDegrees(hue, primary.hue) < 30) {
             return false;
           }
           if (tertiaryHueAvoidsSecondaryHue &&
-              differenceDegrees(hue, secondary.hue) < 15) {
+              differenceDegrees(hue, secondary.hue) < 30) {
             return false;
           }
           return true;
