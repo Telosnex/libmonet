@@ -1508,7 +1508,9 @@ class MonetThemeData {
       var textStyle = TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSize,
-        height: null,
+        // Fixing the height provides a more consistent experience across
+        // fonts with extreme padding.
+        height: 1.5,
       );
 
       // Layout the text.
@@ -1520,8 +1522,9 @@ class MonetThemeData {
         textDirection: TextDirection.ltr,
       )..layout();
 
+      final heightDiff = layout.size.height - targetHeightDp;
       // Compare the rendered text height with the target height.
-      if ((layout.size.height - targetHeightDp).abs() <= threshold) {
+      if (heightDiff.abs() <= threshold) {
         // We've found a font size close enough to the expected height.
         break;
       } else if (layout.size.height < targetHeightDp) {
@@ -1569,84 +1572,67 @@ class MonetThemeData {
 
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 20 * ptsToLp * scale * displayScale,
+          fontSize: 22 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       displayMedium: tt.displayMedium!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 18 * ptsToLp * scale * displayScale,
+          fontSize: 20 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       displaySmall: tt.displaySmall!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 16 * ptsToLp * scale * displayScale,
+          fontSize: 18 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleLarge: tt.headlineLarge!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 20 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleMedium: tt.headlineMedium!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 18 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleSmall: tt.headlineSmall!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 16 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineLarge: tt.headlineLarge!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 20 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineMedium: tt.headlineMedium!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 18 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineSmall: tt.headlineSmall!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 16 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       bodyLarge: tt.bodyLarge!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 14 * ptsToLp * scale * bodyScale,
-          color: txtC,
-          height: h),
+          fontSize: 14 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       bodyMedium: tt.bodyMedium!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 12 * ptsToLp * scale * bodyScale,
-          color: txtC,
-          height: h),
+          fontSize: 12 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       bodySmall: tt.bodySmall!.copyWith(
           fontSize: 10 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 12 * ptsToLp * scale * labelScale,
+          fontSize: 13 * ptsToLp * scale * labelScale,
           color: txtC,
           fontWeight: FontWeight.w500,
           height: h),
       labelMedium: tt.labelMedium!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
-          fontSize: 10 * ptsToLp * scale * labelScale,
+          fontSize: 12 * ptsToLp * scale * labelScale,
           fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
       labelSmall: tt.labelSmall!.copyWith(
-          leadingDistribution: TextLeadingDistribution.even,
           fontSize: 10 * ptsToLp * scale * labelScale,
           fontWeight: FontWeight.w500,
           color: txtC,
