@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
@@ -60,9 +63,9 @@ ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
       hover: safeColors.textHover,
       splash: safeColors.textSplash,
     ),
-    padding: MaterialStateProperty.all(
-      const EdgeInsets.symmetric(vertical: 2),
-    ),
+    minimumSize: MaterialStateProperty.all(minimumSize),
+    maximumSize: MaterialStateProperty.all(maximumSize),
+    padding: MaterialStateProperty.all(padding),
     foregroundColor: stateColors(
       color: safeColors.text,
       hover: safeColors.textHoverText,
@@ -75,6 +78,22 @@ ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
       BorderSide(color: safeColors.fill, width: 2),
     ),
   );
+}
+
+Size get minimumSize {
+  return const Size(MonetThemeData.touchSize, MonetThemeData.touchSize);
+}
+
+Size get maximumSize {
+  return const Size(double.infinity, MonetThemeData.touchSize);
+}
+
+EdgeInsetsGeometry get padding {
+  // Some platforms have buttons that ignore the minimum size.
+  final isDesktop =
+      !kIsWeb && (Platform.isMacOS || Platform.isLinux || Platform.isWindows);
+  final amount = 2.0 + (isDesktop ? 10.0 : 0.0);
+  return EdgeInsets.symmetric(vertical: amount, horizontal: 8);
 }
 
 ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
@@ -92,9 +111,9 @@ ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
       hover: safeColors.fillHover,
       splash: safeColors.fillSplash,
     ),
-    padding: MaterialStateProperty.all(
-      const EdgeInsets.symmetric(vertical: 2),
-    ),
+    minimumSize: MaterialStateProperty.all(minimumSize),
+    maximumSize: MaterialStateProperty.all(maximumSize),
+    padding: MaterialStateProperty.all(padding),
     foregroundColor: stateColors(
       color: safeColors.fillText,
       hover: safeColors.fillHoverText,
@@ -124,9 +143,9 @@ ButtonStyle filledButtonBackgroundIsColor(SafeColors safeColors,
       hover: safeColors.colorHover,
       splash: safeColors.colorSplash,
     ),
-    padding: MaterialStateProperty.all(
-      const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-    ),
+    minimumSize: MaterialStateProperty.all(minimumSize),
+    maximumSize: MaterialStateProperty.all(maximumSize),
+    padding: MaterialStateProperty.all(padding),
     foregroundColor: stateColors(
       color: safeColors.colorText,
       hover: safeColors.colorHoverText,
@@ -203,9 +222,9 @@ ButtonStyle outlineButtonStyleFromColors(SafeColors safeColors) {
       hover: safeColors.textHoverText,
       splash: safeColors.textSplashText,
     ),
-    padding: MaterialStateProperty.all(
-      const EdgeInsets.symmetric(vertical: 2),
-    ),
+    minimumSize: MaterialStateProperty.all(minimumSize),
+    maximumSize: MaterialStateProperty.all(maximumSize),
+    padding: MaterialStateProperty.all(padding),
     side: MaterialStateProperty.all(
       BorderSide(color: safeColors.fill, width: 2),
     ),
@@ -219,10 +238,10 @@ ButtonStyle textButtonStyleFromColors(SafeColors safeColors,
     backgroundColor: MaterialStateProperty.all(Colors.transparent),
     textStyle: MaterialStateProperty.all(
       textStyle ??
-      TextStyle(
-        color: safeColors.text,
-        fontWeight: FontWeight.w500,
-      ),
+          TextStyle(
+            color: safeColors.text,
+            fontWeight: FontWeight.w500,
+          ),
     ),
   );
 }
