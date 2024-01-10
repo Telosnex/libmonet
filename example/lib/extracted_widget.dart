@@ -85,8 +85,7 @@ class _ColorToCountRow extends StatelessWidget {
     final scorer = Scorer(quantizerResult);
     final postfilterSortedByHue = scorer.hcts
       ..sort((a, b) => a.hue.compareTo(b.hue));
-    final threeHcts = ScorerTriad.threeColorsFromQuantizer(
-        Theme.of(context).brightness == Brightness.light, quantizerResult);
+    final threeHcts = ScorerTriad.threeColorsFromQuantizer( quantizerResult);
     return Column(
       children: [
         Flexible(

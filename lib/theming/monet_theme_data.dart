@@ -112,8 +112,7 @@ class MonetThemeData {
     double scale = 1.0,
     Typography Function(ColorScheme)? typography,
   }) {
-    final triad = ScorerTriad.threeColorsFromQuantizer(
-        brightness == Brightness.light, quantizerResult);
+    final triad = ScorerTriad.threeColorsFromQuantizer(quantizerResult);
     return MonetThemeData.fromColors(
       brightness: brightness,
       backgroundTone: backgroundTone,

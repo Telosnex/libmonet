@@ -32,13 +32,15 @@ class Scorer {
     // Use colorToCount to get the total count of all colors, instead of HCTs,
     // because we want to count all colors, not just the ones that are not too
     // dark or too light.
-    final totalCount =
-        argbToCount.values.reduce((value, element) => value + element);
-    final percentages =
+    final totalCount = argbToCount.values.fold(0, (previousValue, element) {
+      return previousValue + element;
+    });
+
+    final colorToPercent =
         argbToCount.map((key, value) => MapEntry(key, value / totalCount));
-    for (final hct in hcts) {
+    for (final hct in filteredHcts) {
       final hue = hct.hue.round();
-      final percentage = percentages[hct.toInt()]!;
+      final percentage = colorToPercent[hct.toInt()]!;
       hueToPercent[hue] += percentage;
     }
 
