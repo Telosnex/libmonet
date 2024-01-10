@@ -74,11 +74,11 @@ class ScorerTriad {
     final double topSecondaryTone;
     {
       if (scorer.hcts.isEmpty) {
-        topSecondaryHue = backupHct.hue;
+        topSecondaryHue = TemperatureCache(primary).analogous()[1].hue;
+        log(() =>
+            'secondary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}');
         topSecondaryChroma = backupHct.chroma;
         topSecondaryTone = backupHct.tone;
-        log(() =>
-            'secondary has 0 candidates, going with primary hue: ${backupHct.hue.round()}');
       } else {
         final secondaryHcts = scorer.hcts.where((hct) {
           final hue = hct.hue;
@@ -87,15 +87,24 @@ class ScorerTriad {
           }
           return true;
         }).toList();
-        final secondaryHuesSmeared =
-            Scorer.createHueToPercentage(secondaryHcts, scorer.hueToPercent, 0);
-        final topHueIndex =
-            secondaryHuesSmeared.indexOf(secondaryHuesSmeared.reduce(math.max));
-        topSecondaryHue = topHueIndex.toDouble();
-        final secondary = scorer.averagedHctNearHue(
-            hue: topSecondaryHue, backupTone: backupHct.tone);
-        topSecondaryChroma = secondary.chroma;
-        topSecondaryTone = secondary.tone;
+        if (secondaryHcts.isEmpty) {
+          topSecondaryHue = TemperatureCache(primary).analogous()[1].hue;
+          log(() =>
+              'secondary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}');
+          topSecondaryChroma = backupHct.chroma;
+          topSecondaryTone = backupHct.tone;
+        } else {
+          log(() => 'secondary has ${secondaryHcts.length} candidates');
+          final secondaryHuesSmeared = Scorer.createHueToPercentage(
+              secondaryHcts, scorer.hueToPercent, 0);
+          final topHueIndex = secondaryHuesSmeared
+              .indexOf(secondaryHuesSmeared.reduce(math.max));
+          topSecondaryHue = topHueIndex.toDouble();
+          final secondary = scorer.averagedHctNearHue(
+              hue: topSecondaryHue, backupTone: backupHct.tone);
+          topSecondaryChroma = secondary.chroma;
+          topSecondaryTone = secondary.tone;
+        }
       }
     }
     final secondary =
@@ -112,7 +121,9 @@ class ScorerTriad {
       const tertiaryHueAvoidsPrimaryHue = true;
       const tertiaryHueAvoidsSecondaryHue = true;
       if (scorer.hcts.isEmpty) {
-        topTertiaryHue = backupHct.hue;
+        topTertiaryHue = TemperatureCache(primary).analogous()[3].hue;
+        log(() =>
+            'tertiary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}');
         topTertiaryChroma = backupHct.chroma;
         topTertiaryTone = backupHct.tone;
       } else {
