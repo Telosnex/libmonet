@@ -1574,58 +1574,58 @@ class MonetThemeData {
 
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
-          fontSize: 22 * ptsToLp * scale * displayScale,
+          fontSize: 24 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       displayMedium: tt.displayMedium!.copyWith(
-          fontSize: 20 * ptsToLp * scale * displayScale,
+          fontSize: 22 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       displaySmall: tt.displaySmall!.copyWith(
-          fontSize: 18 * ptsToLp * scale * displayScale,
+          fontSize: 20 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleLarge: tt.headlineLarge!.copyWith(
-          fontSize: 20 * ptsToLp * scale * titleScale,
+          fontSize: 22 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleMedium: tt.headlineMedium!.copyWith(
-          fontSize: 18 * ptsToLp * scale * titleScale,
+          fontSize: 20 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       titleSmall: tt.headlineSmall!.copyWith(
-          fontSize: 16 * ptsToLp * scale * titleScale,
+          fontSize: 18 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineLarge: tt.headlineLarge!.copyWith(
-          fontSize: 20 * ptsToLp * scale * headlineScale,
+          fontSize: 22 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineMedium: tt.headlineMedium!.copyWith(
-          fontSize: 18 * ptsToLp * scale * headlineScale,
+          fontSize: 20 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       headlineSmall: tt.headlineSmall!.copyWith(
-          fontSize: 16 * ptsToLp * scale * headlineScale,
+          fontSize: 18 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
           height: h),
       bodyLarge: tt.bodyLarge!.copyWith(
           fontSize: 14 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       bodyMedium: tt.bodyMedium!.copyWith(
-          fontSize: 12 * ptsToLp * scale * bodyScale, color: txtC, height: h),
+          fontSize: 13 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       bodySmall: tt.bodySmall!.copyWith(
-          fontSize: 10 * ptsToLp * scale * bodyScale, color: txtC, height: h),
+          fontSize: 11 * ptsToLp * scale * bodyScale, color: txtC, height: h),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 13 * ptsToLp * scale * labelScale,
+          fontSize: 14 * ptsToLp * scale * labelScale,
           color: txtC,
           fontWeight: FontWeight.w500,
           height: h),
@@ -1635,7 +1635,7 @@ class MonetThemeData {
           color: txtC,
           height: h),
       labelSmall: tt.labelSmall!.copyWith(
-          fontSize: 10 * ptsToLp * scale * labelScale,
+          fontSize: 11 * ptsToLp * scale * labelScale,
           fontWeight: FontWeight.w500,
           color: txtC,
           height: h),
