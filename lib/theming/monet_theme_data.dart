@@ -911,7 +911,9 @@ class MonetThemeData {
   static PopupMenuThemeData popupMenuThemeData(
       SafeColors colors, TextTheme textTheme) {
     return PopupMenuThemeData(
-      color: colors.background, // Popup background
+      mouseCursor:
+          MaterialStateProperty.all(SystemMouseCursors.click), // match default
+      color: colors.fill, // Popup background
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(
@@ -926,8 +928,9 @@ class MonetThemeData {
       labelTextStyle: MaterialStateProperty.resolveWith((states) {
         // Doesn't support hover or selected, only disabled, which we do not
         // specify.
-        return textTheme.labelMedium!.apply(color: colors.backgroundText);
+        return textTheme.labelMedium!.apply(color: colors.fillText);
       }),
+      iconColor: colors.fillIcon,
       enableFeedback: true,
       position: PopupMenuPosition.under,
     );
