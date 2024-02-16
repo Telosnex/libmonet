@@ -86,7 +86,8 @@ class Hct {
     final lstar = lerpDouble(a.tone, b.tone, t)!;
     final chroma = lerpDouble(a.chroma, b.chroma, t)!;
     final hue = _lerpKeepHueAngle(a.hue, b.hue, t);
-    return Hct.from(hue, chroma, lstar).color;
+    final opacity = lerpDouble(colorA.opacity, colorB.opacity, t);
+    return Hct.from(hue, chroma, lstar).color.withOpacity(opacity!);
   }
 
   static double _lerpKeepHueAngle(double a, double b, double t) {
