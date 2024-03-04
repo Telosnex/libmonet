@@ -85,7 +85,7 @@ Size get minimumSize {
 }
 
 Size get maximumSize {
-  return const Size(double.infinity, MonetThemeData.touchSize);
+  return const Size(double.infinity, double.infinity);
 }
 
 EdgeInsetsGeometry get padding {
