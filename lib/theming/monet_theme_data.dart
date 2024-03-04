@@ -1396,7 +1396,7 @@ class MonetThemeData {
         ),
         color: colors.color,
       ),
-      textStyle: textTheme.bodyMedium!.copyWith(color: colors.colorText),
+      textStyle: textTheme.bodySmall!.copyWith(color: colors.colorText),
       textAlign: TextAlign.center,
       showDuration: const Duration(seconds: 2),
       waitDuration: const Duration(seconds: 1),
