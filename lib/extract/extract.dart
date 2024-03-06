@@ -32,7 +32,8 @@ class Extract {
     monetDebug(
         debug, () => '[Extract] downscaled in ${sw.elapsedMilliseconds}ms');
     if (byteData.lengthInBytes == 0) {
-      return Future<QuantizerResult>.value(const QuantizerResult({}));
+      return Future<QuantizerResult>.value(
+          const QuantizerResult({}, lstarToCount: {}));
     }
 
     sw.reset();
