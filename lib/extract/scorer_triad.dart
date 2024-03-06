@@ -61,7 +61,7 @@ class ScorerTriad {
         topPrimaryHue = primaryHctsSmeared
             .indexOf(primaryHctsSmeared.reduce(math.max))
             .toDouble();
-        final primary = scorer.averagedHctNearHue(
+        final primary = scorer.topHctNearHue(
             hue: topPrimaryHue, backupTone: backupHct.tone);
         topPrimaryChroma = primary.chroma;
         topPrimaryTone = primary.tone;
@@ -100,7 +100,7 @@ class ScorerTriad {
           final topHueIndex = secondaryHuesSmeared
               .indexOf(secondaryHuesSmeared.reduce(math.max));
           topSecondaryHue = topHueIndex.toDouble();
-          final secondary = scorer.averagedHctNearHue(
+          final secondary = scorer.topHctNearHue(
               hue: topSecondaryHue, backupTone: backupHct.tone);
           topSecondaryChroma = secondary.chroma;
           topSecondaryTone = secondary.tone;
@@ -162,7 +162,7 @@ class ScorerTriad {
               .toDouble();
           log(() =>
               'topTertiaryHue for ${tertiaryHcts.length} candidates: $topTertiaryHue');
-          final tertiary = scorer.averagedHctNearHue(
+          final tertiary = scorer.topHctNearHue(
               hue: topTertiaryHue, backupTone: backupHct.tone);
           topTertiaryChroma = tertiary.chroma;
           topTertiaryTone = tertiary.tone;

@@ -100,6 +100,18 @@ class Scorer {
     return Hct.from(hue, chroma, tone);
   }
 
+  Hct topHctNearHue({required double hue, required double backupTone}) {
+    final hctsNearHue =
+        hcts.where((hct) => differenceDegrees(hct.hue, hue) < 15);
+    if (hctsNearHue.isEmpty) {
+      return Hct.from(hue, 8.0, backupTone);
+    }
+    final topHct = hctsNearHue.reduce((value, element) {
+      return hctToCount[value]! > hctToCount[element]! ? value : element;
+    });
+    return topHct;
+  }
+
   double huePercent(int hue) {
     return hueToPercent[hue];
   }
