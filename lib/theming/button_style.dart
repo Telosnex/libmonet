@@ -208,6 +208,27 @@ ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
   );
 }
 
+ButtonStyle iconButtonStyleFromColorInSafeColors(SafeColors safeColors) {
+  return ButtonStyle(
+    backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
+    surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
+    overlayColor: stateColors(
+      color: safeColors.color,
+      hover: safeColors.colorHover,
+      splash: safeColors.colorSplash,
+    ),
+    foregroundColor: stateColors(
+      color: safeColors.colorText,
+      hover: safeColors.colorHoverText,
+      splash: safeColors.colorSplashText,
+    ),
+    side: MaterialStateProperty.all(
+      const BorderSide(color: Colors.transparent, width: 0),
+    ),
+    // iconColor: foregroundAndIcon,
+  );
+}
+
 ButtonStyle outlineButtonStyleFromColors(SafeColors safeColors) {
   return ButtonStyle(
     backgroundColor: MaterialStatePropertyAll(safeColors.background),
