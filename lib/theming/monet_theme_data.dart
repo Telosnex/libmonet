@@ -1,4 +1,5 @@
 // Show only added to clarify why it is needed, not because it is required.
+// ignore: unnecessary_import
 import 'dart:ui' show FontFeature;
 
 import 'package:flutter/foundation.dart';
@@ -1451,9 +1452,9 @@ class MonetThemeData {
   ScrollbarThemeData scrollbarThemeData(SafeColors colors) {
     const thickness = 8.0;
     return ScrollbarThemeData(
-      thumbVisibility: const MaterialStatePropertyAll(true),
+      thumbVisibility: const MaterialStatePropertyAll(false),
       thickness: const MaterialStatePropertyAll(thickness),
-      trackVisibility: const MaterialStatePropertyAll(true),
+      trackVisibility: const MaterialStatePropertyAll(false),
       radius: const Radius.circular(thickness / 2.0),
       thumbColor: MaterialStatePropertyAll(colors.fill),
       // Protecting the thumb from the background color is a bit tricky.
