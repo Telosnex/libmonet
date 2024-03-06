@@ -21,7 +21,6 @@ import 'package:libmonet/extract/point_provider.dart';
 import 'package:libmonet/extract/point_provider_lab.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 
-
 class DistanceAndIndex implements Comparable<DistanceAndIndex> {
   double distance;
   int index;
@@ -262,6 +261,7 @@ class QuantizerWsmeans {
     return QuantizerResult(
       Map.fromIterables(clusterArgbs, clusterPopulations),
       inputPixelToClusterPixel: inputPixelToClusterPixel,
+      lstarToCount: {},
     );
   }
 }

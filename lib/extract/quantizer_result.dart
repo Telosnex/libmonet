@@ -5,14 +5,14 @@ part 'quantizer_result.g.dart';
 class QuantizerResult {
   final Map<int, int> argbToCount;
   final Map<int, int> inputPixelToClusterPixel;
+  final Map<int, double> lstarToCount;
   const QuantizerResult(
     this.argbToCount, {
     this.inputPixelToClusterPixel = const {},
+    required this.lstarToCount,
   });
 
-  factory QuantizerResult.fromJson(Map json) =>
-      _$QuantizerResultFromJson(json);
-
+  factory QuantizerResult.fromJson(Map json) => _$QuantizerResultFromJson(json);
 
   Map toJson() => _$QuantizerResultToJson(this);
 }

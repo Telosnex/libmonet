@@ -14,6 +14,9 @@ QuantizerResult _$QuantizerResultFromJson(Map json) => QuantizerResult(
             (k, e) => MapEntry(int.parse(k as String), e as int),
           ) ??
           const {},
+      lstarToCount: (json['lstarToCount'] as Map).map(
+        (k, e) => MapEntry(int.parse(k as String), (e as num).toDouble()),
+      ),
     );
 
 Map<String, dynamic> _$QuantizerResultToJson(QuantizerResult instance) =>
@@ -22,4 +25,6 @@ Map<String, dynamic> _$QuantizerResultToJson(QuantizerResult instance) =>
           instance.argbToCount.map((k, e) => MapEntry(k.toString(), e)),
       'inputPixelToClusterPixel': instance.inputPixelToClusterPixel
           .map((k, e) => MapEntry(k.toString(), e)),
+      'lstarToCount':
+          instance.lstarToCount.map((k, e) => MapEntry(k.toString(), e)),
     };

@@ -51,7 +51,10 @@ class QuantizerWu implements Quantizer {
     computeMoments();
     final createBoxesResult = createBoxes(colorCount);
     final results = createResult(createBoxesResult.resultCount);
-    return QuantizerResult(Map.fromEntries(results.map((e) => MapEntry(e, 0))));
+    return QuantizerResult(
+      Map.fromEntries(results.map((e) => MapEntry(e, 0))),
+      lstarToCount: result.lstarToCount,
+    );
   }
 
   static int getIndex(int r, int g, int b) {

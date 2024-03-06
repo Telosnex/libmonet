@@ -47,6 +47,20 @@ class QuantizerResultFamily extends Family<AsyncValue<QuantizerResult>> {
   /// Copied from [quantizerResult].
   const QuantizerResultFamily();
 
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'quantizerResultProvider';
+
   /// This will create a provider named `activityProvider`
   /// which will cache the result of this function.
   ///
@@ -69,19 +83,28 @@ class QuantizerResultFamily extends Family<AsyncValue<QuantizerResult>> {
     );
   }
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+  /// Enables overriding the behavior of this provider, no matter the parameters.
+  Override overrideWith(
+      FutureOr<QuantizerResult> Function(QuantizerResultRef ref) create) {
+    return _$QuantizerResultFamilyOverride(this, create);
+  }
+}
+
+class _$QuantizerResultFamilyOverride
+    implements FamilyOverride<AsyncValue<QuantizerResult>> {
+  _$QuantizerResultFamilyOverride(this.overriddenFamily, this.create);
+
+  final FutureOr<QuantizerResult> Function(QuantizerResultRef ref) create;
 
   @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+  final QuantizerResultFamily overriddenFamily;
 
   @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'quantizerResultProvider';
+  QuantizerResultProvider getProviderOverride(
+    covariant QuantizerResultProvider provider,
+  ) {
+    return provider._copyWith(create);
+  }
 }
 
 /// This will create a provider named `activityProvider`
@@ -114,7 +137,7 @@ class QuantizerResultProvider
         );
 
   QuantizerResultProvider._internal(
-    super._createNotifier, {
+    super.create, {
     required super.name,
     required super.dependencies,
     required super.allTransitiveDependencies,
@@ -127,7 +150,7 @@ class QuantizerResultProvider
 
   @override
   Override overrideWith(
-    FutureOr<QuantizerResult> Function(QuantizerResultRef provider) create,
+    FutureOr<QuantizerResult> Function(QuantizerResultRef ref) create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -151,6 +174,20 @@ class QuantizerResultProvider
   @override
   AutoDisposeFutureProviderElement<QuantizerResult> createElement() {
     return _QuantizerResultProviderElement(this);
+  }
+
+  QuantizerResultProvider _copyWith(
+    FutureOr<QuantizerResult> Function(QuantizerResultRef ref) create,
+  ) {
+    return QuantizerResultProvider._internal(
+      (ref) => create(ref as QuantizerResultRef),
+      name: name,
+      dependencies: dependencies,
+      allTransitiveDependencies: allTransitiveDependencies,
+      debugGetCreateSourceHash: debugGetCreateSourceHash,
+      from: from,
+      imageProvider: imageProvider,
+    );
   }
 
   @override

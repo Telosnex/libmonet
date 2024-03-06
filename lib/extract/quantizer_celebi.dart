@@ -24,14 +24,23 @@ import 'point_provider_lab.dart';
 
 class QuantizerCelebi implements Quantizer {
   @override
-  Future<QuantizerResult> quantize(Iterable<int> pixels, int maxColors,
-      {bool returnInputPixelToClusterPixel = false,}) async {
+  Future<QuantizerResult> quantize(
+    Iterable<int> pixels,
+    int maxColors, {
+    bool returnInputPixelToClusterPixel = false,
+  }) async {
     final wu = QuantizerWu();
     final wuResult = await wu.quantize(pixels, maxColors);
-    final wsmeansResult = QuantizerWsmeans.quantize(pixels, maxColors,
-        startingClusters: wuResult.argbToCount.keys.toList(),
-        pointProvider: const PointProviderLab(),
-        returnInputPixelToClusterPixel: returnInputPixelToClusterPixel);
-    return wsmeansResult;
+    final wsmeansResult = QuantizerWsmeans.quantize(
+      pixels,
+      maxColors,
+      startingClusters: wuResult.argbToCount.keys.toList(),
+      pointProvider: const PointProviderLab(),
+      returnInputPixelToClusterPixel: returnInputPixelToClusterPixel,
+    );
+    return QuantizerResult(
+      wsmeansResult.argbToCount,
+      lstarToCount: wuResult.lstarToCount,
+    );
   }
 }
