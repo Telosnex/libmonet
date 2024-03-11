@@ -24,7 +24,7 @@ class QuantizerMap implements Quantizer {
   @override
   Future<QuantizerResult> quantize(Iterable<int> pixels, int maxColors) async {
     final countByColor = <int, int>{};
-    final lstarToCount = <double, int>{};
+    final lstarToCount = <int, int>{};
     for (final pixel in pixels) {
       final alpha = alphaFromArgb(pixel);
       if (alpha < 255) {
@@ -32,7 +32,7 @@ class QuantizerMap implements Quantizer {
       }
       countByColor[pixel] = (countByColor[pixel] ?? 0) + 1;
 
-      final lstar = lstarFromArgb(pixel);
+      final lstar = lstarFromArgb(pixel).round();
       lstarToCount[lstar] = (lstarToCount[lstar] ?? 0) + 1;
     }
     return QuantizerResult(countByColor, lstarToCount: {});
