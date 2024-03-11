@@ -15,7 +15,7 @@ QuantizerResult _$QuantizerResultFromJson(Map json) => QuantizerResult(
           ) ??
           const {},
       lstarToCount: (json['lstarToCount'] as Map).map(
-        (k, e) => MapEntry(int.parse(k as String), (e as num).toDouble()),
+        (k, e) => MapEntry(int.parse(k as String), e as int),
       ),
     );
 
