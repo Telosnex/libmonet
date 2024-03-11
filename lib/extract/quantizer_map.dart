@@ -35,6 +35,6 @@ class QuantizerMap implements Quantizer {
       final lstar = lstarFromArgb(pixel).round();
       lstarToCount[lstar] = (lstarToCount[lstar] ?? 0) + 1;
     }
-    return QuantizerResult(countByColor, lstarToCount: {});
+    return QuantizerResult(countByColor, lstarToCount: lstarToCount);
   }
 }

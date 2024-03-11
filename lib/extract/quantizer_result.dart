@@ -5,7 +5,7 @@ part 'quantizer_result.g.dart';
 class QuantizerResult {
   final Map<int, int> argbToCount;
   final Map<int, int> inputPixelToClusterPixel;
-  final Map<int, double> lstarToCount;
+  final Map<int, int> lstarToCount;
   const QuantizerResult(
     this.argbToCount, {
     this.inputPixelToClusterPixel = const {},
