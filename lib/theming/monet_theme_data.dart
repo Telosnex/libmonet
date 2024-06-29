@@ -30,7 +30,7 @@ class MonetThemeData {
   final double scale;
   final Typography Function(ColorScheme)? typography;
 
-  static const double buttonElevation = 16.0;
+  static const double buttonElevation = 2.0;
 
   /// The maximum width of any content panel.
   ///
