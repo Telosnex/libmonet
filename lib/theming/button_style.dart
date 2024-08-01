@@ -8,6 +8,7 @@ import 'package:libmonet/theming/monet_theme_data.dart';
 extension SafeColorsButtonStyle on ButtonStyle {
   static ButtonStyle fromSafeColorsColor(SafeColors safeColors) {
     return ButtonStyle(
+      visualDensity: VisualDensity.compact,
       backgroundColor: WidgetStateProperty.all(safeColors.color),
       overlayColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.hovered)) {
@@ -56,6 +57,7 @@ ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
     splash: safeColors.background,
   );
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: alwaysSurface,
     surfaceTintColor: alwaysSurface,
     overlayColor: stateColors(
@@ -104,6 +106,7 @@ ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
     splash: safeColors.fill,
   );
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: alwaysSurface,
     surfaceTintColor: alwaysSurface,
     overlayColor: stateColors(
@@ -136,6 +139,7 @@ ButtonStyle filledButtonBackgroundIsColor(SafeColors safeColors,
     splash: safeColors.color,
   );
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: alwaysSurface,
     surfaceTintColor: alwaysSurface,
     overlayColor: stateColors(
@@ -167,6 +171,7 @@ ButtonStyle iconButtonStyleFromColors(SafeColors safeColors) {
     splash: safeColors.textSplashText,
   );
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
     surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
     overlayColor: stateColors(
@@ -190,6 +195,7 @@ ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
     splash: safeColors.background,
   );
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: alwaysSurface,
     surfaceTintColor: alwaysSurface,
     overlayColor: stateColors(
@@ -210,6 +216,7 @@ ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
 
 ButtonStyle iconButtonStyleFromColorInSafeColors(SafeColors safeColors) {
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
     surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
     overlayColor: stateColors(
@@ -231,6 +238,7 @@ ButtonStyle iconButtonStyleFromColorInSafeColors(SafeColors safeColors) {
 
 ButtonStyle outlineButtonStyleFromColors(SafeColors safeColors) {
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: WidgetStatePropertyAll(safeColors.background),
     surfaceTintColor: WidgetStatePropertyAll(safeColors.background),
     overlayColor: stateColors(
@@ -274,6 +282,7 @@ ButtonStyle buttonStylefromSafeColorsFill(SafeColors safeColors) {
     splash: safeColors.fill,
   );
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: alwaysSurface,
     surfaceTintColor: alwaysSurface,
     overlayColor: stateColors(
@@ -294,6 +303,7 @@ ButtonStyle buttonStylefromSafeColorsFill(SafeColors safeColors) {
 
 ButtonStyle buttonStylefromSafeColorsText(SafeColors safeColors) {
   return ButtonStyle(
+    visualDensity: VisualDensity.compact,
     backgroundColor: WidgetStateProperty.all(null),
     surfaceTintColor: WidgetStateProperty.all(null),
     overlayColor: stateColors(

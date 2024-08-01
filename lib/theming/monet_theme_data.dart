@@ -1071,6 +1071,7 @@ class MonetThemeData {
     });
     return SegmentedButtonThemeData(
         style: ButtonStyle(
+      visualDensity: VisualDensity.compact,
       backgroundColor: background,
       surfaceTintColor: background,
       overlayColor: background,
