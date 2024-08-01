@@ -26,7 +26,7 @@ class SafeColorsPreviewRow extends StatelessWidget {
   Widget _safeColorsRow(BuildContext context, SafeColors colors) {
     final textButtonStyleBase = textButtonStyleFromColors(safeColors);
     final textButtonStyle = textButtonStyleBase.copyWith(
-        textStyle: MaterialStateProperty.resolveWith((states) {
+        textStyle: WidgetStateProperty.resolveWith((states) {
       final base = textButtonStyleBase.textStyle?.resolve(states);
       if (shadows == null) {
         return base;
