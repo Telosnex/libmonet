@@ -3,7 +3,7 @@
 part of 'quantize_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.2
+// Generator: WorkerGenerator 6.0.0
 // **************************************************************************
 
 /// WorkerService class for QuantizeService
@@ -16,39 +16,29 @@ class _$QuantizeServiceWorkerService extends QuantizeService
 
   late final Map<int, CommandHandler> _operations =
       Map.unmodifiable(<int, CommandHandler>{
-    _$quantizeId: ($) async =>
-        (await quantize($.args[0].cast<int>(), $.args[1])).toJson(),
+    _$quantizeId: ($in) async {
+      final $out =
+          await quantize($in.args[0].cast<int>(), Cast.toInt($in.args[1]));
+      return $out.toJson();
+    },
   });
 
   static const int _$quantizeId = 1;
 }
 
 /// Service initializer for QuantizeService
-WorkerService $QuantizeServiceInitializer(WorkerRequest startRequest) =>
+WorkerService $QuantizeServiceInitializer(WorkerRequest $in) =>
     _$QuantizeServiceWorkerService();
-
-/// Operations map for QuantizeService
-@Deprecated(
-    'squadron_builder now supports "plain old Dart objects" as services. '
-    'Services do not need to derive from WorkerService nor do they need to mix in '
-    'with \$QuantizeServiceOperations anymore.')
-mixin $QuantizeServiceOperations on WorkerService {
-  @override
-  // not needed anymore, generated for compatibility with previous versions of squadron_builder
-  Map<int, CommandHandler> get operations => WorkerService.noOperations;
-}
 
 /// Worker for QuantizeService
 class QuantizeServiceWorker extends Worker implements QuantizeService {
-  QuantizeServiceWorker({PlatformWorkerHook? platformWorkerHook})
-      : super($QuantizeServiceActivator,
-            platformWorkerHook: platformWorkerHook);
+  QuantizeServiceWorker({PlatformThreadHook? threadHook})
+      : super($QuantizeServiceActivator, threadHook: threadHook);
 
   @override
   Future<QuantizerResult> quantize(List<int> argbs, int maxColors) =>
       send(_$QuantizeServiceWorkerService._$quantizeId,
-              args: [argbs.cast<int>(), maxColors])
-          .then((_) => QuantizerResult.fromJson(_));
+          args: [argbs, maxColors]).then(($x) => QuantizerResult.fromJson($x));
 }
 
 /// Worker pool for QuantizeService
@@ -56,9 +46,8 @@ class QuantizeServiceWorkerPool extends WorkerPool<QuantizeServiceWorker>
     implements QuantizeService {
   QuantizeServiceWorkerPool(
       {ConcurrencySettings? concurrencySettings,
-      PlatformWorkerHook? platformWorkerHook})
-      : super(
-            () => QuantizeServiceWorker(platformWorkerHook: platformWorkerHook),
+      PlatformThreadHook? threadHook})
+      : super(() => QuantizeServiceWorker(threadHook: threadHook),
             concurrencySettings: concurrencySettings);
 
   @override

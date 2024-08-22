@@ -125,7 +125,7 @@ class ComponentsWidget extends HookConsumerWidget {
           ),
         ),
         const H3('ButtonBar'),
-        ButtonBar(children: <Widget>[
+        OverflowBar(children: <Widget>[
           TextButton.icon(
             label: const Text('Label'),
             icon: const Icon(Icons.abc),

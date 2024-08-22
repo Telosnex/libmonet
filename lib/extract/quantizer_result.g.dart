@@ -8,14 +8,14 @@ part of 'quantizer_result.dart';
 
 QuantizerResult _$QuantizerResultFromJson(Map json) => QuantizerResult(
       (json['argbToCount'] as Map).map(
-        (k, e) => MapEntry(int.parse(k as String), e as int),
+        (k, e) => MapEntry(int.parse(k as String), (e as num).toInt()),
       ),
       inputPixelToClusterPixel: (json['inputPixelToClusterPixel'] as Map?)?.map(
-            (k, e) => MapEntry(int.parse(k as String), e as int),
+            (k, e) => MapEntry(int.parse(k as String), (e as num).toInt()),
           ) ??
           const {},
       lstarToCount: (json['lstarToCount'] as Map).map(
-        (k, e) => MapEntry(int.parse(k as String), e as int),
+        (k, e) => MapEntry(int.parse(k as String), (e as num).toInt()),
       ),
     );
 

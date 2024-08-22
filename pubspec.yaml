@@ -19,11 +19,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  material_color_utilities: ^0.8.0
+  material_color_utilities: ^0.11.1
   build_runner:
   squadron_builder:
     git:
       url: https://github.com/d-markey/squadron_builder
       ref: main
-
+dependency_overrides:
+  # see https://github.com/d-markey/squadron/issues/37
+  squadron:
+    git:
+      url: https://github.com/d-markey/squadron
+      ref: main
 flutter:
