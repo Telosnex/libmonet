@@ -14,4 +14,4 @@ void main() {
 }
 
 EntryPoint $getQuantizeServiceActivator() =>
-    'lib/extract/service/quantize_service.web.g.dart.js';
+    Uri.parse('lib/extract/service/quantize_service.web.g.dart.js');
