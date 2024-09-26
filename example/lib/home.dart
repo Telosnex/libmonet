@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:google_fonts/google_fonts.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
@@ -58,101 +59,122 @@ class Home extends HookConsumerWidget {
     final scale = useState(1.0);
     final brightnessSetting = useState(BrightnessSetting.auto);
     final brightness = brightnessSetting.value.brightness(context);
-    final ui = Builder(builder: (context) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          title: const Text('Monet Studio'),
-        ),
-        body: Stack(
-          children: [
-            if (backgroundImage.value != null)
-              Positioned.fill(
-                child: Image(
-                  image: backgroundImage.value!,
-                  fit: BoxFit.none,
-                ),
-              ),
-            SingleChildScrollView(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(
-                      maxWidth: MonetThemeData.maxPanelWidth),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        const VerticalPadding(),
-                        BackgroundExpansionTile(
-                          darkModeLstarNotifier: darkSurfaceLstar,
-                          lightModeLstarNotifier: lightSurfaceLstar,
-                          brightnessSettingNotifier: brightnessSetting,
-                        ),
-                        const VerticalPadding(),
-                        for (final image in images.value)
-                          ExtractedWidget(
-                            image: image,
-                            onTapped: () {
-
-                              backgroundImage.value = image;
-                            },
-                          ),
-                        const VerticalPadding(),
-                        ColorPicker(
-                          color: color.value,
-                          onColorChanged: (newColor) {
-                            color.value = newColor;
-                            backgroundImage.value = null;
-                          },
-                          onPhotoLibraryTapped: () {
-                            _uploadImagePressed(
-                                ref, images, backgroundImage, color);
-                          },
-                        ),
-                        const VerticalPadding(),
-                        ContrastExpansionTile(contrast: contrast, algo: algo),
-                        _buildComponentPreview(context, contrast, images),
-                        const TokensExpansionTile(),
-                        const VerticalPadding(),
-                        ScrimExpansionTile(
-                          contrast: contrast.value,
-                        ),
-                        const VerticalPadding(),
-                        ExpansionTile(
-                          title: Text(
-                            'Material Components',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge!
-                                .copyWith(
-                                    color: MonetTheme.of(context).primary.text),
-                          ),
-                          children: const [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: ComponentsWidget(),
-                            ),
-                          ],
-                        ),
-                        const VerticalPadding(),
-                        ScalingExpansionTile(
-                          scaleValueNotifier: scale,
-                        ),
-                        const VerticalPadding(),
-
-                      ],
-                    ),
+    final font = GoogleFonts.alice();
+    final font2 = GoogleFonts.imFellEnglish();
+    final font3 = GoogleFonts.lusitana();
+    final font4 = GoogleFonts.lobster();
+    final ui = FutureBuilder<Object>(
+        future: GoogleFonts.pendingFonts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          print('async snapshot data: ${snapshot.data}');
+          return Builder(builder: (context) {
+            return DefaultTextStyle(
+              style: font,
+              child: Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  title: Text(
+                    'Monet Studio',
+                    style: font,
                   ),
                 ),
+                body: Stack(
+                  children: [
+                    if (backgroundImage.value != null)
+                      Positioned.fill(
+                        child: Image(
+                          image: backgroundImage.value!,
+                          fit: BoxFit.none,
+                        ),
+                      ),
+                    SingleChildScrollView(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                              maxWidth: MonetThemeData.maxPanelWidth),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                const VerticalPadding(),
+                                BackgroundExpansionTile(
+                                  darkModeLstarNotifier: darkSurfaceLstar,
+                                  lightModeLstarNotifier: lightSurfaceLstar,
+                                  brightnessSettingNotifier: brightnessSetting,
+                                ),
+                                const VerticalPadding(),
+                                for (final image in images.value)
+                                  ExtractedWidget(
+                                    image: image,
+                                    onTapped: () {
+                                      backgroundImage.value = image;
+                                    },
+                                  ),
+                                const VerticalPadding(),
+                                ColorPicker(
+                                  color: color.value,
+                                  onColorChanged: (newColor) {
+                                    color.value = newColor;
+                                    backgroundImage.value = null;
+                                  },
+                                  onPhotoLibraryTapped: () {
+                                    _uploadImagePressed(
+                                        ref, images, backgroundImage, color);
+                                  },
+                                ),
+                                const VerticalPadding(),
+                                ContrastExpansionTile(
+                                    contrast: contrast, algo: algo),
+                                _buildComponentPreview(
+                                    context, contrast, images),
+                                const TokensExpansionTile(),
+                                const VerticalPadding(),
+                                ScrimExpansionTile(
+                                  contrast: contrast.value,
+                                ),
+                                const VerticalPadding(),
+                                ExpansionTile(
+                                  title: Text(
+                                    'Material Components',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge!
+                                        .copyWith(
+                                            fontFamily: font3.fontFamily,
+                                            color: MonetTheme.of(context)
+                                                .primary
+                                                .text),
+                                  ),
+                                  children: const [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: ComponentsWidget(),
+                                    ),
+                                  ],
+                                ),
+                                const VerticalPadding(),
+                                ScalingExpansionTile(
+                                  scaleValueNotifier: scale,
+                                ),
+                                const VerticalPadding(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            );
+          });
+        });
 
     final imageQuantizerResult = backgroundImage.value == null
         ? null

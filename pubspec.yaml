@@ -13,7 +13,7 @@ dependencies:
   json_annotation: ^4.8.1
   json_serializable: ^6.7.1
   matcher: ^0.12.16
-  squadron: ^5.1.6
+  squadron: ^6.0.3
 
 dev_dependencies:
   flutter_test:
@@ -21,14 +21,6 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   material_color_utilities: ^0.11.1
   build_runner:
-  squadron_builder:
-    git:
-      url: https://github.com/d-markey/squadron_builder
-      ref: main
-dependency_overrides:
-  # see https://github.com/d-markey/squadron/issues/37
-  squadron:
-    git:
-      url: https://github.com/d-markey/squadron
-      ref: main
+  squadron_builder: ^6.0.2
+
 flutter:

@@ -40,6 +40,8 @@ dependencies:
   hooks_riverpod: ^2.4.4
   riverpod_annotation: ^2.2.1
   flutter_hooks: ^0.20.3
+  google_fonts: ^6.2.1
+  squadron: ^6.0.3
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +51,7 @@ dev_dependencies:
   custom_lint:
   riverpod_generator: ^3.0.0-dev.5
   riverpod_lint: ^2.3.2
+  squadron_builder: ^6.0.2
 
 flutter:
   uses-material-design: true
