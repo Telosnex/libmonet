@@ -7,23 +7,28 @@ import 'package:libmonet/temperature.dart';
 
 /// Returns 3 HCTs if [result.argbToCount] is not empty, otherwise returns an
 /// empty list.
-/// 
+///
 /// [toneTooLow] and [toneTooHigh] are optional parameters that can be used to
 /// avoid filtering out colors that are too dark or too light. Generally, you
-/// should not set them, it is useful for very few wallpapers in special use 
+/// should not set them, it is useful for very few wallpapers in special use
 /// cases beyond general theming.
-/// 
+///
 /// For example, this was useful when using extraction to determine the "proper"
 /// color of text and shadow to use on a background. A wallpaper with a dark
 /// section where the text is placed, with some light sections, was extracting
 /// the lighter colors as the primary color, causing it to seem like the section
 /// was light.
+///
+/// [primaryIsAverageOfNearby] is an optional parameter that can be used to
+/// determine the primary color by averaging the hue, chroma, and tone of nearby
+/// colors. [true] is useful in the same scenario described above.
 class ScorerTriad {
   static List<Hct> threeColorsFromQuantizer(
     QuantizerResult result, {
     bool debugLog = false,
     double? toneTooLow = 10,
     double? toneTooHigh = 95,
+    bool primaryIsAverageOfNearby = false,
   }) {
     void log(String Function() message) {
       if (debugLog) {
@@ -76,8 +81,14 @@ class ScorerTriad {
         topPrimaryHue = primaryHctsSmeared
             .indexOf(primaryHctsSmeared.reduce(math.max))
             .toDouble();
-        final primary = scorer.topHctNearHue(
-            hue: topPrimaryHue, backupTone: backupHct.tone);
+        final Hct primary;
+        if (primaryIsAverageOfNearby) {
+          primary = scorer.averagedHctNearHue(
+              hue: topPrimaryHue, backupTone: backupHct.tone);
+        } else {
+          primary = scorer.topHctNearHue(
+              hue: topPrimaryHue, backupTone: backupHct.tone);
+        }
         topPrimaryChroma = primary.chroma;
         topPrimaryTone = primary.tone;
       }
