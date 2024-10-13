@@ -22,6 +22,10 @@ import 'package:libmonet/temperature.dart';
 /// [primaryIsAverageOfNearby] is an optional parameter that can be used to
 /// determine the primary color by averaging the hue, chroma, and tone of nearby
 /// colors. [true] is useful in the same scenario described above.
+///
+/// [ensureClosestPairPrimary] is an optional parameter that can be used to
+/// ensure that the primary and secondary colors are the closest pair in hue.
+/// The non-default, false, is useful in the same scenario described above.
 class ScorerTriad {
   static List<Hct> threeColorsFromQuantizer(
     QuantizerResult result, {
@@ -29,6 +33,7 @@ class ScorerTriad {
     double? toneTooLow = 10,
     double? toneTooHigh = 95,
     bool primaryIsAverageOfNearby = false,
+    bool ensureClosestPairPrimary = true,
   }) {
     void log(String Function() message) {
       if (debugLog) {
@@ -228,8 +233,12 @@ class ScorerTriad {
     // no candidates and becomes analogous at 97.
     // 97 and 66 are closer than 358 and 66, so tertiary should become
     // secondary.
-    return _ensureClosestPairPrimary([primary, secondary, tertiary],
-        debugLog: debugLog);
+    if (ensureClosestPairPrimary) {
+      return _ensureClosestPairPrimary([primary, secondary, tertiary],
+          debugLog: debugLog);
+    } else {
+      return [primary, secondary, tertiary];
+    }
   }
 
   static List<Hct> _ensureClosestPairPrimary(List<Hct> candidates,
