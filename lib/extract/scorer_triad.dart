@@ -201,6 +201,8 @@ class ScorerTriad {
     }
     final tertiary =
         Hct.from(topTertiaryHue, topTertiaryChroma, topTertiaryTone);
+    log(() =>
+        'threeColorsFromQuantizer done. Primary: $primary, Secondary: $secondary, Tertiary: $tertiary');
     // Motivating examples for ensureClosestPairPrimary:
     // 1. A blue and green flower on a blue background.
     // Unsplash photo by Saffu.
