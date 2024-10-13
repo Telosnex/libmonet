@@ -85,9 +85,13 @@ class ScorerTriad {
         if (primaryIsAverageOfNearby) {
           primary = scorer.averagedHctNearHue(
               hue: topPrimaryHue, backupTone: backupHct.tone);
+          log(() =>
+              'Selected primary using averaged HCT near hue. Primary HCT: $primary');
         } else {
           primary = scorer.topHctNearHue(
               hue: topPrimaryHue, backupTone: backupHct.tone);
+          log(() =>
+              'Selected primary using top HCT near hue. Primary HCT: $primary');
         }
         topPrimaryChroma = primary.chroma;
         topPrimaryTone = primary.tone;
