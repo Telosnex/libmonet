@@ -7,10 +7,23 @@ import 'package:libmonet/temperature.dart';
 
 /// Returns 3 HCTs if [result.argbToCount] is not empty, otherwise returns an
 /// empty list.
+/// 
+/// [toneTooLow] and [toneTooHigh] are optional parameters that can be used to
+/// avoid filtering out colors that are too dark or too light. Generally, you
+/// should not set them, it is useful for very few wallpapers in special use 
+/// cases beyond general theming.
+/// 
+/// For example, this was useful when using extraction to determine the "proper"
+/// color of text and shadow to use on a background. A wallpaper with a dark
+/// section where the text is placed, with some light sections, was extracting
+/// the lighter colors as the primary color, causing it to seem like the section
+/// was light.
 class ScorerTriad {
   static List<Hct> threeColorsFromQuantizer(
     QuantizerResult result, {
     bool debugLog = false,
+    double? toneTooLow = 10,
+    double? toneTooHigh = 95,
   }) {
     void log(String Function() message) {
       if (debugLog) {
@@ -33,10 +46,12 @@ class ScorerTriad {
       (incumbentKey, contenderKey) {
         final incumbentHct = Hct.fromInt(incumbentKey);
         final contenderHct = Hct.fromInt(contenderKey);
-        if (!(contenderHct.tone > 10 && contenderHct.tone < 95)) {
+        if (toneTooLow != null && contenderHct.tone <= toneTooLow) {
           return incumbentKey;
         }
-
+        if (toneTooHigh != null && contenderHct.tone >= toneTooHigh) {
+          return incumbentKey;
+        }
         if (scorer.huePercent(contenderHct.hue.round()) >
             scorer.huePercent(incumbentHct.hue.round())) {
           return contenderKey;
