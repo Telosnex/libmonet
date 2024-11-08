@@ -9,7 +9,10 @@ class Scorer {
   final List<double> hueToPercent = List.filled(361, 0.0);
   final List<double> hueToSmearedPercent = List.filled(361, 0.0);
 
-  Scorer(this.quantizerResult) {
+  Scorer(this.quantizerResult,
+      {double? toneTooLow = 10.0,
+      double? toneTooHigh = 95.0,
+      double? minChroma = 16.0}) {
     const smearDistance = 7.0;
 
     // 1. Get all colors that are not too dark or too light
@@ -17,15 +20,24 @@ class Scorer {
     if (argbToCount.isEmpty) {
       return;
     }
-    final filteredHcts = argbToCount.keys
-        .map((color) {
-          final hct = Hct.fromInt(color);
-          hctToCount[hct] = argbToCount[color]!;
-          return hct;
-        })
-        .where((element) =>
-            element.tone >= 10 && element.tone <= 95 && element.chroma > 16)
-        .toList();
+    final intermediate = argbToCount.keys.map((color) {
+      final hct = Hct.fromInt(color);
+      hctToCount[hct] = argbToCount[color]!;
+      return hct;
+    });
+
+    final filteredHcts =
+        (toneTooLow == null && toneTooHigh == null && minChroma == null)
+            ? intermediate
+            : intermediate.where((element) {
+                final meetsLow =
+                    toneTooLow == null || element.tone >= toneTooLow;
+                final meetsHigh =
+                    toneTooHigh == null || element.tone <= toneTooHigh;
+                final meetsChroma =
+                    minChroma == null || element.chroma >= minChroma;
+                return meetsLow && meetsHigh && meetsChroma;
+              }).toList();
     hcts.addAll(filteredHcts);
 
     // 2. Get the percentage of each color

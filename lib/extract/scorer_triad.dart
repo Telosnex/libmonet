@@ -32,6 +32,7 @@ class ScorerTriad {
     bool debugLog = false,
     double? toneTooLow = 10,
     double? toneTooHigh = 95,
+    double? minChroma = 16,
     bool primaryIsAverageOfNearby = false,
     bool ensureClosestPairPrimary = true,
   }) {
@@ -47,7 +48,12 @@ class ScorerTriad {
       return [];
     }
 
-    final scorer = Scorer(result);
+    final scorer = Scorer(
+      result,
+      toneTooHigh: toneTooHigh,
+      toneTooLow: toneTooLow,
+      minChroma: minChroma,
+    );
     final colorToCountKeys = result.argbToCount.keys.toList();
     // Sort the keys so the color with the top count is first.
     colorToCountKeys.sort(
