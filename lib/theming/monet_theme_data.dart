@@ -1522,17 +1522,21 @@ class MonetThemeData {
         // String is designed to be short and do a good job of capturing an accurate picture
         // of the extremes of the font's letter heights.
         text: TextSpan(text: '|&"qjQJAEIOUYaeiouy', style: textStyle),
-        strutStyle: StrutStyle.fromTextStyle(textStyle, forceStrutHeight: true, height: 1.0),
+        strutStyle: StrutStyle.fromTextStyle(textStyle,
+            forceStrutHeight: true, height: 1.0),
         maxLines: 1,
         textDirection: TextDirection.ltr,
       )..layout();
 
-      final heightDiff = layout.size.height - targetHeightDp;
+      // Inversing force strut height effect. This assumes a default line height
+      // would be 1.5 times the font size, which is a common default.
+      final effectiveHeight = layout.size.height * 0.66;
+      final heightDiff = effectiveHeight - targetHeightDp;
       // Compare the rendered text height with the target height.
       if (heightDiff.abs() <= threshold) {
         // We've found a font size close enough to the expected height.
         break;
-      } else if (layout.size.height < targetHeightDp) {
+      } else if (effectiveHeight < targetHeightDp) {
         // If the rendered height is less than the target, adjust font size up.
         minFontSize = fontSize;
       } else {
