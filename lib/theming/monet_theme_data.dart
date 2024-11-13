@@ -1522,6 +1522,7 @@ class MonetThemeData {
         // String is designed to be short and do a good job of capturing an accurate picture
         // of the extremes of the font's letter heights.
         text: TextSpan(text: '|&"qjQJAEIOUYaeiouy', style: textStyle),
+        strutStyle: StrutStyle.fromTextStyle(textStyle, forceStrutHeight: true, height: 1.0),
         maxLines: 1,
         textDirection: TextDirection.ltr,
       )..layout();
