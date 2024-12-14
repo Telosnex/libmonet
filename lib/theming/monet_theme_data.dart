@@ -702,7 +702,7 @@ class MonetThemeData {
 
   static IconButtonThemeData iconButtonThemeData(SafeColors colors) {
     return IconButtonThemeData(
-      style: iconButtonStyleFromColors(colors),
+      style: iconButtonStyleFromColors(colors,),
     );
   }
 

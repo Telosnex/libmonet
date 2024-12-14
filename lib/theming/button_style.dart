@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +66,16 @@ ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
       hover: safeColors.textHover,
       splash: safeColors.textSplash,
     ),
+    iconColor: stateColors(
+      color: safeColors.text,
+      hover: safeColors.textHoverText,
+      splash: safeColors.textSplashText,
+    ),
+    iconSize: textStyle != null
+        ? WidgetStateProperty.all(textStyle.fontSize!.roundToDouble())
+        : WidgetStatePropertyAll(
+            max(maximumSize.width, maximumSize.height),
+          ),
     minimumSize: WidgetStateProperty.all(minimumSize),
     maximumSize: WidgetStateProperty.all(maximumSize),
     padding: WidgetStateProperty.all(padding),
@@ -122,6 +133,16 @@ ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
       hover: safeColors.fillHoverText,
       splash: safeColors.fillSplashText,
     ),
+    iconColor: stateColors(
+      color: safeColors.fillText,
+      hover: safeColors.fillHoverText,
+      splash: safeColors.fillSplashText,
+    ),
+    iconSize: textStyle != null
+        ? WidgetStateProperty.all(textStyle.fontSize!.roundToDouble())
+        : WidgetStatePropertyAll(
+            max(maximumSize.width, maximumSize.height),
+          ),
     textStyle: textStyle != null
         ? WidgetStateProperty.all(textStyle)
         : WidgetStateProperty.all(null),
@@ -147,6 +168,16 @@ ButtonStyle filledButtonBackgroundIsColor(SafeColors safeColors,
       hover: safeColors.colorHover,
       splash: safeColors.colorSplash,
     ),
+    iconColor: stateColors(
+      color: safeColors.colorText,
+      hover: safeColors.colorHoverText,
+      splash: safeColors.colorSplashText,
+    ),
+    iconSize: textStyle != null
+        ? WidgetStateProperty.all(textStyle.fontSize!.roundToDouble())
+        : WidgetStatePropertyAll(
+            max(maximumSize.width, maximumSize.height),
+          ),
     minimumSize: WidgetStateProperty.all(minimumSize),
     maximumSize: WidgetStateProperty.all(maximumSize),
     padding: WidgetStateProperty.all(padding),
@@ -164,7 +195,8 @@ ButtonStyle filledButtonBackgroundIsColor(SafeColors safeColors,
   );
 }
 
-ButtonStyle iconButtonStyleFromColors(SafeColors safeColors) {
+ButtonStyle iconButtonStyleFromColors(SafeColors safeColors,
+    {double? iconSize}) {
   final foregroundAndIcon = stateColors(
     color: safeColors.text,
     hover: safeColors.textHoverText,
@@ -183,7 +215,12 @@ ButtonStyle iconButtonStyleFromColors(SafeColors safeColors) {
     side: WidgetStateProperty.all(
       const BorderSide(color: Colors.transparent, width: 0),
     ),
-    // iconColor: foregroundAndIcon,
+    iconColor: foregroundAndIcon,
+    iconSize: iconSize != null
+        ? WidgetStateProperty.all(iconSize)
+        : WidgetStatePropertyAll(
+            max(maximumSize.width, maximumSize.height),
+          ),
   );
 }
 
@@ -208,6 +245,14 @@ ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
       hover: safeColors.textHoverText,
       splash: safeColors.textSplashText,
     ),
+    iconColor: stateColors(
+      color: safeColors.backgroundText,
+      hover: safeColors.textHoverText,
+      splash: safeColors.textSplashText,
+    ),
+    iconSize: WidgetStatePropertyAll(
+      max(maximumSize.width, maximumSize.height),
+    ),
     side: WidgetStateProperty.all(
       BorderSide(color: safeColors.colorBorder, width: 2),
     ),
@@ -228,6 +273,14 @@ ButtonStyle iconButtonStyleFromColorInSafeColors(SafeColors safeColors) {
       color: safeColors.colorText,
       hover: safeColors.colorHoverText,
       splash: safeColors.colorSplashText,
+    ),
+    iconColor: stateColors(
+      color: safeColors.colorText,
+      hover: safeColors.colorHoverText,
+      splash: safeColors.colorSplashText,
+    ),
+    iconSize: WidgetStatePropertyAll(
+      max(maximumSize.width, maximumSize.height),
     ),
     side: WidgetStateProperty.all(
       const BorderSide(color: Colors.transparent, width: 0),
@@ -250,6 +303,11 @@ ButtonStyle outlineButtonStyleFromColors(SafeColors safeColors) {
       color: safeColors.text,
       hover: safeColors.textHoverText,
       splash: safeColors.textSplashText,
+    ),
+    iconColor: stateColors(
+      color: safeColors.text,
+      hover: safeColors.textHover,
+      splash: safeColors.textSplash,
     ),
     minimumSize: WidgetStateProperty.all(minimumSize),
     maximumSize: WidgetStateProperty.all(maximumSize),
@@ -295,6 +353,11 @@ ButtonStyle buttonStylefromSafeColorsFill(SafeColors safeColors) {
       hover: safeColors.fillHoverText,
       splash: safeColors.fillSplashText,
     ),
+    iconColor: stateColors(
+      color: safeColors.fillText,
+      hover: safeColors.fillHoverText,
+      splash: safeColors.fillSplashText,
+    ),
     side: WidgetStateProperty.all(
       BorderSide(color: safeColors.fill, width: 2),
     ),
@@ -315,6 +378,11 @@ ButtonStyle buttonStylefromSafeColorsText(SafeColors safeColors) {
       color: safeColors.text,
       hover: safeColors.textHoverText,
       splash: safeColors.textSplashText,
+    ),
+    iconColor: stateColors(
+      color: safeColors.text,
+      hover: safeColors.textHover,
+      splash: safeColors.textSplash,
     ),
     side: WidgetStateProperty.all(BorderSide.none),
   );
