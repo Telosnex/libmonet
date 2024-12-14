@@ -73,9 +73,7 @@ ButtonStyle filledButtonBackgroundIsBackground(SafeColors safeColors,
     ),
     iconSize: textStyle != null
         ? WidgetStateProperty.all(textStyle.fontSize!.roundToDouble())
-        : WidgetStatePropertyAll(
-            max(maximumSize.width, maximumSize.height),
-          ),
+        : null,
     minimumSize: WidgetStateProperty.all(minimumSize),
     maximumSize: WidgetStateProperty.all(maximumSize),
     padding: WidgetStateProperty.all(padding),
@@ -140,9 +138,7 @@ ButtonStyle filledButtonBackgroundIsFill(SafeColors safeColors,
     ),
     iconSize: textStyle != null
         ? WidgetStateProperty.all(textStyle.fontSize!.roundToDouble())
-        : WidgetStatePropertyAll(
-            max(maximumSize.width, maximumSize.height),
-          ),
+        : null,
     textStyle: textStyle != null
         ? WidgetStateProperty.all(textStyle)
         : WidgetStateProperty.all(null),
@@ -175,9 +171,7 @@ ButtonStyle filledButtonBackgroundIsColor(SafeColors safeColors,
     ),
     iconSize: textStyle != null
         ? WidgetStateProperty.all(textStyle.fontSize!.roundToDouble())
-        : WidgetStatePropertyAll(
-            max(maximumSize.width, maximumSize.height),
-          ),
+        : null,
     minimumSize: WidgetStateProperty.all(minimumSize),
     maximumSize: WidgetStateProperty.all(maximumSize),
     padding: WidgetStateProperty.all(padding),
@@ -218,14 +212,12 @@ ButtonStyle iconButtonStyleFromColors(SafeColors safeColors,
     iconColor: foregroundAndIcon,
     iconSize: iconSize != null
         ? WidgetStateProperty.all(iconSize)
-        : WidgetStatePropertyAll(
-            max(maximumSize.width, maximumSize.height),
-          ),
+        : null,
   );
 }
 
 /// Useful for ex. MaterialBanner
-ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
+ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors, {double? iconSize}) {
   final alwaysSurface = stateColors(
     color: safeColors.background,
     hover: safeColors.background,
@@ -250,16 +242,16 @@ ButtonStyle onFillButtonStyleFromColors(SafeColors safeColors) {
       hover: safeColors.textHoverText,
       splash: safeColors.textSplashText,
     ),
-    iconSize: WidgetStatePropertyAll(
-      max(maximumSize.width, maximumSize.height),
-    ),
+    iconSize: iconSize != null
+        ? WidgetStateProperty.all(iconSize)
+        : null,
     side: WidgetStateProperty.all(
       BorderSide(color: safeColors.colorBorder, width: 2),
     ),
   );
 }
 
-ButtonStyle iconButtonStyleFromColorInSafeColors(SafeColors safeColors) {
+ButtonStyle iconButtonStyleFromColorInSafeColors(SafeColors safeColors, {double? iconSize}) {
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
@@ -279,9 +271,9 @@ ButtonStyle iconButtonStyleFromColorInSafeColors(SafeColors safeColors) {
       hover: safeColors.colorHoverText,
       splash: safeColors.colorSplashText,
     ),
-    iconSize: WidgetStatePropertyAll(
-      max(maximumSize.width, maximumSize.height),
-    ),
+    iconSize: iconSize != null
+        ? WidgetStateProperty.all(iconSize)
+        : null,
     side: WidgetStateProperty.all(
       const BorderSide(color: Colors.transparent, width: 0),
     ),
