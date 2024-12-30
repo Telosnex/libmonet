@@ -8,7 +8,8 @@ import 'package:libmonet/hct.dart';
 class SafeColors {
   final Color background;
   final Color backgroundText;
-  
+  final Color backgroundFill;
+
   final Color color;
   final Color colorHover;
   final Color colorSplash;
@@ -39,6 +40,7 @@ class SafeColors {
   SafeColors({
     required this.background,
     required this.backgroundText,
+    required this.backgroundFill,
     required this.color,
     required this.colorText,
     required this.colorBorder,
@@ -95,6 +97,13 @@ class SafeColors {
         }
         break;
     }
+
+    final backgroundFillTone = contrastingLstar(
+      withLstar: backgroundTone,
+      usage: Usage.fill,
+      by: algo,
+      contrast: contrast,
+    );
 
     final backgroundTextTone = contrastingLstar(
       withLstar: backgroundTone,
@@ -222,6 +231,8 @@ class SafeColors {
       background: backgroundHct.color,
       backgroundText: Hct.colorFrom(
           backgroundHct.hue, backgroundHct.chroma, backgroundTextTone),
+      backgroundFill: Hct.colorFrom(
+          backgroundHct.hue, backgroundHct.chroma, backgroundFillTone),
       color: color,
       colorHover: Hct.colorFrom(hue, chroma, colorHover),
       colorSplash: Hct.colorFrom(hue, chroma, colorSplash),
@@ -281,6 +292,12 @@ class SafeColors {
     final backgroundTextTone = contrastingLstar(
       withLstar: backgroundTone,
       usage: Usage.text,
+      by: algo,
+      contrast: contrast,
+    );
+    final backgroundFillTone = contrastingLstar(
+      withLstar: backgroundTone,
+      usage: Usage.fill,
       by: algo,
       contrast: contrast,
     );
@@ -402,6 +419,8 @@ class SafeColors {
     final chroma = colorHct.chroma;
     return SafeColors(
       background: backgroundHct.color,
+      backgroundFill: Hct.colorFrom(
+          backgroundHct.hue, backgroundHct.chroma, backgroundFillTone),
       backgroundText: Hct.colorFrom(
           backgroundHct.hue, backgroundHct.chroma, backgroundTextTone),
       color: color,
