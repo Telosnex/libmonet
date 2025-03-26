@@ -1,7 +1,8 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: WorkerGenerator 6.0.2
+// Generator: WorkerGenerator 7.1.0 (Squadron 7.1.0)
 // **************************************************************************
 
 import 'quantize_service.stub.g.dart'
@@ -9,4 +10,4 @@ import 'quantize_service.stub.g.dart'
     if (dart.library.io) 'quantize_service.vm.g.dart';
 
 /// Service activator for QuantizeService
-final $QuantizeServiceActivator = $getQuantizeServiceActivator;
+const $QuantizeServiceActivator = $getQuantizeServiceActivator;

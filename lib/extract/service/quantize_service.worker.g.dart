@@ -1,39 +1,75 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'quantize_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 6.0.2
+// Generator: WorkerGenerator 7.1.0 (Squadron 7.1.0)
 // **************************************************************************
 
+/// Command ids used in operations map
+const int _$quantizeId = 1;
+
+/// WorkerService operations for QuantizeService
+extension on QuantizeService {
+  OperationsMap _$getOperations() => OperationsMap({
+        _$quantizeId: ($req) async {
+          final QuantizerResult $res;
+          try {
+            final $dsr = _$Deser(contextAware: false);
+            $res = await quantize($dsr.$1($req.args[0]), $dsr.$0($req.args[1]));
+          } finally {}
+          try {
+            final $sr = _$Ser(contextAware: false);
+            return $sr.$0($res);
+          } finally {}
+        },
+      });
+}
+
+/// Invoker for QuantizeService, implements the public interface to invoke the
+/// remote service.
+mixin _$QuantizeService$Invoker on Invoker implements QuantizeService {
+  @override
+  Future<QuantizerResult> quantize(List<int> argbs, int maxColors) async {
+    final dynamic $res = await send(_$quantizeId, args: [argbs, maxColors]);
+    try {
+      final $dsr = _$Deser(contextAware: false);
+      return $dsr.$2($res);
+    } finally {}
+  }
+}
+
+/// Facade for QuantizeService, implements other details of the service unrelated to
+/// invoking the remote service.
+mixin _$QuantizeService$Facade implements QuantizeService {}
+
 /// WorkerService class for QuantizeService
-class _$QuantizeServiceWorkerService extends QuantizeService
+class _$QuantizeService$WorkerService extends QuantizeService
     implements WorkerService {
-  _$QuantizeServiceWorkerService() : super();
+  _$QuantizeService$WorkerService() : super();
 
   @override
-  late final Map<int, CommandHandler> operations =
-      Map.unmodifiable(<int, CommandHandler>{
-    _$quantizeId: ($) =>
-        quantize(_$X.$1($.args[0]), _$X.$0($.args[1])).then(_$X.$2),
-  });
-
-  static const int _$quantizeId = 1;
+  OperationsMap get operations => _$getOperations();
 }
 
 /// Service initializer for QuantizeService
-WorkerService $QuantizeServiceInitializer(WorkerRequest $$) =>
-    _$QuantizeServiceWorkerService();
+WorkerService $QuantizeServiceInitializer(WorkerRequest $req) =>
+    _$QuantizeService$WorkerService();
 
 /// Worker for QuantizeService
-base class QuantizeServiceWorker extends Worker implements QuantizeService {
+base class QuantizeServiceWorker extends Worker
+    with _$QuantizeService$Invoker, _$QuantizeService$Facade
+    implements QuantizeService {
   QuantizeServiceWorker(
       {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
-      : super($QuantizeServiceActivator(Squadron.platformType));
+      : super($QuantizeServiceActivator(Squadron.platformType),
+            threadHook: threadHook, exceptionManager: exceptionManager);
 
   QuantizeServiceWorker.vm(
       {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
-      : super($QuantizeServiceActivator(SquadronPlatformType.vm));
+      : super($QuantizeServiceActivator(SquadronPlatformType.vm),
+            threadHook: threadHook, exceptionManager: exceptionManager);
 
   QuantizeServiceWorker.js(
       {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
@@ -42,69 +78,70 @@ base class QuantizeServiceWorker extends Worker implements QuantizeService {
 
   QuantizeServiceWorker.wasm(
       {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
-      : super($QuantizeServiceActivator(SquadronPlatformType.wasm));
+      : super($QuantizeServiceActivator(SquadronPlatformType.wasm),
+            threadHook: threadHook, exceptionManager: exceptionManager);
 
   @override
-  Future<QuantizerResult> quantize(List<int> argbs, int maxColors) =>
-      send(_$QuantizeServiceWorkerService._$quantizeId,
-              args: [_$X.$3(argbs), maxColors],
-              inspectRequest: true,
-              inspectResponse: true)
-          .then(_$X.$4);
+  List? getStartArgs() => null;
 }
 
 /// Worker pool for QuantizeService
 base class QuantizeServiceWorkerPool extends WorkerPool<QuantizeServiceWorker>
+    with _$QuantizeService$Facade
     implements QuantizeService {
   QuantizeServiceWorkerPool(
-      {ConcurrencySettings? concurrencySettings,
-      PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager})
+      {PlatformThreadHook? threadHook,
+      ExceptionManager? exceptionManager,
+      ConcurrencySettings? concurrencySettings})
       : super(
-          (ExceptionManager exceptionManager) => QuantizeServiceWorker(
-              threadHook: threadHook, exceptionManager: exceptionManager),
-          concurrencySettings: concurrencySettings,
-        );
+            (ExceptionManager exceptionManager) => QuantizeServiceWorker(
+                threadHook: threadHook, exceptionManager: exceptionManager),
+            concurrencySettings: concurrencySettings,
+            exceptionManager: exceptionManager);
 
   QuantizeServiceWorkerPool.vm(
-      {ConcurrencySettings? concurrencySettings,
-      PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager})
+      {PlatformThreadHook? threadHook,
+      ExceptionManager? exceptionManager,
+      ConcurrencySettings? concurrencySettings})
       : super(
-          (ExceptionManager exceptionManager) => QuantizeServiceWorker.vm(
-              threadHook: threadHook, exceptionManager: exceptionManager),
-          concurrencySettings: concurrencySettings,
-        );
+            (ExceptionManager exceptionManager) => QuantizeServiceWorker.vm(
+                threadHook: threadHook, exceptionManager: exceptionManager),
+            concurrencySettings: concurrencySettings,
+            exceptionManager: exceptionManager);
 
   QuantizeServiceWorkerPool.js(
-      {ConcurrencySettings? concurrencySettings,
-      PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager})
+      {PlatformThreadHook? threadHook,
+      ExceptionManager? exceptionManager,
+      ConcurrencySettings? concurrencySettings})
       : super(
-          (ExceptionManager exceptionManager) => QuantizeServiceWorker.js(
-              threadHook: threadHook, exceptionManager: exceptionManager),
-          concurrencySettings: concurrencySettings,
-        );
+            (ExceptionManager exceptionManager) => QuantizeServiceWorker.js(
+                threadHook: threadHook, exceptionManager: exceptionManager),
+            concurrencySettings: concurrencySettings,
+            exceptionManager: exceptionManager);
 
   QuantizeServiceWorkerPool.wasm(
-      {ConcurrencySettings? concurrencySettings,
-      PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager})
+      {PlatformThreadHook? threadHook,
+      ExceptionManager? exceptionManager,
+      ConcurrencySettings? concurrencySettings})
       : super(
-          (ExceptionManager exceptionManager) => QuantizeServiceWorker.wasm(
-              threadHook: threadHook, exceptionManager: exceptionManager),
-          concurrencySettings: concurrencySettings,
-        );
+            (ExceptionManager exceptionManager) => QuantizeServiceWorker.wasm(
+                threadHook: threadHook, exceptionManager: exceptionManager),
+            concurrencySettings: concurrencySettings,
+            exceptionManager: exceptionManager);
 
   @override
   Future<QuantizerResult> quantize(List<int> argbs, int maxColors) =>
       execute((w) => w.quantize(argbs, maxColors));
 }
 
-class _$X {
-  static final $0 = Squadron.converter.value<int>();
-  static final $1 = Squadron.converter.list<int>(_$X.$0);
-  static final $2 = (($) => ($ as QuantizerResult).toJson());
-  static final $3 = Squadron.converter.list<int>();
-  static final $4 = (($) => QuantizerResult.fromJson($));
+final class _$Deser extends MarshalingContext {
+  _$Deser({super.contextAware});
+  late final $0 = value<int>();
+  late final $1 = list<int>($0);
+  late final $2 = (($) => QuantizerResult.fromJson($));
+}
+
+final class _$Ser extends MarshalingContext {
+  _$Ser({super.contextAware});
+  late final $0 = (($) => ($ as QuantizerResult).toJson());
 }
