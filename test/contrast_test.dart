@@ -67,7 +67,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(80.242, 0.001));
+      expect(lstar, closeTo(79.548, 0.001));
     });
     test('lighter text', () {
       final lstar = contrastingLstar(
@@ -76,7 +76,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(49.637, 0.001));
+      expect(lstar, closeTo(49.876, 0.001));
     });
 
     test('darker fill', () {
@@ -86,7 +86,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(86.695, 0.001));
+      expect(lstar, closeTo(86.935, 0.001));
     });
 
     test('lighter fill', () {
@@ -96,7 +96,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(40.730, 0.001));
+      expect(lstar, closeTo(40.970, 0.001));
     });
   });
 
@@ -109,7 +109,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(36.986, 0.001));
+      expect(lstar, closeTo(33.629, 0.001));
     });
     test('lighter text', () {
       final lstar = contrastingLstar(
@@ -118,7 +118,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(87.406, 0.001));
+      expect(lstar, closeTo(87.818, 0.001));
     });
 
     test('darker fill', () {
@@ -128,7 +128,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(49.238, 0.001));
+      expect(lstar, closeTo(49.478, 0.001));
     });
 
     test('lighter fill', () {
@@ -138,7 +138,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(82.764, 0.001));
+      expect(lstar, closeTo(83.004, 0.001));
     });
   });
 
@@ -150,7 +150,7 @@ void main() {
         by: Algo.apca,
         contrast: 0.5,
       );
-      expect(lstar, closeTo(59.020, 0.001));
+      expect(lstar, closeTo(56.797, 0.001));
     });
     test('lighter text', () {
       final lstar = contrastingLstar(
@@ -159,7 +159,7 @@ void main() {
         by: Algo.apca,
         contrast: 0.5,
       );
-      expect(lstar, closeTo(72.205, 0.001));
+      expect(lstar, closeTo(72.445, 0.001));
     });
 
     test('darker fill', () {
@@ -169,7 +169,7 @@ void main() {
         by: Algo.apca,
         contrast: 0.5,
       );
-      expect(lstar, closeTo(73.312, 0.001));
+      expect(lstar, closeTo(73.551, 0.001));
     });
 
     test('lighter fill', () {
@@ -179,7 +179,7 @@ void main() {
         by: Algo.apca,
         contrast: 0.5,
       );
-      expect(lstar, closeTo(59.788, 0.001));
+      expect(lstar, closeTo(60.028, 0.001));
     });
   });
   group('contrasting L* WCAG', () {

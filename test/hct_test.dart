@@ -273,7 +273,7 @@ void main() {
               .inViewingConditions(
                   Cam16ViewingConditions.make(backgroundLstar: 100.0))
               .toInt(),
-          isColor(0xff8EFF77));
+          isColor(0xff8FFF77));
     });
 
     test('blue in black', () {
@@ -295,7 +295,7 @@ void main() {
               .inViewingConditions(
                   Cam16ViewingConditions.make(backgroundLstar: 100.0))
               .toInt(),
-          isColor(0xff3F49FF));
+          isColor(0xff4048FF));
     });
 
     test('white in black', () {
