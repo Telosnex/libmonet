@@ -6,62 +6,76 @@ import 'package:libmonet/contrast.dart';
 import 'package:libmonet/hct.dart';
 
 class SafeColors {
-  final Color background;
-  final Color backgroundText;
-  final Color backgroundFill;
+  // Core parameters
+  final Color _baseColor;
+  final Color _baseBackground;
+  final double _backgroundTone;
+  final double _contrast;
+  final Algo _algo;
 
-  final Color color;
-  final Color colorHover;
-  final Color colorSplash;
+  // Cache for lazy-computed values
+  final Map<String, Color> _cache = {};
 
-  final Color colorText;
-  final Color colorHoverText;
-  final Color colorSplashText;
+  // Constructor now only takes core parameters needed for calculations
+  SafeColors._(
+      {required Color baseColor,
+      required Color baseBackground,
+      double? backgroundTone,
+      required double contrast,
+      required Algo algo})
+      : _baseColor = baseColor,
+        _baseBackground = baseBackground,
+        _backgroundTone = backgroundTone ?? Hct.fromColor(baseBackground).tone,
+        _contrast = contrast,
+        _algo = algo;
 
-  final Color colorIcon;
-  final Color colorBorder;
+  // Getters with lazy computation
+  Color get background => _computeOrGet('background', _computeBackground);
+  Color get backgroundText =>
+      _computeOrGet('backgroundText', _computeBackgroundText);
+  Color get backgroundFill =>
+      _computeOrGet('backgroundFill', _computeBackgroundFill);
 
-  final Color fill;
-  final Color fillHover;
-  final Color fillSplash;
+  Color get color => _baseColor;
+  Color get colorHover => _computeOrGet('colorHover', _computeColorHover);
+  Color get colorSplash => _computeOrGet('colorSplash', _computeColorSplash);
 
-  final Color fillHoverText;
-  final Color fillSplashText;
+  Color get colorText => _computeOrGet('colorText', _computeColorText);
+  Color get colorHoverText =>
+      _computeOrGet('colorHoverText', _computeColorHoverText);
+  Color get colorSplashText =>
+      _computeOrGet('colorSplashText', _computeColorSplashText);
 
-  final Color fillText;
-  final Color fillIcon;
+  Color get colorIcon => _computeOrGet('colorIcon', _computeColorIcon);
+  Color get colorBorder => _computeOrGet('colorBorder', _computeColorBorder);
 
-  final Color text;
-  final Color textHover;
-  final Color textHoverText;
-  final Color textSplash;
-  final Color textSplashText;
+  Color get fill => _computeOrGet('fill', _computeFill);
+  Color get fillHover => _computeOrGet('fillHover', _computeFillHover);
+  Color get fillSplash => _computeOrGet('fillSplash', _computeFillSplash);
 
-  SafeColors({
-    required this.background,
-    required this.backgroundText,
-    required this.backgroundFill,
-    required this.color,
-    required this.colorText,
-    required this.colorBorder,
-    required this.colorIcon,
-    required this.colorHover,
-    required this.colorHoverText,
-    required this.colorSplashText,
-    required this.colorSplash,
-    required this.fill,
-    required this.fillText,
-    required this.fillHoverText,
-    required this.fillSplashText,
-    required this.fillIcon,
-    required this.fillHover,
-    required this.fillSplash,
-    required this.text,
-    required this.textHover,
-    required this.textHoverText,
-    required this.textSplash,
-    required this.textSplashText,
-  });
+  Color get fillHoverText =>
+      _computeOrGet('fillHoverText', _computeFillHoverText);
+  Color get fillSplashText =>
+      _computeOrGet('fillSplashText', _computeFillSplashText);
+
+  Color get fillText => _computeOrGet('fillText', _computeFillText);
+  Color get fillIcon => _computeOrGet('fillIcon', _computeFillIcon);
+
+  Color get text => _computeOrGet('text', _computeText);
+  Color get textHover => _computeOrGet('textHover', _computeTextHover);
+  Color get textHoverText =>
+      _computeOrGet('textHoverText', _computeTextHoverText);
+  Color get textSplash => _computeOrGet('textSplash', _computeTextSplash);
+  Color get textSplashText =>
+      _computeOrGet('textSplashText', _computeTextSplashText);
+
+  // Helper method for lazy computation with caching
+  Color _computeOrGet(String key, Color Function() compute) {
+    if (!_cache.containsKey(key)) {
+      _cache[key] = compute();
+    }
+    return _cache[key]!;
+  }
 
   /// Use for colorful backgrounds: [SafeColors.from] reduces the chroma of the
   /// background color to 16.
@@ -71,188 +85,11 @@ class SafeColors {
     double contrast = 0.5,
     Algo algo = Algo.apca,
   }) {
-    final hoverContrast = math.max(contrast - 0.3, 0.1);
-    final splashContrast = math.max(contrast - 0.15, 0.25);
-    final colorHct = Hct.fromColor(color);
-    final backgroundHct = Hct.fromColor(background);
-    final backgroundTone = backgroundHct.tone;
-    bool needBorder = false;
-    switch (algo) {
-      case Algo.wcag21:
-        final requiredContrastRatio =
-            contrastRatioInterpolation(percent: contrast, usage: Usage.fill);
-        final actualContrastRatio =
-            contrastRatioOfLstars(colorHct.tone, backgroundTone);
-        if (actualContrastRatio < requiredContrastRatio) {
-          needBorder = true;
-        }
-        break;
-      case Algo.apca:
-        final apca = apcaContrastOfApcaY(
-            lstarToApcaY(colorHct.tone), lstarToApcaY(backgroundTone));
-        final requiredApca =
-            apcaInterpolation(percent: contrast, usage: Usage.fill);
-        if (apca.abs() < requiredApca.abs()) {
-          needBorder = true;
-        }
-        break;
-    }
-
-    final backgroundFillTone = contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.fill,
-      by: algo,
+    return SafeColors._(
+      baseColor: color,
+      baseBackground: background,
       contrast: contrast,
-    );
-
-    final backgroundTextTone = contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final colorBorder = !needBorder
-        ? colorHct.tone
-        : contrastingLstar(
-            withLstar: backgroundTone,
-            usage: Usage.fill,
-            by: algo,
-            contrast: contrast,
-          );
-    final colorText = contrastingLstar(
-      withLstar: colorHct.tone,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final colorIcon = contrastingLstar(
-      withLstar: colorHct.tone,
-      usage: Usage.fill,
-      by: algo,
-      contrast: contrast,
-    );
-    final colorHover = contrastingLstar(
-      withLstar: colorHct.tone,
-      usage: Usage.fill,
-      by: algo,
-      contrast: hoverContrast,
-    );
-    final colorSplash = contrastingLstar(
-      withLstar: colorHct.tone,
-      usage: Usage.fill,
-      by: algo,
-      contrast: splashContrast,
-    );
-    final colorTextSplash = contrastingLstar(
-      withLstar: colorSplash,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final colorTextHover = contrastingLstar(
-      withLstar: colorHover,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-
-    final fill = colorBorder;
-    final fillText = contrastingLstar(
-      withLstar: fill,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final fillIcon = contrastingLstar(
-      withLstar: fill,
-      usage: Usage.fill,
-      by: algo,
-      contrast: contrast,
-    );
-
-    final fillHover = contrastingLstar(
-      withLstar: fill,
-      usage: Usage.fill,
-      by: algo,
-      contrast: hoverContrast,
-    );
-    final fillSplash = contrastingLstar(
-      withLstar: fill,
-      usage: Usage.fill,
-      by: algo,
-      contrast: splashContrast,
-    );
-    final fillTextHover = contrastingLstar(
-      withLstar: fillHover,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final fillTextSplash = contrastingLstar(
-      withLstar: fillSplash,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-
-    final text = contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final textHover = contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.text,
-      by: algo,
-      contrast: hoverContrast,
-    );
-    final textSplash = contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.text,
-      by: algo,
-      contrast: splashContrast,
-    );
-    final textHoverText = contrastingLstar(
-      withLstar: textHover,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final textSplashText = contrastingLstar(
-      withLstar: textSplash,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final hue = colorHct.hue;
-    final chroma = colorHct.chroma;
-    return SafeColors(
-      background: backgroundHct.color,
-      backgroundText: Hct.colorFrom(
-          backgroundHct.hue, backgroundHct.chroma, backgroundTextTone),
-      backgroundFill: Hct.colorFrom(
-          backgroundHct.hue, backgroundHct.chroma, backgroundFillTone),
-      color: color,
-      colorHover: Hct.colorFrom(hue, chroma, colorHover),
-      colorSplash: Hct.colorFrom(hue, chroma, colorSplash),
-      colorBorder: Hct.colorFrom(hue, chroma, colorBorder),
-      colorText: Hct.colorFrom(hue, chroma, colorText),
-      colorHoverText: Hct.colorFrom(hue, chroma, colorTextHover),
-      colorSplashText: Hct.colorFrom(hue, chroma, colorTextSplash),
-      colorIcon: Hct.colorFrom(hue, chroma, colorIcon),
-      fill: Hct.colorFrom(hue, chroma, fill),
-      fillText: Hct.colorFrom(hue, chroma, fillText),
-      fillHoverText: Hct.colorFrom(hue, chroma, fillTextHover),
-      fillSplashText: Hct.colorFrom(hue, chroma, fillTextSplash),
-      fillIcon: Hct.colorFrom(hue, chroma, fillIcon),
-      fillHover: Hct.colorFrom(hue, chroma, fillHover),
-      fillSplash: Hct.colorFrom(hue, chroma, fillSplash),
-      text: Hct.colorFrom(hue, chroma, text),
-      textHover: Hct.colorFrom(hue, chroma, textHover),
-      textHoverText: Hct.colorFrom(hue, chroma, textHoverText),
-      textSplash: Hct.colorFrom(hue, chroma, textSplash),
-      textSplashText: Hct.colorFrom(hue, chroma, textSplashText),
+      algo: algo,
     );
   }
 
@@ -262,187 +99,287 @@ class SafeColors {
     double contrast = 0.5,
     Algo algo = Algo.apca,
   }) {
-    final hoverContrast = math.max(contrast - 0.3, 0.1);
-    final splashContrast = math.max(contrast - 0.15, 0.25);
+    // Create a background color with the specified tone
     final colorHct = Hct.fromColor(color);
+    final backgroundHct =
+        Hct.from(colorHct.hue, math.min(16, colorHct.chroma), backgroundTone);
+
+    return SafeColors._(
+      baseColor: color,
+      baseBackground: backgroundHct.color,
+      backgroundTone: backgroundTone,
+      contrast: contrast,
+      algo: algo,
+    );
+  }
+
+  // Computation methods for all color properties
+  Color _computeBackground() => _baseBackground;
+
+  Color _computeBackgroundText() {
+    final backgroundHct = Hct.fromColor(_baseBackground);
+    final backgroundTextTone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.text,
+      by: _algo,
+      contrast: _contrast,
+    );
+    return Hct.colorFrom(
+        backgroundHct.hue, backgroundHct.chroma, backgroundTextTone);
+  }
+
+  Color _computeBackgroundFill() {
+    final backgroundHct = Hct.fromColor(_baseBackground);
+    final backgroundFillTone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.fill,
+      by: _algo,
+      contrast: _contrast,
+    );
+    return Hct.colorFrom(
+        backgroundHct.hue, backgroundHct.chroma, backgroundFillTone);
+  }
+
+  Color _computeColorBorder() {
+    final colorHct = Hct.fromColor(_baseColor);
     bool needBorder = false;
-    switch (algo) {
+    switch (_algo) {
       case Algo.wcag21:
         final requiredContrastRatio =
-            contrastRatioInterpolation(percent: contrast, usage: Usage.fill);
+            contrastRatioInterpolation(percent: _contrast, usage: Usage.fill);
         final actualContrastRatio =
-            contrastRatioOfLstars(colorHct.tone, backgroundTone);
+            contrastRatioOfLstars(colorHct.tone, _backgroundTone);
         if (actualContrastRatio < requiredContrastRatio) {
           needBorder = true;
         }
         break;
       case Algo.apca:
         final apca = apcaContrastOfApcaY(
-            lstarToApcaY(colorHct.tone), lstarToApcaY(backgroundTone));
+            lstarToApcaY(colorHct.tone), lstarToApcaY(_backgroundTone));
         final requiredApca =
-            apcaInterpolation(percent: contrast, usage: Usage.fill);
+            apcaInterpolation(percent: _contrast, usage: Usage.fill);
         if (apca.abs() < requiredApca.abs()) {
           needBorder = true;
         }
         break;
     }
 
-    final backgroundHct =
-        Hct.from(colorHct.hue, math.min(16, colorHct.chroma), backgroundTone);
-    final backgroundTextTone = contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final backgroundFillTone = contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.fill,
-      by: algo,
-      contrast: contrast,
-    );
-    final colorBorder = !needBorder
+    final colorBorderTone = !needBorder
         ? colorHct.tone
         : contrastingLstar(
-            withLstar: backgroundTone,
+            withLstar: _backgroundTone,
             usage: Usage.fill,
-            by: algo,
-            contrast: contrast,
+            by: _algo,
+            contrast: _contrast,
           );
-    final colorText = contrastingLstar(
+
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorBorderTone);
+  }
+
+  Color _computeColorText() {
+    final colorHct = Hct.fromColor(_baseColor);
+    final colorTextTone = contrastingLstar(
       withLstar: colorHct.tone,
       usage: Usage.text,
-      by: algo,
-      contrast: contrast,
+      by: _algo,
+      contrast: _contrast,
     );
-    final colorIcon = contrastingLstar(
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorTextTone);
+  }
+
+  Color _computeColorIcon() {
+    final colorHct = Hct.fromColor(_baseColor);
+    final colorIconTone = contrastingLstar(
       withLstar: colorHct.tone,
       usage: Usage.fill,
-      by: algo,
-      contrast: contrast,
+      by: _algo,
+      contrast: _contrast,
     );
-    final colorHover = contrastingLstar(
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorIconTone);
+  }
+
+  Color _computeColorHover() {
+    final colorHct = Hct.fromColor(_baseColor);
+    final hoverContrast = math.max(_contrast - 0.3, 0.1);
+    final colorHoverTone = contrastingLstar(
       withLstar: colorHct.tone,
       usage: Usage.fill,
-      by: algo,
+      by: _algo,
       contrast: hoverContrast,
     );
-    final colorSplash = contrastingLstar(
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorHoverTone);
+  }
+
+  Color _computeColorSplash() {
+    final colorHct = Hct.fromColor(_baseColor);
+    final splashContrast = math.max(_contrast - 0.15, 0.25);
+    final colorSplashTone = contrastingLstar(
       withLstar: colorHct.tone,
       usage: Usage.fill,
-      by: algo,
+      by: _algo,
       contrast: splashContrast,
     );
-    final colorTextSplash = contrastingLstar(
-      withLstar: colorSplash,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final colorTextHover = contrastingLstar(
-      withLstar: colorHover,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorSplashTone);
+  }
 
-    final fill = colorBorder;
-    final fillText = contrastingLstar(
-      withLstar: fill,
+  Color _computeColorHoverText() {
+    final colorHoverTone = Hct.fromColor(colorHover).tone;
+    final colorHoverTextTone = contrastingLstar(
+      withLstar: colorHoverTone,
       usage: Usage.text,
-      by: algo,
-      contrast: contrast,
+      by: _algo,
+      contrast: _contrast,
     );
-    final fillIcon = contrastingLstar(
-      withLstar: fill,
-      usage: Usage.fill,
-      by: algo,
-      contrast: contrast,
-    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorHoverTextTone);
+  }
 
-    final fillHover = contrastingLstar(
-      withLstar: fill,
+  Color _computeColorSplashText() {
+    final colorSplashTone = Hct.fromColor(colorSplash).tone;
+    final colorSplashTextTone = contrastingLstar(
+      withLstar: colorSplashTone,
+      usage: Usage.text,
+      by: _algo,
+      contrast: _contrast,
+    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorSplashTextTone);
+  }
+
+  Color _computeFill() {
+    return colorBorder;
+  }
+
+  Color _computeFillText() {
+    final fillTone = Hct.fromColor(fill).tone;
+    final fillTextTone = contrastingLstar(
+      withLstar: fillTone,
+      usage: Usage.text,
+      by: _algo,
+      contrast: _contrast,
+    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillTextTone);
+  }
+
+  Color _computeFillIcon() {
+    final fillTone = Hct.fromColor(fill).tone;
+    final fillIconTone = contrastingLstar(
+      withLstar: fillTone,
       usage: Usage.fill,
-      by: algo,
+      by: _algo,
+      contrast: _contrast,
+    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillIconTone);
+  }
+
+  Color _computeFillHover() {
+    final fillTone = Hct.fromColor(fill).tone;
+    final hoverContrast = math.max(_contrast - 0.3, 0.1);
+    final fillHoverTone = contrastingLstar(
+      withLstar: fillTone,
+      usage: Usage.fill,
+      by: _algo,
       contrast: hoverContrast,
     );
-    final fillSplash = contrastingLstar(
-      withLstar: fill,
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillHoverTone);
+  }
+
+  Color _computeFillSplash() {
+    final fillTone = Hct.fromColor(fill).tone;
+    final splashContrast = math.max(_contrast - 0.15, 0.25);
+    final fillSplashTone = contrastingLstar(
+      withLstar: fillTone,
       usage: Usage.fill,
-      by: algo,
+      by: _algo,
       contrast: splashContrast,
     );
-    final fillTextHover = contrastingLstar(
-      withLstar: fillHover,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
-    final fillTextSplash = contrastingLstar(
-      withLstar: fillSplash,
-      usage: Usage.text,
-      by: algo,
-      contrast: contrast,
-    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillSplashTone);
+  }
 
-    final text = contrastingLstar(
-      withLstar: backgroundTone,
+  Color _computeFillHoverText() {
+    final fillHoverTone = Hct.fromColor(fillHover).tone;
+    final fillHoverTextTone = contrastingLstar(
+      withLstar: fillHoverTone,
       usage: Usage.text,
-      by: algo,
-      contrast: contrast,
+      by: _algo,
+      contrast: _contrast,
     );
-    final textHover = contrastingLstar(
-      withLstar: backgroundTone,
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillHoverTextTone);
+  }
+
+  Color _computeFillSplashText() {
+    final fillSplashTone = Hct.fromColor(fillSplash).tone;
+    final fillSplashTextTone = contrastingLstar(
+      withLstar: fillSplashTone,
       usage: Usage.text,
-      by: algo,
+      by: _algo,
+      contrast: _contrast,
+    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillSplashTextTone);
+  }
+
+  Color _computeText() {
+    final textTone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.text,
+      by: _algo,
+      contrast: _contrast,
+    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, textTone);
+  }
+
+  Color _computeTextHover() {
+    final hoverContrast = math.max(_contrast - 0.3, 0.1);
+    final textHoverTone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.text,
+      by: _algo,
       contrast: hoverContrast,
     );
-    final textSplash = contrastingLstar(
-      withLstar: backgroundTone,
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, textHoverTone);
+  }
+
+  Color _computeTextSplash() {
+    final splashContrast = math.max(_contrast - 0.15, 0.25);
+    final textSplashTone = contrastingLstar(
+      withLstar: _backgroundTone,
       usage: Usage.text,
-      by: algo,
+      by: _algo,
       contrast: splashContrast,
     );
-    final textHoverText = contrastingLstar(
-      withLstar: textHover,
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, textSplashTone);
+  }
+
+  Color _computeTextHoverText() {
+    final textHoverTone = Hct.fromColor(textHover).tone;
+    final textHoverTextTone = contrastingLstar(
+      withLstar: textHoverTone,
       usage: Usage.text,
-      by: algo,
-      contrast: contrast,
+      by: _algo,
+      contrast: _contrast,
     );
-    final textSplashText = contrastingLstar(
-      withLstar: textSplash,
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, textHoverTextTone);
+  }
+
+  Color _computeTextSplashText() {
+    final textSplashTone = Hct.fromColor(textSplash).tone;
+    final textSplashTextTone = contrastingLstar(
+      withLstar: textSplashTone,
       usage: Usage.text,
-      by: algo,
-      contrast: contrast,
+      by: _algo,
+      contrast: _contrast,
     );
-    final hue = colorHct.hue;
-    final chroma = colorHct.chroma;
-    return SafeColors(
-      background: backgroundHct.color,
-      backgroundFill: Hct.colorFrom(
-          backgroundHct.hue, backgroundHct.chroma, backgroundFillTone),
-      backgroundText: Hct.colorFrom(
-          backgroundHct.hue, backgroundHct.chroma, backgroundTextTone),
-      color: color,
-      colorHover: Hct.colorFrom(hue, chroma, colorHover),
-      colorSplash: Hct.colorFrom(hue, chroma, colorSplash),
-      colorBorder: Hct.colorFrom(hue, chroma, colorBorder),
-      colorText: Hct.colorFrom(hue, chroma, colorText),
-      colorHoverText: Hct.colorFrom(hue, chroma, colorTextHover),
-      colorSplashText: Hct.colorFrom(hue, chroma, colorTextSplash),
-      colorIcon: Hct.colorFrom(hue, chroma, colorIcon),
-      fill: Hct.colorFrom(hue, chroma, fill),
-      fillText: Hct.colorFrom(hue, chroma, fillText),
-      fillHoverText: Hct.colorFrom(hue, chroma, fillTextHover),
-      fillSplashText: Hct.colorFrom(hue, chroma, fillTextSplash),
-      fillIcon: Hct.colorFrom(hue, chroma, fillIcon),
-      fillHover: Hct.colorFrom(hue, chroma, fillHover),
-      fillSplash: Hct.colorFrom(hue, chroma, fillSplash),
-      text: Hct.colorFrom(hue, chroma, text),
-      textHover: Hct.colorFrom(hue, chroma, textHover),
-      textHoverText: Hct.colorFrom(hue, chroma, textHoverText),
-      textSplash: Hct.colorFrom(hue, chroma, textSplash),
-      textSplashText: Hct.colorFrom(hue, chroma, textSplashText),
-    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, textSplashTextTone);
   }
 }
