@@ -252,8 +252,6 @@ class QuantizerWu implements Quantizer {
         two.g0 = one.g0;
         two.b0 = one.b1;
         break;
-      default:
-        throw 'unexpected direction $cutDirection';
     }
 
     one.vol = (one.r1 - one.r0) * (one.g1 - one.g0) * (one.b1 - one.b0);
@@ -334,8 +332,6 @@ class QuantizerWu implements Quantizer {
             moment[getIndex(cube.r1, cube.g0, cube.b0)] +
             moment[getIndex(cube.r0, cube.g1, cube.b0)] -
             moment[getIndex(cube.r0, cube.g0, cube.b0)];
-      default:
-        throw 'unexpected direction $direction';
     }
   }
 
@@ -357,8 +353,6 @@ class QuantizerWu implements Quantizer {
             moment[getIndex(cube.r1, cube.g0, position)] -
             moment[getIndex(cube.r0, cube.g1, position)] +
             moment[getIndex(cube.r0, cube.g0, position)]);
-      default:
-        throw 'unexpected direction $direction';
     }
   }
 }

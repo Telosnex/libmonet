@@ -1,5 +1,3 @@
-library libmonet;
-
 export 'argb_srgb_xyz_lab.dart';
 export 'cam16.dart';
 export 'cam16_viewing_conditions.dart';

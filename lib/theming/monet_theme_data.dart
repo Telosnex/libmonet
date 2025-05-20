@@ -382,8 +382,8 @@ class MonetThemeData {
     return const ButtonThemeData();
   }
 
-  static CardTheme cardTheme(SafeColors colors) {
-    return CardTheme(
+  static CardThemeData cardTheme(SafeColors colors) {
+    return CardThemeData(
       clipBehavior: Clip.none, // match default
       color: colors.background,
       shadowColor: _singleShadowColorFor(colors.background),
@@ -584,8 +584,8 @@ class MonetThemeData {
     );
   }
 
-  static DialogTheme createDialogTheme(SafeColors colors, TextTheme textTheme) {
-    return DialogTheme(
+  static DialogThemeData createDialogTheme(SafeColors colors, TextTheme textTheme) {
+    return DialogThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
       shadowColor: _singleShadowColorFor(colors.background),
@@ -1190,7 +1190,7 @@ class MonetThemeData {
     );
   }
 
-  static TabBarTheme createTabBarTheme(SafeColors colors, TextTheme textTheme) {
+  static TabBarThemeData createTabBarTheme(SafeColors colors, TextTheme textTheme) {
     final labelColor = WidgetStateColor.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return colors.text;
@@ -1202,7 +1202,7 @@ class MonetThemeData {
         return colors.backgroundText;
       }
     });
-    return TabBarTheme(
+    return TabBarThemeData(
       // Oddly, this still is required even if indicatorColor is set.
       indicator: UnderlineTabIndicator(
           borderSide: BorderSide(color: colors.fill, width: 2)),
