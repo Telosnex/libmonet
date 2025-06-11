@@ -15,4 +15,9 @@ class QuantizerResult {
   factory QuantizerResult.fromJson(Map json) => _$QuantizerResultFromJson(json);
 
   Map toJson() => _$QuantizerResultToJson(this);
+
+  @override
+  String toString() {
+    return 'QuantizerResult(argbToCount= $argbToCount';
+  }
 }
