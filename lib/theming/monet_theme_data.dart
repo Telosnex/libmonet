@@ -16,7 +16,8 @@ import 'package:libmonet/temperature.dart';
 import 'package:libmonet/theming/button_style.dart';
 import 'package:libmonet/theming/slider_flat_shape.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
-import 'package:libmonet/util/lru_cache.dart';
+
+import 'package:libmonet/theming/font_metrics_utils.dart';
 
 class MonetThemeData {
   final SafeColors primary;
@@ -584,7 +585,8 @@ class MonetThemeData {
     );
   }
 
-  static DialogThemeData createDialogTheme(SafeColors colors, TextTheme textTheme) {
+  static DialogThemeData createDialogTheme(
+      SafeColors colors, TextTheme textTheme) {
     return DialogThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
@@ -702,7 +704,9 @@ class MonetThemeData {
 
   static IconButtonThemeData iconButtonThemeData(SafeColors colors) {
     return IconButtonThemeData(
-      style: iconButtonStyleFromColors(colors,),
+      style: iconButtonStyleFromColors(
+        colors,
+      ),
     );
   }
 
@@ -1190,7 +1194,8 @@ class MonetThemeData {
     );
   }
 
-  static TabBarThemeData createTabBarTheme(SafeColors colors, TextTheme textTheme) {
+  static TabBarThemeData createTabBarTheme(
+      SafeColors colors, TextTheme textTheme) {
     final labelColor = WidgetStateColor.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return colors.text;
@@ -1483,67 +1488,16 @@ class MonetThemeData {
   static const ptsToDp = 160 / 72.0;
   // 2x expected # for a theme.
   // 2x to help avoid undesierable step chance in behavior due to a client
-  static final fontSizeForFamilyAndPts = LruCache<String, double>(capacity: 8);
 
-  double searchForFontSizeReachingPts(double pts, String fontFamily) {
-    final key = '$fontFamily-${pts.toStringAsFixed(3)}';
-    final cached = fontSizeForFamilyAndPts[key];
-    if (cached != null) {
-      return cached;
-    }
-
-    // needing the old heights and new ones in memory simultaneously.
-    final targetHeightDp = pts * ptsToLp * lpToDp;
-
-    double minFontSize =
-        pts * ptsToLp * 1.0 / 3.0; // assuming 1/3 is a reasonable min size.
-    var fontSize = pts * ptsToLp;
-    double maxFontSize =
-        3 * pts * ptsToLp; // assuming 3x is a reasonable max size.
-
-    // The threshold within which we consider the height "close enough".
-    const double threshold = 0.5;
-
-    // The maximum number of iterations to prevent infinite loops.
-    const int maxIterations = 10;
-    // The loop to adjust the font size.
-    for (int i = 0; i < maxIterations; i++) {
-      // Define the text style using the current font size.
-      var textStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-        // Fixing the height provides a more consistent experience across
-        // fonts with extreme padding.
-        height: 1.5,
-      );
-
-      // Layout the text.
-      final layout = TextPainter(
-        // String is designed to be short and do a good job of capturing an accurate picture
-        // of the extremes of the font's letter heights.
-        text: TextSpan(text: '|&"qjQJAEIOUYaeiouy', style: textStyle),
-        maxLines: 1,
-        textDirection: TextDirection.ltr,
-      )..layout();
-
-      final heightDiff = layout.size.height - targetHeightDp;
-      // Compare the rendered text height with the target height.
-      if (heightDiff.abs() <= threshold) {
-        // We've found a font size close enough to the expected height.
-        break;
-      } else if (layout.size.height < targetHeightDp) {
-        // If the rendered height is less than the target, adjust font size up.
-        minFontSize = fontSize;
-      } else {
-        // If the rendered height is greater than the target, adjust font size down.
-        maxFontSize = fontSize;
-      }
-
-      // Calculate the new font size.
-      fontSize = (minFontSize + maxFontSize) / 2;
-    }
-    fontSizeForFamilyAndPts[key] = fontSize;
-    return fontSize;
+  /// Returns the font size for optical consistency across different fonts.
+  /// Uses role-appropriate balancing of cap height and x-height.
+  static double fontSizeForConsistentCapHeight(double pts, String fontFamily,
+      [TextRole? role]) {
+    return FontMetricsUtils.opticalFontSizePts(
+      fontFamily: fontFamily,
+      targetSizePts: pts,
+      role: role ?? TextRole.ui,
+    );
   }
 
   TextTheme createTextTheme(Typography typography, TextScaler textScaler,
@@ -1554,101 +1508,114 @@ class MonetThemeData {
     };
     scale = scale.sizeScale;
     final txtC = primary.backgroundText;
-    const h = null; // Respect font's settings. This is much better than setting
-    // it, it feels like playing whack-a-mole even with one font to tune it for
-    // all the components.
+    const h =
+        null; // Use consistent line height after cap-height normalization.
+    // This provides better consistency across font families since cap-height
+    // is now normalized, and we can apply uniform leading.
     const med = FontWeight.w500;
 
-    // The bodyMedium font size is used as a reference point for scaling the
-    final displayScale =
-        searchForFontSizeReachingPts(26, tt.displayMedium!.fontFamily!) /
-            (26 * ptsToLp);
-    final headlineScale =
-        searchForFontSizeReachingPts(20, tt.headlineMedium!.fontFamily!) /
-            (20 * ptsToLp);
-    final titleScale = headlineScale;
-    final bodyScale =
-        searchForFontSizeReachingPts(12, tt.bodyMedium!.fontFamily!) /
-            (12 * ptsToLp);
-    final labelScale =
-        searchForFontSizeReachingPts(12, tt.labelMedium!.fontFamily!) /
-            (12 * ptsToLp);
-
+    // Direct cap-height calculation for each role - no more roleScale indirection
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
-          fontSize: 24 * ptsToLp * scale * displayScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  18, tt.displayLarge!.fontFamily!, TextRole.headline) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
       displayMedium: tt.displayMedium!.copyWith(
-          fontSize: 22 * ptsToLp * scale * displayScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  16, tt.displayMedium!.fontFamily!, TextRole.headline) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
       displaySmall: tt.displaySmall!.copyWith(
-          fontSize: 20 * ptsToLp * scale * displayScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  14, tt.displaySmall!.fontFamily!, TextRole.headline) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
-      titleLarge: tt.headlineLarge!.copyWith(
-          fontSize: 22 * ptsToLp * scale * titleScale,
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
+      titleLarge: tt.titleLarge!.copyWith(
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  16, tt.titleLarge!.fontFamily!, TextRole.subtitle) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
-      titleMedium: tt.headlineMedium!.copyWith(
-          fontSize: 20 * ptsToLp * scale * titleScale,
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
+      titleMedium: tt.titleMedium!.copyWith(
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  14, tt.titleMedium!.fontFamily!, TextRole.ui) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
-      titleSmall: tt.headlineSmall!.copyWith(
-          fontSize: 18 * ptsToLp * scale * titleScale,
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
+      titleSmall: tt.titleSmall!.copyWith(
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  12, tt.titleSmall!.fontFamily!, TextRole.subtitle) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
       headlineLarge: tt.headlineLarge!.copyWith(
-          fontSize: 22 * ptsToLp * scale * headlineScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  16, tt.headlineLarge!.fontFamily!, TextRole.headline) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
       headlineMedium: tt.headlineMedium!.copyWith(
-          fontSize: 20 * ptsToLp * scale * headlineScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  14, tt.headlineMedium!.fontFamily!, TextRole.headline) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
           ],
-          height: h),
+          height: h,
+          leadingDistribution: TextLeadingDistribution.even),
       headlineSmall: tt.headlineSmall!.copyWith(
-          fontSize: 18 * ptsToLp * scale * headlineScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  12, tt.headlineSmall!.fontFamily!, TextRole.headline) *
+              scale,
           color: txtC,
           fontWeight: med,
           fontFamilyFallback: [
@@ -1657,7 +1624,9 @@ class MonetThemeData {
           ],
           height: h),
       bodyLarge: tt.bodyLarge!.copyWith(
-          fontSize: 14 * ptsToLp * scale * bodyScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  16 / 1.5, tt.bodyLarge!.fontFamily!, TextRole.body) *
+              scale,
           color: txtC,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
@@ -1665,7 +1634,9 @@ class MonetThemeData {
           ],
           height: h),
       bodyMedium: tt.bodyMedium!.copyWith(
-          fontSize: 13 * ptsToLp * scale * bodyScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  14 / 1.5, tt.bodyMedium!.fontFamily!, TextRole.body) *
+              scale,
           color: txtC,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
@@ -1673,7 +1644,9 @@ class MonetThemeData {
           ],
           height: h),
       bodySmall: tt.bodySmall!.copyWith(
-          fontSize: 11 * ptsToLp * scale * bodyScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  12.0 / 1.5, tt.bodySmall!.fontFamily!, TextRole.body) *
+              scale,
           color: txtC,
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
@@ -1681,7 +1654,9 @@ class MonetThemeData {
           ],
           height: h),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 14 * ptsToLp * scale * labelScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  13 / 1.5, tt.labelLarge!.fontFamily!, TextRole.ui) *
+              scale,
           color: txtC,
           fontWeight: FontWeight.w500,
           fontFamilyFallback: [
@@ -1690,7 +1665,9 @@ class MonetThemeData {
           ],
           height: h),
       labelMedium: tt.labelMedium!.copyWith(
-          fontSize: 12 * ptsToLp * scale * labelScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  12 / 1.5, tt.labelMedium!.fontFamily!, TextRole.ui) *
+              scale,
           fontWeight: FontWeight.w500,
           color: txtC,
           fontFamilyFallback: [
@@ -1699,7 +1676,9 @@ class MonetThemeData {
           ],
           height: h),
       labelSmall: tt.labelSmall!.copyWith(
-          fontSize: 11 * ptsToLp * scale * labelScale,
+          fontSize: MonetThemeData.fontSizeForConsistentCapHeight(
+                  9 / 1.5, tt.labelSmall!.fontFamily!, TextRole.caption) *
+              scale,
           fontWeight: FontWeight.w500,
           color: txtC,
           fontFamilyFallback: [
