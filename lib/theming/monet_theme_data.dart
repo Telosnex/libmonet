@@ -53,9 +53,7 @@ class MonetThemeData {
     this.contrast = 0.5,
     this.scale = 1.0,
     this.typography,
-  }) {
-    _themeDataHash = _calculateHash();
-  }
+  });
 
   MonetThemeData copyWith({
     SafeColors? primary,
@@ -78,7 +76,7 @@ class MonetThemeData {
       contrast: contrast ?? this.contrast,
       scale: scale ?? this.scale,
       typography: typography ?? this.typography,
-    ).._invalidateCache();
+    );
   }
 
   factory MonetThemeData.fromColor({
@@ -160,35 +158,12 @@ class MonetThemeData {
   }
 
   ThemeData? _cachedThemeData;
-  int? _themeDataHash;
-  
-  void _invalidateCache() {
-    _cachedThemeData = null;
-    _themeDataHash = _calculateHash();
-  }
-  
-  int _calculateHash() {
-    return Object.hash(
-      primary,
-      secondary, 
-      tertiary,
-      algo,
-      backgroundTone,
-      brightness,
-      contrast,
-      scale,
-      typography,
-    );
-  }
-  
   ThemeData createThemeData(BuildContext context) {
-    final currentHash = _calculateHash();
-    if (_cachedThemeData != null && _themeDataHash == currentHash) {
+    if (_cachedThemeData != null) {
       // This is surprisingly helpful: when a popup menu is opened, it would
       // otherwise have to create a ThemeData.
       return _cachedThemeData!;
     }
-    _themeDataHash = currentHash;
     final primaryColorLight =
         Hct.fromColor(primary.fill).tone > Hct.fromColor(primary.color).tone
             ? primary.fill
