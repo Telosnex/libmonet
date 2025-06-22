@@ -331,8 +331,12 @@ class SafeColors {
       by: _algo,
       contrast: _contrast,
     );
+    final calculatedBackgroundChroma = Hct.fromColor(_baseBackground).chroma;
     final colorHct = Hct.fromColor(_baseColor);
-    return Hct.colorFrom(colorHct.hue, colorHct.chroma, textTone);
+    // It is unnatural to have a text color with chroma greater than the
+    // background color. Cap the text chroma to the background chroma.
+    return Hct.colorFrom(colorHct.hue,
+        math.min(colorHct.chroma, calculatedBackgroundChroma), textTone);
   }
 
   Color _computeTextHover() {
