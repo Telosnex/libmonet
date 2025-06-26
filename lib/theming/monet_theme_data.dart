@@ -20,9 +20,10 @@ import 'package:libmonet/util/lru_cache.dart';
 
 const _kFontFamilyFallback = [
   'sans-serif', // via https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-  // trying to cover "Could not find a set of Noto fonts to display
+  // covers "Could not find a set of Noto fonts to display
   // all missing characters"; font_fallback.dart in Flutter engine, on web
-  'NotoColorEmoji',
+  'NotoColorEmoji', // 23 MB(!)
+  'NotoEmoji', // 600 KB
 ];
 
 class MonetThemeData {
