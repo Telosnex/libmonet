@@ -18,6 +18,13 @@ import 'package:libmonet/theming/slider_flat_shape.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
 import 'package:libmonet/util/lru_cache.dart';
 
+const _kFontFamilyFallback = [
+  'sans-serif', // via https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
+  // trying to cover "Could not find a set of Noto fonts to display
+  // all missing characters"; font_fallback.dart in Flutter engine, on web
+  'NotoColorEmoji',
+];
+
 class MonetThemeData {
   final SafeColors primary;
   final SafeColors secondary;
@@ -584,7 +591,8 @@ class MonetThemeData {
     );
   }
 
-  static DialogThemeData createDialogTheme(SafeColors colors, TextTheme textTheme) {
+  static DialogThemeData createDialogTheme(
+      SafeColors colors, TextTheme textTheme) {
     return DialogThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
@@ -702,7 +710,9 @@ class MonetThemeData {
 
   static IconButtonThemeData iconButtonThemeData(SafeColors colors) {
     return IconButtonThemeData(
-      style: iconButtonStyleFromColors(colors,),
+      style: iconButtonStyleFromColors(
+        colors,
+      ),
     );
   }
 
@@ -1190,7 +1200,8 @@ class MonetThemeData {
     );
   }
 
-  static TabBarThemeData createTabBarTheme(SafeColors colors, TextTheme textTheme) {
+  static TabBarThemeData createTabBarTheme(
+      SafeColors colors, TextTheme textTheme) {
     final labelColor = WidgetStateColor.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return colors.text;
@@ -1582,130 +1593,89 @@ class MonetThemeData {
           fontFamilyFallback: [
             // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
             'sans-serif',
+            'NotoColorEmoji',
           ],
           height: h),
       displayMedium: tt.displayMedium!.copyWith(
           fontSize: 22 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       displaySmall: tt.displaySmall!.copyWith(
           fontSize: 20 * ptsToLp * scale * displayScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       titleLarge: tt.headlineLarge!.copyWith(
           fontSize: 22 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       titleMedium: tt.headlineMedium!.copyWith(
           fontSize: 20 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       titleSmall: tt.headlineSmall!.copyWith(
           fontSize: 18 * ptsToLp * scale * titleScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       headlineLarge: tt.headlineLarge!.copyWith(
           fontSize: 22 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       headlineMedium: tt.headlineMedium!.copyWith(
           fontSize: 20 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       headlineSmall: tt.headlineSmall!.copyWith(
           fontSize: 18 * ptsToLp * scale * headlineScale,
           color: txtC,
           fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       bodyLarge: tt.bodyLarge!.copyWith(
           fontSize: 14 * ptsToLp * scale * bodyScale,
           color: txtC,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       bodyMedium: tt.bodyMedium!.copyWith(
           fontSize: 13 * ptsToLp * scale * bodyScale,
           color: txtC,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       bodySmall: tt.bodySmall!.copyWith(
           fontSize: 11 * ptsToLp * scale * bodyScale,
           color: txtC,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       labelLarge: tt.labelLarge!.copyWith(
           fontSize: 14 * ptsToLp * scale * labelScale,
           color: txtC,
           fontWeight: FontWeight.w500,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       labelMedium: tt.labelMedium!.copyWith(
           fontSize: 12 * ptsToLp * scale * labelScale,
           fontWeight: FontWeight.w500,
           color: txtC,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
       labelSmall: tt.labelSmall!.copyWith(
           fontSize: 11 * ptsToLp * scale * labelScale,
           fontWeight: FontWeight.w500,
           color: txtC,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-          ],
+          fontFamilyFallback: _kFontFamilyFallback,
           height: h),
     );
     return textTheme;
