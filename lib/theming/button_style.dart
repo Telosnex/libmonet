@@ -1,5 +1,4 @@
-import 'dart:io';
-import 'dart:math';
+
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,7 @@ WidgetStateProperty<Color> stateColors(
     if (states.contains(WidgetState.pressed)) {
       return splash;
     } else if (states.contains(WidgetState.focused) ||
-        states.contains(WidgetState.hovered)) {
+        states.contains(WidgetState.hovered) || states.contains(WidgetState.selected)) {
       return hover;
     }
     return color;
@@ -102,7 +101,9 @@ Size get maximumSize {
 EdgeInsetsGeometry get padding {
   // Some platforms have buttons that ignore the minimum size.
   final isDesktop =
-      !kIsWeb && (Platform.isMacOS || Platform.isLinux || Platform.isWindows);
+      !kIsWeb && (defaultTargetPlatform == TargetPlatform.macOS ||
+          defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux);
   final amount = 2.0 + (isDesktop ? 10.0 : 0.0);
   return EdgeInsets.symmetric(vertical: amount, horizontal: 8);
 }
