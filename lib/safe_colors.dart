@@ -53,12 +53,12 @@ class SafeColors {
   Color get fillHover => _computeOrGet('fillHover', _computeFillHover);
   Color get fillSplash => _computeOrGet('fillSplash', _computeFillSplash);
 
+  Color get fillText => _computeOrGet('fillText', _computeFillText);
   Color get fillHoverText =>
       _computeOrGet('fillHoverText', _computeFillHoverText);
   Color get fillSplashText =>
       _computeOrGet('fillSplashText', _computeFillSplashText);
 
-  Color get fillText => _computeOrGet('fillText', _computeFillText);
   Color get fillIcon => _computeOrGet('fillIcon', _computeFillIcon);
 
   Color get text => _computeOrGet('text', _computeText);
@@ -247,7 +247,16 @@ class SafeColors {
   }
 
   Color _computeFill() {
-    return colorBorder;
+    final colorHct = Hct.fromColor(_baseColor);
+
+    final fillTone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.fill,
+      by: _algo,
+      contrast: _contrast,
+    );
+    
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillTone);
   }
 
   Color _computeFillText() {
