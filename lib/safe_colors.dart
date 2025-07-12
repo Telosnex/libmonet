@@ -174,19 +174,19 @@ class SafeColors {
     final colorHct = Hct.fromColor(_baseColor);
     final colorTone = colorHct.tone;
     final backgroundTone = _backgroundTone;
-    
+
     // First check if the color already has sufficient contrast with background
     final colorBgContrast = _algo.getContrastBetweenLstars(
       bg: backgroundTone,
       fg: colorTone,
     );
     final requiredContrast = _algo.getAbsoluteContrast(_contrast, Usage.large);
-    
+
     // If color already has enough contrast with background, use it as the border
     if (colorBgContrast >= requiredContrast) {
       return _baseColor;
     }
-    
+
     // Calculate total delta for a given tone
     double calculateTotalDelta(double tone) {
       return (tone - colorTone).abs() + (tone - backgroundTone).abs();
@@ -202,7 +202,8 @@ class SafeColors {
         bg: colorTone,
         fg: tone,
       );
-      return bgContrast >= requiredContrast || colorContrast >= requiredContrast;
+      return bgContrast >= requiredContrast ||
+          colorContrast >= requiredContrast;
     }
 
     // Candidate tones to consider (use Set to avoid duplicates)
@@ -218,7 +219,7 @@ class SafeColors {
     if (bgLighterTone <= 100) {
       candidateSet.add(bgLighterTone.clamp(0, 100));
     }
-    
+
     // Darker option
     final bgDarkerTone = darkerLstarForContrast(
       lstar: backgroundTone,
@@ -239,7 +240,7 @@ class SafeColors {
     if (colorLighterTone <= 100) {
       candidateSet.add(colorLighterTone.clamp(0, 100));
     }
-    
+
     // Darker option
     final colorDarkerTone = darkerLstarForContrast(
       lstar: colorTone,
@@ -254,15 +255,19 @@ class SafeColors {
 
     // Filter candidates that have sufficient contrast with either background or color
     final validCandidates = candidateTones.where(hasValidContrast).toList();
-    
+    print(
+        'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
+    print('All candidates: ${candidateTones.map((t) => t.round())}');
+    print('Valid candidates: ${validCandidates.map((t) => t.round())}');
     // If no valid candidates, fall back to pure black or white
     if (validCandidates.isEmpty) {
       // Choose black or white based on which has better contrast with both
       final blackDelta = calculateTotalDelta(0);
       final whiteDelta = calculateTotalDelta(100);
-      return Hct.colorFrom(colorHct.hue, colorHct.chroma, blackDelta < whiteDelta ? 0 : 100);
+      return Hct.colorFrom(
+          colorHct.hue, colorHct.chroma, blackDelta < whiteDelta ? 0 : 100);
     }
-    
+
     // Find the candidate with minimal total delta
     double bestTone = validCandidates.first;
     double minDelta = calculateTotalDelta(bestTone);
