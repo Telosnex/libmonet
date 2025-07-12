@@ -1,9 +1,39 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:libmonet/apca.dart';
+import 'package:libmonet/apca_contrast.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/hct.dart';
+import 'package:libmonet/wcag.dart';
+
+// Helper functions for getting lighter/darker tones with specific contrast
+double lighterLstarForContrast({
+  required double lstar,
+  required double contrast,
+  required Algo algo,
+}) {
+  switch (algo) {
+    case Algo.wcag21:
+      return lighterLstarUnsafe(lstar: lstar, contrastRatio: contrast);
+    case Algo.apca:
+      // For APCA, use negative contrast for lighter text
+      return lighterTextLstar(lstar, -contrast);
+  }
+}
+
+double darkerLstarForContrast({
+  required double lstar,
+  required double contrast,
+  required Algo algo,
+}) {
+  switch (algo) {
+    case Algo.wcag21:
+      return darkerLstarUnsafe(lstar: lstar, contrastRatio: contrast);
+    case Algo.apca:
+      // For APCA, use positive contrast for darker text
+      return darkerTextLstar(lstar, contrast);
+  }
+}
 
 class SafeColors {
   // Core parameters
@@ -144,36 +174,95 @@ class SafeColors {
     final colorHct = Hct.fromColor(_baseColor);
     final colorTone = colorHct.tone;
     final backgroundTone = _backgroundTone;
+    
+    // First check if the color already has sufficient contrast with background
+    final colorBgContrast = _algo.getContrastBetweenLstars(
+      bg: backgroundTone,
+      fg: colorTone,
+    );
+    final requiredContrast = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    
+    // If color already has enough contrast with background, use it as the border
+    if (colorBgContrast >= requiredContrast) {
+      return _baseColor;
+    }
+    
     // Calculate total delta for a given tone
     double calculateTotalDelta(double tone) {
       return (tone - colorTone).abs() + (tone - backgroundTone).abs();
     }
 
+    // Check if a tone has sufficient contrast with either background or color
+    bool hasValidContrast(double tone) {
+      final bgContrast = _algo.getContrastBetweenLstars(
+        bg: backgroundTone,
+        fg: tone,
+      );
+      final colorContrast = _algo.getContrastBetweenLstars(
+        bg: colorTone,
+        fg: tone,
+      );
+      return bgContrast >= requiredContrast || colorContrast >= requiredContrast;
+    }
+
     // Candidate tones to consider (use Set to avoid duplicates)
     Set<double> candidateSet = {};
 
-    // Add the original color and background tones
-    candidateSet.add(colorTone);
-    candidateSet.add(backgroundTone);
-    // Add contrasting tones
-    candidateSet.add(contrastingLstar(
-      withLstar: backgroundTone,
-      usage: Usage.large,
-      by: _algo,
-      contrast: _contrast,
-    ));
+    // For background: add both lighter and darker contrasting options
+    // Lighter option
+    final bgLighterTone = lighterLstarForContrast(
+      lstar: backgroundTone,
+      contrast: requiredContrast,
+      algo: _algo,
+    );
+    if (bgLighterTone <= 100) {
+      candidateSet.add(bgLighterTone.clamp(0, 100));
+    }
+    
+    // Darker option
+    final bgDarkerTone = darkerLstarForContrast(
+      lstar: backgroundTone,
+      contrast: requiredContrast,
+      algo: _algo,
+    );
+    if (bgDarkerTone >= 0) {
+      candidateSet.add(bgDarkerTone.clamp(0, 100));
+    }
 
-    candidateSet.add(contrastingLstar(
-      withLstar: colorTone,
-      usage: Usage.large,
-      by: _algo,
-      contrast: _contrast,
-    ));
+    // For color: add both lighter and darker contrasting options
+    // Lighter option
+    final colorLighterTone = lighterLstarForContrast(
+      lstar: colorTone,
+      contrast: requiredContrast,
+      algo: _algo,
+    );
+    if (colorLighterTone <= 100) {
+      candidateSet.add(colorLighterTone.clamp(0, 100));
+    }
+    
+    // Darker option
+    final colorDarkerTone = darkerLstarForContrast(
+      lstar: colorTone,
+      contrast: requiredContrast,
+      algo: _algo,
+    );
+    if (colorDarkerTone >= 0) {
+      candidateSet.add(colorDarkerTone.clamp(0, 100));
+    }
 
     final candidateTones = candidateSet.toList();
 
     // Filter candidates that have sufficient contrast with either background or color
-    final validCandidates = candidateTones;
+    final validCandidates = candidateTones.where(hasValidContrast).toList();
+    
+    // If no valid candidates, fall back to pure black or white
+    if (validCandidates.isEmpty) {
+      // Choose black or white based on which has better contrast with both
+      final blackDelta = calculateTotalDelta(0);
+      final whiteDelta = calculateTotalDelta(100);
+      return Hct.colorFrom(colorHct.hue, colorHct.chroma, blackDelta < whiteDelta ? 0 : 100);
+    }
+    
     // Find the candidate with minimal total delta
     double bestTone = validCandidates.first;
     double minDelta = calculateTotalDelta(bestTone);
