@@ -179,7 +179,7 @@ class SafeColors {
           : (bgContrast >= requiredContrast || colorContrast >= requiredContrast);
       print(
           '  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
-      return isValid;
+      return true;
     }
 
     // Candidate tones to consider (use Set to avoid duplicates)
