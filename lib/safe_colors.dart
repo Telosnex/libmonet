@@ -6,32 +6,34 @@ import 'package:libmonet/contrast.dart';
 import 'package:libmonet/hct.dart';
 import 'package:libmonet/wcag.dart';
 
-// Helper functions for getting lighter/darker tones with specific contrast
-double lighterLstarForContrast({
-  required double lstar,
-  required double contrast,
-  required Algo algo,
-}) {
+// Helper functions for getting background tones that would contrast with given "text" tone
+double _getLighterContrastingTone(
+  double referenceTone,
+  double contrast,
+  Algo algo,
+) {
   switch (algo) {
     case Algo.wcag21:
-      return lighterLstarUnsafe(lstar: lstar, contrastRatio: contrast);
+      // For WCAG, we want a lighter tone that contrasts with the reference
+      return lighterLstarUnsafe(lstar: referenceTone, contrastRatio: contrast);
     case Algo.apca:
-      // For APCA, use negative contrast for lighter text
-      return lighterTextLstar(lstar, -contrast);
+      // For APCA, treat reference as text and find lighter background
+      return lighterBackgroundLstar(referenceTone, contrast);
   }
 }
 
-double darkerLstarForContrast({
-  required double lstar,
-  required double contrast,
-  required Algo algo,
-}) {
+double _getDarkerContrastingTone(
+  double referenceTone,
+  double contrast,
+  Algo algo,
+) {
   switch (algo) {
     case Algo.wcag21:
-      return darkerLstarUnsafe(lstar: lstar, contrastRatio: contrast);
+      // For WCAG, we want a darker tone that contrasts with the reference
+      return darkerLstarUnsafe(lstar: referenceTone, contrastRatio: contrast);
     case Algo.apca:
-      // For APCA, use positive contrast for darker text
-      return darkerTextLstar(lstar, contrast);
+      // For APCA, treat reference as text and find darker background
+      return darkerBackgroundLstar(referenceTone, contrast);
   }
 }
 
@@ -209,44 +211,30 @@ class SafeColors {
     // Candidate tones to consider (use Set to avoid duplicates)
     Set<double> candidateSet = {};
 
-    // For background: add both lighter and darker contrasting options
-    // Lighter option
-    final bgLighterTone = lighterLstarForContrast(
-      lstar: backgroundTone,
-      contrast: requiredContrast,
-      algo: _algo,
-    );
+    // We need to find tones that contrast WITH the background/color,
+    // not tones that would work AS TEXT ON the background/color.
+    // So we need to think of background/color as the "text" and find "background" tones.
+    
+    // For tones that contrast with the background:
+    // Find what "background" the current background tone would work as text on
+    final bgLighterTone = _getLighterContrastingTone(backgroundTone, requiredContrast, _algo);
+    final bgDarkerTone = _getDarkerContrastingTone(backgroundTone, requiredContrast, _algo);
+    
     if (bgLighterTone <= 100) {
       candidateSet.add(bgLighterTone.clamp(0, 100));
     }
-
-    // Darker option
-    final bgDarkerTone = darkerLstarForContrast(
-      lstar: backgroundTone,
-      contrast: requiredContrast,
-      algo: _algo,
-    );
     if (bgDarkerTone >= 0) {
       candidateSet.add(bgDarkerTone.clamp(0, 100));
     }
 
-    // For color: add both lighter and darker contrasting options
-    // Lighter option
-    final colorLighterTone = lighterLstarForContrast(
-      lstar: colorTone,
-      contrast: requiredContrast,
-      algo: _algo,
-    );
+    // For tones that contrast with the color:
+    // Find what "background" the current color tone would work as text on
+    final colorLighterTone = _getLighterContrastingTone(colorTone, requiredContrast, _algo);
+    final colorDarkerTone = _getDarkerContrastingTone(colorTone, requiredContrast, _algo);
+    
     if (colorLighterTone <= 100) {
       candidateSet.add(colorLighterTone.clamp(0, 100));
     }
-
-    // Darker option
-    final colorDarkerTone = darkerLstarForContrast(
-      lstar: colorTone,
-      contrast: requiredContrast,
-      algo: _algo,
-    );
     if (colorDarkerTone >= 0) {
       candidateSet.add(colorDarkerTone.clamp(0, 100));
     }
@@ -255,14 +243,13 @@ class SafeColors {
 
     // Filter candidates that have sufficient contrast with either background or color
     final validCandidates = candidateTones.where(hasValidContrast).toList();
-    print(
-        'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
-    print(
-        'Color has sufficient contrast with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
-    print(
-        'Background has sufficient contrast with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
+    
+    print('Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
+    print('Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
+    print('Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
     print('All candidates: ${candidateTones.map((t) => t.round())}');
     print('Valid candidates: ${validCandidates.map((t) => t.round())}');
+    
     // If no valid candidates, fall back to pure black or white
     if (validCandidates.isEmpty) {
       // Choose black or white based on which has better contrast with both
