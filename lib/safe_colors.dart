@@ -164,6 +164,9 @@ class SafeColors {
     }
 
     // Check if a tone has sufficient contrast with either background or color
+    // This is strictly necessary because the APCA methods will return a tone
+    // value even when they cannot meet the contrat requested, i.e. if contrast
+    // required a T130, the APCA methods will return T100.
     bool hasValidContrast(double tone) {
       final bgContrast = _algo.getContrastBetweenLstars(
         bg: backgroundTone,
@@ -179,7 +182,7 @@ class SafeColors {
           : (bgContrast >= requiredContrast || colorContrast >= requiredContrast);
       print(
           '  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
-      return true;
+      return isValid;
     }
 
     // Candidate tones to consider (use Set to avoid duplicates)
