@@ -202,7 +202,7 @@ class SafeColors {
     if (validCandidates.isEmpty) {
       final fallbackTone = contrastingLstar(
         withLstar: backgroundTone,
-        usage: Usage.fill,
+        usage: Usage.large,
         by: _algo,
         contrast: _contrast,
       );
