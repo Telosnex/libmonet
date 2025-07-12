@@ -6,37 +6,6 @@ import 'package:libmonet/contrast.dart';
 import 'package:libmonet/hct.dart';
 import 'package:libmonet/wcag.dart';
 
-// Helper functions for getting background tones that would contrast with given "text" tone
-double _getLighterContrastingTone(
-  double referenceTone,
-  double contrast,
-  Algo algo,
-) {
-  switch (algo) {
-    case Algo.wcag21:
-      // For WCAG, we want a lighter tone that contrasts with the reference
-      return lighterLstarUnsafe(lstar: referenceTone, contrastRatio: contrast);
-    case Algo.apca:
-      // For APCA, treat reference as text and find lighter background
-      return lighterBackgroundLstar(referenceTone, contrast);
-  }
-}
-
-double _getDarkerContrastingTone(
-  double referenceTone,
-  double contrast,
-  Algo algo,
-) {
-  switch (algo) {
-    case Algo.wcag21:
-      // For WCAG, we want a darker tone that contrasts with the reference
-      return darkerLstarUnsafe(lstar: referenceTone, contrastRatio: contrast);
-    case Algo.apca:
-      // For APCA, treat reference as text and find darker background
-      return darkerBackgroundLstar(referenceTone, contrast);
-  }
-}
-
 class SafeColors {
   // Core parameters
   final Color _baseColor;
@@ -204,8 +173,10 @@ class SafeColors {
         bg: colorTone,
         fg: tone,
       );
-      return bgContrast >= requiredContrast ||
+      final isValid = bgContrast >= requiredContrast ||
           colorContrast >= requiredContrast;
+      print('  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
+      return isValid;
     }
 
     // Candidate tones to consider (use Set to avoid duplicates)
@@ -216,9 +187,13 @@ class SafeColors {
     // So we need to think of background/color as the "text" and find "background" tones.
     
     // For tones that contrast with the background:
-    // Find what "background" the current background tone would work as text on
-    final bgLighterTone = _getLighterContrastingTone(backgroundTone, requiredContrast, _algo);
-    final bgDarkerTone = _getDarkerContrastingTone(backgroundTone, requiredContrast, _algo);
+    // Use APCA contrast value for APCA (negative for lighter text)
+    final bgLighterTone = (_algo == Algo.apca) 
+        ? lighterTextLstar(backgroundTone, -requiredContrast)
+        : lighterLstarUnsafe(lstar: backgroundTone, contrastRatio: requiredContrast);
+    final bgDarkerTone = (_algo == Algo.apca)
+        ? darkerTextLstar(backgroundTone, requiredContrast)
+        : darkerLstarUnsafe(lstar: backgroundTone, contrastRatio: requiredContrast);
     
     if (bgLighterTone <= 100) {
       candidateSet.add(bgLighterTone.clamp(0, 100));
@@ -228,9 +203,12 @@ class SafeColors {
     }
 
     // For tones that contrast with the color:
-    // Find what "background" the current color tone would work as text on
-    final colorLighterTone = _getLighterContrastingTone(colorTone, requiredContrast, _algo);
-    final colorDarkerTone = _getDarkerContrastingTone(colorTone, requiredContrast, _algo);
+    final colorLighterTone = (_algo == Algo.apca)
+        ? lighterTextLstar(colorTone, -requiredContrast)
+        : lighterLstarUnsafe(lstar: colorTone, contrastRatio: requiredContrast);
+    final colorDarkerTone = (_algo == Algo.apca)
+        ? darkerTextLstar(colorTone, requiredContrast)
+        : darkerLstarUnsafe(lstar: colorTone, contrastRatio: requiredContrast);
     
     if (colorLighterTone <= 100) {
       candidateSet.add(colorLighterTone.clamp(0, 100));
