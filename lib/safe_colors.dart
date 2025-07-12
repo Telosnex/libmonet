@@ -173,8 +173,10 @@ class SafeColors {
         bg: colorTone,
         fg: tone,
       );
-      final isValid =
-          bgContrast >= requiredContrast || colorContrast >= requiredContrast;
+      // For APCA, contrast can be negative (polarity), so we need absolute value
+      final isValid = (_algo == Algo.apca) 
+          ? (bgContrast.abs() >= requiredContrast || colorContrast.abs() >= requiredContrast)
+          : (bgContrast >= requiredContrast || colorContrast >= requiredContrast);
       print(
           '  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
       return isValid;
