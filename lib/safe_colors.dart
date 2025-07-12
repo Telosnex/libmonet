@@ -173,9 +173,10 @@ class SafeColors {
         bg: colorTone,
         fg: tone,
       );
-      final isValid = bgContrast >= requiredContrast ||
-          colorContrast >= requiredContrast;
-      print('  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
+      final isValid =
+          bgContrast >= requiredContrast || colorContrast >= requiredContrast;
+      print(
+          '  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
       return isValid;
     }
 
@@ -185,16 +186,18 @@ class SafeColors {
     // We need to find tones that contrast WITH the background/color,
     // not tones that would work AS TEXT ON the background/color.
     // So we need to think of background/color as the "text" and find "background" tones.
-    
+
     // For tones that contrast with the background:
     // Use APCA contrast value for APCA (negative for lighter text)
-    final bgLighterTone = (_algo == Algo.apca) 
+    final bgLighterTone = (_algo == Algo.apca)
         ? lighterTextLstar(backgroundTone, -requiredContrast)
-        : lighterLstarUnsafe(lstar: backgroundTone, contrastRatio: requiredContrast);
+        : lighterLstarUnsafe(
+            lstar: backgroundTone, contrastRatio: requiredContrast);
     final bgDarkerTone = (_algo == Algo.apca)
         ? darkerTextLstar(backgroundTone, requiredContrast)
-        : darkerLstarUnsafe(lstar: backgroundTone, contrastRatio: requiredContrast);
-    
+        : darkerLstarUnsafe(
+            lstar: backgroundTone, contrastRatio: requiredContrast);
+
     if (bgLighterTone <= 100) {
       candidateSet.add(bgLighterTone.clamp(0, 100));
     }
@@ -209,7 +212,7 @@ class SafeColors {
     final colorDarkerTone = (_algo == Algo.apca)
         ? darkerTextLstar(colorTone, requiredContrast)
         : darkerLstarUnsafe(lstar: colorTone, contrastRatio: requiredContrast);
-    
+
     if (colorLighterTone <= 100) {
       candidateSet.add(colorLighterTone.clamp(0, 100));
     }
@@ -221,13 +224,16 @@ class SafeColors {
 
     // Filter candidates that have sufficient contrast with either background or color
     final validCandidates = candidateTones.where(hasValidContrast).toList();
-    
-    print('Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
-    print('Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
-    print('Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
+
+    print(
+        'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
+    print(
+        'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
+    print(
+        'Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
     print('All candidates: ${candidateTones.map((t) => t.round())}');
     print('Valid candidates: ${validCandidates.map((t) => t.round())}');
-    
+
     // If no valid candidates, fall back to pure black or white
     if (validCandidates.isEmpty) {
       // Choose black or white based on which has better contrast with both
@@ -248,6 +254,7 @@ class SafeColors {
         bestTone = tone;
       }
     }
+    print('Final best tone: ${bestTone.round()} with delta $minDelta');
 
     return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
   }
