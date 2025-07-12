@@ -142,38 +142,126 @@ class SafeColors {
 
   Color _computeColorBorder() {
     final colorHct = Hct.fromColor(_baseColor);
-    bool needBorder = false;
+    final colorTone = colorHct.tone;
+    final backgroundTone = _backgroundTone;
+    
+    // Helper function to check contrast
+    bool hasContrastWith(double tone1, double tone2) {
+      switch (_algo) {
+        case Algo.wcag21:
+          final requiredContrastRatio =
+              contrastRatioInterpolation(percent: _contrast, usage: Usage.fill);
+          final actualContrastRatio = contrastRatioOfLstars(tone1, tone2);
+          return actualContrastRatio >= requiredContrastRatio;
+          
+        case Algo.apca:
+          final requiredApca = apcaInterpolation(percent: _contrast, usage: Usage.fill);
+          final actualApca = apcaContrastOfApcaY(lstarToApcaY(tone1), lstarToApcaY(tone2));
+          return actualApca.abs() >= requiredApca.abs();
+      }
+    }
+    
+    // Calculate total delta for a given tone
+    double calculateTotalDelta(double tone) {
+      return (tone - colorTone).abs() + (tone - backgroundTone).abs();
+    }
+    
+    // Candidate tones to consider
+    List<double> candidateTones = [];
+    
+    // Add the original color and background tones
+    candidateTones.add(colorTone);
+    candidateTones.add(backgroundTone);
+    
+    // Add the midpoint (minimizes total delta)
+    candidateTones.add((colorTone + backgroundTone) / 2);
+    
+    // Add contrasting tones
+    candidateTones.add(contrastingLstar(
+      withLstar: backgroundTone,
+      usage: Usage.fill,
+      by: _algo,
+      contrast: _contrast,
+    ));
+    
+    candidateTones.add(contrastingLstar(
+      withLstar: colorTone,
+      usage: Usage.fill,
+      by: _algo,
+      contrast: _contrast,
+    ));
+    
+    // Filter candidates that have sufficient contrast with either background or color
+    final validCandidates = candidateTones.where((tone) {
+      return hasContrastWith(tone, backgroundTone) || hasContrastWith(tone, colorTone);
+    }).toList();
+    
+    // If no valid candidates, fall back to contrasting with background
+    if (validCandidates.isEmpty) {
+      final fallbackTone = contrastingLstar(
+        withLstar: backgroundTone,
+        usage: Usage.fill,
+        by: _algo,
+        contrast: _contrast,
+      );
+      return Hct.colorFrom(colorHct.hue, colorHct.chroma, fallbackTone);
+    }
+    
+    // Find the candidate with minimal total delta
+    double bestTone = validCandidates.first;
+    double minDelta = calculateTotalDelta(bestTone);
+    
+    for (final tone in validCandidates) {
+      final delta = calculateTotalDelta(tone);
+      if (delta < minDelta) {
+        minDelta = delta;
+        bestTone = tone;
+      }
+    }
+    
+    // Calculate what the old algorithm would have recommended for comparison
+    bool oldNeedBorder = false;
     switch (_algo) {
       case Algo.wcag21:
         final requiredContrastRatio =
             contrastRatioInterpolation(percent: _contrast, usage: Usage.fill);
         final actualContrastRatio =
-            contrastRatioOfLstars(colorHct.tone, _backgroundTone);
+            contrastRatioOfLstars(colorTone, backgroundTone);
         if (actualContrastRatio < requiredContrastRatio) {
-          needBorder = true;
+          oldNeedBorder = true;
         }
         break;
       case Algo.apca:
         final apca = apcaContrastOfApcaY(
-            lstarToApcaY(colorHct.tone), lstarToApcaY(_backgroundTone));
+            lstarToApcaY(colorTone), lstarToApcaY(backgroundTone));
         final requiredApca =
             apcaInterpolation(percent: _contrast, usage: Usage.fill);
         if (apca.abs() < requiredApca.abs()) {
-          needBorder = true;
+          oldNeedBorder = true;
         }
         break;
     }
-
-    final colorBorderTone = !needBorder
-        ? colorHct.tone
+    
+    final oldTone = !oldNeedBorder
+        ? colorTone
         : contrastingLstar(
-            withLstar: _backgroundTone,
+            withLstar: backgroundTone,
             usage: Usage.fill,
             by: _algo,
             contrast: _contrast,
           );
-
-    return Hct.colorFrom(colorHct.hue, colorHct.chroma, colorBorderTone);
+    
+    final oldDelta = calculateTotalDelta(oldTone);
+    final newDelta = calculateTotalDelta(bestTone);
+    final improvement = oldDelta - newDelta;
+    
+    // Debug print
+    print('Border: candidates=[${candidateTones.map((t) => t.round()).join(',')}] '
+          'selected=${bestTone.round()} (Δ=${newDelta.round()}) '
+          'old=${oldTone.round()} (Δ=${oldDelta.round()}) '
+          'improve=${improvement.round()}');
+    
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
   }
 
   Color _computeColorText() {
