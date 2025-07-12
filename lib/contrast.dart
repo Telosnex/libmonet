@@ -31,6 +31,7 @@ enum Algo {
 enum Usage {
   text,
   fill,
+  large, // 160dp, large text
 }
 
 double contrastingLstar({
@@ -54,7 +55,9 @@ double contrastingLstar({
         monetDebug(debug, () => 'apca: $apca');
         final naiveLighterLstar = switch (usage) {
           (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
-          (Usage.fill) => lighterBackgroundLstar(withLstar, apca, debug: debug)
+          (Usage.fill) => lighterBackgroundLstar(withLstar, apca, debug: debug),
+          (Usage.large) => lighterTextLstar(withLstar, -apca,
+              debug: debug), // 160dp large text
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         if (naiveLighterLstar.round() <= 100) {
@@ -62,7 +65,9 @@ double contrastingLstar({
         }
         final naiveDarkerLstar = switch (usage) {
           (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
-          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca, debug: debug)
+          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca, debug: debug),
+          (Usage.large) =>
+            darkerTextLstar(withLstar, apca, debug: debug), // 160dp large text
         };
         final naiveLighterDelta =
             (math.min(100, naiveLighterLstar) - withLstar).abs();
@@ -115,7 +120,9 @@ double contrastingLstar({
         monetDebug(debug, () => 'apca: $apca');
         final naiveDarkerLstar = switch (usage) {
           (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
-          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca, debug: debug)
+          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca, debug: debug),
+          (Usage.large) =>
+            darkerTextLstar(withLstar, apca, debug: debug), // 160dp large text
         };
         monetDebug(debug, () => 'naiveDarkerLstar: $naiveDarkerLstar');
         if (naiveDarkerLstar.round() >= 0) {
@@ -123,7 +130,9 @@ double contrastingLstar({
         }
         final naiveLighterLstar = switch (usage) {
           (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
-          (Usage.fill) => lighterBackgroundLstar(withLstar, apca, debug: debug)
+          (Usage.fill) => lighterBackgroundLstar(withLstar, apca, debug: debug),
+          (Usage.large) => lighterTextLstar(withLstar, -apca,
+              debug: debug), // 160dp large text
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         final naiveLighterDelta =
@@ -193,6 +202,7 @@ double contrastRatioInterpolation(
   final mid = switch (usage) {
     (Usage.text) => 4.5,
     (Usage.fill) => 3.0,
+    (Usage.large) => 3.0, // WCAG21 3.0 for large text (same as fill)
   };
   const end = 21.0;
   final actualPercent = (percent > 0.5 ? percent - 0.5 : percent) / 0.5;
@@ -208,6 +218,8 @@ double apcaInterpolation({required double percent, required Usage usage}) {
   final mid = switch (usage) {
     (Usage.text) => 60, // "APCA Lc 60 'similar' to WCAG 4.5"
     (Usage.fill) => 45, // "APCA Lc 45 'similar' to WCAG 3.0"
+    (Usage.large) => 30, // APCA Lc 30 is minimum for legible semantic elements
+    // > 5.5 CSS px in at least one dimension.
   };
   // Earlier, assumed end was 100. But, at high contrast, this wasn't leading
   // to white/black as expected. 110 seems to work better...but better to have

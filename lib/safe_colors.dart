@@ -150,12 +150,12 @@ class SafeColors {
       switch (_algo) {
         case Algo.wcag21:
           final requiredContrastRatio =
-              contrastRatioInterpolation(percent: _contrast, usage: Usage.fill);
+              contrastRatioInterpolation(percent: _contrast, usage: Usage.large);
           final actualContrastRatio = contrastRatioOfLstars(tone1, tone2);
           return actualContrastRatio >= requiredContrastRatio;
           
         case Algo.apca:
-          final requiredApca = apcaInterpolation(percent: _contrast, usage: Usage.fill);
+          final requiredApca = apcaInterpolation(percent: _contrast, usage: Usage.large);
           final actualApca = apcaContrastOfApcaY(lstarToApcaY(tone1), lstarToApcaY(tone2));
           return actualApca.abs() >= requiredApca.abs();
       }
@@ -166,30 +166,32 @@ class SafeColors {
       return (tone - colorTone).abs() + (tone - backgroundTone).abs();
     }
     
-    // Candidate tones to consider
-    List<double> candidateTones = [];
+    // Candidate tones to consider (use Set to avoid duplicates)
+    Set<double> candidateSet = {};
     
     // Add the original color and background tones
-    candidateTones.add(colorTone);
-    candidateTones.add(backgroundTone);
+    candidateSet.add(colorTone);
+    candidateSet.add(backgroundTone);
     
     // Add the midpoint (minimizes total delta)
-    candidateTones.add((colorTone + backgroundTone) / 2);
+    candidateSet.add((colorTone + backgroundTone) / 2);
     
     // Add contrasting tones
-    candidateTones.add(contrastingLstar(
+    candidateSet.add(contrastingLstar(
       withLstar: backgroundTone,
-      usage: Usage.fill,
+      usage: Usage.large,
       by: _algo,
       contrast: _contrast,
     ));
     
-    candidateTones.add(contrastingLstar(
+    candidateSet.add(contrastingLstar(
       withLstar: colorTone,
-      usage: Usage.fill,
+      usage: Usage.large,
       by: _algo,
       contrast: _contrast,
     ));
+    
+    final candidateTones = candidateSet.toList();
     
     // Filter candidates that have sufficient contrast with either background or color
     final validCandidates = candidateTones.where((tone) {
