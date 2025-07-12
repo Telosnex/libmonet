@@ -257,6 +257,10 @@ class SafeColors {
     final validCandidates = candidateTones.where(hasValidContrast).toList();
     print(
         'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
+    print(
+        'Color has sufficient contrast with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
+    print(
+        'Background has sufficient contrast with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
     print('All candidates: ${candidateTones.map((t) => t.round())}');
     print('Valid candidates: ${validCandidates.map((t) => t.round())}');
     // If no valid candidates, fall back to pure black or white
