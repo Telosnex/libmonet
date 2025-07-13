@@ -177,11 +177,13 @@ class SafeColors {
         fg: tone,
       );
       // For APCA, contrast can be negative (polarity), so we need absolute value
-      final isValid = (_algo == Algo.apca) 
-          ? (bgContrast.abs() >= requiredContrast || colorContrast.abs() >= requiredContrast)
-          : (bgContrast >= requiredContrast || colorContrast >= requiredContrast);
-      print(
-          '  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
+      final isValid = (_algo == Algo.apca)
+          ? (bgContrast.abs() >= requiredContrast ||
+              colorContrast.abs() >= requiredContrast)
+          : (bgContrast >= requiredContrast ||
+              colorContrast >= requiredContrast);
+      // print(
+      // '  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
       return isValid;
     }
 
@@ -230,14 +232,16 @@ class SafeColors {
     // Filter candidates that have sufficient contrast with either background or color
     final validCandidates = candidateTones.where(hasValidContrast).toList();
 
-    print(
-        'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
-    print(
-        'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
-    print(
-        'Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
-    print('All candidates: ${candidateTones.map((t) => t.round())}');
-    print('Valid candidates: ${validCandidates.map((t) => t.round())}');
+    // rationale: leaving in debug prints because logic is new, and crucial to
+    // effects like glow and contrast on dynamic backgrounds.
+    // print(
+    // 'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
+    // print(
+    // 'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
+    // print(
+    // 'Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
+    // print('All candidates: ${candidateTones.map((t) => t.round())}');
+    // print('Valid candidates: ${validCandidates.map((t) => t.round())}');
 
     // If no valid candidates, fall back to pure black or white
     if (validCandidates.isEmpty) {
@@ -259,7 +263,7 @@ class SafeColors {
         bestTone = tone;
       }
     }
-    print('Final best tone: ${bestTone.round()} with delta $minDelta');
+    // print('Final best tone: ${bestTone.round()} with delta $minDelta');
 
     return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
   }
