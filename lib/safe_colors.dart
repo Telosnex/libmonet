@@ -245,11 +245,13 @@ class SafeColors {
 
     // If no valid candidates, fall back to pure black or white
     if (validCandidates.isEmpty) {
-      // Choose black or white based on which has better contrast with both
+      // Choose black or white based on which has better contrast with both.
+      // This works as you'd expect because in practice, there's 0 valid 
+      // candidates when contrast is at a max.
       final blackDelta = calculateTotalDelta(0);
       final whiteDelta = calculateTotalDelta(100);
       return Hct.colorFrom(
-          colorHct.hue, colorHct.chroma, blackDelta < whiteDelta ? 0 : 100);
+          colorHct.hue, colorHct.chroma, blackDelta > whiteDelta ? 0 : 100);
     }
 
     // Find the candidate with minimal total delta
