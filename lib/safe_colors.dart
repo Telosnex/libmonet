@@ -36,6 +36,8 @@ class SafeColors {
       _computeOrGet('backgroundText', _computeBackgroundText);
   Color get backgroundFill =>
       _computeOrGet('backgroundFill', _computeBackgroundFill);
+  Color get backgroundBorder =>
+      _computeOrGet('backgroundBorder', _computeBackgroundBorder);
 
   Color get color => _baseColor;
   Color get colorHover => _computeOrGet('colorHover', _computeColorHover);
@@ -139,6 +141,18 @@ class SafeColors {
     );
     return Hct.colorFrom(
         backgroundHct.hue, backgroundHct.chroma, backgroundFillTone);
+  }
+
+  Color _computeBackgroundBorder() {
+    final backgroundHct = Hct.fromColor(_baseBackground);
+    final backgroundBorderTone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.large,
+      by: _algo,
+      contrast: _contrast,
+    );
+    return Hct.colorFrom(
+        backgroundHct.hue, backgroundHct.chroma, backgroundBorderTone);
   }
 
   Color _computeColorBorder() {
