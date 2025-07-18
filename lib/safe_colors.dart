@@ -80,6 +80,70 @@ class SafeColors {
     return _cache[key]!;
   }
 
+  /// Helper method to check if a tone has sufficient contrast with either 
+  /// background or color. This is crucial because APCA methods can return tones
+  /// that don't actually meet the requested contrast (e.g., returning T100 when
+  /// T130 is the only way to have sufficient contrast with a lighter color).
+  ///
+  /// We check all four possible contrast combinations:
+  /// 1. background as bg, tone as fg
+  /// 2. color as bg, tone as fg  
+  /// 3. tone as bg, background as fg
+  /// 4. tone as bg, color as fg
+  bool _hasValidContrastHelper({
+    required double tone,
+    required double backgroundTone,
+    required double colorTone,
+    required double requiredContrast,
+  }) {
+    // Calculate contrast: background as bg, tone as fg
+    final backgroundBgToneFgContrast = _algo.getContrastBetweenLstars(
+      bg: backgroundTone,
+      fg: tone,
+    );
+    
+    // Calculate contrast: color as bg, tone as fg
+    final colorBgToneFgContrast = _algo.getContrastBetweenLstars(
+      bg: colorTone,
+      fg: tone,
+    );
+    
+    // Calculate contrast: tone as bg, background as fg
+    final toneBgBackgroundFgContrast = _algo.getContrastBetweenLstars(
+      bg: tone,
+      fg: backgroundTone,
+    );
+    
+    // Calculate contrast: tone as bg, color as fg
+    final toneBgColorFgContrast = _algo.getContrastBetweenLstars(
+      bg: tone,
+      fg: colorTone,
+    );
+    
+    // Check if any of the four contrasts meet the required threshold
+    // For APCA, contrast can be negative (polarity), so we need absolute value
+    // For WCAG, contrast is always positive
+    final isValid = (_algo == Algo.apca)
+        ? (backgroundBgToneFgContrast.abs() >= requiredContrast ||
+            colorBgToneFgContrast.abs() >= requiredContrast ||
+            toneBgBackgroundFgContrast.abs() >= requiredContrast ||
+            toneBgColorFgContrast.abs() >= requiredContrast)
+        : (backgroundBgToneFgContrast >= requiredContrast ||
+            colorBgToneFgContrast >= requiredContrast ||
+            toneBgBackgroundFgContrast >= requiredContrast ||
+            toneBgColorFgContrast >= requiredContrast);
+    
+    // Uncomment for debugging:
+    // print('  T${tone.round()}: '
+    //       'bg→tone: ${backgroundBgToneFgContrast.toStringAsFixed(2)}, '
+    //       'color→tone: ${colorBgToneFgContrast.toStringAsFixed(2)}, '
+    //       'tone→bg: ${toneBgBackgroundFgContrast.toStringAsFixed(2)}, '
+    //       'tone→color: ${toneBgColorFgContrast.toStringAsFixed(2)} '
+    //       '(need ${requiredContrast.toStringAsFixed(2)}) => ${isValid ? "VALID" : "invalid"}');
+    
+    return isValid;
+  }
+
   /// Use for colorful backgrounds: [SafeColors.from] reduces the chroma of the
   /// background color to 16.
   factory SafeColors.fromColorAndBackground(
@@ -182,23 +246,12 @@ class SafeColors {
     // value even when they cannot meet the contrat requested, i.e. if contrast
     // required a T130, the APCA methods will return T100.
     bool hasValidContrast(double tone) {
-      final bgContrast = _algo.getContrastBetweenLstars(
-        bg: backgroundTone,
-        fg: tone,
+      return _hasValidContrastHelper(
+        tone: tone,
+        backgroundTone: backgroundTone,
+        colorTone: colorTone,
+        requiredContrast: requiredContrast,
       );
-      final colorContrast = _algo.getContrastBetweenLstars(
-        bg: colorTone,
-        fg: tone,
-      );
-      // For APCA, contrast can be negative (polarity), so we need absolute value
-      final isValid = (_algo == Algo.apca)
-          ? (bgContrast.abs() >= requiredContrast ||
-              colorContrast.abs() >= requiredContrast)
-          : (bgContrast >= requiredContrast ||
-              colorContrast >= requiredContrast);
-      // print(
-      // '  T${tone.round()}: bg contrast ${bgContrast.toStringAsFixed(2)} (need ${requiredContrast.toStringAsFixed(2)}), color contrast ${colorContrast.toStringAsFixed(2)} => ${isValid ? "VALID" : "invalid"}');
-      return isValid;
     }
 
     // Candidate tones to consider (use Set to avoid duplicates)
@@ -249,21 +302,23 @@ class SafeColors {
     // rationale: leaving in debug prints because logic is new, and crucial to
     // effects like glow and contrast on dynamic backgrounds.
     // print(
-    // 'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
+    //     'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
     // print(
-    // 'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
+    //     'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
     // print(
-    // 'Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
+    //     'Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
     // print('All candidates: ${candidateTones.map((t) => t.round())}');
     // print('Valid candidates: ${validCandidates.map((t) => t.round())}');
 
     // If no valid candidates, fall back to pure black or white
     if (validCandidates.isEmpty) {
       // Choose black or white based on which has better contrast with both.
-      // This works as you'd expect because in practice, there's 0 valid 
+      // This works as you'd expect because in practice, there's 0 valid
       // candidates when contrast is at a max.
       final blackDelta = calculateTotalDelta(0);
       final whiteDelta = calculateTotalDelta(100);
+      // print(
+          // 'No valid candidates found. Using black (0) with delta $blackDelta, white (100) with delta $whiteDelta');
       return Hct.colorFrom(
           colorHct.hue, colorHct.chroma, blackDelta > whiteDelta ? 0 : 100);
     }
