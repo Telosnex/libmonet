@@ -69,7 +69,6 @@ class Home extends HookConsumerWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          print('async snapshot data: ${snapshot.data}');
           return Builder(builder: (context) {
             return DefaultTextStyle(
               style: font,
