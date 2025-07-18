@@ -80,14 +80,14 @@ class SafeColors {
     return _cache[key]!;
   }
 
-  /// Helper method to check if a tone has sufficient contrast with either 
+  /// Helper method to check if a tone has sufficient contrast with either
   /// background or color. This is crucial because APCA methods can return tones
   /// that don't actually meet the requested contrast (e.g., returning T100 when
   /// T130 is the only way to have sufficient contrast with a lighter color).
   ///
   /// We check all four possible contrast combinations:
   /// 1. background as bg, tone as fg
-  /// 2. color as bg, tone as fg  
+  /// 2. color as bg, tone as fg
   /// 3. tone as bg, background as fg
   /// 4. tone as bg, color as fg
   bool _hasValidContrastHelper({
@@ -101,25 +101,25 @@ class SafeColors {
       bg: backgroundTone,
       fg: tone,
     );
-    
+
     // Calculate contrast: color as bg, tone as fg
     final colorBgToneFgContrast = _algo.getContrastBetweenLstars(
       bg: colorTone,
       fg: tone,
     );
-    
+
     // Calculate contrast: tone as bg, background as fg
     final toneBgBackgroundFgContrast = _algo.getContrastBetweenLstars(
       bg: tone,
       fg: backgroundTone,
     );
-    
+
     // Calculate contrast: tone as bg, color as fg
     final toneBgColorFgContrast = _algo.getContrastBetweenLstars(
       bg: tone,
       fg: colorTone,
     );
-    
+
     // Check if any of the four contrasts meet the required threshold
     // For APCA, contrast can be negative (polarity), so we need absolute value
     // For WCAG, contrast is always positive
@@ -132,7 +132,7 @@ class SafeColors {
             colorBgToneFgContrast >= requiredContrast ||
             toneBgBackgroundFgContrast >= requiredContrast ||
             toneBgColorFgContrast >= requiredContrast);
-    
+
     // Uncomment for debugging:
     // print('  T${tone.round()}: '
     //       'bg→tone: ${backgroundBgToneFgContrast.toStringAsFixed(2)}, '
@@ -140,7 +140,7 @@ class SafeColors {
     //       'tone→bg: ${toneBgBackgroundFgContrast.toStringAsFixed(2)}, '
     //       'tone→color: ${toneBgColorFgContrast.toStringAsFixed(2)} '
     //       '(need ${requiredContrast.toStringAsFixed(2)}) => ${isValid ? "VALID" : "invalid"}');
-    
+
     return isValid;
   }
 
@@ -220,6 +220,14 @@ class SafeColors {
   }
 
   Color _computeColorBorder() {
+    void debugLog(String Function() message) {
+      // ignore: dead_code
+      if (false) {
+        // ignore: avoid_print
+        print(message());
+      }
+    }
+
     final colorHct = Hct.fromColor(_baseColor);
     final colorTone = colorHct.tone;
     final backgroundTone = _backgroundTone;
@@ -301,14 +309,15 @@ class SafeColors {
 
     // rationale: leaving in debug prints because logic is new, and crucial to
     // effects like glow and contrast on dynamic backgrounds.
-    // print(
-    //     'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
-    // print(
-    //     'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
-    // print(
-    //     'Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
-    // print('All candidates: ${candidateTones.map((t) => t.round())}');
-    // print('Valid candidates: ${validCandidates.map((t) => t.round())}');
+    debugLog(() =>
+        'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()}');
+    debugLog(() =>
+        'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
+    debugLog(() =>
+        'Color contrasts with lighter T${colorLighterTone.round()}, darker T${colorDarkerTone.round()}');
+    debugLog(() => 'All candidates: ${candidateTones.map((t) => t.round())}');
+    debugLog(
+        () => 'Valid candidates: ${validCandidates.map((t) => t.round())}');
 
     // If no valid candidates, fall back to pure black or white
     if (validCandidates.isEmpty) {
@@ -317,10 +326,55 @@ class SafeColors {
       // candidates when contrast is at a max.
       final blackDelta = calculateTotalDelta(0);
       final whiteDelta = calculateTotalDelta(100);
-      // print(
-          // 'No valid candidates found. Using black (0) with delta $blackDelta, white (100) with delta $whiteDelta');
+      debugLog(() =>
+          'No valid candidates found. Using black (0) with delta $blackDelta, white (100) with delta $whiteDelta');
       return Hct.colorFrom(
           colorHct.hue, colorHct.chroma, blackDelta > whiteDelta ? 0 : 100);
+    }
+
+    final colorPrefersLighter = lstarPrefersLighterPair(colorTone);
+    if (colorPrefersLighter) {
+      final lighterCandidates =
+          validCandidates.where((tone) => tone > colorTone).toList();
+      if (lighterCandidates.isNotEmpty) {
+        debugLog(() =>
+            'Lighter candidates: ${lighterCandidates.map((t) => t.round())}');
+        // Find the candidate with minimal total delta
+        double bestTone = lighterCandidates.first;
+        double minDelta = calculateTotalDelta(bestTone);
+        for (final tone in lighterCandidates) {
+          final delta = calculateTotalDelta(tone);
+          debugLog(() => 'Tone ${tone.round()}: delta = ${delta.round()}');
+          if (delta < minDelta) {
+            minDelta = delta;
+            bestTone = tone;
+          }
+        }
+        debugLog(() =>
+            'Final best tone: ${bestTone.round()} with delta ${minDelta.round()}');
+        return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
+      }
+    } else {
+      final darkerCandidates =
+          validCandidates.where((tone) => tone < colorTone).toList();
+      if (darkerCandidates.isNotEmpty) {
+        debugLog(() =>
+            'Darker candidates: ${darkerCandidates.map((t) => t.round())}');
+        // Find the candidate with minimal total delta
+        double bestTone = darkerCandidates.first;
+        double minDelta = calculateTotalDelta(bestTone);
+        for (final tone in darkerCandidates) {
+          final delta = calculateTotalDelta(tone);
+          debugLog(() => 'Tone ${tone.round()}: delta = ${delta.round()}');
+          if (delta < minDelta) {
+            minDelta = delta;
+            bestTone = tone;
+          }
+        }
+        debugLog(() =>
+            'Final best tone: ${bestTone.round()} with delta ${minDelta.round()}');
+        return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
+      }
     }
 
     // Find the candidate with minimal total delta
@@ -329,12 +383,14 @@ class SafeColors {
 
     for (final tone in validCandidates) {
       final delta = calculateTotalDelta(tone);
+      debugLog(() => 'Tone ${tone.round()}: delta = ${delta.round()}');
       if (delta < minDelta) {
         minDelta = delta;
         bestTone = tone;
       }
     }
-    // print('Final best tone: ${bestTone.round()} with delta $minDelta');
+    debugLog(() =>
+        'Final best tone: ${bestTone.round()} with delta ${minDelta.round()}');
 
     return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
   }
