@@ -53,6 +53,7 @@ class SafeColors {
   Color get colorBorder => _computeOrGet('colorBorder', _computeColorBorder);
 
   Color get fill => _computeOrGet('fill', _computeFill);
+  Color get fillBorder => _computeOrGet('fillBorder', _computeFillBorder);
   Color get fillHover => _computeOrGet('fillHover', _computeFillHover);
   Color get fillSplash => _computeOrGet('fillSplash', _computeFillSplash);
 
@@ -209,6 +210,7 @@ class SafeColors {
 
   Color _computeBackgroundBorder() {
     final backgroundHct = Hct.fromColor(_baseBackground);
+    final colorHct = Hct.fromColor(_baseColor);
     final backgroundBorderTone = contrastingLstar(
       withLstar: _backgroundTone,
       usage: Usage.large,
@@ -216,7 +218,20 @@ class SafeColors {
       contrast: _contrast,
     );
     return Hct.colorFrom(
-        backgroundHct.hue, backgroundHct.chroma, backgroundBorderTone);
+        backgroundHct.hue, colorHct.chroma, backgroundBorderTone);
+  }
+
+
+  Color _computeFillBorder() {
+    final fillTone = Hct.fromColor(fill).tone;
+    final fillBorderTone = contrastingLstar(
+      withLstar: fillTone,
+      usage: Usage.large,
+      by: _algo,
+      contrast: _contrast,
+    );
+    final colorHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillBorderTone);
   }
 
   Color _computeColorBorder() {
@@ -351,7 +366,7 @@ class SafeColors {
           }
         }
         debugLog(() =>
-            'Final best tone: ${bestTone.round()} with delta ${minDelta.round()}');
+            'Final best tone: ${bestTone.round()} with delta ${minDelta.round()} from color ${colorTone.round()} and background ${backgroundTone.round()}');
         return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
       }
     } else {
@@ -372,7 +387,7 @@ class SafeColors {
           }
         }
         debugLog(() =>
-            'Final best tone: ${bestTone.round()} with delta ${minDelta.round()}');
+            'Final best tone: ${bestTone.round()} with delta ${minDelta.round()} from color ${colorTone.round()} and background ${backgroundTone.round()}');
         return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
       }
     }
@@ -390,7 +405,7 @@ class SafeColors {
       }
     }
     debugLog(() =>
-        'Final best tone: ${bestTone.round()} with delta ${minDelta.round()}');
+        'Final best tone: ${bestTone.round()} with delta ${minDelta.round()} from color ${colorTone.round()} and background ${backgroundTone.round()}');
 
     return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
   }
