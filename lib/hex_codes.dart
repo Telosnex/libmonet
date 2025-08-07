@@ -42,3 +42,12 @@ int? argbFromHex(String hex) {
   }
   return int.tryParse(hex, radix: 16);
 }
+
+extension HexOnColor on Color {
+  String get hex => hexFromArgb(argb);
+}
+
+extension Argb on Color {
+  // ignore: deprecated_member_use
+  int get argb => value;
+}
