@@ -251,9 +251,11 @@ class SafeColors {
     final colorBgContrast = _algo.getContrastBetweenLstars(
       bg: backgroundTone,
       fg: colorTone,
-    );
+    ).abs();
+    // abs because APCA can return negative values for lighter text
     final requiredContrast = _algo.getAbsoluteContrast(_contrast, Usage.large);
-
+    debugLog(() =>
+        'Color tone: ${colorTone.round()} bg tone: ${backgroundTone.round()} required contrast: ${requiredContrast.toStringAsFixed(2)}. Actual contrast: ${colorBgContrast.toStringAsFixed(2)}');
     // If color already has enough contrast with background, use it as the border
     if (colorBgContrast >= requiredContrast) {
       return _baseColor;
