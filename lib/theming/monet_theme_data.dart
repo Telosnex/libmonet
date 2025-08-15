@@ -8,7 +8,6 @@ import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:libmonet/extract/scorer_triad.dart';
-import 'package:libmonet/full_color_scheme.dart';
 import 'package:libmonet/hct.dart';
 import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/size_scale.dart';
@@ -200,13 +199,6 @@ class MonetThemeData {
       // make sense once you don't only have opacity for lightening, but color.
       applyElevationOverlayColor: false,
       cupertinoOverrideTheme: null,
-      extensions: [
-        MonetColorScheme.fromSafeColors(
-          primary: primary,
-          secondary: secondary,
-          tertiary: tertiary,
-        ),
-      ],
       // Not sure this is used all that much, it's not affecting buttons on
       // macOS at all. Default to shrinkWrap, because the components tend to
       // be excessively large due to being designed for touch.
