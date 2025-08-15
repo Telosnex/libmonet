@@ -355,8 +355,8 @@ class MonetThemeData {
     );
   }
 
-  static BottomAppBarTheme bottomAppBarTheme(SafeColors colors) {
-    return BottomAppBarTheme(
+  static BottomAppBarThemeData bottomAppBarTheme(SafeColors colors) {
+    return BottomAppBarThemeData(
       color: colors.background,
       elevation: 0,
       shape: const AutomaticNotchedShape(
