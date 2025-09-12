@@ -405,9 +405,9 @@ class MonetThemeData {
         if (states.contains(WidgetState.selected)) {
           return colors.fill;
         } else if (states.contains(WidgetState.hovered)) {
-          return colors.textHover;
+          return colors.textHovered;
         } else if (states.contains(WidgetState.pressed)) {
-          return colors.textSplash;
+          return colors.textSplashed;
         } else {
           return colors.background;
         }
@@ -417,7 +417,7 @@ class MonetThemeData {
       checkColor: WidgetStateProperty.all(colors.fillText),
       overlayColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return colors.textHover;
+          return colors.textHovered;
 
           // Note 1:
           // Even though this is "wrong", i.e. the checkbox is filled,
@@ -428,9 +428,9 @@ class MonetThemeData {
           // Note 2: Other states aren't respected here, even if supplied. Ex.
           // selected doesn't distinguish between being hovered and pressed.
         } else if (states.contains(WidgetState.hovered)) {
-          return colors.textHover;
+          return colors.textHovered;
         } else if (states.contains(WidgetState.pressed)) {
-          return colors.textSplash;
+          return colors.textSplashed;
         } else {
           return colors.background;
         }
@@ -468,9 +468,9 @@ class MonetThemeData {
       }),
       selectedColor: Colors
           .transparent, // messes everything up because FG can't be set based on state
-      secondarySelectedColor: colors.textHover,
+      secondarySelectedColor: colors.textHovered,
       secondaryLabelStyle:
-          textTheme.labelLarge!.copyWith(color: colors.textHoverText),
+          textTheme.labelLarge!.copyWith(color: colors.textHoveredText),
       side: BorderSide(width: 2, color: colors.fill),
       backgroundColor: colors.background,
       labelStyle: textTheme.labelLarge!.copyWith(
@@ -506,9 +506,9 @@ class MonetThemeData {
     final background = WidgetStateProperty.resolveWith(
       (states) {
         if (states.contains(WidgetState.hovered)) {
-          return colors.textHover;
+          return colors.textHovered;
         } else if (states.contains(WidgetState.pressed)) {
-          return colors.textSplash;
+          return colors.textSplashed;
         } else if (states.contains(WidgetState.selected)) {
           return colors.color;
         } else {
@@ -528,11 +528,11 @@ class MonetThemeData {
     final fillText = WidgetStateProperty.resolveWith(
       (states) {
         if (states.contains(WidgetState.hovered)) {
-          return colors.fillHoverText;
+          return colors.fillHoveredText;
         } else if (states.contains(WidgetState.pressed)) {
-          return colors.fillSplashText;
+          return colors.fillSplashedText;
         } else if (states.contains(WidgetState.selected)) {
-          return colors.fillSplashText;
+          return colors.fillSplashedText;
         } else {
           return colors.fillText;
         }
@@ -619,7 +619,7 @@ class MonetThemeData {
 
   static ElevatedButtonThemeData elevatedButtonTheme(SafeColors colors) {
     return ElevatedButtonThemeData(
-      style: elevatedButtonStyleFromColors(colors),
+      style: fillButtonStyle(colors),
     );
   }
 
@@ -655,7 +655,7 @@ class MonetThemeData {
   }
 
   static FilledButtonThemeData filledButtonTheme(SafeColors colors) {
-    return FilledButtonThemeData(style: filledButtonBackgroundIsColor(colors));
+    return FilledButtonThemeData(style: fillButtonStyle(colors));
   }
 
   static FloatingActionButtonThemeData fabThemeData(
@@ -663,25 +663,25 @@ class MonetThemeData {
     return FloatingActionButtonThemeData(
       foregroundColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.pressed)) {
-          return colors.colorSplashText;
+          return colors.colorSplashedText;
         } else if (states.contains(WidgetState.hovered)) {
-          return colors.colorHoverText;
+          return colors.colorHoveredText;
         } else {
           return colors.colorText;
         }
       }),
       backgroundColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.pressed)) {
-          return colors.colorSplash;
+          return colors.colorSplashed;
         } else if (states.contains(WidgetState.hovered)) {
-          return colors.colorHover;
+          return colors.colorHovered;
         } else {
           return colors.color;
         }
       }),
-      focusColor: colors.colorHover,
-      hoverColor: colors.colorHover,
-      splashColor: colors.colorSplash,
+      focusColor: colors.colorHovered,
+      hoverColor: colors.colorHovered,
+      splashColor: colors.colorSplashed,
       elevation: buttonElevation,
       focusElevation: buttonElevation,
       hoverElevation: buttonElevation,
@@ -703,7 +703,7 @@ class MonetThemeData {
 
   static IconButtonThemeData iconButtonThemeData(SafeColors colors) {
     return IconButtonThemeData(
-      style: iconButtonStyleFromColors(
+      style: iconButtonStyle(
         colors,
       ),
     );
@@ -715,7 +715,7 @@ class MonetThemeData {
       dense: true,
       shape: null,
       style: ListTileStyle.list,
-      selectedColor: colors.fillHover,
+      selectedColor: colors.fillHovered,
       iconColor: colors.fill,
       textColor: colors.text,
       titleTextStyle: textTheme.titleSmall!.copyWith(color: colors.text),
@@ -724,7 +724,7 @@ class MonetThemeData {
           textTheme.bodyMedium!.copyWith(color: colors.text),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
       tileColor: colors.background,
-      selectedTileColor: colors.fillHover,
+      selectedTileColor: colors.fillHovered,
       horizontalTitleGap: 16,
       minVerticalPadding: 4,
       minLeadingWidth: 40,
@@ -778,7 +778,7 @@ class MonetThemeData {
 
   static MenuButtonThemeData menuButtonThemeData(SafeColors colors) {
     return MenuButtonThemeData(
-      style: textButtonStyleFromColors(colors).copyWith(
+      style: textButtonStyle(colors).copyWith(
         padding: WidgetStateProperty.all(const EdgeInsets.all(4)),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
@@ -907,7 +907,7 @@ class MonetThemeData {
 
   static OutlinedButtonThemeData outlinedButtonTheme(SafeColors colors) {
     return OutlinedButtonThemeData(
-      style: outlineButtonStyleFromColors(colors),
+      style: outlineButtonStyle(colors),
     );
   }
 
@@ -959,7 +959,7 @@ class MonetThemeData {
       fillColor: WidgetStateProperty.resolveWith(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.hovered)) {
-            return colors.textHoverText;
+            return colors.textHoveredText;
           }
           if (states.contains(WidgetState.selected)) {
             return colors.text;
@@ -969,7 +969,7 @@ class MonetThemeData {
       ),
       overlayColor: WidgetStateProperty.resolveWith(
         (Set<WidgetState> states) {
-          return colors.textHover;
+          return colors.textHovered;
         },
       ),
       splashRadius: 20.0, // match checkbox default,
@@ -1038,15 +1038,15 @@ class MonetThemeData {
   static SegmentedButtonThemeData segmentedButtonThemeData(SafeColors colors) {
     // Button style in-lined due to unique requirements, essentially, a text
     // button when not selected, fillbutton when selected.
-    final selectedBackground = stateColors(
-      color: colors.fill,
-      hover: colors.fillHover,
-      splash: colors.fillSplash,
+    final selectedBackground = widgetPropertyByState(
+      normal: colors.fill,
+      hover: colors.fillHovered,
+      splash: colors.fillSplashed,
     );
-    final unselectedBackground = stateColors(
-      color: colors.background,
-      hover: colors.textHover,
-      splash: colors.textSplash,
+    final unselectedBackground = widgetPropertyByState(
+      normal: colors.background,
+      hover: colors.backgroundHovered,
+      splash: colors.backgroundSplashed,
     );
     final background = WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
@@ -1055,15 +1055,15 @@ class MonetThemeData {
         return unselectedBackground.resolve(states);
       }
     });
-    final selectedForeground = stateColors(
-      color: colors.fillText,
-      hover: colors.fillHoverText,
-      splash: colors.fillSplashText,
+    final selectedForeground = widgetPropertyByState(
+      normal: colors.fillText,
+      hover: colors.fillHoveredText,
+      splash: colors.fillSplashedText,
     );
-    final unselectedForeground = stateColors(
-      color: colors.backgroundText,
-      hover: colors.textHoverText,
-      splash: colors.textSplashText,
+    final unselectedForeground = widgetPropertyByState(
+      normal: colors.backgroundText,
+      hover: colors.backgroundHoveredText,
+      splash: colors.backgroundSplashedText,
     );
     final foreground = WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
@@ -1169,9 +1169,9 @@ class MonetThemeData {
           if (states.contains(WidgetState.selected)) {
             return colors.fill;
           } else if (states.contains(WidgetState.hovered)) {
-            return colors.fillHover;
+            return colors.fillHovered;
           } else if (states.contains(WidgetState.pressed)) {
-            return colors.fillSplash;
+            return colors.fillSplashed;
           } else {
             return colors.fill;
           }
@@ -1199,9 +1199,9 @@ class MonetThemeData {
       if (states.contains(WidgetState.selected)) {
         return colors.text;
       } else if (states.contains(WidgetState.hovered)) {
-        return colors.textHoverText;
+        return colors.textHoveredText;
       } else if (states.contains(WidgetState.pressed)) {
-        return colors.textSplashText;
+        return colors.textSplashedText;
       } else {
         return colors.backgroundText;
       }
@@ -1220,11 +1220,11 @@ class MonetThemeData {
       overlayColor: WidgetStateProperty.resolveWith(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.selected)) {
-            return colors.textSplash;
+            return colors.textSplashed;
           } else if (states.contains(WidgetState.hovered)) {
-            return colors.textHover;
+            return colors.textHovered;
           } else if (states.contains(WidgetState.pressed)) {
-            return colors.textSplash;
+            return colors.textSplashed;
           } else {
             return colors.background;
           }
@@ -1238,14 +1238,14 @@ class MonetThemeData {
 
   TextButtonThemeData textButtonTheme(SafeColors colors) {
     return TextButtonThemeData(
-      style: textButtonStyleFromColors(colors),
+      style: textButtonStyle(colors),
     );
   }
 
   static TextSelectionThemeData textSelectionThemeData(SafeColors colors) {
     return TextSelectionThemeData(
       cursorColor: colors.fill,
-      // Can't induce text to use textHoverText, so instead, use opacity to
+      // Can't induce text to use textHoveredText, so instead, use opacity to
       // introduce some effect, but not so much so that contrast between
       // text and the selection color is jarringly low.
       selectionColor: colors.text.withOpacity(0.4),
@@ -1257,8 +1257,8 @@ class MonetThemeData {
       SafeColors colors, TextTheme textTheme) {
     return TimePickerThemeData(
       backgroundColor: colors.background,
-      cancelButtonStyle: outlineButtonStyleFromColors(colors),
-      confirmButtonStyle: filledButtonBackgroundIsColor(colors),
+      cancelButtonStyle: outlineButtonStyle(colors),
+      confirmButtonStyle: outlineButtonStyle(colors),
       dayPeriodBorderSide: BorderSide(
         color: colors.fill,
         width: 2,
@@ -1295,9 +1295,9 @@ class MonetThemeData {
       }),
       hourMinuteColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.hovered)) {
-          return colors.fillHover;
+          return colors.fillHovered;
         } else if (states.contains(WidgetState.pressed)) {
-          return colors.fillSplash;
+          return colors.fillSplashed;
         } else if (states.contains(WidgetState.selected)) {
           return colors.fill;
         } else {
@@ -1313,9 +1313,9 @@ class MonetThemeData {
       ),
       hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.hovered)) {
-          return colors.fillHoverText;
+          return colors.fillHoveredText;
         } else if (states.contains(WidgetState.pressed)) {
-          return colors.fillSplashText;
+          return colors.fillSplashedText;
         } else if (states.contains(WidgetState.selected)) {
           return colors.fillText;
         } else {
@@ -1351,12 +1351,12 @@ class MonetThemeData {
       }),
       disabledColor: colors.text,
       fillColor: colors.color,
-      focusColor: colors.colorHover,
+      focusColor: colors.colorHovered,
       highlightColor: Colors.transparent,
       hoverColor: WidgetStateColor.resolveWith((states) {
-        return colors.textHover;
+        return colors.textHovered;
       }),
-      splashColor: colors.fillSplash,
+      splashColor: colors.fillSplashed,
       borderColor: colors.colorBorder,
       selectedBorderColor: colors.colorBorder,
       disabledBorderColor: colors.colorBorder,
@@ -1436,7 +1436,7 @@ class MonetThemeData {
           .copyWith(fontWeight: FontWeight.w700),
       // Can't specify text in hover state: introduce some change in the
       // background, but not so much as to make the text unreadable, as
-      // primarySafeColors.textHover would do.
+      // primarySafeColors.textHovered would do.
       hoverColor: colors.text.withOpacity(0.2),
     );
   }

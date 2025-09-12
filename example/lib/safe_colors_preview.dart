@@ -24,7 +24,7 @@ class SafeColorsPreviewRow extends StatelessWidget {
   }
 
   Widget _safeColorsRow(BuildContext context, SafeColors colors) {
-    final textButtonStyleBase = textButtonStyleFromColors(safeColors);
+    final textButtonStyleBase = fillButtonStyle(safeColors);
     final textButtonStyle = textButtonStyleBase.copyWith(
         textStyle: WidgetStateProperty.resolveWith((states) {
       final base = textButtonStyleBase.textStyle?.resolve(states);
@@ -44,12 +44,12 @@ class SafeColorsPreviewRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FilledButton(
-                    style: filledButtonBackgroundIsColor(colors),
+                    style: fillButtonStyle(colors),
                     onPressed: () {},
                     child: const Text('Color')),
                 const HorizontalPadding(),
                 FilledButton(
-                  style: filledButtonBackgroundIsFill(colors),
+                  style: fillButtonStyle(colors),
                   onPressed: () {},
                   child: const Text('Fill'),
                 ),
