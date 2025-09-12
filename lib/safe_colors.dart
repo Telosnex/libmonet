@@ -39,6 +39,26 @@ class SafeColors {
   Color get backgroundBorder =>
       _computeOrGet('backgroundBorder', _computeBackgroundBorder);
 
+  // New: Background interactive (brand overlay on background)
+  // Distinct hover/splash colors that preserve base hue/chroma and
+  // solve tone against the background using the interactive contrast dials.
+  Color get backgroundHover =>
+      _computeOrGet('backgroundHover', _computeBackgroundHover);
+  Color get backgroundSplash =>
+      _computeOrGet('backgroundSplash', _computeBackgroundSplash);
+
+  // Synonyms for explicit intent (fill overlay on background during hover/press)
+  Color get backgroundHoverFill => _computeOrGet(
+      'backgroundHoverFill', _computeBackgroundHoverFill);
+  Color get backgroundSplashFill => _computeOrGet(
+      'backgroundSplashFill', _computeBackgroundSplashFill);
+
+  // Text intended to sit on top of the brand background overlays above.
+  Color get backgroundHoverText => _computeOrGet(
+      'backgroundHoverText', _computeBackgroundHoverText);
+  Color get backgroundSplashText => _computeOrGet(
+      'backgroundSplashText', _computeBackgroundSplashText);
+
   Color get color => _baseColor;
   Color get colorHover => _computeOrGet('colorHover', _computeColorHover);
   Color get colorSplash => _computeOrGet('colorSplash', _computeColorSplash);
@@ -221,17 +241,186 @@ class SafeColors {
         backgroundHct.hue, colorHct.chroma, backgroundBorderTone);
   }
 
+  // New: Background interactive (brand overlay on background)
+  Color _computeBackgroundHover() {
+    final baseHct = Hct.fromColor(_baseColor);
+    final hoverContrast = math.max(_contrast - 0.3, 0.1);
+    final tone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.fill,
+      by: _algo,
+      contrast: hoverContrast,
+    );
+    return Hct.colorFrom(baseHct.hue, baseHct.chroma, tone);
+  }
 
-  Color _computeFillBorder() {
-    final fillTone = Hct.fromColor(fill).tone;
-    final fillBorderTone = contrastingLstar(
-      withLstar: fillTone,
-      usage: Usage.large,
+  Color _computeBackgroundSplash() {
+    final baseHct = Hct.fromColor(_baseColor);
+    final splashContrast = math.max(_contrast - 0.15, 0.25);
+    final tone = contrastingLstar(
+      withLstar: _backgroundTone,
+      usage: Usage.fill,
+      by: _algo,
+      contrast: splashContrast,
+    );
+    return Hct.colorFrom(baseHct.hue, baseHct.chroma, tone);
+  }
+
+  // Synonyms for clarity: compute identical to backgroundHover/backgroundSplash.
+  Color _computeBackgroundHoverFill() => backgroundHover;
+  Color _computeBackgroundSplashFill() => backgroundSplash;
+
+  // Text intended to sit on top of the brand overlays above –
+  // compute against the overlay tone, preserving brand hue/chroma.
+  Color _computeBackgroundHoverText() {
+    final overlayTone = Hct.fromColor(backgroundHover).tone;
+    final textTone = contrastingLstar(
+      withLstar: overlayTone,
+      usage: Usage.text,
       by: _algo,
       contrast: _contrast,
     );
+    final baseHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(baseHct.hue, baseHct.chroma, textTone);
+  }
+
+  Color _computeBackgroundSplashText() {
+    final overlayTone = Hct.fromColor(backgroundSplash).tone;
+    final textTone = contrastingLstar(
+      withLstar: overlayTone,
+      usage: Usage.text,
+      by: _algo,
+      contrast: _contrast,
+    );
+    final baseHct = Hct.fromColor(_baseColor);
+    return Hct.colorFrom(baseHct.hue, baseHct.chroma, textTone);
+  }
+
+
+  // Update: make fillBorder robust like colorBorder by solving for a tone
+  // that contrasts with both the fill surface and the background. This
+  // matches the two-reference approach used in _computeColorBorder.
+  Color _computeFillBorder() {
+    void debugLog(String Function() message) {
+      // ignore: dead_code
+      if (false) {
+        // ignore: avoid_print
+        print(message());
+      }
+    }
+
     final colorHct = Hct.fromColor(_baseColor);
-    return Hct.colorFrom(colorHct.hue, colorHct.chroma, fillBorderTone);
+    final fillTone = Hct.fromColor(fill).tone;
+    final backgroundTone = _backgroundTone;
+
+    // If the base color already contrasts sufficiently vs BOTH fill and background,
+    // we can use it directly as an edge color.
+    final requiredContrast = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    final fillBgContrast = _algo.getContrastBetweenLstars(bg: fillTone, fg: colorHct.tone).abs();
+    final bgContrast = _algo.getContrastBetweenLstars(bg: backgroundTone, fg: colorHct.tone).abs();
+    if (fillBgContrast >= requiredContrast && bgContrast >= requiredContrast) {
+      return _baseColor;
+    }
+
+    // Calculate total delta for a given tone (close to both references)
+    double calculateTotalDelta(double tone) {
+      return (tone - fillTone).abs() + (tone - backgroundTone).abs();
+    }
+
+    bool hasValidContrast(double tone) {
+      return _hasValidContrastHelper(
+        tone: tone,
+        backgroundTone: backgroundTone,
+        colorTone: fillTone,
+        requiredContrast: requiredContrast,
+      );
+    }
+
+    // Build candidate tones similar to colorBorder logic.
+    final Set<double> candidateSet = {};
+
+    // Candidates that contrast with the background
+    final bgLighterTone = (_algo == Algo.apca)
+        ? lighterTextLstar(backgroundTone, -requiredContrast)
+        : lighterLstarUnsafe(lstar: backgroundTone, contrastRatio: requiredContrast);
+    final bgDarkerTone = (_algo == Algo.apca)
+        ? darkerTextLstar(backgroundTone, requiredContrast)
+        : darkerLstarUnsafe(lstar: backgroundTone, contrastRatio: requiredContrast);
+    if (bgLighterTone <= 100) candidateSet.add(bgLighterTone.clamp(0, 100));
+    if (bgDarkerTone >= 0) candidateSet.add(bgDarkerTone.clamp(0, 100));
+
+    // Candidates that contrast with the fill tone
+    final fillLighterTone = (_algo == Algo.apca)
+        ? lighterTextLstar(fillTone, -requiredContrast)
+        : lighterLstarUnsafe(lstar: fillTone, contrastRatio: requiredContrast);
+    final fillDarkerTone = (_algo == Algo.apca)
+        ? darkerTextLstar(fillTone, requiredContrast)
+        : darkerLstarUnsafe(lstar: fillTone, contrastRatio: requiredContrast);
+    if (fillLighterTone <= 100) candidateSet.add(fillLighterTone.clamp(0, 100));
+    if (fillDarkerTone >= 0) candidateSet.add(fillDarkerTone.clamp(0, 100));
+
+    final candidateTones = candidateSet.toList();
+    final validCandidates = candidateTones.where(hasValidContrast).toList();
+
+    debugLog(() => 'Fill tone: ${fillTone.round()} bg tone: ${backgroundTone.round()}');
+    debugLog(() =>
+        'Background contrasts with lighter T${bgLighterTone.round()}, darker T${bgDarkerTone.round()}');
+    debugLog(() =>
+        'Fill contrasts with lighter T${fillLighterTone.round()}, darker T${fillDarkerTone.round()}');
+    debugLog(() => 'All candidates: ${candidateTones.map((t) => t.round())}');
+    debugLog(() => 'Valid candidates: ${validCandidates.map((t) => t.round())}');
+
+    if (validCandidates.isEmpty) {
+      final blackDelta = calculateTotalDelta(0);
+      final whiteDelta = calculateTotalDelta(100);
+      debugLog(() =>
+          'No valid candidates found. Using black (0) with delta $blackDelta, white (100) with delta $whiteDelta');
+      return Hct.colorFrom(colorHct.hue, colorHct.chroma, blackDelta > whiteDelta ? 0 : 100);
+    }
+
+    // Prefer lighter/darker relative to the fill tone, mirroring colorBorder behavior.
+    final fillPrefersLighter = lstarPrefersLighterPair(fillTone);
+    if (fillPrefersLighter) {
+      final lighterCandidates = validCandidates.where((t) => t > fillTone).toList();
+      if (lighterCandidates.isNotEmpty) {
+        double bestTone = lighterCandidates.first;
+        double minDelta = calculateTotalDelta(bestTone);
+        for (final t in lighterCandidates) {
+          final d = calculateTotalDelta(t);
+          if (d < minDelta) {
+            minDelta = d;
+            bestTone = t;
+          }
+        }
+        return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
+      }
+    } else {
+      final darkerCandidates = validCandidates.where((t) => t < fillTone).toList();
+      if (darkerCandidates.isNotEmpty) {
+        double bestTone = darkerCandidates.first;
+        double minDelta = calculateTotalDelta(bestTone);
+        for (final t in darkerCandidates) {
+          final d = calculateTotalDelta(t);
+          if (d < minDelta) {
+            minDelta = d;
+            bestTone = t;
+          }
+        }
+        return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
+      }
+    }
+
+    // Fallback: choose candidate with minimal total delta.
+    double bestTone = validCandidates.first;
+    double minDelta = calculateTotalDelta(bestTone);
+    for (final t in validCandidates) {
+      final d = calculateTotalDelta(t);
+      if (d < minDelta) {
+        minDelta = d;
+        bestTone = t;
+      }
+    }
+    return Hct.colorFrom(colorHct.hue, colorHct.chroma, bestTone);
   }
 
   Color _computeColorBorder() {
