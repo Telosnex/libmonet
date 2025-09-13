@@ -420,9 +420,20 @@ class SafeColors {
   Color _computeBackgroundSplashed() => _brandOn(
       containerTone: _backgroundTone, usage: Usage.fill, dial: _splashDial());
 
-  // Synonyms for clarity: compute identical to backgroundHovered/backgroundSplashed.
-  Color _computeBackgroundHoveredFill() => backgroundHovered;
-  Color _computeBackgroundSplashedFill() => backgroundSplashed;
+  // Fill roles that sit ON TOP of the interactive background overlays.
+  // Solve using BRAND family against the overlay tone (preserve hue/chroma),
+  // ensuring contrast with the hovered/splashed background overlay.
+  Color _computeBackgroundHoveredFill() {
+    final overlayTone = Hct.fromColor(backgroundHovered).tone;
+    return _brandOn(
+        containerTone: overlayTone, usage: Usage.fill, dial: _contrast);
+  }
+
+  Color _computeBackgroundSplashedFill() {
+    final overlayTone = Hct.fromColor(backgroundSplashed).tone;
+    return _brandOn(
+        containerTone: overlayTone, usage: Usage.fill, dial: _contrast);
+  }
 
   // Text intended to sit on top of the brand overlays above –
   // compute against the overlay tone, preserving brand hue/chroma.
