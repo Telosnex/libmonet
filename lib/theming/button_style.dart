@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:libmonet/hex_codes.dart';
 import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
@@ -210,11 +209,6 @@ ButtonStyle iconButtonStyle(
   SafeColors sc, {
   TextStyle? textStyle,
 }) {
-  final backgroundHoveredFill = sc.backgroundHoveredFill;
-  final backgroundHovered = sc.backgroundHovered;
-  print('BHF HEX: ${backgroundHoveredFill.hex}');
-  print('BH HEX: ${backgroundHovered.hex}');
-
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
