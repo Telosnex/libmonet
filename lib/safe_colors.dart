@@ -73,16 +73,22 @@ class SafeColors {
   // Core parameters
   final Color _baseColor;
   final Color _baseBackground;
-  final double _backgroundTone;
+  // Lazily-evaluated HCT channels to make construction 0-cost.
+  // These are evaluated only on first use.
+  final double? _backgroundToneOverride;
   final double _contrast;
   final Algo _algo;
 
   // Precomputed HCT channels to avoid repeated Hct.fromColor lookups
-  final double _baseHue;
-  final double _baseChroma;
-  final double _baseTone;
-  final double _bgHue;
-  final double _bgChroma;
+  late final Hct _baseBackgroundHct = Hct.fromColor(_baseBackground);
+  late final Hct _baseColorHct = Hct.fromColor(_baseColor);
+  late final double _backgroundTone =
+      _backgroundToneOverride ?? _baseBackgroundHct.tone;
+  late final double _baseHue = _baseColorHct.hue;
+  late final double _baseChroma = _baseColorHct.chroma;
+  late final double _baseTone = _baseColorHct.tone;
+  late final double _bgHue = _baseBackgroundHct.hue;
+  late final double _bgChroma = _baseBackgroundHct.chroma;
 
   // Cache for lazy-computed values (typed keys)
   final Map<_Token, Color> _cache = {};
@@ -96,14 +102,9 @@ class SafeColors {
       required Algo algo})
       : _baseColor = baseColor,
         _baseBackground = baseBackground,
-        _backgroundTone = backgroundTone ?? Hct.fromColor(baseBackground).tone,
+        _backgroundToneOverride = backgroundTone,
         _contrast = contrast,
-        _algo = algo,
-        _baseHue = Hct.fromColor(baseColor).hue,
-        _baseChroma = Hct.fromColor(baseColor).chroma,
-        _baseTone = Hct.fromColor(baseColor).tone,
-        _bgHue = Hct.fromColor(baseBackground).hue,
-        _bgChroma = Hct.fromColor(baseBackground).chroma;
+        _algo = algo;
 
   // Getters with lazy computation
   Color get background => _computeOrGet(_Token.background, _computeBackground);
@@ -424,13 +425,15 @@ class SafeColors {
   // Solve using BRAND family against the overlay tone (preserve hue/chroma),
   // ensuring contrast with the hovered/splashed background overlay.
   Color _computeBackgroundHoveredFill() {
-    final overlayTone = Hct.fromColor(backgroundHovered).tone;
+    final overlayTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _hoverDial());
     return _brandOn(
         containerTone: overlayTone, usage: Usage.fill, dial: _contrast);
   }
 
   Color _computeBackgroundSplashedFill() {
-    final overlayTone = Hct.fromColor(backgroundSplashed).tone;
+    final overlayTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _splashDial());
     return _brandOn(
         containerTone: overlayTone, usage: Usage.fill, dial: _contrast);
   }
@@ -438,19 +441,22 @@ class SafeColors {
   // Text intended to sit on top of the brand overlays above –
   // compute against the overlay tone, preserving brand hue/chroma.
   Color _computeBackgroundHoveredText() {
-    final overlayTone = Hct.fromColor(backgroundHovered).tone;
+    final overlayTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _hoverDial());
     return _brandOn(
         containerTone: overlayTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeBackgroundSplashedText() {
-    final overlayTone = Hct.fromColor(backgroundSplashed).tone;
+    final overlayTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _splashDial());
     return _brandOn(
         containerTone: overlayTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeBackgroundHoveredBorder() {
-    final overlayTone = Hct.fromColor(backgroundHovered).tone;
+    final overlayTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _hoverDial());
     final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
     final baseVsOverlay =
         _algo.getContrastBetweenLstars(bg: overlayTone, fg: _baseTone).abs();
@@ -464,7 +470,8 @@ class SafeColors {
   }
 
   Color _computeBackgroundSplashedBorder() {
-    final overlayTone = Hct.fromColor(backgroundSplashed).tone;
+    final overlayTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _splashDial());
     final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
     final baseVsOverlay =
         _algo.getContrastBetweenLstars(bg: overlayTone, fg: _baseTone).abs();
@@ -483,10 +490,11 @@ class SafeColors {
   // Implementation is shared with _computeColorBorder via
   // _solveEitherSideBorder (either-side cost with smart tie-breaks).
   Color _computeFillBorder() {
-    final innerTone = Hct.fromColor(fill).tone;
+    final innerTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
     return _solveEitherSideBorder(
       innerTone: innerTone,
-      baseTone: Hct.fromColor(_baseColor).tone,
+      baseTone: _baseTone,
       backgroundTone: _backgroundTone,
       requiredContrast: _algo.getAbsoluteContrast(_contrast, Usage.large),
       hue: _baseHue,
@@ -638,7 +646,7 @@ class SafeColors {
   }
 
   Color _computeColorBorder() {
-    final innerTone = Hct.fromColor(_baseColor).tone; // color surface tone
+    final innerTone = _baseTone; // color surface tone
     return _solveEitherSideBorder(
       innerTone: innerTone,
       baseTone: innerTone,
@@ -662,19 +670,22 @@ class SafeColors {
       containerTone: _baseTone, usage: Usage.fill, dial: _splashDial());
 
   Color _computeColorHoveredText() {
-    final colorHoveredTone = Hct.fromColor(colorHovered).tone;
+    final colorHoveredTone = _solveTone(
+        containerTone: _baseTone, usage: Usage.fill, dial: _hoverDial());
     return _brandOn(
         containerTone: colorHoveredTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeColorSplashedText() {
-    final colorSplashedTone = Hct.fromColor(colorSplashed).tone;
+    final colorSplashedTone = _solveTone(
+        containerTone: _baseTone, usage: Usage.fill, dial: _splashDial());
     return _brandOn(
         containerTone: colorSplashedTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeColorHoveredBorder() {
-    final colorHoveredTone = Hct.fromColor(colorHovered).tone;
+    final colorHoveredTone = _solveTone(
+        containerTone: _baseTone, usage: Usage.fill, dial: _hoverDial());
     final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
     final baseVsHovered = _algo.getContrastBetweenLstars(bg: colorHoveredTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
@@ -684,7 +695,8 @@ class SafeColors {
   }
 
   Color _computeColorSplashedBorder() {
-    final colorSplashedTone = Hct.fromColor(colorSplashed).tone;
+    final colorSplashedTone = _solveTone(
+        containerTone: _baseTone, usage: Usage.fill, dial: _splashDial());
     final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
     final baseVsSplashed = _algo.getContrastBetweenLstars(bg: colorSplashedTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
@@ -697,43 +709,65 @@ class SafeColors {
       containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
 
   Color _computeFillText() {
-    final fillTone = Hct.fromColor(fill).tone;
+    final fillTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
     return _brandOn(
         containerTone: fillTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeFillIcon() {
-    final fillTone = Hct.fromColor(fill).tone;
+    final fillTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
     return _brandOn(
         containerTone: fillTone, usage: Usage.fill, dial: _contrast);
   }
 
   Color _computeFillHovered() {
-    final fillTone = Hct.fromColor(fill).tone;
+    final fillTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
     return _brandOn(
         containerTone: fillTone, usage: Usage.fill, dial: _hoverDial());
   }
 
   Color _computeFillSplashed() {
-    final fillTone = Hct.fromColor(fill).tone;
+    final fillTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
     return _brandOn(
         containerTone: fillTone, usage: Usage.fill, dial: _splashDial());
   }
 
   Color _computeFillHoveredText() {
-    final fillHoveredTone = Hct.fromColor(fillHovered).tone;
+    final fillHoveredTone = _solveTone(
+        containerTone: _solveTone(
+            containerTone: _backgroundTone,
+            usage: Usage.fill,
+            dial: _contrast),
+        usage: Usage.text,
+        dial: _hoverDial());
     return _brandOn(
         containerTone: fillHoveredTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeFillSplashedText() {
-    final fillSplashedTone = Hct.fromColor(fillSplashed).tone;
+    final fillSplashedTone = _solveTone(
+        containerTone: _solveTone(
+            containerTone: _backgroundTone,
+            usage: Usage.fill,
+            dial: _contrast),
+        usage: Usage.text,
+        dial: _splashDial());
     return _brandOn(
         containerTone: fillSplashedTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeFillHoveredBorder() {
-    final fillHoveredTone = Hct.fromColor(fillHovered).tone;
+    final fillHoveredTone = _solveTone(
+        containerTone: _solveTone(
+            containerTone: _backgroundTone,
+            usage: Usage.fill,
+            dial: _contrast),
+        usage: Usage.fill,
+        dial: _hoverDial());
     final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
     final baseVsHovered = _algo.getContrastBetweenLstars(bg: fillHoveredTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
@@ -743,7 +777,13 @@ class SafeColors {
   }
 
   Color _computeFillSplashedBorder() {
-    final fillSplashedTone = Hct.fromColor(fillSplashed).tone;
+    final fillSplashedTone = _solveTone(
+        containerTone: _solveTone(
+            containerTone: _backgroundTone,
+            usage: Usage.fill,
+            dial: _contrast),
+        usage: Usage.fill,
+        dial: _splashDial());
     final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
     final baseVsSplashed = _algo.getContrastBetweenLstars(bg: fillSplashedTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
@@ -762,13 +802,15 @@ class SafeColors {
       containerTone: _backgroundTone, usage: Usage.text, dial: _splashDial());
 
   Color _computeTextHoveredText() {
-    final textHoveredTone = Hct.fromColor(textHovered).tone;
+    final textHoveredTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.text, dial: _hoverDial());
     return _brandOn(
         containerTone: textHoveredTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeTextSplashedText() {
-    final textSplashedTone = Hct.fromColor(textSplashed).tone;
+    final textSplashedTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.text, dial: _splashDial());
     return _brandOn(
         containerTone: textSplashedTone, usage: Usage.text, dial: _contrast);
   }
