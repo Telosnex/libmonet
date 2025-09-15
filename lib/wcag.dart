@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui' show Color;
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/libmonet.dart';
 
 double lighterLstarUnsafe({
   required double lstar,
@@ -47,5 +47,5 @@ double wcagFromArgbs(int a, int b) {
 }
 
 double wcagFromColors(Color a, Color b) {
-  return wcagFromArgbs(a.value, b.value);
+  return wcagFromArgbs(a.argb, b.argb);
 }

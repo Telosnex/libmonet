@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
-import 'package:libmonet/opacity.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:libmonet/util/with_opacity_neue.dart';
 
 void main() {
   group('zebra BG', () {
@@ -163,7 +163,7 @@ void expectOpacity(double opacity,
   );
   expect(result.opacity, closeTo(opacity, 0.001));
   final resultColor =
-      Color(argbFromLstar(result.lstar)).withOpacity(result.opacity);
+      Color(argbFromLstar(result.lstar)).withOpacityNeue(result.opacity);
   final minBgColor = Color(argbFromLstar(bgLMin));
   final maxBgColor = Color(argbFromLstar(bgLMax));
   final minBlended = Color.alphaBlend(resultColor, minBgColor);
@@ -171,9 +171,9 @@ void expectOpacity(double opacity,
   final fgColor = Color(argbFromLstar(fgL));
   final contrastExpected = algo.getAbsoluteContrast(0.5, Usage.text);
   final contrastMin =
-      algo.getContrastBetweenLstars(bg: lstarFromArgb(minBlended.value), fg: fgL);
+      algo.getContrastBetweenLstars(bg: lstarFromArgb(minBlended.argb), fg: fgL);
   final contrastMax =
-      algo.getContrastBetweenLstars(bg: lstarFromArgb(maxBlended.value), fg: fgL);
+      algo.getContrastBetweenLstars(bg: lstarFromArgb(maxBlended.argb), fg: fgL);
   if (debug) {
     // Double-nesting avoids compiler warning because it sees if (kDebugMode)
     if (kDebugMode) {
@@ -181,9 +181,9 @@ void expectOpacity(double opacity,
       print(
           'added opacity ${result.opacity} with lstar ${result.lstar} ($resultColor)');
       print(
-          'added to minBgColor $minBgColor to get $minBlended with lstar ${lstarFromArgb(minBlended.value).round()}');
+          'added to minBgColor $minBgColor to get $minBlended with lstar ${lstarFromArgb(minBlended.argb).round()}');
       print(
-          'added to maxBgColor $maxBgColor to get $maxBlended with lstar ${lstarFromArgb(maxBlended.value).round()}');
+          'added to maxBgColor $maxBgColor to get $maxBlended with lstar ${lstarFromArgb(maxBlended.argb).round()}');
       print('text color $fgColor');
       print(
           'contrastMin: $contrastMin, contrastMax: $contrastMax, contrastExpected: $contrastExpected');

@@ -30,7 +30,7 @@ class _ColorMatcher extends Matcher {
       return false;
     }
     if (object is Color && _argb is int) {
-      return object.value == _argb;
+      return object.argb == _argb;
     } else if (object is int && _argb is Color) {
       return object == _argb.value;
     }
@@ -53,6 +53,6 @@ class _ColorMatcher extends Matcher {
         .add('expected hex code\n  ')
         .add(hexFromArgb(_argb))
         .add('\nbut got\n  ')
-        .add(hexFromArgb(item is Color ? item.value : item as int));
+        .add(hexFromArgb(item is Color ? item.argb : item as int));
   }
 }

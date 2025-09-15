@@ -339,28 +339,27 @@ class ComponentsWidget extends HookConsumerWidget {
         const LinearProgressIndicator(),
    
         const H3('Radio'),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Radio(
-              value: 0,
-              groupValue: radioValue.value,
-              onChanged: onRadioValueChanged,
-            ),
-            const Text('Zero'),
-            Radio(
-              value: 1,
-              groupValue: radioValue.value,
-              onChanged: onRadioValueChanged,
-            ),
-            const Text('One'),
-            Radio(
-              value: 2,
-              groupValue: radioValue.value,
-              onChanged: onRadioValueChanged,
-            ),
-            const Text('Two'),
-          ],
+        RadioGroup(
+          groupValue: radioValue.value,
+          onChanged: onRadioValueChanged,
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Radio(
+                value: 0,
+              ),
+              Text('Zero'),
+              Radio(
+                value: 1,
+
+              ),
+              Text('One'),
+              Radio(
+                value: 2,
+              ),
+              Text('Two'),
+            ],
+          ),
         ),
         const H3('Search Bar'),
         const SearchBar(

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:libmonet/hex_codes.dart';
 import 'package:monet_studio/brand_colors.dart';
 import 'package:monet_studio/hue_tone_picker.dart';
 import 'package:monet_studio/padding.dart';
@@ -10,6 +11,7 @@ import 'package:libmonet/hct.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/slider_flat.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
+import 'package:squadron/squadron.dart';
 
 class ColorPicker extends StatefulHookConsumerWidget {
   const ColorPicker({
@@ -32,13 +34,8 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
 
   final random = Random.secure();
 
-
   static String _colorToHex(Color color) {
-    return color.value
-        .toRadixString(16)
-        .padLeft(8, '0')
-        .toUpperCase()
-        .replaceFirst('FF', '');
+    return color.argb.hex;
   }
 
   @override
@@ -49,12 +46,12 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
     final mutableTone = useState(hctDANGERDANGER.tone);
     final hexController =
         useTextEditingController(text: _colorToHex(widget.color));
-    final hueController = useTextEditingController(
-        text: mutableHue.value.round().toString());
-    final chromaController = useTextEditingController(
-        text: mutableChroma.value.round().toString());
-    final toneController = useTextEditingController(
-        text: mutableTone.value.round().toString());
+    final hueController =
+        useTextEditingController(text: mutableHue.value.round().toString());
+    final chromaController =
+        useTextEditingController(text: mutableChroma.value.round().toString());
+    final toneController =
+        useTextEditingController(text: mutableTone.value.round().toString());
     useEffect(() {
       hexController.text = _colorToHex(widget.color);
       hueController.text = mutableHue.value.round().toString();

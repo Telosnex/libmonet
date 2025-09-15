@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/debug_print.dart';
+import 'package:libmonet/libmonet.dart';
 
 /// Calculations for APCA contrast.
 /// Per [APCA landing page](https://github.com/Myndex/apca-w3/):
@@ -171,5 +171,5 @@ double apcaFromArgbs(int textArgb, int backgroundArgb) {
 
 double apcaFromColors(
     {required Color textColor, required Color backgroundColor}) {
-  return apcaFromArgbs(textColor.value, backgroundColor.value);
+  return apcaFromArgbs(textColor.argb, backgroundColor.argb);
 }

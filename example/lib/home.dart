@@ -60,9 +60,7 @@ class Home extends HookConsumerWidget {
     final brightnessSetting = useState(BrightnessSetting.auto);
     final brightness = brightnessSetting.value.brightness(context);
     final font = GoogleFonts.alice();
-    final font2 = GoogleFonts.imFellEnglish();
-    final font3 = GoogleFonts.lusitana();
-    final font4 = GoogleFonts.lobster();
+    final font2 = GoogleFonts.lusitana();
     final ui = FutureBuilder<Object>(
         future: GoogleFonts.pendingFonts(),
         builder: (context, snapshot) {
@@ -145,7 +143,7 @@ class Home extends HookConsumerWidget {
                                         .textTheme
                                         .headlineLarge!
                                         .copyWith(
-                                            fontFamily: font3.fontFamily,
+                                            fontFamily: font2.fontFamily,
                                             color: MonetTheme.of(context)
                                                 .primary
                                                 .text),
@@ -220,14 +218,14 @@ class Home extends HookConsumerWidget {
       minBgLstar: 0,
       maxBgLstar: 100,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.value),
+      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast.value,
     );
     final shadows = getShadowOpacities(
       minBgLstar: 0,
       maxBgLstar: 100,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.value),
+      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast.value,
       blurRadius: 5,
       contentRadius: 3,

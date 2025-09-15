@@ -4,18 +4,17 @@ import 'dart:ui' show FontFeature;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
-import 'package:libmonet/extract/scorer_triad.dart';
 import 'package:libmonet/hct.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/safe_colors.dart';
-import 'package:libmonet/size_scale.dart';
 import 'package:libmonet/temperature.dart';
 import 'package:libmonet/theming/button_style.dart';
 import 'package:libmonet/theming/slider_flat_shape.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
 import 'package:libmonet/util/lru_cache.dart';
+import 'package:libmonet/util/with_opacity_neue.dart';
 
 const _kFontFamilyFallback = [
   'sans-serif', // via https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
@@ -214,19 +213,17 @@ class MonetThemeData {
       canvasColor: primary.background,
       cardColor: primary.background,
       colorScheme: colorScheme,
-      dialogBackgroundColor: primary.background,
       disabledColor: primary.color,
       dividerColor: primary.backgroundText,
-      hoverColor: primary.fill.withOpacity(0.2),
-      splashColor: primary.fill.withOpacity(0.4),
-      focusColor: primary.fill.withOpacity(0.4),
+      hoverColor: primary.fill.withOpacityNeue(0.2),
+      splashColor: primary.fill.withOpacityNeue(0.4),
+      focusColor: primary.fill.withOpacityNeue(0.4),
       highlightColor: Colors.transparent,
       hintColor: primary.backgroundText,
       // ThemeData uses white if primary = secondary, otherwise, secondary
       primaryColor: primary.color,
       primaryColorDark: primaryColorDark,
       primaryColorLight: primaryColorLight,
-      indicatorColor: secondary.fill,
       scaffoldBackgroundColor: primary.background,
       secondaryHeaderColor: secondary.backgroundText,
       // Avoid setting a default, as each widget may be a different color and
@@ -250,7 +247,6 @@ class MonetThemeData {
       bottomNavigationBarTheme:
           bottomNavigationBarThemeData(primary, scale, textTheme),
       bottomSheetTheme: bottomSheetThemeData(primary),
-      buttonBarTheme: buttonBarThemeData(),
       buttonTheme: buttonThemeData(),
       cardTheme: cardTheme(primary),
       checkboxTheme: checkboxThemeData(primary),
@@ -370,11 +366,6 @@ class MonetThemeData {
       shape: const RoundedRectangleBorder(),
       clipBehavior: Clip.none,
     );
-  }
-
-  static ButtonBarThemeData buttonBarThemeData() {
-    // Go with defaults, most of the properties are about padding and spacing.
-    return const ButtonBarThemeData(alignment: MainAxisAlignment.center);
   }
 
   static ButtonThemeData buttonThemeData() {
@@ -1119,7 +1110,7 @@ class MonetThemeData {
       rangeThumbShape: const RoundRangeSliderThumbShape(),
       rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
       rangeValueIndicatorShape: const PaddleRangeSliderValueIndicatorShape(),
-      showValueIndicator: ShowValueIndicator.always,
+      showValueIndicator: ShowValueIndicator.onDrag,
       valueIndicatorTextStyle: textTheme.labelLarge!.copyWith(
         color: colors.colorText,
       ),
@@ -1248,7 +1239,7 @@ class MonetThemeData {
       // Can't induce text to use textHoveredText, so instead, use opacity to
       // introduce some effect, but not so much so that contrast between
       // text and the selection color is jarringly low.
-      selectionColor: colors.text.withOpacity(0.4),
+      selectionColor: colors.text.withOpacityNeue(0.4),
       selectionHandleColor: colors.fill,
     );
   }
@@ -1280,7 +1271,7 @@ class MonetThemeData {
       }),
       dayPeriodTextStyle: textTheme.labelLarge,
       dialBackgroundColor: colors.fill,
-      dialHandColor: colors.fillText.withOpacity(0.4),
+      dialHandColor: colors.fillText.withOpacityNeue(0.4),
       dialTextColor: colors.fillText,
       dialTextStyle: textTheme.labelLarge!.copyWith(color: colors.fillText),
       elevation: modalElevation,
@@ -1368,16 +1359,7 @@ class MonetThemeData {
   static TooltipThemeData tooltipThemeData(
       SafeColors colors, TextTheme textTheme) {
     return TooltipThemeData(
-      height: switch (defaultTargetPlatform) {
-        TargetPlatform.macOS ||
-        TargetPlatform.linux ||
-        TargetPlatform.windows =>
-          24.0,
-        TargetPlatform.android ||
-        TargetPlatform.fuchsia ||
-        TargetPlatform.iOS =>
-          32.0,
-      },
+      constraints: BoxConstraints(minHeight: 32),
       padding: switch (defaultTargetPlatform) {
         TargetPlatform.macOS ||
         TargetPlatform.linux ||
@@ -1437,7 +1419,7 @@ class MonetThemeData {
       // Can't specify text in hover state: introduce some change in the
       // background, but not so much as to make the text unreadable, as
       // primarySafeColors.textHovered would do.
-      hoverColor: colors.text.withOpacity(0.2),
+      hoverColor: colors.text.withOpacityNeue(0.2),
     );
   }
 
@@ -1687,7 +1669,7 @@ class MonetThemeData {
   DrawerThemeData drawerThemeData(SafeColors colors) {
     return DrawerThemeData(
       backgroundColor: colors.backgroundText,
-      scrimColor: Colors.black.withOpacity(0.54),
+      scrimColor: Colors.black.withOpacityNeue(0.54),
       shadowColor: _singleShadowColorFor(colors.background),
       surfaceTintColor: colors.background,
       shape: null,
@@ -1746,5 +1728,5 @@ ColorScheme _createColorScheme(
 }
 
 Color _singleShadowColorFor(Color color) {
-  return lstarFromArgb(color.value).round() >= 60 ? Colors.black : Colors.white;
+  return lstarFromArgb(color.argb).round() >= 60 ? Colors.black : Colors.white;
 }

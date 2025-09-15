@@ -34,10 +34,12 @@ void main() {
       final base = SafeColors.from(seed, backgroundTone: bgTone, contrast: 0.5, algo: Algo.apca);
       final bgHex = hexFromColor(base.background);
       final colorHex = hexFromColor(base.color);
+      // ignore: avoid_print
       print('SC $name BG $bgHex COLOR $colorHex');
       for (final c in contrasts) {
         final sc = SafeColors.from(seed, backgroundTone: bgTone, contrast: c, algo: Algo.apca);
         final borderHex = hexFromColor(sc.colorBorder);
+        // ignore: avoid_print
         print('SC $name c=$c BORDER $borderHex');
       }
     }

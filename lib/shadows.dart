@@ -7,6 +7,8 @@ import 'package:libmonet/debug_print.dart';
 import 'package:libmonet/hex_codes.dart';
 import 'package:libmonet/luma.dart';
 import 'package:libmonet/opacity.dart';
+import 'package:libmonet/util/alpha_neue.dart';
+import 'package:libmonet/util/with_opacity_neue.dart';
 
 class ShadowResult {
   final double blurRadius;
@@ -27,7 +29,7 @@ class ShadowResult {
     } else {
       resolvedShadows = opacities.map((e) {
         return Shadow(
-          color: Color(argbFromLstar(lstar)).withOpacity(e),
+          color: Color(argbFromLstar(lstar)).withOpacityNeue(e),
           blurRadius: blurRadius,
           offset: const Offset(0, 0),
         );
@@ -107,13 +109,13 @@ ShadowResult getShadowOpacities({
   }
   var bgColor = Color(argbFromLstar(minBgLstar));
   final shadowColor =
-      Color(argbFromLstar(opacityResult.lstar)).withOpacity(effectiveOpacity);
+      Color(argbFromLstar(opacityResult.lstar)).withOpacityNeue(effectiveOpacity);
   var blended = Color.alphaBlend(shadowColor, bgColor);
-  assert(blended.alpha == 255);
+  assert(blended.a == 255);
   monetDebug(
       debug,
       () =>
-          'added ${Color(argbFromLstar(opacityResult.lstar))} at ${(1.0 * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.value)}');
+          'added ${Color(argbFromLstar(opacityResult.lstar))} at ${(1.0 * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.argb)}');
 
   var netOpacity = effectiveOpacity;
   final allOpacities = [1.0];
@@ -142,15 +144,15 @@ ShadowResult getShadowOpacities({
             'gap is $gap. effectiveOpacity is $currentEffectiveOpacity. therefore nextOpacity is $nextOpacity');
 
     final shadowColor = Color(argbFromLstar(opacityResult.lstar))
-        .withOpacity(nextOpacity * currentEffectiveOpacity);
+        .withOpacityNeue(nextOpacity * currentEffectiveOpacity);
 
     blended = Color.alphaBlend(shadowColor, blended);
-    assert(blended.alpha == 255);
+    assert(blended.alphaNeue == 255);
 
     monetDebug(
         debug,
         () =>
-            'added ${Color(argbFromLstar(opacityResult.lstar))} at ${(nextOpacity * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.value)}');
+            'added ${Color(argbFromLstar(opacityResult.lstar))} at ${(nextOpacity * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.argb)}');
 
     netOpacity += (1.0 - netOpacity) * nextOpacity * effectiveOpacity;
 

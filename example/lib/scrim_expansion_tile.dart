@@ -21,14 +21,14 @@ class ScrimExpansionTile extends ConsumerWidget {
       minBgLstar: 0,
       maxBgLstar: 100,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.value),
+      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast,
     );
     final shadows = getShadowOpacities(
       minBgLstar: 0,
       maxBgLstar: 100,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.value),
+      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast,
       blurRadius: 5,
       contentRadius: 3,

@@ -6,6 +6,7 @@ import 'package:libmonet/contrast.dart';
 import 'package:libmonet/debug_print.dart';
 import 'package:libmonet/hex_codes.dart';
 import 'package:libmonet/luma.dart';
+import 'package:libmonet/util/with_opacity_neue.dart';
 import 'package:libmonet/wcag.dart';
 
 class OpacityResult {
@@ -13,7 +14,7 @@ class OpacityResult {
   final double opacity;
   final double requiredLstar;
 
-  Color get color => Color(argbFromLstar(lstar)).withOpacity(opacity);
+  Color get color => Color(argbFromLstar(lstar)).withOpacityNeue(opacity);
   OpacityResult(
       {required this.lstar,
       required this.opacity,

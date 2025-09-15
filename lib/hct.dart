@@ -17,10 +17,10 @@
 
 import 'dart:ui';
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/cam16_viewing_conditions.dart';
-import 'package:libmonet/cam16.dart';
 import 'package:libmonet/hct_solver_noalloc.dart';
+import 'package:libmonet/libmonet.dart';
+import 'package:libmonet/util/alpha_neue.dart';
+import 'package:libmonet/util/with_opacity_neue.dart';
 
 /// HCT, hue, chroma, and tone. A color system that provides a perceptually
 /// accurate color measurement system that can also accurately render what
@@ -68,7 +68,7 @@ class Hct {
   }
 
   factory Hct.fromColor(Color color) {
-    final argb = color.value;
+    final argb = color.argb;
     return Hct._(argb);
   }
 
@@ -86,8 +86,8 @@ class Hct {
     final lstar = lerpDouble(a.tone, b.tone, t)!;
     final chroma = lerpDouble(a.chroma, b.chroma, t)!;
     final hue = _lerpKeepHueAngle(a.hue, b.hue, t);
-    final opacity = lerpDouble(colorA.opacity, colorB.opacity, t);
-    return Hct.from(hue, chroma, lstar).color.withOpacity(opacity!);
+    final opacity = lerpDouble(colorA.alphaNeue, colorB.alphaNeue, t);
+    return Hct.from(hue, chroma, lstar).color.withOpacityNeue(opacity!);
   }
 
   static double _lerpKeepHueAngle(double a, double b, double t) {

@@ -68,7 +68,6 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
   ShortcutRegistryEntry? _shortcutsEntry;
   String? _lastSelection;
 
-
   bool get showingMessage => _showMessage;
   bool _showMessage = false;
   set showingMessage(bool value) {
@@ -156,18 +155,14 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
             menuChildren: <MenuEntry>[
               MenuEntry(
                 label: 'Red Background',
-                onPressed: () {
-              
-                },
+                onPressed: () {},
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyR,
                     control: true),
               ),
               MenuEntry(
                 label: 'Green Background',
                 onPressed: () {
-                  setState(() {
-        
-                  });
+                  setState(() {});
                 },
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyG,
                     control: true),
@@ -175,9 +170,7 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
               MenuEntry(
                 label: 'Blue Background',
                 onPressed: () {
-                  setState(() {
- 
-                  });
+                  setState(() {});
                 },
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyB,
                     control: true),
@@ -192,14 +185,18 @@ class _MenuBarComponentState extends State<MenuBarComponent> {
     _shortcutsEntry?.dispose();
     _shortcutsEntry = null;
     Future.delayed(Duration.zero, () {
-      if (context.mounted) {
-        try {
-          _shortcutsEntry =
-              ShortcutRegistry.of(context).addAll(MenuEntry.shortcuts(result));
-        } catch (e) {
-          // Silence exception, currently the Flutter demo code for MenuBar
-          // doesn't work and causes a lot of noise, even with workarounds.
-        }
+      if (!context.mounted) {
+        return;
+      }
+
+      try {
+        _shortcutsEntry =
+            // rationale: checked for mounted above
+            // ignore: use_build_context_synchronously
+            ShortcutRegistry.of(context).addAll(MenuEntry.shortcuts(result));
+      } catch (e) {
+        // Silence exception, currently the Flutter demo code for MenuBar
+        // doesn't work and causes a lot of noise, even with workarounds.
       }
     });
 

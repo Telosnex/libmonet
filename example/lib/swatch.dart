@@ -14,7 +14,7 @@ class Swatch extends StatelessWidget {
     if (tooltip != null) {
       finalTooltip.writeln(tooltip);
     }
-    finalTooltip.writeln(hexFromArgb(color.value));
+    finalTooltip.writeln(hexFromArgb(color.argb));
     finalTooltip.write(Hct.fromColor(color).toString());
       return Tooltip(message: finalTooltip.toString(), child: swatch,);
   }
