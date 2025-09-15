@@ -1,0 +1,149 @@
+import 'package:flutter/material.dart';
+import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/theming/monet_theme.dart';
+import 'package:libmonet/theming/monet_theme_data.dart';
+
+/// Interpolated theme data that lerps the three seed colors in HCT and
+/// constructs SafeColors for each frame, while keeping ThemeData stable by
+/// default to avoid Material transient states.
+class InterpolatedMonetThemeData extends MonetThemeData {
+  final MonetThemeData begin;
+  final MonetThemeData end;
+  final double t;
+  final bool animateThemeData;
+
+  InterpolatedMonetThemeData({
+    required this.begin,
+    required this.end,
+    required this.t,
+    this.animateThemeData = false,
+  }) : super(
+          backgroundTone: begin.backgroundTone,
+          brightness: begin.brightness,
+          primary: LerpedSafeColors(a: begin.primary, b: end.primary, t: t),
+          secondary: LerpedSafeColors(a: begin.secondary, b: end.secondary, t: t),
+          tertiary: LerpedSafeColors(a: begin.tertiary, b: end.tertiary, t: t),
+          algo: begin.algo,
+          contrast: begin.contrast,
+          scale: begin.scale,
+          typography: begin.typography,
+        );
+
+  @override
+  ThemeData createThemeData(BuildContext context) {
+    if (animateThemeData) {
+      return super.createThemeData(context);
+    }
+    // Keep Material ThemeData stable during animation to avoid transient glitches.
+    if (t >= 1.0) {
+      return end.createThemeData(context);
+    } else {
+      return begin.createThemeData(context);
+    }
+  }
+}
+
+/// Implicitly animated wrapper that smooths SafeColors transitions.
+/// By default, Material ThemeData is not animated.
+class AnimatedMonetTheme extends StatefulWidget {
+  final MonetThemeData begin;
+  final MonetThemeData end;
+  final Widget child;
+  final bool animateThemeData;
+  final Duration duration;
+  final Curve curve;
+
+  const AnimatedMonetTheme({
+    super.key,
+    required this.begin,
+    required this.end,
+    required this.child,
+    this.animateThemeData = false,
+    this.duration = kThemeAnimationDuration,
+    this.curve = Curves.easeInOut,
+  });
+
+  @override
+  State<AnimatedMonetTheme> createState() => _AnimatedMonetThemeState();
+}
+
+class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late MonetThemeData _begin;
+  late MonetThemeData _end;
+
+  @override
+  void initState() {
+    super.initState();
+    _begin = widget.begin;
+    _end = widget.end;
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+    if (_begin == _end) {
+      _controller.value = 1.0;
+    } else {
+      _controller.value = 0.0;
+      _controller.animateTo(1.0, curve: widget.curve);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedMonetTheme oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final endChanged = !identical(widget.end, _end);
+    final durationChanged = widget.duration != _controller.duration;
+    if (durationChanged) {
+      _controller.duration = widget.duration;
+    }
+    if (endChanged) {
+      // Capture current displayed state as new begin to avoid snaps.
+      final snapshot = InterpolatedMonetThemeData(
+        begin: _begin,
+        end: _end,
+        t: _controller.value,
+        animateThemeData: widget.animateThemeData,
+      );
+      _begin = MonetThemeData(
+        brightness: snapshot.brightness,
+        backgroundTone: snapshot.backgroundTone,
+        primary: SnapshotSafeColors.capture(snapshot.primary),
+        secondary: SnapshotSafeColors.capture(snapshot.secondary),
+        tertiary: SnapshotSafeColors.capture(snapshot.tertiary),
+        algo: snapshot.algo,
+        contrast: snapshot.contrast,
+        scale: snapshot.scale,
+        typography: snapshot.typography,
+      );
+      _end = widget.end;
+      _controller
+        ..value = 0.0
+        ..animateTo(1.0, curve: widget.curve);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final t = _controller.value;
+        final data = InterpolatedMonetThemeData(
+          begin: _begin,
+          end: _end,
+          t: t,
+          animateThemeData: widget.animateThemeData,
+        );
+        return MonetTheme(
+          monetThemeData: t >= 1.0 ? _end : data,
+          child: widget.child,
+        );
+      },
+    );
+  }
+}

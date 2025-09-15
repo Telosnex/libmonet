@@ -815,3 +815,381 @@ class SafeColors {
         containerTone: textSplashedTone, usage: Usage.text, dial: _contrast);
   }
 }
+
+// Interpolated view of SafeColors that HCT-lerps token outputs between two
+// SafeColors instances. Lives in this library to access the private
+// constructor.
+class LerpedSafeColors extends SafeColors {
+
+// Snapshot of SafeColors: captures token outputs at construction time and
+// returns the same values thereafter. Lives in this library to access the
+// private constructor.
+// SnapshotSafeColors moved to top-level after LerpedSafeColors.
+  final SafeColors a;
+  final SafeColors b;
+  final double t;
+
+  LerpedSafeColors({required this.a, required this.b, required this.t})
+      : super._(
+          baseColor: a.color,
+          baseBackground: a.background,
+          contrast: 0.5,
+          algo: Algo.apca,
+        );
+
+  Color _lerp(Color x, Color y) {
+    if (t <= 0.0) return x;
+    if (t >= 1.0) return y;
+    final ha = Hct.fromColor(x);
+    final hb = Hct.fromColor(y);
+    double dh = hb.hue - ha.hue;
+    if (dh > 180) dh -= 360;
+    if (dh < -180) dh += 360;
+    final hue = (ha.hue + dh * t) % 360.0;
+    final chroma = ha.chroma + (hb.chroma - ha.chroma) * t;
+    final tone = ha.tone + (hb.tone - ha.tone) * t;
+    return Hct.from(hue, chroma, tone).color;
+  }
+
+  // Background family
+  @override
+  Color get background => _lerp(a.background, b.background);
+  @override
+  Color get backgroundText => _lerp(a.backgroundText, b.backgroundText);
+  @override
+  Color get backgroundFill => _lerp(a.backgroundFill, b.backgroundFill);
+  @override
+  Color get backgroundBorder => _lerp(a.backgroundBorder, b.backgroundBorder);
+  @override
+  Color get backgroundHovered => _lerp(a.backgroundHovered, b.backgroundHovered);
+  @override
+  Color get backgroundSplashed => _lerp(a.backgroundSplashed, b.backgroundSplashed);
+  @override
+  Color get backgroundHoveredFill => _lerp(a.backgroundHoveredFill, b.backgroundHoveredFill);
+  @override
+  Color get backgroundSplashedFill => _lerp(a.backgroundSplashedFill, b.backgroundSplashedFill);
+  @override
+  Color get backgroundHoveredText => _lerp(a.backgroundHoveredText, b.backgroundHoveredText);
+  @override
+  Color get backgroundSplashedText => _lerp(a.backgroundSplashedText, b.backgroundSplashedText);
+  @override
+  Color get backgroundHoveredBorder => _lerp(a.backgroundHoveredBorder, b.backgroundHoveredBorder);
+  @override
+  Color get backgroundSplashedBorder => _lerp(a.backgroundSplashedBorder, b.backgroundSplashedBorder);
+
+  // Fill family
+  @override
+  Color get fill => _lerp(a.fill, b.fill);
+  @override
+  Color get fillBorder => _lerp(a.fillBorder, b.fillBorder);
+  @override
+  Color get fillHovered => _lerp(a.fillHovered, b.fillHovered);
+  @override
+  Color get fillSplashed => _lerp(a.fillSplashed, b.fillSplashed);
+  @override
+  Color get fillText => _lerp(a.fillText, b.fillText);
+  @override
+  Color get fillHoveredText => _lerp(a.fillHoveredText, b.fillHoveredText);
+  @override
+  Color get fillSplashedText => _lerp(a.fillSplashedText, b.fillSplashedText);
+  @override
+  Color get fillIcon => _lerp(a.fillIcon, b.fillIcon);
+  @override
+  Color get fillHoveredBorder => _lerp(a.fillHoveredBorder, b.fillHoveredBorder);
+  @override
+  Color get fillSplashedBorder => _lerp(a.fillSplashedBorder, b.fillSplashedBorder);
+
+  // Color (ink) family
+  @override
+  Color get color => _lerp(a.color, b.color);
+  @override
+  Color get colorText => _lerp(a.colorText, b.colorText);
+  @override
+  Color get colorIcon => _lerp(a.colorIcon, b.colorIcon);
+  @override
+  Color get colorBorder => _lerp(a.colorBorder, b.colorBorder);
+  @override
+  Color get colorHovered => _lerp(a.colorHovered, b.colorHovered);
+  @override
+  Color get colorHoveredText => _lerp(a.colorHoveredText, b.colorHoveredText);
+  @override
+  Color get colorHoveredBorder => _lerp(a.colorHoveredBorder, b.colorHoveredBorder);
+  @override
+  Color get colorSplashed => _lerp(a.colorSplashed, b.colorSplashed);
+  @override
+  Color get colorSplashedText => _lerp(a.colorSplashedText, b.colorSplashedText);
+  @override
+  Color get colorSplashedBorder => _lerp(a.colorSplashedBorder, b.colorSplashedBorder);
+
+  // Text standalone family
+  @override
+  Color get text => _lerp(a.text, b.text);
+  @override
+  Color get textHovered => _lerp(a.textHovered, b.textHovered);
+  @override
+  Color get textHoveredText => _lerp(a.textHoveredText, b.textHoveredText);
+  @override
+  Color get textSplashed => _lerp(a.textSplashed, b.textSplashed);
+  @override
+  Color get textSplashedText => _lerp(a.textSplashedText, b.textSplashedText);
+}
+
+// Snapshot of SafeColors: captures token outputs at construction time and
+// returns the same values thereafter. Lives in this library to access the
+// private constructor.
+class SnapshotSafeColors extends SafeColors {
+  // Background
+  final Color _background;
+  final Color _backgroundText;
+  final Color _backgroundFill;
+  final Color _backgroundBorder;
+  final Color _backgroundHovered;
+  final Color _backgroundSplashed;
+  final Color _backgroundHoveredFill;
+  final Color _backgroundSplashedFill;
+  final Color _backgroundHoveredText;
+  final Color _backgroundSplashedText;
+  final Color _backgroundHoveredBorder;
+  final Color _backgroundSplashedBorder;
+
+  // Fill
+  final Color _fill;
+  final Color _fillBorder;
+  final Color _fillHovered;
+  final Color _fillSplashed;
+  final Color _fillText;
+  final Color _fillHoveredText;
+  final Color _fillSplashedText;
+  final Color _fillIcon;
+  final Color _fillHoveredBorder;
+  final Color _fillSplashedBorder;
+
+  // Color (ink)
+  final Color _color;
+  final Color _colorText;
+  final Color _colorIcon;
+  final Color _colorBorder;
+  final Color _colorHovered;
+  final Color _colorHoveredText;
+  final Color _colorHoveredBorder;
+  final Color _colorSplashed;
+  final Color _colorSplashedText;
+  final Color _colorSplashedBorder;
+
+  // Text standalone
+  final Color _text;
+  final Color _textHovered;
+  final Color _textHoveredText;
+  final Color _textSplashed;
+  final Color _textSplashedText;
+
+  SnapshotSafeColors._(
+    Color baseColor,
+    Color baseBackground,
+    Color background,
+    Color backgroundText,
+    Color backgroundFill,
+    Color backgroundBorder,
+    Color backgroundHovered,
+    Color backgroundSplashed,
+    Color backgroundHoveredFill,
+    Color backgroundSplashedFill,
+    Color backgroundHoveredText,
+    Color backgroundSplashedText,
+    Color backgroundHoveredBorder,
+    Color backgroundSplashedBorder,
+    Color fill,
+    Color fillBorder,
+    Color fillHovered,
+    Color fillSplashed,
+    Color fillText,
+    Color fillHoveredText,
+    Color fillSplashedText,
+    Color fillIcon,
+    Color fillHoveredBorder,
+    Color fillSplashedBorder,
+    Color color,
+    Color colorText,
+    Color colorIcon,
+    Color colorBorder,
+    Color colorHovered,
+    Color colorHoveredText,
+    Color colorHoveredBorder,
+    Color colorSplashed,
+    Color colorSplashedText,
+    Color colorSplashedBorder,
+    Color text,
+    Color textHovered,
+    Color textHoveredText,
+    Color textSplashed,
+    Color textSplashedText,
+  )   : _background = background,
+        _backgroundText = backgroundText,
+        _backgroundFill = backgroundFill,
+        _backgroundBorder = backgroundBorder,
+        _backgroundHovered = backgroundHovered,
+        _backgroundSplashed = backgroundSplashed,
+        _backgroundHoveredFill = backgroundHoveredFill,
+        _backgroundSplashedFill = backgroundSplashedFill,
+        _backgroundHoveredText = backgroundHoveredText,
+        _backgroundSplashedText = backgroundSplashedText,
+        _backgroundHoveredBorder = backgroundHoveredBorder,
+        _backgroundSplashedBorder = backgroundSplashedBorder,
+        _fill = fill,
+        _fillBorder = fillBorder,
+        _fillHovered = fillHovered,
+        _fillSplashed = fillSplashed,
+        _fillText = fillText,
+        _fillHoveredText = fillHoveredText,
+        _fillSplashedText = fillSplashedText,
+        _fillIcon = fillIcon,
+        _fillHoveredBorder = fillHoveredBorder,
+        _fillSplashedBorder = fillSplashedBorder,
+        _color = color,
+        _colorText = colorText,
+        _colorIcon = colorIcon,
+        _colorBorder = colorBorder,
+        _colorHovered = colorHovered,
+        _colorHoveredText = colorHoveredText,
+        _colorHoveredBorder = colorHoveredBorder,
+        _colorSplashed = colorSplashed,
+        _colorSplashedText = colorSplashedText,
+        _colorSplashedBorder = colorSplashedBorder,
+        _text = text,
+        _textHovered = textHovered,
+        _textHoveredText = textHoveredText,
+        _textSplashed = textSplashed,
+        _textSplashedText = textSplashedText,
+        super._(
+          baseColor: baseColor,
+          baseBackground: baseBackground,
+          contrast: 0.5,
+          algo: Algo.apca,
+        );
+
+  factory SnapshotSafeColors.capture(SafeColors s) {
+    return SnapshotSafeColors._(
+      s.color,
+      s.background,
+      s.background,
+      s.backgroundText,
+      s.backgroundFill,
+      s.backgroundBorder,
+      s.backgroundHovered,
+      s.backgroundSplashed,
+      s.backgroundHoveredFill,
+      s.backgroundSplashedFill,
+      s.backgroundHoveredText,
+      s.backgroundSplashedText,
+      s.backgroundHoveredBorder,
+      s.backgroundSplashedBorder,
+      s.fill,
+      s.fillBorder,
+      s.fillHovered,
+      s.fillSplashed,
+      s.fillText,
+      s.fillHoveredText,
+      s.fillSplashedText,
+      s.fillIcon,
+      s.fillHoveredBorder,
+      s.fillSplashedBorder,
+      s.color,
+      s.colorText,
+      s.colorIcon,
+      s.colorBorder,
+      s.colorHovered,
+      s.colorHoveredText,
+      s.colorHoveredBorder,
+      s.colorSplashed,
+      s.colorSplashedText,
+      s.colorSplashedBorder,
+      s.text,
+      s.textHovered,
+      s.textHoveredText,
+      s.textSplashed,
+      s.textSplashedText,
+    );
+  }
+
+  // Background
+  @override
+  Color get background => _background;
+  @override
+  Color get backgroundText => _backgroundText;
+  @override
+  Color get backgroundFill => _backgroundFill;
+  @override
+  Color get backgroundBorder => _backgroundBorder;
+  @override
+  Color get backgroundHovered => _backgroundHovered;
+  @override
+  Color get backgroundSplashed => _backgroundSplashed;
+  @override
+  Color get backgroundHoveredFill => _backgroundHoveredFill;
+  @override
+  Color get backgroundSplashedFill => _backgroundSplashedFill;
+  @override
+  Color get backgroundHoveredText => _backgroundHoveredText;
+  @override
+  Color get backgroundSplashedText => _backgroundSplashedText;
+  @override
+  Color get backgroundHoveredBorder => _backgroundHoveredBorder;
+  @override
+  Color get backgroundSplashedBorder => _backgroundSplashedBorder;
+
+  // Fill
+  @override
+  Color get fill => _fill;
+  @override
+  Color get fillBorder => _fillBorder;
+  @override
+  Color get fillHovered => _fillHovered;
+  @override
+  Color get fillSplashed => _fillSplashed;
+  @override
+  Color get fillText => _fillText;
+  @override
+  Color get fillHoveredText => _fillHoveredText;
+  @override
+  Color get fillSplashedText => _fillSplashedText;
+  @override
+  Color get fillIcon => _fillIcon;
+  @override
+  Color get fillHoveredBorder => _fillHoveredBorder;
+  @override
+  Color get fillSplashedBorder => _fillSplashedBorder;
+
+  // Color (ink)
+  @override
+  Color get color => _color;
+  @override
+  Color get colorText => _colorText;
+  @override
+  Color get colorIcon => _colorIcon;
+  @override
+  Color get colorBorder => _colorBorder;
+  @override
+  Color get colorHovered => _colorHovered;
+  @override
+  Color get colorHoveredText => _colorHoveredText;
+  @override
+  Color get colorHoveredBorder => _colorHoveredBorder;
+  @override
+  Color get colorSplashed => _colorSplashed;
+  @override
+  Color get colorSplashedText => _colorSplashedText;
+  @override
+  Color get colorSplashedBorder => _colorSplashedBorder;
+
+  // Text standalone
+  @override
+  Color get text => _text;
+  @override
+  Color get textHovered => _textHovered;
+  @override
+  Color get textHoveredText => _textHoveredText;
+  @override
+  Color get textSplashed => _textSplashed;
+  @override
+  Color get textSplashedText => _textSplashedText;
+}
