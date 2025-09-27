@@ -21,7 +21,8 @@ class InterpolatedMonetThemeData extends MonetThemeData {
           backgroundTone: begin.backgroundTone,
           brightness: begin.brightness,
           primary: LerpedSafeColors(a: begin.primary, b: end.primary, t: t),
-          secondary: LerpedSafeColors(a: begin.secondary, b: end.secondary, t: t),
+          secondary:
+              LerpedSafeColors(a: begin.secondary, b: end.secondary, t: t),
           tertiary: LerpedSafeColors(a: begin.tertiary, b: end.tertiary, t: t),
           algo: begin.algo,
           contrast: begin.contrast,
@@ -73,13 +74,32 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
   late MonetThemeData _begin;
   late MonetThemeData _end;
 
+  void _alignBeginTypographyWithEnd() {
+    if (identical(_begin.typography, _end.typography)) {
+      return;
+    }
+    _begin = MonetThemeData(
+      brightness: _begin.brightness,
+      backgroundTone: _begin.backgroundTone,
+      primary: _begin.primary,
+      secondary: _begin.secondary,
+      tertiary: _begin.tertiary,
+      algo: _begin.algo,
+      contrast: _begin.contrast,
+      scale: _begin.scale,
+      typography: _end.typography,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _begin = widget.begin;
     _end = widget.end;
+    final shouldSkipAnimation = identical(_begin, _end);
+    _alignBeginTypographyWithEnd();
     _controller = AnimationController(vsync: this, duration: widget.duration);
-    if (_begin == _end) {
+    if (shouldSkipAnimation) {
       _controller.value = 1.0;
     } else {
       _controller.value = 0.0;
@@ -112,9 +132,10 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
         algo: snapshot.algo,
         contrast: snapshot.contrast,
         scale: snapshot.scale,
-        typography: snapshot.typography,
+        typography: widget.end.typography,
       );
       _end = widget.end;
+      _alignBeginTypographyWithEnd();
       _controller
         ..value = 0.0
         ..animateTo(1.0, curve: widget.curve);
