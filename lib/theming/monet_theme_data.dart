@@ -36,6 +36,9 @@ class MonetThemeData {
   final double scale;
   final Typography Function(ColorScheme)? typography;
 
+  // Static cache shared across all instances
+  static final _themeCache = LruCache<String, ThemeData>(capacity: 10);
+
   static const double buttonElevation = 4.0;
 
   /// The maximum width of any content panel.
@@ -60,6 +63,32 @@ class MonetThemeData {
     this.scale = 1.0,
     this.typography,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MonetThemeData &&
+          runtimeType == other.runtimeType &&
+          primary == other.primary &&
+          secondary == other.secondary &&
+          tertiary == other.tertiary &&
+          algo == other.algo &&
+          backgroundTone == other.backgroundTone &&
+          brightness == other.brightness &&
+          contrast == other.contrast &&
+          scale == other.scale;
+          // Skip typography function comparison
+
+  @override
+  int get hashCode =>
+      primary.hashCode ^
+      secondary.hashCode ^
+      tertiary.hashCode ^
+      algo.hashCode ^
+      backgroundTone.hashCode ^
+      brightness.hashCode ^
+      contrast.hashCode ^
+      scale.hashCode;
 
   MonetThemeData copyWith({
     SafeColors? primary,
@@ -163,12 +192,20 @@ class MonetThemeData {
     );
   }
 
-  ThemeData? _cachedThemeData;
+  String _cacheKey() {
+    // Create a unique key based on theme parameters
+    // Avoid triggering expensive SafeColors lazy getters (like fill)
+    // in order to build the key. Use base colors + config instead.
+    // Skip typography function since it can't be reliably compared.
+    return '${primary.color.argb}-${secondary.color.argb}-${tertiary.color.argb}-'
+        '$algo-$backgroundTone-$brightness-$contrast-$scale';
+  }
+
   ThemeData createThemeData(BuildContext context) {
-    if (_cachedThemeData != null) {
-      // This is surprisingly helpful: when a popup menu is opened, it would
-      // otherwise have to create a ThemeData.
-      return _cachedThemeData!;
+    final cacheKey = _cacheKey();
+    final cached = _themeCache[cacheKey];
+    if (cached != null) {
+      return cached;
     }
     final primaryColorLight =
         Hct.fromColor(primary.fill).tone > Hct.fromColor(primary.color).tone
@@ -289,10 +326,11 @@ class MonetThemeData {
     );
     final cupertinoOverrideTheme =
         MaterialBasedCupertinoThemeData(materialTheme: themeData);
-    _cachedThemeData = themeData.copyWith(
+    final finalThemeData = themeData.copyWith(
       cupertinoOverrideTheme: cupertinoOverrideTheme,
     );
-    return _cachedThemeData!;
+    _themeCache[cacheKey] = finalThemeData;
+    return finalThemeData;
   }
 
   static ActionIconThemeData actionIconTheme() {
