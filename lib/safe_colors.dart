@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:libmonet/apca_contrast.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/hct.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/wcag.dart';
 
 // Internal cache token for typed, collision-free memoization.
@@ -814,6 +815,29 @@ class SafeColors {
     return _brandOn(
         containerTone: textSplashedTone, usage: Usage.text, dial: _contrast);
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SafeColors &&
+          runtimeType == other.runtimeType &&
+          color.argb == other.color.argb &&
+          background.argb == other.background.argb &&
+          _contrast == other._contrast &&
+          _algo == other._algo &&
+          // If backgroundToneOverride was provided, ensure parity.
+          (_backgroundToneOverride == null) ==
+              (other._backgroundToneOverride == null) &&
+          (_backgroundToneOverride == null ||
+              _backgroundToneOverride == other._backgroundToneOverride);
+
+  @override
+  int get hashCode => Object.hash(
+      color.argb,
+      background.argb,
+      _contrast,
+      _algo,
+      _backgroundToneOverride);
 }
 
 // Interpolated view of SafeColors that HCT-lerps token outputs between two
