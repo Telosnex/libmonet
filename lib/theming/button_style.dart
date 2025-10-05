@@ -143,7 +143,8 @@ ButtonStyle colorButtonStyle(
         normal: sc.color, hover: sc.colorHovered, splash: sc.colorSplashed),
     surfaceTintColor: widgetPropertyByState(
         normal: sc.color, hover: sc.colorHovered, splash: sc.colorSplashed),
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+    overlayColor: widgetPropertyByState(
+        normal: sc.color, hover: sc.colorHovered, splash: sc.colorSplashed),
     foregroundColor: widgetPropertyByState(
         normal: sc.colorText,
         hover: sc.colorHoveredText,
@@ -216,8 +217,16 @@ ButtonStyle iconButtonStyle(
       hover: sc.backgroundHovered,
       splash: sc.backgroundSplashed,
     ),
-    surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+    surfaceTintColor: widgetPropertyByState(
+      normal: Colors.transparent,
+      hover: sc.backgroundHovered,
+      splash: sc.backgroundSplashed,
+    ),
+    overlayColor: widgetPropertyByState(
+      normal: Colors.transparent,
+      hover: sc.backgroundHovered,
+      splash: sc.backgroundSplashed,
+    ),
     foregroundColor: widgetPropertyByState(
       normal: sc.fill,
       hover: sc.backgroundHoveredFill,
