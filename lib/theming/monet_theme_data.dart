@@ -76,8 +76,8 @@ class MonetThemeData {
           backgroundTone == other.backgroundTone &&
           brightness == other.brightness &&
           contrast == other.contrast &&
-          scale == other.scale;
-          // Skip typography function comparison
+          scale == other.scale &&
+          other.typography == typography;
 
   @override
   int get hashCode =>
@@ -88,7 +88,8 @@ class MonetThemeData {
       backgroundTone.hashCode ^
       brightness.hashCode ^
       contrast.hashCode ^
-      scale.hashCode;
+      scale.hashCode ^
+      typography.hashCode;
 
   MonetThemeData copyWith({
     SafeColors? primary,
