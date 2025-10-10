@@ -198,8 +198,7 @@ class MonetThemeData {
     // Avoid triggering expensive SafeColors lazy getters (like fill)
     // in order to build the key. Use base colors + config instead.
     // Skip typography function since it can't be reliably compared.
-    return '${primary.color.argb}-${secondary.color.argb}-${tertiary.color.argb}-'
-        '$algo-$backgroundTone-$brightness-$contrast-$scale';
+    return hashCode.toString();
   }
 
   ThemeData createThemeData(BuildContext context) {
