@@ -1068,14 +1068,14 @@ class MonetThemeData {
     // Button style in-lined due to unique requirements, essentially, a text
     // button when not selected, fillbutton when selected.
     final selectedBackground = widgetPropertyByState(
-      normal: colors.fill,
-      hover: colors.fillHovered,
-      splash: colors.fillSplashed,
+      normal: () => colors.fill,
+      hover: () => colors.fillHovered,
+      splash: () => colors.fillSplashed,
     );
     final unselectedBackground = widgetPropertyByState(
-      normal: colors.background,
-      hover: colors.backgroundHovered,
-      splash: colors.backgroundSplashed,
+      normal: () => colors.background,
+      hover: () => colors.backgroundHovered,
+      splash: () => colors.backgroundSplashed,
     );
     final background = WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
@@ -1085,14 +1085,14 @@ class MonetThemeData {
       }
     });
     final selectedForeground = widgetPropertyByState(
-      normal: colors.fillText,
-      hover: colors.fillHoveredText,
-      splash: colors.fillSplashedText,
+      normal: () => colors.fillText,
+      hover: () => colors.fillHoveredText,
+      splash: () => colors.fillSplashedText,
     );
     final unselectedForeground = widgetPropertyByState(
-      normal: colors.backgroundText,
-      hover: colors.backgroundHoveredText,
-      splash: colors.backgroundSplashedText,
+      normal: () => colors.backgroundText,
+      hover: () => colors.backgroundHoveredText,
+      splash: () => colors.backgroundSplashedText,
     );
     final foreground = WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {

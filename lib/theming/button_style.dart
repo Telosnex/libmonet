@@ -4,22 +4,23 @@ import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
 // Resolve Material states to our 3-state model and return a value per state.
+// All parameters are lazy to avoid computing expensive color values until needed.
 WidgetStateProperty<T> widgetPropertyByState<T>({
-  required T normal,
-  required T hover,
-  required T splash,
+  required T Function() normal,
+  required T Function() hover,
+  required T Function() splash,
 }) {
   return WidgetStateProperty.resolveWith((states) {
     if (states.contains(WidgetState.pressed) ||
         states.contains(WidgetState.dragged)) {
-      return splash;
+      return splash();
     }
     if (states.contains(WidgetState.hovered) ||
         states.contains(WidgetState.focused) ||
         states.contains(WidgetState.selected)) {
-      return hover;
+      return hover();
     }
-    return normal;
+    return normal();
   });
 }
 
@@ -45,22 +46,22 @@ ButtonStyle backgroundButtonStyle(
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
-        normal: sc.background,
-        hover: sc.backgroundHovered,
-        splash: sc.backgroundSplashed),
+        normal: () => sc.background,
+        hover: () => sc.backgroundHovered,
+        splash: () => sc.backgroundSplashed),
     surfaceTintColor: widgetPropertyByState(
-        normal: sc.background,
-        hover: sc.backgroundHovered,
-        splash: sc.backgroundSplashed),
+        normal: () => sc.background,
+        hover: () => sc.backgroundHovered,
+        splash: () => sc.backgroundSplashed),
     overlayColor: const WidgetStatePropertyAll(Colors.transparent),
     foregroundColor: widgetPropertyByState(
-        normal: sc.backgroundText,
-        hover: sc.backgroundHoveredText,
-        splash: sc.backgroundSplashedText),
+        normal: () => sc.backgroundText,
+        hover: () => sc.backgroundHoveredText,
+        splash: () => sc.backgroundSplashedText),
     iconColor: widgetPropertyByState(
-        normal: sc.backgroundText,
-        hover: sc.backgroundHoveredText,
-        splash: sc.backgroundSplashedText),
+        normal: () => sc.backgroundText,
+        hover: () => sc.backgroundHoveredText,
+        splash: () => sc.backgroundSplashedText),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSize),
     maximumSize: WidgetStatePropertyAll(maximumSize),
@@ -94,19 +95,19 @@ ButtonStyle fillButtonStyle(
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
-        normal: sc.fill, hover: sc.fillHovered, splash: sc.fillSplashed),
+        normal: () => sc.fill, hover: () => sc.fillHovered, splash: () => sc.fillSplashed),
     surfaceTintColor: widgetPropertyByState(
-        normal: sc.fill, hover: sc.fillHovered, splash: sc.fillSplashed),
+        normal: () => sc.fill, hover: () => sc.fillHovered, splash: () => sc.fillSplashed),
     overlayColor: const WidgetStatePropertyAll(Colors.transparent),
     foregroundColor: widgetPropertyByState(
-        normal: sc.fillText,
-        hover: sc.fillHoveredText,
-        splash: sc.fillSplashedText),
+        normal: () => sc.fillText,
+        hover: () => sc.fillHoveredText,
+        splash: () => sc.fillSplashedText),
     // For icons, use the icon role if available; hover/splash fall back to text roles.
     iconColor: widgetPropertyByState(
-        normal: sc.fillIcon,
-        hover: sc.fillHoveredText,
-        splash: sc.fillSplashedText),
+        normal: () => sc.fillIcon,
+        hover: () => sc.fillHoveredText,
+        splash: () => sc.fillSplashedText),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSize),
     maximumSize: WidgetStatePropertyAll(maximumSize),
@@ -140,19 +141,19 @@ ButtonStyle colorButtonStyle(
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
-        normal: sc.color, hover: sc.colorHovered, splash: sc.colorSplashed),
+        normal: () => sc.color, hover: () => sc.colorHovered, splash: () => sc.colorSplashed),
     surfaceTintColor: widgetPropertyByState(
-        normal: sc.color, hover: sc.colorHovered, splash: sc.colorSplashed),
+        normal: () => sc.color, hover: () => sc.colorHovered, splash: () => sc.colorSplashed),
     overlayColor: widgetPropertyByState(
-        normal: sc.color, hover: sc.colorHovered, splash: sc.colorSplashed),
+        normal: () => sc.color, hover: () => sc.colorHovered, splash: () => sc.colorSplashed),
     foregroundColor: widgetPropertyByState(
-        normal: sc.colorText,
-        hover: sc.colorHoveredText,
-        splash: sc.colorSplashedText),
+        normal: () => sc.colorText,
+        hover: () => sc.colorHoveredText,
+        splash: () => sc.colorSplashedText),
     iconColor: widgetPropertyByState(
-        normal: sc.colorIcon,
-        hover: sc.colorHoveredText,
-        splash: sc.colorSplashedText),
+        normal: () => sc.colorIcon,
+        hover: () => sc.colorHoveredText,
+        splash: () => sc.colorSplashedText),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSize),
     maximumSize: WidgetStatePropertyAll(maximumSize),
@@ -189,14 +190,14 @@ ButtonStyle textButtonStyle(
     surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
     overlayColor: const WidgetStatePropertyAll(Colors.transparent),
     foregroundColor: widgetPropertyByState(
-      normal: sc.text,
-      hover: sc.textHovered,
-      splash: sc.textSplashed,
+      normal: () => sc.text,
+      hover: () => sc.textHovered,
+      splash: () => sc.textSplashed,
     ),
     iconColor: widgetPropertyByState(
-      normal: sc.text,
-      hover: sc.textHovered,
-      splash: sc.textSplashed,
+      normal: () => sc.text,
+      hover: () => sc.textHovered,
+      splash: () => sc.textSplashed,
     ),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSize),
@@ -213,29 +214,29 @@ ButtonStyle iconButtonStyle(
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
-      normal: Colors.transparent,
-      hover: sc.backgroundHovered,
-      splash: sc.backgroundSplashed,
+      normal: () => Colors.transparent,
+      hover: () => sc.backgroundHovered,
+      splash: () => sc.backgroundSplashed,
     ),
     surfaceTintColor: widgetPropertyByState(
-      normal: Colors.transparent,
-      hover: sc.backgroundHovered,
-      splash: sc.backgroundSplashed,
+      normal: () => Colors.transparent,
+      hover: () => sc.backgroundHovered,
+      splash: () => sc.backgroundSplashed,
     ),
     overlayColor: widgetPropertyByState(
-      normal: Colors.transparent,
-      hover: sc.backgroundHovered,
-      splash: sc.backgroundSplashed,
+      normal: () => Colors.transparent,
+      hover: () => sc.backgroundHovered,
+      splash: () => sc.backgroundSplashed,
     ),
     foregroundColor: widgetPropertyByState(
-      normal: sc.fill,
-      hover: sc.backgroundHoveredFill,
-      splash: sc.backgroundSplashedFill,
+      normal: () => sc.fill,
+      hover: () => sc.backgroundHoveredFill,
+      splash: () => sc.backgroundSplashedFill,
     ),
     iconColor: widgetPropertyByState(
-      normal: sc.fill,
-      hover: sc.backgroundHoveredFill,
-      splash: sc.backgroundSplashedFill,
+      normal: () => sc.fill,
+      hover: () => sc.backgroundHoveredFill,
+      splash: () => sc.backgroundSplashedFill,
     ),
     padding: WidgetStatePropertyAll(EdgeInsets.zero),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
