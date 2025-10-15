@@ -81,15 +81,15 @@ class MonetThemeData {
 
   @override
   int get hashCode =>
-      primary.hashCode ^
-      secondary.hashCode ^
-      tertiary.hashCode ^
-      algo.hashCode ^
-      backgroundTone.hashCode ^
-      brightness.hashCode ^
-      contrast.hashCode ^
-      scale.hashCode ^
-      typography.hashCode;
+      'p${primary.hashCode}'.hashCode ^
+      's${secondary.hashCode}'.hashCode ^
+      't${tertiary.hashCode}'.hashCode ^
+      'a${algo.hashCode}'.hashCode ^
+      'b${backgroundTone.hashCode}'.hashCode ^
+      'br${brightness.hashCode}'.hashCode ^
+      'c${contrast.hashCode}'.hashCode ^
+      's${scale.hashCode}'.hashCode ^
+      't${typography.hashCode}'.hashCode;
 
   MonetThemeData copyWith({
     SafeColors? primary,
