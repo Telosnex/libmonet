@@ -30,18 +30,14 @@ class MonetTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = monetThemeData.createThemeData(context);
     return _MonetInheritedTheme(
       theme: this,
       // Animated theme is actually worse for design, ex. when switching theme
       // color, the InputDecoration of a text field only acquires the correct
       // background color and text color at the end of animating.
-      child: DefaultTextStyle(
-        style: themeData.textTheme.bodyMedium!,
-        child: Theme(
-          data: themeData,
-          child: child,
-        ),
+      child: Theme(
+        data: monetThemeData.createThemeData(context),
+        child: child,
       ),
     );
   }
