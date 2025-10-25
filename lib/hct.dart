@@ -19,7 +19,6 @@ import 'dart:ui';
 
 import 'package:libmonet/hct_solver_noalloc.dart';
 import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/util/alpha_neue.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 
 /// HCT, hue, chroma, and tone. A color system that provides a perceptually
@@ -86,7 +85,7 @@ class Hct {
     final lstar = lerpDouble(a.tone, b.tone, t)!;
     final chroma = lerpDouble(a.chroma, b.chroma, t)!;
     final hue = _lerpKeepHueAngle(a.hue, b.hue, t);
-    final opacity = lerpDouble(colorA.alphaNeue, colorB.alphaNeue, t);
+    final opacity = lerpDouble(colorA.opacityNeue, colorB.opacityNeue, t);
     return Hct.from(hue, chroma, lstar).color.withOpacityNeue(opacity!);
   }
 

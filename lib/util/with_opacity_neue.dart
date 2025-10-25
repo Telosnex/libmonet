@@ -5,4 +5,8 @@ extension WithOpacity on Color {
   Color withOpacityNeue(double opacity) {
     return withValues(alpha: opacity);
   }
+
+  double get opacityNeue {
+    return a;
+  }
 }
