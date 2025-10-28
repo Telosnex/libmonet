@@ -20,7 +20,9 @@ class InterpolatedMonetThemeData extends MonetThemeData {
     required this.t,
     this.animateThemeData = false,
   }) : super(
-          backgroundTone: begin.backgroundTone,
+          backgroundTone: lerpDouble(
+                  begin.backgroundTone, end.backgroundTone, t) ??
+              end.backgroundTone,
           brightness: begin.brightness,
           primary: LerpedSafeColors(a: begin.primary, b: end.primary, t: t),
           secondary:
