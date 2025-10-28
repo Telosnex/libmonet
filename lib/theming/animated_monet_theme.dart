@@ -1,3 +1,5 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
 import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/theming/monet_theme.dart';
@@ -26,7 +28,7 @@ class InterpolatedMonetThemeData extends MonetThemeData {
           tertiary: LerpedSafeColors(a: begin.tertiary, b: end.tertiary, t: t),
           algo: begin.algo,
           contrast: begin.contrast,
-          scale: begin.scale,
+          scale: lerpDouble(begin.scale, end.scale, t) ?? end.scale,
           typography: begin.typography,
         );
 
