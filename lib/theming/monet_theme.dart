@@ -28,6 +28,12 @@ class MonetTheme extends StatelessWidget {
     return inheritedTheme!.theme;
   }
 
+  static MonetTheme? maybeOf(BuildContext context) {
+    final _MonetInheritedTheme? inheritedTheme =
+        context.dependOnInheritedWidgetOfExactType<_MonetInheritedTheme>();
+    return inheritedTheme?.theme;
+  }
+
   @override
   Widget build(BuildContext context) {
     return _MonetInheritedTheme(
