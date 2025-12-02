@@ -86,12 +86,16 @@ class ScorerTriad {
         topPrimaryChroma = backupHct.chroma;
         topPrimaryTone = backupHct.tone;
       } else {
-        final primaryHcts = scorer.hcts;
-        final primaryHctsSmeared =
-            Scorer.createHueToPercentage(primaryHcts, scorer.hueToPercent, 0);
-        topPrimaryHue = primaryHctsSmeared
-            .indexOf(primaryHctsSmeared.reduce(math.max))
+        // Use the already-computed smeared percentages from scorer
+        // instead of recalculating, for consistency
+        topPrimaryHue = scorer.hueToSmearedPercent
+            .indexOf(scorer.hueToSmearedPercent.reduce(math.max))
             .toDouble();
+        
+        if (debugLog) {
+          log(() => '[ScorerTriad] topPrimaryHue from hueToSmearedPercent: $topPrimaryHue');
+        }
+        
         final Hct primary;
         if (primaryIsAverageOfNearby) {
           primary = scorer.averagedHctNearHue(
