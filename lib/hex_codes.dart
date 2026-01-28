@@ -43,6 +43,14 @@ int? argbFromHex(String hex) {
   return int.tryParse(hex, radix: 16);
 }
 
+Color? colorFromHex(String hex) {
+  final argb = argbFromHex(hex);
+  if (argb == null) {
+    return null;
+  }
+  return Color(argb);
+}
+
 extension HexOnColor on Color {
   String get hex => hexFromArgb(argb);
 }
