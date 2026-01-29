@@ -210,6 +210,46 @@ void main() {
     }
   });
 
+  group('lerpKeepHue', () {
+    void expectHueClose(
+      double actual,
+      double expected, {
+      required String label,
+    }) {
+      final delta = ((actual - expected + 540.0) % 360.0) - 180.0;
+
+      expect(
+        delta.abs(),
+        lessThanOrEqualTo(0.1),
+        reason: '$label expected≈$expected°, actual=$actual°, Δ=${delta.abs()}°',
+      );
+    }
+
+    test('wraps across zero from high to low', () {
+      final colorA = Hct.colorFrom(350.0, 40.0, 50.0);
+      final colorB = Hct.colorFrom(10.0, 40.0, 50.0);
+      final resultHue = Hct.fromColor(Hct.lerpKeepHue(colorA, colorB, 0.5)).hue;
+
+      expectHueClose(
+        resultHue,
+        0.1,
+        label: 'lerpKeepHue 350°→10° @ t=0.5',
+      );
+    });
+
+    test('wraps across zero from low to high', () {
+      final colorA = Hct.colorFrom(10.0, 40.0, 50.0);
+      final colorB = Hct.colorFrom(350.0, 40.0, 50.0);
+      final resultHue = Hct.fromColor(Hct.lerpKeepHue(colorA, colorB, 0.5)).hue;
+
+      expectHueClose(
+        resultHue,
+        0.1,
+        label: 'lerpKeepHue 10°→350° @ t=0.5',
+      );
+    });
+  });
+
   group('CAM16 to XYZ', () {
     test('without array', () {
       const colorToTest = red;
