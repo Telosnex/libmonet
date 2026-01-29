@@ -63,23 +63,21 @@ double contrastingLstar({
         if (naiveLighterLstar.round() <= 100) {
           return naiveLighterLstar.clamp(0, 100);
         }
-        final naiveDarkerLstar = switch (usage) {
-          (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
-          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca, debug: debug),
-          (Usage.large) =>
-            darkerTextLstar(withLstar, apca, debug: debug), // 160dp large text
-        };
-        final naiveLighterDelta =
-            (math.min(100, naiveLighterLstar) - withLstar).abs();
-        final naiveDarkerDelta =
-            (math.max(naiveDarkerLstar, 0) - withLstar).abs();
-        monetDebug(debug, () => 'naiveLighterDelta: $naiveLighterDelta');
-        monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
-        if (naiveLighterDelta.roundToDouble() >=
-            naiveDarkerDelta.roundToDouble()) {
-          return 100.0;
+        // Lighter direction impossible; fall back to black or white
+        // Compare actual contrast error: which is closer to desired?
+        final apcaYWith = lstarToApcaY(withLstar);
+        final blackContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(0)).abs();
+        final whiteContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(100)).abs();
+        final blackError = (apca - blackContrast).abs();
+        final whiteError = (apca - whiteContrast).abs();
+        monetDebug(debug, () => 'blackContrast: $blackContrast, error: $blackError');
+        monetDebug(debug, () => 'whiteContrast: $whiteContrast, error: $whiteError');
+        if (blackError <= whiteError) {
+          monetDebug(debug, () => 'returning black (closer to desired contrast)');
+          return 0.0;
         }
-        return 0.0;
+        monetDebug(debug, () => 'returning white (closer to desired contrast)');
+        return 100.0;
       case Algo.wcag21:
         final ratio =
             contrastRatioInterpolation(percent: contrast, usage: usage);
@@ -92,25 +90,20 @@ double contrastingLstar({
         if (naiveLighterLstar.round() <= 100) {
           return naiveLighterLstar.clamp(0, 100);
         }
-        final naiveDarkerLstar = darkerLstarUnsafe(
-          lstar: withLstar,
-          contrastRatio: ratio,
-        );
-        final naiveLighterDelta =
-            (math.min(100, naiveLighterLstar) - withLstar).abs();
-        final naiveDarkerDelta =
-            (math.max(naiveDarkerLstar, 0) - withLstar).abs();
-        monetDebug(debug, () => 'naiveLighterDelta: $naiveLighterDelta');
-        monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
-        if (naiveLighterDelta.roundToDouble() >=
-            naiveDarkerDelta.roundToDouble()) {
-          monetDebug(debug,
-              () => 'returning white, naiveLighterDelta >= naiveDarkerDelta');
-          return 100.0;
+        // Lighter direction impossible; fall back to black or white
+        // Compare actual contrast error: which is closer to desired?
+        final blackContrast = contrastRatioOfLstars(withLstar, 0);
+        final whiteContrast = contrastRatioOfLstars(withLstar, 100);
+        final blackError = (ratio - blackContrast).abs();
+        final whiteError = (ratio - whiteContrast).abs();
+        monetDebug(debug, () => 'blackContrast: $blackContrast, error: $blackError');
+        monetDebug(debug, () => 'whiteContrast: $whiteContrast, error: $whiteError');
+        if (blackError <= whiteError) {
+          monetDebug(debug, () => 'returning black (closer to desired contrast)');
+          return 0.0;
         }
-        monetDebug(debug,
-            () => 'returning black, naiveLighterDelta < naiveDarkerDelta');
-        return 0.0;
+        monetDebug(debug, () => 'returning white (closer to desired contrast)');
+        return 100.0;
     }
   } else {
     switch (by) {
@@ -118,33 +111,40 @@ double contrastingLstar({
         // APCA is negative when referring to a darker color.
         final apca = apcaInterpolation(percent: contrast, usage: usage);
         monetDebug(debug, () => 'apca: $apca');
+        // Use unsafe functions to detect impossible values (< 0 or > 100)
         final naiveDarkerLstar = switch (usage) {
-          (Usage.text) => darkerTextLstar(withLstar, apca, debug: debug),
-          (Usage.fill) => darkerBackgroundLstar(withLstar, -apca, debug: debug),
-          (Usage.large) =>
-            darkerTextLstar(withLstar, apca, debug: debug), // 160dp large text
+          (Usage.text) => darkerTextLstarUnsafe(withLstar, apca, debug: debug),
+          (Usage.fill) =>
+            darkerBackgroundLstarUnsafe(withLstar, -apca, debug: debug),
+          (Usage.large) => darkerTextLstarUnsafe(withLstar, apca,
+              debug: debug), // 160dp large text
         };
         monetDebug(debug, () => 'naiveDarkerLstar: $naiveDarkerLstar');
         if (naiveDarkerLstar.round() >= 0) {
           return naiveDarkerLstar.clamp(0.0, 100.0);
         }
         final naiveLighterLstar = switch (usage) {
-          (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
-          (Usage.fill) => lighterBackgroundLstar(withLstar, apca, debug: debug),
-          (Usage.large) => lighterTextLstar(withLstar, -apca,
+          (Usage.text) =>
+            lighterTextLstarUnsafe(withLstar, -apca, debug: debug),
+          (Usage.fill) =>
+            lighterBackgroundLstarUnsafe(withLstar, apca, debug: debug),
+          (Usage.large) => lighterTextLstarUnsafe(withLstar, -apca,
               debug: debug), // 160dp large text
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
-        final naiveLighterDelta =
-            (math.min(100, naiveLighterLstar) - naiveLighterLstar).abs();
-        final naiveDarkerDelta =
-            (math.max(naiveDarkerLstar, 0) - naiveDarkerLstar).abs();
-        monetDebug(debug, () => 'naiveLighterDelta: $naiveLighterDelta');
-        monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
-        if (naiveDarkerDelta.roundToDouble() <=
-            naiveLighterDelta.roundToDouble()) {
+        // Compare actual contrast error: which is closer to desired?
+        final apcaYWith = lstarToApcaY(withLstar);
+        final blackContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(0)).abs();
+        final whiteContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(100)).abs();
+        final blackError = (apca - blackContrast).abs();
+        final whiteError = (apca - whiteContrast).abs();
+        monetDebug(debug, () => 'blackContrast: $blackContrast, error: $blackError');
+        monetDebug(debug, () => 'whiteContrast: $whiteContrast, error: $whiteError');
+        if (blackError <= whiteError) {
+          monetDebug(debug, () => 'returning black (closer to desired contrast)');
           return 0.0;
         }
+        monetDebug(debug, () => 'returning white (closer to desired contrast)');
         return 100.0;
       case Algo.wcag21:
         final ratio =
@@ -163,20 +163,18 @@ double contrastingLstar({
           contrastRatio: ratio,
         );
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
-        final naiveLighterDelta =
-            (math.min(100, naiveLighterLstar) - naiveLighterLstar).abs();
-        final naiveDarkerDelta =
-            (math.max(naiveDarkerLstar, 0) - naiveDarkerLstar).abs();
-        monetDebug(debug, () => 'naiveLighterDelta: $naiveLighterDelta');
-        monetDebug(debug, () => 'naiveDarkerDelta: $naiveDarkerDelta');
-        if (naiveDarkerDelta.roundToDouble() <=
-            naiveLighterDelta.roundToDouble()) {
-          monetDebug(debug,
-              () => 'returning black, naiveDarkerDelta <= naiveLighterDelta');
+        // Compare actual contrast error: which is closer to desired?
+        final blackContrast = contrastRatioOfLstars(withLstar, 0);
+        final whiteContrast = contrastRatioOfLstars(withLstar, 100);
+        final blackError = (ratio - blackContrast).abs();
+        final whiteError = (ratio - whiteContrast).abs();
+        monetDebug(debug, () => 'blackContrast: $blackContrast, error: $blackError');
+        monetDebug(debug, () => 'whiteContrast: $whiteContrast, error: $whiteError');
+        if (blackError <= whiteError) {
+          monetDebug(debug, () => 'returning black (closer to desired contrast)');
           return 0.0;
         }
-        monetDebug(debug,
-            () => 'returning white, naiveDarkerDelta > naiveLighterDelta');
+        monetDebug(debug, () => 'returning white (closer to desired contrast)');
         return 100.0;
     }
   }

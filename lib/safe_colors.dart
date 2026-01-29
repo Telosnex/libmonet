@@ -229,14 +229,16 @@ class SafeColors {
       _neutralFromTone(
           _solveTone(containerTone: containerTone, usage: usage, dial: dial));
 
-  // APCA/WCAG candidate tones around a reference tone for border solving
+  // APCA/WCAG candidate tones around a reference tone for border solving.
+  // Use "unsafe" variants that return out-of-bounds values when impossible,
+  // allowing callers to handle fallback consistently.
   double _lighterCandidate(double tone, double requiredContrast) =>
       (_algo == Algo.apca)
-          ? lighterTextLstar(tone, -requiredContrast)
+          ? lighterTextLstarUnsafe(tone, -requiredContrast)
           : lighterLstarUnsafe(lstar: tone, contrastRatio: requiredContrast);
   double _darkerCandidate(double tone, double requiredContrast) =>
       (_algo == Algo.apca)
-          ? darkerTextLstar(tone, requiredContrast)
+          ? darkerTextLstarUnsafe(tone, requiredContrast)
           : darkerLstarUnsafe(lstar: tone, contrastRatio: requiredContrast);
 
   // Find a tone that contrasts with two references; prefers lighter/darker
@@ -532,25 +534,27 @@ class SafeColors {
       return Hct.colorFrom(hue, chroma, baseTone);
     }
 
-    // Candidate tones (avoid duplicates)
+    // Candidate tones (avoid duplicates).
+    // Use "unsafe" variants that return out-of-bounds values when impossible,
+    // so we can filter consistently.
     final Set<double> candidateSet = {};
     // Background-side candidates
     final bgLighterTone = (_algo == Algo.apca)
-        ? lighterTextLstar(backgroundTone, -requiredContrast)
+        ? lighterTextLstarUnsafe(backgroundTone, -requiredContrast)
         : lighterLstarUnsafe(
             lstar: backgroundTone, contrastRatio: requiredContrast);
     final bgDarkerTone = (_algo == Algo.apca)
-        ? darkerTextLstar(backgroundTone, requiredContrast)
+        ? darkerTextLstarUnsafe(backgroundTone, requiredContrast)
         : darkerLstarUnsafe(
             lstar: backgroundTone, contrastRatio: requiredContrast);
     if (bgLighterTone <= 100) candidateSet.add(bgLighterTone.clamp(0, 100));
     if (bgDarkerTone >= 0) candidateSet.add(bgDarkerTone.clamp(0, 100));
     // Inner-side candidates
     final inLighterTone = (_algo == Algo.apca)
-        ? lighterBackgroundLstar(innerTone, requiredContrast)
+        ? lighterBackgroundLstarUnsafe(innerTone, requiredContrast)
         : lighterLstarUnsafe(lstar: innerTone, contrastRatio: requiredContrast);
     final inDarkerTone = (_algo == Algo.apca)
-        ? darkerBackgroundLstar(innerTone, -requiredContrast)
+        ? darkerBackgroundLstarUnsafe(innerTone, -requiredContrast)
         : darkerLstarUnsafe(lstar: innerTone, contrastRatio: requiredContrast);
     if (inLighterTone <= 100) candidateSet.add(inLighterTone.clamp(0, 100));
     if (inDarkerTone >= 0) candidateSet.add(inDarkerTone.clamp(0, 100));

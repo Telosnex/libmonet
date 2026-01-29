@@ -5,12 +5,39 @@ import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/complex.dart';
 import 'package:libmonet/debug_print.dart';
 
+/// Returns the L* of a lighter background that achieves [apca] contrast
+/// with text at [textLstar].
+///
+/// May return values > 100 when the requested contrast is impossible.
+/// Use [lighterBackgroundLstar] if you want automatic fallback.
+double lighterBackgroundLstarUnsafe(double textLstar, double apca,
+    {bool debug = false}) {
+  monetDebug(debug, () => 'LIGHTER BACKGROUND L* UNSAFE ENTER');
+  final lighterBackgroundApcaYValue =
+      lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).first;
+}
+
 double lighterBackgroundLstar(double textLstar, double apca,
     {bool debug = false}) {
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* ENTER');
   final lighterBackgroundApcaYValue =
       lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
-  return apcaYToLstarRange(lighterBackgroundApcaYValue).last;
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).last.clamp(0.0, 100.0);
+}
+
+/// Returns the L* of a lighter text that achieves [apca] contrast
+/// with background at [backgroundLstar].
+///
+/// May return values > 100 when the requested contrast is impossible.
+/// Use [lighterTextLstar] if you want automatic fallback.
+double lighterTextLstarUnsafe(double backgroundLstar, double apca,
+    {bool debug = false}) {
+  monetDebug(debug, () => 'LIGHTER TEXT L* UNSAFE ENTER');
+  final backgroundApcaY = lstarToApcaY(backgroundLstar);
+  final lighterTextApcaYValue =
+      lighterTextApcaY(backgroundApcaY, apca, debug: debug);
+  return apcaYToLstarRange(lighterTextApcaYValue).first;
 }
 
 double lighterTextLstar(double backgroundLstar, double apca,
@@ -43,10 +70,23 @@ double lighterTextLstar(double backgroundLstar, double apca,
           debug,
           () =>
               'asked for lighter, but darker is in bounds. darkerTextApcaYValue: $darkerTextApcaYValue');
-      return apcaYToLstarRange(darkerTextApcaYValue).last;
+      return apcaYToLstarRange(darkerTextApcaYValue).last.clamp(0.0, 100.0);
     }
   }
-  return apcaYToLstarRange(lighterTextApcaYValue).last;
+  return apcaYToLstarRange(lighterTextApcaYValue).last.clamp(0.0, 100.0);
+}
+
+/// Returns the L* of a darker background that achieves [apca] contrast
+/// with text at [textLstar].
+///
+/// May return values < 0 when the requested contrast is impossible.
+/// Use [darkerBackgroundLstar] if you want automatic fallback.
+double darkerBackgroundLstarUnsafe(double textLstar, double apca,
+    {bool debug = false}) {
+  monetDebug(debug, () => 'DARKER BACKGROUND L* UNSAFE ENTER');
+  final textApcaY = lstarToApcaY(textLstar);
+  final darkerBackgroundApcaYValue = darkerBackgroundApcaY(textApcaY, apca);
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).first;
 }
 
 double darkerBackgroundLstar(double textLstar, double apca,
@@ -80,11 +120,25 @@ double darkerBackgroundLstar(double textLstar, double apca,
       }
     }
     // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
-    return apcaYToLstarRange(lighterBackgroundApcaYValue).first;
+    return apcaYToLstarRange(lighterBackgroundApcaYValue).first.clamp(0.0, 100.0);
   }
 
   // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
-  return apcaYToLstarRange(darkerBackgroundApcaYValue).last;
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).last.clamp(0.0, 100.0);
+}
+
+/// Returns the L* of a darker text that achieves [apca] contrast
+/// with background at [backgroundLstar].
+///
+/// May return values < 0 when the requested contrast is impossible.
+/// Use [darkerTextLstar] if you want automatic fallback.
+double darkerTextLstarUnsafe(double backgroundLstar, double apca,
+    {bool debug = false}) {
+  monetDebug(debug, () => 'DARKER TEXT L* UNSAFE ENTER');
+  final backgroundApcaY = lstarToApcaY(backgroundLstar);
+  final darkerTextApcaYValue =
+      darkerTextApcaY(backgroundApcaY, apca, debug: debug);
+  return apcaYToLstarRange(darkerTextApcaYValue).first;
 }
 
 double darkerTextLstar(double backgroundYLstar, double apca,
@@ -121,10 +175,10 @@ double darkerTextLstar(double backgroundYLstar, double apca,
           () =>
               'asked for darker, but lighter is in bounds. lighterTextApcaYValue: $lighterTextApcaYValue');
       // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
-      return apcaYToLstarRange(lighterTextApcaYValue).first;
+      return apcaYToLstarRange(lighterTextApcaYValue).first.clamp(0.0, 100.0);
     }
   }
-  return apcaYToLstarRange(darkerTextApcaYValue).first;
+  return apcaYToLstarRange(darkerTextApcaYValue).first.clamp(0.0, 100.0);
 }
 
 double lighterBackgroundApcaY(double textApcaY, double apca,
@@ -292,12 +346,52 @@ double darkerTextApcaY(double backgroundApcaY, double apca,
   return textApcaY;
 }
 
+/// Given an APCA Y value, return the range of L* values that could produce it.
+///
+/// Returns `[minLstar, maxLstar]` — any sRGB color with this apcaY will have
+/// an L* within this range.
+///
+/// ## The problem
+///
+/// Many colors share the same apcaY but have different L* values. For example,
+/// a saturated blue and a light gray might have identical apcaY, but the gray
+/// has much higher L*. So a single apcaY maps to a *range* of possible L* values.
+///
+/// ## In-bounds solution (apcaY 0 to ~1)
+///
+/// **Conjecture**: The extreme L* values for a given apcaY occur at "boundary"
+/// colors — those where RGB channels are at their limits (0 or 255).
+///
+/// This makes intuitive sense: both apcaY and L* are weighted sums over RGB.
+/// When optimizing L* on the constant-apcaY surface, extrema occur at the
+/// edges of the RGB cube where channels are saturated.
+///
+/// **Empirical verification**: The test `'all RGBs are in range of L* produced
+/// from their APCA Y'` in `apca_contrast_test.dart` exhaustively checks all
+/// 16.7 million RGB colors and confirms every one falls within the computed range.
+///
+/// ### Error tolerances
+///
+/// The magic numbers (0.087 subtracted from min, 0.239 added to max) account
+/// for RGB quantization error. When the "true" boundary color would need a
+/// fractional channel (e.g., R=250.2), we can only use 250 or 251, introducing
+/// small L* errors. These tolerances are the maximum errors found by exhaustive
+/// search.
+///
+/// ## Out-of-bounds (apcaY < 0 or > 1)
+///
+/// No real sRGB colors exist, so we extrapolate via grayscale and return
+/// a degenerate range `[x, x]`. This may yield L* < 0 or > 100.
+/// Callers wanting clamped values should use `.clamp(0, 100)`.
 List<double> apcaYToLstarRange(double apcaY, {bool debug = false}) {
-  if (apcaY < inputClampMin) {
-    final asIfGrayscale =
-        lstarFromArgb(apcaYToGrayscaleArgb(apcaY, debug: debug));
-    return [asIfGrayscale, asIfGrayscale];
+  // Out-of-bounds: extrapolate via grayscale, return degenerate range
+  // Note: max apcaY for real colors is sRco + sGco + sBco ≈ 1.0000001 (pure white)
+  if (apcaY < 0 || apcaY > sRco + sGco + sBco) {
+    final lstar = _extrapolateGrayscaleLstar(apcaY);
+    return [lstar, lstar];
   }
+
+  // In-bounds: find boundary colors and compute L* range
   final argbs = findBoundaryArgbsForApcaY(apcaY);
   final ys = argbs.map((e) => yFromArgb(e)).toList(growable: false);
   final minY = ys.reduce(math.min);
@@ -305,11 +399,57 @@ List<double> apcaYToLstarRange(double apcaY, {bool debug = false}) {
   final minLstar = lstarFromY(minY);
   final maxLstar = lstarFromY(maxY);
   return [
-    (minLstar - 0.08747562332222003).clamp(0, 100),
-    (maxLstar + 0.23986207179298447).clamp(0, 100)
+    (minLstar - 0.08747562332222003).clamp(0.0, 100.0),
+    (maxLstar + 0.23986207179298447).clamp(0.0, 100.0)
   ];
 }
 
+/// Extrapolates apcaY to L* via grayscale for out-of-bounds values.
+///
+/// Used when apcaY < 0 or > 1, where no real sRGB colors exist.
+///
+/// ## Derivation
+///
+/// For grayscale (R=G=B), apcaY uniquely determines the color:
+///   1. `channel/255 = apcaY^(1/2.4)` — invert the APCA formula
+///   2. `Y = srgbTransfer(channel/255)` — convert to CIE luminance
+///   3. `L* = lstarFromY(Y)` — convert to perceptual lightness
+///
+/// For negative apcaY, we compute using |apcaY| and negate the result.
+double _extrapolateGrayscaleLstar(double apcaY) {
+  final sign = apcaY < 0 ? -1.0 : 1.0;
+
+  // Step 1: apcaY → normalized channel (invert apcaY = x^2.4)
+  final normalized = math.pow(apcaY.abs(), 1.0 / mainTrc);
+
+  // Step 2: normalized channel → Y (sRGB transfer function)
+  final y = (normalized <= 0.040449936
+          ? normalized / 12.92
+          : math.pow((normalized + 0.055) / 1.055, 2.4) as double) *
+      100.0;
+
+  // Step 3: Y → L*
+  return sign * lstarFromY(y);
+}
+
+/// Finds sRGB boundary colors that produce the given apcaY.
+///
+/// ## Algorithm
+///
+/// Boundary colors have channels at their limits (0 or 255). For each of the
+/// 6 channel orderings (R→G→B, R→B→G, G→R→B, etc.), we:
+///
+///   1. Try to hit apcaY using just the first channel
+///   2. If that overflows (needs >255), max it out and spill to the second
+///   3. If that still overflows, max it out and solve for the third
+///
+/// We also include the grayscale solution (R=G=B) as a baseline.
+///
+/// ## Why this works
+///
+/// These boundary colors represent extremes of the sRGB gamut for a given
+/// luminance. The conjecture (verified empirically) is that min/max L* for
+/// any apcaY occurs at these boundary colors. See [apcaYToLstarRange].
 List<int> findBoundaryArgbsForApcaY(double apcaY) {
   /// Find the R/G/B whole number that will generate the most progress towards
   /// fulfilling the apcaY.
