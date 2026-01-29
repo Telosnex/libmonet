@@ -38,6 +38,9 @@ class QuantizerCelebi implements Quantizer {
       pointProvider: const PointProviderLab(),
       returnInputPixelToClusterPixel: returnInputPixelToClusterPixel,
     );
+    // argbToCount: refined cluster centers from WSMeans
+    // lstarToCount: original input image's L* distribution (from Wu/Map),
+    //               intentionally preserved for source image analysis
     return QuantizerResult(
       wsmeansResult.argbToCount,
       lstarToCount: wuResult.lstarToCount,
