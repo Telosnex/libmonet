@@ -250,6 +250,65 @@ void main() {
     });
   });
 
+  group('lerpCartesian', () {
+    test('returns endpoints', () {
+      final colorA = Hct.colorFrom(20.0, 50.0, 60.0);
+      final colorB = Hct.colorFrom(200.0, 30.0, 70.0);
+
+      expect(
+        Hct.lerpLoseHueAndChroma(colorA, colorB, 0.0),
+        isColor(colorA),
+        reason: 't=0 should return colorA',
+      );
+      expect(
+        Hct.lerpLoseHueAndChroma(colorA, colorB, 1.0),
+        isColor(colorB),
+        reason: 't=1 should return colorB',
+      );
+    });
+
+    test('lerps tone in L* space', () {
+      final colorA = Hct.colorFrom(30.0, 60.0, 20.0);
+      final colorB = Hct.colorFrom(140.0, 40.0, 80.0);
+      const t = 0.5;
+      final aTone = lstarFromArgb(colorA.argb);
+      final bTone = lstarFromArgb(colorB.argb);
+      final expectedTone = aTone + (bTone - aTone) * t;
+      final result = Hct.lerpLoseHueAndChroma(colorA, colorB, t);
+      final resultTone = Hct.fromColor(result).tone;
+
+      expect(
+        resultTone,
+        closeTo(expectedTone, 0.5),
+        reason: 'Expected tone≈$expectedTone but got $resultTone',
+      );
+    });
+
+    test('lerp test case', () {
+      final colorA = Hct.colorFrom(30.0, 60.0, 20.0);
+      final colorB = Hct.colorFrom(140.0, 40.0, 80.0);
+      const t = 0.7;
+      final result = Hct.lerpLoseHueAndChroma(colorA, colorB, t);
+
+      expect(
+        result,
+        isColor(0xff9D9863),
+      );
+    });
+
+    test('lerp test case', () {
+      final colorA = Hct.colorFrom(0.0, 0.0, 0.0);
+      final colorB = Hct.colorFrom(90.0, 40.0, 100.0);
+      const t = 0.7;
+      final result = Hct.lerpLoseHueAndChroma(colorA, colorB, t);
+
+      expect(
+        result,
+        isColor(0xffABABAB),
+      );
+    });
+  });
+
   group('CAM16 to XYZ', () {
     test('without array', () {
       const colorToTest = red;

@@ -89,6 +89,28 @@ class Hct {
     return Hct.from(hue, chroma, lstar).color.withOpacityNeue(opacity!);
   }
 
+  /// Linearly interpolates between two colors in HCT space, allowing both hue
+  /// and chroma to shift as needed. 
+  /// 
+  /// For example, interpolating between a saturated red and a saturated blue
+  /// would pass through grays.
+  static Color lerpLoseHueAndChroma(Color colorA, Color colorB, double t) {
+    final camA = Cam16.fromInt(colorA.argb);
+    final camB = Cam16.fromInt(colorB.argb);
+    final aStar = lerpDouble(camA.astar, camB.astar, t)!;
+    final bStar = lerpDouble(camA.bstar, camB.bstar, t)!;
+    final jStar = lerpDouble(camA.jstar, camB.jstar, t)!;
+    final camMerged = Cam16.fromUcs(jStar, aStar, bStar);
+    final aTone = lstarFromArgb(colorA.argb);
+    final bTone = lstarFromArgb(colorB.argb);
+    final tone = lerpDouble(aTone, bTone, t)!;
+    final opacity = lerpDouble(colorA.opacityNeue, colorB.opacityNeue, t);
+
+    return Hct.from(camMerged.hue, camMerged.chroma, tone)
+        .color
+        .withOpacityNeue(opacity!);
+  }
+
   static double _lerpKeepHueAngle(double a, double b, double t) {
     final delta = ((b - a + 540.0) % 360.0) - 180.0;
     final interpolatedAngle = (a + delta * t) % 360.0;
