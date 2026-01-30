@@ -17,7 +17,7 @@
 
 import 'dart:ui';
 
-import 'package:libmonet/colorspaces/hct_solver_noalloc.dart';
+import 'package:libmonet/colorspaces/hct_solver.dart';
 import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 
@@ -36,7 +36,7 @@ class Hct {
   ///    given hue and tone.
   /// 0 <= [tone] <= 100; informally, lightness. Invalid values are corrected.
   static Hct from(double hue, double chroma, double tone) {
-    final argb = HctSolverNoAlloc.solveToInt(hue, chroma, tone);
+    final argb = HctSolver.solveToInt(hue, chroma, tone);
     return Hct._(argb);
   }
 
@@ -62,7 +62,7 @@ class Hct {
   }
 
   static Color colorFrom(double hue, double chroma, double tone) {
-    final argb = HctSolverNoAlloc.solveToInt(hue, chroma, tone);
+    final argb = HctSolver.solveToInt(hue, chroma, tone);
     return Color(argb);
   }
 
@@ -129,7 +129,7 @@ class Hct {
   /// representation. If the HCT color is outside of the sRGB gamut, chroma
   /// will decrease until it is inside the gamut.
   set hue(double newHue) {
-    _argb = HctSolverNoAlloc.solveToInt(newHue, chroma, tone);
+    _argb = HctSolver.solveToInt(newHue, chroma, tone);
     final cam16 = Cam16.fromInt(_argb);
     _hue = cam16.hue;
     _chroma = cam16.chroma;
@@ -146,7 +146,7 @@ class Hct {
   /// representation. If the HCT color is outside of the sRGB gamut, chroma
   /// will decrease until it is inside the gamut.
   set chroma(double newChroma) {
-    _argb = HctSolverNoAlloc.solveToInt(hue, newChroma, tone);
+    _argb = HctSolver.solveToInt(hue, newChroma, tone);
     final cam16 = Cam16.fromInt(_argb);
     _hue = cam16.hue;
     _chroma = cam16.chroma;
@@ -164,7 +164,7 @@ class Hct {
   /// representation. If the HCT color is outside of the sRGB gamut, chroma
   /// will decrease until it is inside the gamut.
   set tone(double newTone) {
-    _argb = HctSolverNoAlloc.solveToInt(hue, chroma, newTone);
+    _argb = HctSolver.solveToInt(hue, chroma, newTone);
     final cam16 = Cam16.fromInt(_argb);
     _hue = cam16.hue;
     _chroma = cam16.chroma;

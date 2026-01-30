@@ -23,7 +23,7 @@ import 'package:libmonet/colorspaces/cam16_viewing_conditions.dart';
 import 'package:libmonet/core/math.dart';
 
 /// A class that solves the HCT equation.
-class HctSolverNoAlloc {
+class HctSolver {
   /// Sanitizes a small enough angle in radians.
   ///
   /// [angle] An angle in radians; must not deviate too much from 0.
