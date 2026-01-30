@@ -834,6 +834,7 @@ class SafeColors {
 
   @override
   int get hashCode => Object.hash(
+      runtimeType,
       color.argb,
       background.argb,
       _contrast,
@@ -845,11 +846,6 @@ class SafeColors {
 // SafeColors instances. Lives in this library to access the private
 // constructor.
 class LerpedSafeColors extends SafeColors {
-
-// Snapshot of SafeColors: captures token outputs at construction time and
-// returns the same values thereafter. Lives in this library to access the
-// private constructor.
-// SnapshotSafeColors moved to top-level after LerpedSafeColors.
   final SafeColors a;
   final SafeColors b;
   final double t;

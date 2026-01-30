@@ -214,15 +214,15 @@ double contrastRatioInterpolation(
 double apcaInterpolation({required double percent, required Usage usage}) {
   const start = 0.0;
   final mid = switch (usage) {
-    (Usage.text) => 60, // "APCA Lc 60 'similar' to WCAG 4.5"
-    (Usage.fill) => 45, // "APCA Lc 45 'similar' to WCAG 3.0"
-    (Usage.large) => 30, // APCA Lc 30 is minimum for legible semantic elements
+    (Usage.text) => 60.0, // "APCA Lc 60 'similar' to WCAG 4.5"
+    (Usage.fill) => 45.0, // "APCA Lc 45 'similar' to WCAG 3.0"
+    (Usage.large) => 30.0, // APCA Lc 30 is minimum for legible semantic elements
     // > 5.5 CSS px in at least one dimension.
   };
   // Earlier, assumed end was 100. But, at high contrast, this wasn't leading
   // to white/black as expected. 110 seems to work better...but better to have
   // a concrete reason for this.
-  const end = 110;
+  const end = 110.0;
   final actualPercent = (percent > 0.5 ? percent - 0.5 : percent) / 0.5;
   final actualStart = percent > 0.5 ? mid : start;
   final actualEnd = percent > 0.5 ? end : mid;
