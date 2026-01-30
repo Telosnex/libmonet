@@ -11,17 +11,34 @@ import 'package:squadron/squadron.dart';
 
 class Extract {
   static QuantizeServiceWorkerPool? _quantizeServiceWorkerPool;
+  static Completer<QuantizeServiceWorkerPool>? _poolInitializer;
 
   static Future<QuantizeServiceWorkerPool> _getQuantizeWorkerPool() async {
-    if (_quantizeServiceWorkerPool == null) {
+    // Return existing pool if already initialized
+    if (_quantizeServiceWorkerPool != null) {
+      return _quantizeServiceWorkerPool!;
+    }
+
+    // If initialization is in progress, wait for it
+    if (_poolInitializer != null) {
+      return _poolInitializer!.future;
+    }
+
+    // Start initialization
+    _poolInitializer = Completer<QuantizeServiceWorkerPool>();
+    try {
       const concurrency =
           ConcurrencySettings(minWorkers: 1, maxWorkers: 4, maxParallel: 1);
       final pool = QuantizeServiceWorkerPool(concurrencySettings: concurrency);
+      await pool.start();
       _quantizeServiceWorkerPool = pool;
+      _poolInitializer!.complete(pool);
+      return pool;
+    } catch (e) {
+      _poolInitializer!.completeError(e);
+      _poolInitializer = null; // Allow retry on failure
+      rethrow;
     }
-
-    await _quantizeServiceWorkerPool!.start();
-    return _quantizeServiceWorkerPool!;
   }
 
   static Future<QuantizerResult> quantize(
