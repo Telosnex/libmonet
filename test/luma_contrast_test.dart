@@ -53,7 +53,7 @@ void main() {
     expect(grayscaleArgbFromLuma(0.0), isColor(0xff000000));
   });
 
-  test('CSV of range', () {
+  test('CSV of range', skip: 'no need to produce csv', () {
     final tsv = StringBuffer();
     for (int i = 0; i <= 100; i++) {
       final luma = i.toDouble();
