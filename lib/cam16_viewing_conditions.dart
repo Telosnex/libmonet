@@ -47,7 +47,6 @@ class Cam16ViewingConditions {
   final double ncb;
   final double c;
   final double nC;
-  final List<double> drgbInverse;
   final List<double> rgbD;
   final double fl;
   final double fLRoot;
@@ -65,7 +64,6 @@ class Cam16ViewingConditions {
     required this.ncb,
     required this.c,
     required this.nC,
-    required this.drgbInverse,
     required this.rgbD,
     required this.fl,
     required this.fLRoot,
@@ -180,7 +178,6 @@ class Cam16ViewingConditions {
       ncb: ncb,
       c: c,
       nC: nc,
-      drgbInverse: [0.0, 0.0, 0.0],
       rgbD: rgbD,
       fl: fl,
       fLRoot: math.pow(fl, 0.25).toDouble(),
