@@ -870,9 +870,17 @@ class Palette {
       _backgroundToneOverride);
 }
 
-// Interpolated view of [Palette] that HCT-lerps token outputs between two
-// [Palette] instances. Lives in this library to access the private
-// constructor.
+/// Interpolates between two [Palette] instances using perceptual HCT lerp.
+///
+/// **Performance note:** Each token access recomputes the HCT lerp.
+/// For repeated access (e.g., in a build method), wrap with
+/// [PaletteSnapshot.capture] to evaluate all tokens once:
+///
+/// ```dart
+/// final snapshot = PaletteSnapshot.capture(PaletteLerped(a: a, b: b, t: t));
+/// ```
+///
+/// Lives in this library to access the private constructor.
 class PaletteLerped extends Palette {
   final Palette a;
   final Palette b;
