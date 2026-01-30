@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:libmonet/theming/palette_lerped.dart';
 
 /// Interpolated theme data that lerps the three seed colors in HCT and
 /// constructs Palette for each frame, while keeping ThemeData stable by
