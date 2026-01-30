@@ -25,6 +25,14 @@ String hexFromColor(Color color, {bool leadingHashSign = true}) {
   return hexFromArgb(color.argb, leadingHashSign: leadingHashSign);
 }
 
+/// Converts an ARGB integer to a 6-character RGB hex string.
+///
+/// **Note:** The alpha channel is discarded. This function always returns
+/// a 6-character hex code (e.g., `#FF5733`), which is the standard format
+/// for CSS colors and does not support transparency. If you need to preserve
+/// alpha, use an 8-character ARGB hex format instead.
+///
+/// Returns a hex string with or without a leading `#` based on [leadingHashSign].
 String hexFromArgb(int argb, {bool leadingHashSign = true}) {
   final red = redFromArgb(argb);
   final green = greenFromArgb(argb);
