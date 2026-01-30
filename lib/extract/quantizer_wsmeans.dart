@@ -119,8 +119,6 @@ class QuantizerWsmeans {
     );
     final clusterIndices =
         List<int>.generate(pointCount, (index) => index % clusterCount);
-    final indexMatrix = List<List<int>>.generate(
-        clusterCount, (_) => List.filled(clusterCount, 0));
 
     final distanceToIndexMatrix = List<List<DistanceAndIndex>>.generate(
         clusterCount,
@@ -159,9 +157,6 @@ class QuantizerWsmeans {
           distanceToIndexMatrix[i][j].index = j;
         }
         distanceToIndexMatrix[i].sort();
-        for (var j = 0; j < clusterCount; j++) {
-          indexMatrix[i][j] = distanceToIndexMatrix[i][j].index;
-        }
       }
 
       for (var i = 0; i < pointCount; i++) {
