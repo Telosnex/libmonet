@@ -169,7 +169,11 @@ class TemperatureCache {
         continue;
       }
       final possibleAnswer = hctsByHue[hue.round() % 360];
-      final relativeTemp = (_tempsByHct[possibleAnswer]! - coldestTemp) / range;
+      // Handle when there's no difference in temperature between warmest and
+      // coldest: for example, at T100, only one color is available, white.
+      final relativeTemp = range == 0.0
+          ? 0.5
+          : (_tempsByHct[possibleAnswer]! - coldestTemp) / range;
       final error = (complementRelativeTemp - relativeTemp).abs();
       if (error < smallestError) {
         smallestError = error;
