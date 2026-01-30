@@ -111,7 +111,7 @@ ShadowResult getShadowOpacities({
   final shadowColor =
       Color(argbFromLstar(opacityResult.lstar)).withOpacityNeue(effectiveOpacity);
   var blended = Color.alphaBlend(shadowColor, bgColor);
-  assert(blended.a == 255);
+  assert(blended.alphaNeue == 255);
   monetDebug(
       debug,
       () =>
