@@ -4,7 +4,7 @@ import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/theming/safe_colors.dart';
 import 'package:test/test.dart';
 
-import 'utils/color_matcher.dart';
+import '../utils/color_matcher.dart';
 
 void main() {
   group('#334157', () {

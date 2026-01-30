@@ -7,7 +7,7 @@ import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/colorspaces/luma.dart';
 import 'package:libmonet/contrast/luma_contrast.dart';
 
-import 'utils/color_matcher.dart';
+import '../utils/color_matcher.dart';
 
 void main() {
   test('all RGBs are in range of L* produced from their APCA Y', () {

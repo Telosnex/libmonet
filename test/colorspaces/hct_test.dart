@@ -19,7 +19,7 @@ import 'package:libmonet/colorspaces/cam16_viewing_conditions.dart';
 import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/core/hex_codes.dart';
 
-import './utils/color_matcher.dart';
+import '../utils/color_matcher.dart';
 
 const black = 0xff000000;
 const white = 0xffffffff;
