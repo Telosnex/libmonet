@@ -507,6 +507,38 @@ class Palette {
   // (innerTone, backgroundTone). Uses either-side cost with pass-oriented
   // tie-breaks. Optionally short-circuits to the base color if it already
   // meets the contrast requirement (vs bg only or vs both sides).
+  /// Lexicographic comparison for border tone selection.
+  /// Priority: cost → totalDist → distToInner → distToBackground
+  /// Returns true if candidate is strictly better than current best.
+  static bool _isBetterCandidate({
+    required double cost,
+    required double totalDist,
+    required double distToInner,
+    required double distToBg,
+    required double bestCost,
+    required double bestTotalDist,
+    required double bestDistToInner,
+    required double bestDistToBg,
+  }) {
+    const epsilon = 1e-6;
+
+    // Strictly better cost
+    if (cost < bestCost - epsilon) return true;
+    // Strictly worse cost
+    if (cost > bestCost + epsilon) return false;
+
+    // Cost ~equal; check total distance
+    if (totalDist < bestTotalDist - epsilon) return true;
+    if (totalDist > bestTotalDist + epsilon) return false;
+
+    // Total ~equal; check distance to inner
+    if (distToInner < bestDistToInner - epsilon) return true;
+    if (distToInner > bestDistToInner + epsilon) return false;
+
+    // Inner ~equal; check distance to background
+    return distToBg < bestDistToBg - epsilon;
+  }
+
   Color _solveEitherSideBorder({
     required double innerTone,
     required double baseTone,
@@ -628,13 +660,16 @@ class Palette {
       final dBg = (t - backgroundTone).abs();
       final total = dIn + dBg;
 
-      if (cost < bestCost - 1e-6 ||
-          (cost <= bestCost + 1e-6 &&
-              (total < bestTotalDist - 1e-6 ||
-                  (total <= bestTotalDist + 1e-6 &&
-                      (dIn < bestDInner - 1e-6 ||
-                          (dIn <= bestDInner + 1e-6 &&
-                              dBg < bestDBg - 1e-6)))))) {
+      if (_isBetterCandidate(
+        cost: cost,
+        totalDist: total,
+        distToInner: dIn,
+        distToBg: dBg,
+        bestCost: bestCost,
+        bestTotalDist: bestTotalDist,
+        bestDistToInner: bestDInner,
+        bestDistToBg: bestDBg,
+      )) {
         bestCost = cost;
         bestTotalDist = total;
         bestDInner = dIn;
