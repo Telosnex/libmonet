@@ -130,7 +130,10 @@ OpacityResult getOpacity({
       ),
   };
   final sPFMin = lumaFromLstar(lstarPFMin) / 100.0;
-  final oPMinRaw = (sPFMin - sBMin) / (sPMin - sBMin);
+  // Guard against division by zero when protection L* matches background L*
+  final oPMinRaw = (sPMin - sBMin).abs() < 1e-10 
+      ? double.nan 
+      : (sPFMin - sBMin) / (sPMin - sBMin);
 
   // Let's find the opacity for the maximum background / darkest protection.
   const lstarPMax = 0.0;
@@ -145,7 +148,10 @@ OpacityResult getOpacity({
       ),
   };
   final sPFMax = lumaFromLstar(lstarPFMax) / 100.0;
-  final oPMaxRaw = (sPFMax - sBMax) / (sPMax - sBMax);
+  // Guard against division by zero when protection L* matches background L*
+  final oPMaxRaw = (sPMax - sBMax).abs() < 1e-10 
+      ? double.nan 
+      : (sPFMax - sBMax) / (sPMax - sBMax);
 
   double? cleanRawOpacity(double rawOpacity) {
     if (rawOpacity.isInfinite || rawOpacity.isNaN || rawOpacity < 0) {
@@ -192,6 +198,43 @@ OpacityResult getOpacity({
   // Floating point precision creates equivalent cases when the background is
   // very close to the protection.
   if (oPMin == null && oPMax == null) {
+    // Both natural pairings failed (white protection on white bg, black on black).
+    // Try "crossed" pairings: black protection on minBg, white protection on maxBg.
+    
+    // Black protection (L*=0) on minBg
+    final oPMinCrossedRaw = (sPMax - sBMin).abs() < 1e-10
+        ? double.nan
+        : (sPFMax - sBMin) / (sPMax - sBMin);
+    final oPMinCrossed = cleanRawOpacity(oPMinCrossedRaw);
+    
+    // White protection (L*=100) on maxBg  
+    final oPMaxCrossedRaw = (sPMin - sBMax).abs() < 1e-10
+        ? double.nan
+        : (sPFMin - sBMax) / (sPMin - sBMax);
+    final oPMaxCrossed = cleanRawOpacity(oPMaxCrossedRaw);
+    
+    monetDebug(debug, () => 'Both natural pairings failed, trying crossed pairings');
+    monetDebug(debug, () => 'oPMinCrossed (black on minBg): $oPMinCrossed');
+    monetDebug(debug, () => 'oPMaxCrossed (white on maxBg): $oPMaxCrossed');
+    
+    if (oPMinCrossed != null && oPMaxCrossed != null) {
+      // Choose the one with lower opacity (more subtle protection)
+      if (oPMinCrossed <= oPMaxCrossed) {
+        return OpacityResult(
+            lstar: lstarPMax, opacity: oPMinCrossed, requiredLstar: lstarAfterProtection);
+      } else {
+        return OpacityResult(
+            lstar: lstarPMin, opacity: oPMaxCrossed, requiredLstar: lstarAfterProtection);
+      }
+    } else if (oPMinCrossed != null) {
+      return OpacityResult(
+          lstar: lstarPMax, opacity: oPMinCrossed, requiredLstar: lstarAfterProtection);
+    } else if (oPMaxCrossed != null) {
+      return OpacityResult(
+          lstar: lstarPMin, opacity: oPMaxCrossed, requiredLstar: lstarAfterProtection);
+    }
+    
+    // All pairings failed - return fallback (this should be rare)
     return OpacityResult(
       lstar: 0.0,
       opacity: 0.0,

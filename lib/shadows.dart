@@ -123,11 +123,6 @@ ShadowResult getShadowOpacities({
   while (netOpacity < requiredOpacity) {
     turns++;
     final double gap = requiredOpacity - netOpacity;
-    final double currentEffectiveOpacity =
-        effectiveOpacity * allOpacities.reduce((a, b) => a * b);
-    final double targetOpacity = 1 - (1 - requiredOpacity) / (1 - netOpacity);
-    final double nextOpacity =
-        math.min(targetOpacity / currentEffectiveOpacity, 1.0);
     if (gap < 0.004) {
       // In rare cases, gaps of ex. 5.551115123125783e-17 were leading to this
       // loop to continue excessively and sometimes produce a NaN opacity.
@@ -135,6 +130,23 @@ ShadowResult getShadowOpacities({
       // This prevents that issue, and the rationale is that if the gap is this
       // small, there would be no difference in the final answer, as we round
       // to the nearest 0.01.
+      break;
+    }
+
+    final double currentEffectiveOpacity =
+        effectiveOpacity * allOpacities.reduce((a, b) => a * b);
+    
+    // Guard against division by zero or near-zero values
+    if (currentEffectiveOpacity < 1e-10 || netOpacity >= 1.0 - 1e-10) {
+      break;
+    }
+
+    final double targetOpacity = 1 - (1 - requiredOpacity) / (1 - netOpacity);
+    final double nextOpacity =
+        math.min(targetOpacity / currentEffectiveOpacity, 1.0);
+    
+    // Guard against NaN or invalid opacity values from floating-point edge cases
+    if (nextOpacity.isNaN || nextOpacity.isInfinite || nextOpacity <= 0) {
       break;
     }
 
