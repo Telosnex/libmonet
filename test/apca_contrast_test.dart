@@ -16,7 +16,8 @@ void main() {
           final lstar = lstarFromArgb(argb);
           final apcaY = apcaYFromArgb(argb);
           final lstarRange = apcaYToLstarRange(apcaY);
-          expect(lstar, inInclusiveRange(lstarRange[0], lstarRange[1]));
+          expect(
+              lstar, inInclusiveRange(lstarRange.darkest, lstarRange.lightest));
         }
       }
     }
@@ -27,9 +28,7 @@ void main() {
     for (int i = 0; i <= 100; i++) {
       final apcaY = i.toDouble() / 100.0;
       final lstarRange = apcaYToLstarRange(apcaY);
-      final first = lstarRange[0];
-      final last = lstarRange[1];
-      tsv.writeln('$apcaY,$first,$last');
+      tsv.writeln('$apcaY,${lstarRange.darkest},${lstarRange.lightest}');
     }
     print(tsv.toString());
   });
@@ -169,16 +168,59 @@ void main() {
     }
   });
 
+  group('closestTo - returns L* nearest to input for least disruption', () {
+    test('lighterBackgroundLstarUnsafe returns closestTo(textLstar)', () {
+      const textLstar = 50.0;
+      const apca = 60.0;
 
+      final result = lighterBackgroundLstarUnsafe(textLstar, apca);
+      final apcaY = lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
+      final range = apcaYToLstarRange(apcaY);
+
+      print(
+          'FG=$textLstar wants lighter BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}. closestTo=$textLstar');
+
+      expect(result, equals(range.closestTo(textLstar)));
+    });
+
+    test('lighterTextLstarUnsafe returns closestTo(backgroundLstar)', () {
+      const backgroundLstar = 20.0;
+      const apca = 60.0;
+
+      final result = lighterTextLstarUnsafe(backgroundLstar, apca);
+      final backgroundApcaY = lstarToApcaY(backgroundLstar);
+      final apcaY = lighterTextApcaY(backgroundApcaY, apca);
+      final range = apcaYToLstarRange(apcaY);
+
+      print(
+          'BG=$backgroundLstar wants lighter text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}. closestTo=$backgroundLstar');
+
+      expect(result, equals(range.closestTo(backgroundLstar)));
+    });
+
+    test('darkerBackgroundLstar returns closestTo(textLstar)', () {
+      const textLstar = 90.0;
+      const apca = 60.0;
+
+      final result = darkerBackgroundLstar(textLstar, apca);
+      final textApcaY = lstarToApcaY(textLstar);
+      final apcaY = darkerBackgroundApcaY(textApcaY, apca);
+      final range = apcaYToLstarRange(apcaY);
+
+      print(
+          'FG=$textLstar wants darker BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}. closestTo=$textLstar');
+
+      expect(result, equals(range.closestTo(textLstar).clamp(0.0, 100.0)));
+    });
+  });
 }
-
 
 double _findDiffBetweenTrueLstarAndLstarRangeFromApcaY(int argb) {
   final lstar = lstarFromArgb(argb);
   final apcaY = apcaYFromArgb(argb);
   final lstarRange = apcaYToLstarRange(apcaY);
-  final diffFromMin = (lstar - lstarRange[0]).abs();
-  final diffFromMax = (lstar - lstarRange[1]).abs();
+  final diffFromMin = (lstar - lstarRange.darkest).abs();
+  final diffFromMax = (lstar - lstarRange.lightest).abs();
   final lstarDiff = math.max(diffFromMin, diffFromMax);
   return lstarDiff;
 }

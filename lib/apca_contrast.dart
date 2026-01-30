@@ -5,6 +5,22 @@ import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/complex.dart';
 import 'package:libmonet/debug_print.dart';
 
+/// Represents a range of L* values that produce the same APCA Y value.
+///
+/// Since APCA contrast is computed from apcaY (not L*), any L* in this range
+/// achieves the same contrast. Use [closestTo] to pick the least disruptive option.
+class LstarRange {
+  final double darkest;
+  final double lightest;
+  const LstarRange({required this.darkest, required this.lightest});
+  const LstarRange.single(double value) : darkest = value, lightest = value;
+  bool get isDegenerate => darkest == lightest;
+
+  /// Returns the L* in this range closest to [target].
+  double closestTo(double target) =>
+      (target - darkest).abs() <= (target - lightest).abs() ? darkest : lightest;
+}
+
 /// Returns the L* of a lighter background that achieves [apca] contrast
 /// with text at [textLstar].
 ///
@@ -15,7 +31,7 @@ double lighterBackgroundLstarUnsafe(double textLstar, double apca,
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* UNSAFE ENTER');
   final lighterBackgroundApcaYValue =
       lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
-  return apcaYToLstarRange(lighterBackgroundApcaYValue).first;
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).closestTo(textLstar);
 }
 
 double lighterBackgroundLstar(double textLstar, double apca,
@@ -23,7 +39,7 @@ double lighterBackgroundLstar(double textLstar, double apca,
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* ENTER');
   final lighterBackgroundApcaYValue =
       lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
-  return apcaYToLstarRange(lighterBackgroundApcaYValue).last.clamp(0.0, 100.0);
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).closestTo(textLstar).clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a lighter text that achieves [apca] contrast
@@ -37,7 +53,7 @@ double lighterTextLstarUnsafe(double backgroundLstar, double apca,
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
   final lighterTextApcaYValue =
       lighterTextApcaY(backgroundApcaY, apca, debug: debug);
-  return apcaYToLstarRange(lighterTextApcaYValue).first;
+  return apcaYToLstarRange(lighterTextApcaYValue).closestTo(backgroundLstar);
 }
 
 double lighterTextLstar(double backgroundLstar, double apca,
@@ -70,10 +86,10 @@ double lighterTextLstar(double backgroundLstar, double apca,
           debug,
           () =>
               'asked for lighter, but darker is in bounds. darkerTextApcaYValue: $darkerTextApcaYValue');
-      return apcaYToLstarRange(darkerTextApcaYValue).last.clamp(0.0, 100.0);
+      return apcaYToLstarRange(darkerTextApcaYValue).closestTo(backgroundLstar).clamp(0.0, 100.0);
     }
   }
-  return apcaYToLstarRange(lighterTextApcaYValue).last.clamp(0.0, 100.0);
+  return apcaYToLstarRange(lighterTextApcaYValue).closestTo(backgroundLstar).clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a darker background that achieves [apca] contrast
@@ -86,7 +102,7 @@ double darkerBackgroundLstarUnsafe(double textLstar, double apca,
   monetDebug(debug, () => 'DARKER BACKGROUND L* UNSAFE ENTER');
   final textApcaY = lstarToApcaY(textLstar);
   final darkerBackgroundApcaYValue = darkerBackgroundApcaY(textApcaY, apca);
-  return apcaYToLstarRange(darkerBackgroundApcaYValue).first;
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).closestTo(textLstar);
 }
 
 double darkerBackgroundLstar(double textLstar, double apca,
@@ -119,12 +135,11 @@ double darkerBackgroundLstar(double textLstar, double apca,
         return 100.0;
       }
     }
-    // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
-    return apcaYToLstarRange(lighterBackgroundApcaYValue).first.clamp(0.0, 100.0);
+    // Fallback: use closestTo for least disruptive result.
+    return apcaYToLstarRange(lighterBackgroundApcaYValue).closestTo(textLstar).clamp(0.0, 100.0);
   }
 
-  // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
-  return apcaYToLstarRange(darkerBackgroundApcaYValue).last.clamp(0.0, 100.0);
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).closestTo(textLstar).clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a darker text that achieves [apca] contrast
@@ -138,7 +153,7 @@ double darkerTextLstarUnsafe(double backgroundLstar, double apca,
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
   final darkerTextApcaYValue =
       darkerTextApcaY(backgroundApcaY, apca, debug: debug);
-  return apcaYToLstarRange(darkerTextApcaYValue).first;
+  return apcaYToLstarRange(darkerTextApcaYValue).closestTo(backgroundLstar);
 }
 
 double darkerTextLstar(double backgroundYLstar, double apca,
@@ -174,11 +189,11 @@ double darkerTextLstar(double backgroundYLstar, double apca,
           debug,
           () =>
               'asked for darker, but lighter is in bounds. lighterTextApcaYValue: $lighterTextApcaYValue');
-      // WARNING: Couldn't find an obvious visual error to confirm .last is correct.
-      return apcaYToLstarRange(lighterTextApcaYValue).first.clamp(0.0, 100.0);
+      // Fallback: use closestTo for least disruptive result.
+      return apcaYToLstarRange(lighterTextApcaYValue).closestTo(backgroundYLstar).clamp(0.0, 100.0);
     }
   }
-  return apcaYToLstarRange(darkerTextApcaYValue).first.clamp(0.0, 100.0);
+  return apcaYToLstarRange(darkerTextApcaYValue).closestTo(backgroundYLstar).clamp(0.0, 100.0);
 }
 
 double lighterBackgroundApcaY(double textApcaY, double apca,
@@ -383,12 +398,12 @@ double darkerTextApcaY(double backgroundApcaY, double apca,
 /// No real sRGB colors exist, so we extrapolate via grayscale and return
 /// a degenerate range `[x, x]`. This may yield L* < 0 or > 100.
 /// Callers wanting clamped values should use `.clamp(0, 100)`.
-List<double> apcaYToLstarRange(double apcaY, {bool debug = false}) {
+LstarRange apcaYToLstarRange(double apcaY, {bool debug = false}) {
   // Out-of-bounds: extrapolate via grayscale, return degenerate range
   // Note: max apcaY for real colors is sRco + sGco + sBco ≈ 1.0000001 (pure white)
   if (apcaY < 0 || apcaY > sRco + sGco + sBco) {
     final lstar = _extrapolateGrayscaleLstar(apcaY);
-    return [lstar, lstar];
+    return LstarRange.single(lstar);
   }
 
   // In-bounds: find boundary colors and compute L* range
@@ -398,10 +413,10 @@ List<double> apcaYToLstarRange(double apcaY, {bool debug = false}) {
   final maxY = ys.reduce(math.max);
   final minLstar = lstarFromY(minY);
   final maxLstar = lstarFromY(maxY);
-  return [
-    (minLstar - 0.08747562332222003).clamp(0.0, 100.0),
-    (maxLstar + 0.23986207179298447).clamp(0.0, 100.0)
-  ];
+  return LstarRange(
+    darkest: (minLstar - 0.08747562332222003).clamp(0.0, 100.0),
+    lightest: (maxLstar + 0.23986207179298447).clamp(0.0, 100.0),
+  );
 }
 
 /// Extrapolates apcaY to L* via grayscale for out-of-bounds values.
