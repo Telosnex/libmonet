@@ -103,6 +103,10 @@ class QuantizerWsmeans {
         // Rather than generate random centroids, we'll pick centroids that
         // are actual pixels in the image, and avoid duplicating centroids.
 
+        // Safeguard: if we've exhausted all unique points, stop adding clusters.
+        if (indices.length >= points.length) {
+          break;
+        }
         var index = random.nextInt(points.length);
         while (indices.contains(index)) {
           index = random.nextInt(points.length);
