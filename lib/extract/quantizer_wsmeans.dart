@@ -85,7 +85,7 @@ class QuantizerWsmeans {
     final additionalClustersNeeded = clusterCount - clusters.length;
     if (additionalClustersNeeded > 0) {
       final random = math.Random(0x42688);
-      final indices = <int>[];
+      final indices = <int>{};
       for (var i = 0; i < additionalClustersNeeded; i++) {
         // Use existing points rather than generating random centroids.
         //
