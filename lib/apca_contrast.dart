@@ -16,7 +16,10 @@ class LstarRange {
   const LstarRange.single(double value) : darkest = value, lightest = value;
   bool get isDegenerate => darkest == lightest;
 
-  /// Returns the L* in this range closest to [target].
+  /// Returns the L* in this range closest to [target] in L* space.
+  /// 
+  /// WARNING: This may not preserve apcaY! Use [closestByApcaY] when you need
+  /// the L* that best preserves a target apcaY value.
   double closestTo(double target) =>
       (target - darkest).abs() <= (target - lightest).abs() ? darkest : lightest;
 }
@@ -26,12 +29,24 @@ class LstarRange {
 ///
 /// May return values > 100 when the requested contrast is impossible.
 /// Use [lighterBackgroundLstar] if you want automatic fallback.
+///
+/// ## Why we return the lightest L* in the range
+///
+/// Different colors at the same L* can have different apcaY values. A saturated
+/// blue at L*=48 might have the same apcaY as a gray at L*=51. By returning the
+/// lightest L* in the range, we ensure the contrast requirement is met even for
+/// worst-case chromatic colors (like saturated blues which contribute less to
+/// apcaY due to the low sBco coefficient).
+///
+/// This means grayscale colors at the returned L* will have MORE contrast than
+/// requested, but that's the safe choice for a general-purpose API.
 double lighterBackgroundLstarUnsafe(double textLstar, double apca,
     {bool debug = false}) {
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* UNSAFE ENTER');
+  final textApcaY = lstarToApcaY(textLstar);
   final lighterBackgroundApcaYValue =
-      lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
-  return apcaYToLstarRange(lighterBackgroundApcaYValue).closestTo(textLstar);
+      lighterBackgroundApcaY(textApcaY, apca);
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest;
 }
 
 double lighterBackgroundLstar(double textLstar, double apca,
@@ -47,13 +62,16 @@ double lighterBackgroundLstar(double textLstar, double apca,
 ///
 /// May return values > 100 when the requested contrast is impossible.
 /// Use [lighterTextLstar] if you want automatic fallback.
+///
+/// Returns the lightest L* in the valid range to be safe for chromatic colors.
+/// See [lighterBackgroundLstarUnsafe] for detailed explanation.
 double lighterTextLstarUnsafe(double backgroundLstar, double apca,
     {bool debug = false}) {
   monetDebug(debug, () => 'LIGHTER TEXT L* UNSAFE ENTER');
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
   final lighterTextApcaYValue =
       lighterTextApcaY(backgroundApcaY, apca, debug: debug);
-  return apcaYToLstarRange(lighterTextApcaYValue).closestTo(backgroundLstar);
+  return apcaYToLstarRange(lighterTextApcaYValue).lightest;
 }
 
 double lighterTextLstar(double backgroundLstar, double apca,
@@ -97,12 +115,15 @@ double lighterTextLstar(double backgroundLstar, double apca,
 ///
 /// May return values < 0 when the requested contrast is impossible.
 /// Use [darkerBackgroundLstar] if you want automatic fallback.
+///
+/// Returns the darkest L* in the valid range to be safe for chromatic colors.
+/// See [lighterBackgroundLstarUnsafe] for detailed explanation.
 double darkerBackgroundLstarUnsafe(double textLstar, double apca,
     {bool debug = false}) {
   monetDebug(debug, () => 'DARKER BACKGROUND L* UNSAFE ENTER');
   final textApcaY = lstarToApcaY(textLstar);
   final darkerBackgroundApcaYValue = darkerBackgroundApcaY(textApcaY, apca);
-  return apcaYToLstarRange(darkerBackgroundApcaYValue).closestTo(textLstar);
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).darkest;
 }
 
 double darkerBackgroundLstar(double textLstar, double apca,
@@ -147,13 +168,16 @@ double darkerBackgroundLstar(double textLstar, double apca,
 ///
 /// May return values < 0 when the requested contrast is impossible.
 /// Use [darkerTextLstar] if you want automatic fallback.
+///
+/// Returns the darkest L* in the valid range to be safe for chromatic colors.
+/// See [lighterBackgroundLstarUnsafe] for detailed explanation.
 double darkerTextLstarUnsafe(double backgroundLstar, double apca,
     {bool debug = false}) {
   monetDebug(debug, () => 'DARKER TEXT L* UNSAFE ENTER');
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
   final darkerTextApcaYValue =
       darkerTextApcaY(backgroundApcaY, apca, debug: debug);
-  return apcaYToLstarRange(darkerTextApcaYValue).closestTo(backgroundLstar);
+  return apcaYToLstarRange(darkerTextApcaYValue).darkest;
 }
 
 double darkerTextLstar(double backgroundYLstar, double apca,

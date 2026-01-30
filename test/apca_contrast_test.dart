@@ -168,8 +168,11 @@ void main() {
     }
   });
 
-  group('closestTo - returns L* nearest to input for least disruption', () {
-    test('lighterBackgroundLstarUnsafe returns closestTo(textLstar)', () {
+  // Unsafe functions return conservative L* values to be safe for chromatic
+  // colors: lightest for lighter functions, darkest for darker functions.
+  // See lighterBackgroundLstarUnsafe documentation for explanation.
+  group('chromatic-safe L* selection', () {
+    test('lighterBackgroundLstarUnsafe returns lightest (chromatic-safe)', () {
       const textLstar = 50.0;
       const apca = 60.0;
 
@@ -178,12 +181,12 @@ void main() {
       final range = apcaYToLstarRange(apcaY);
 
       print(
-          'FG=$textLstar wants lighter BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}. closestTo=$textLstar');
+          'FG=$textLstar wants lighter BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
 
-      expect(result, equals(range.closestTo(textLstar)));
+      expect(result, equals(range.lightest));
     });
 
-    test('lighterTextLstarUnsafe returns closestTo(backgroundLstar)', () {
+    test('lighterTextLstarUnsafe returns lightest (chromatic-safe)', () {
       const backgroundLstar = 20.0;
       const apca = 60.0;
 
@@ -193,24 +196,39 @@ void main() {
       final range = apcaYToLstarRange(apcaY);
 
       print(
-          'BG=$backgroundLstar wants lighter text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}. closestTo=$backgroundLstar');
+          'BG=$backgroundLstar wants lighter text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
 
-      expect(result, equals(range.closestTo(backgroundLstar)));
+      expect(result, equals(range.lightest));
     });
 
-    test('darkerBackgroundLstar returns closestTo(textLstar)', () {
+    test('darkerBackgroundLstarUnsafe returns darkest (chromatic-safe)', () {
       const textLstar = 90.0;
       const apca = 60.0;
 
-      final result = darkerBackgroundLstar(textLstar, apca);
+      final result = darkerBackgroundLstarUnsafe(textLstar, apca);
       final textApcaY = lstarToApcaY(textLstar);
       final apcaY = darkerBackgroundApcaY(textApcaY, apca);
       final range = apcaYToLstarRange(apcaY);
 
       print(
-          'FG=$textLstar wants darker BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}. closestTo=$textLstar');
+          'FG=$textLstar wants darker BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
 
-      expect(result, equals(range.closestTo(textLstar).clamp(0.0, 100.0)));
+      expect(result, equals(range.darkest));
+    });
+
+    test('darkerTextLstarUnsafe returns darkest (chromatic-safe)', () {
+      const backgroundLstar = 80.0;
+      const apca = 60.0;
+
+      final result = darkerTextLstarUnsafe(backgroundLstar, apca);
+      final backgroundApcaY = lstarToApcaY(backgroundLstar);
+      final apcaY = darkerTextApcaY(backgroundApcaY, apca);
+      final range = apcaYToLstarRange(apcaY);
+
+      print(
+          'BG=$backgroundLstar wants darker text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
+
+      expect(result, equals(range.darkest));
     });
   });
 }

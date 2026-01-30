@@ -15,19 +15,19 @@ void main() {
       );
       expect(colors.color, isColor(0xff334157));
       expect(colors.colorBorder, isColor(0xff334157));
-      expect(colors.colorText, isColor(0xffB5C3DE));
-      expect(colors.colorIcon, isColor(0xff9BA9C4));
-      expect(colors.colorHovered, isColor(0xff63718A));
-      expect(colors.colorHoveredText, isColor(0xffD4E3FF));
-      expect(colors.colorSplashed, isColor(0xff808EA8));
-      expect(colors.colorSplashedText, isColor(0xffF6F7FF));
+      expect(colors.colorText, isColor(0xffB2C1DC));
+      expect(colors.colorIcon, isColor(0xff98A7C1));
+      expect(colors.colorHovered, isColor(0xff5C6A82));
+      expect(colors.colorHoveredText, isColor(0xffCCDBF6));
+      expect(colors.colorSplashed, isColor(0xff7988A1));
+      expect(colors.colorSplashedText, isColor(0xffEBF1FF));
       expect(colors.fill, isColor(0xffA4B3CD));
       expect(colors.fillText, isColor(0xff0B1A2F));
       expect(colors.fillIcon, isColor(0xff3A485E));
       expect(colors.fillHovered, isColor(0xff7B89A3));
-      expect(colors.fillHoveredText, isColor(0xffF0F4FF));
+      expect(colors.fillHoveredText, isColor(0xffEDF2FF));
       expect(colors.fillSplashed, isColor(0xff5E6C84));
-      expect(colors.fillSplashedText, isColor(0xffD0DEFA));
+      expect(colors.fillSplashedText, isColor(0xffCDDCF7));
       expect(colors.text, isColor(0xff7B89A2));
       expect(colors.textHovered, isColor(0xffC2D0EC));
       expect(colors.textHoveredText, isColor(0xff3B495F));
@@ -41,29 +41,43 @@ void main() {
         backgroundTone: 0.0,
       );
       expect(colors.color, isColor(0xff334157));
-      expect(colors.colorBorder, isColor(0xff76849D));
-      expect(colors.colorText, isColor(0xffB5C3DE));
-      expect(colors.colorIcon, isColor(0xff9BA9C4));
-      expect(colors.colorHovered, isColor(0xff63718A));
-      expect(colors.colorHoveredText, isColor(0xffD4E3FF));
-      expect(colors.colorSplashed, isColor(0xff808EA8));
-      expect(colors.colorSplashedText, isColor(0xffF6F7FF));
-      expect(colors.fill, isColor(0xff8391AB));
-      expect(colors.fillText, isColor(0xffFAF9FF));
-      expect(colors.fillIcon, isColor(0xffDFE9FF));
-      expect(colors.fillHovered, isColor(0xffABB9D4));
-      expect(colors.fillHoveredText, isColor(0xff18263B));
-      expect(colors.fillSplashed, isColor(0xffC3D2ED));
-      expect(colors.fillSplashedText, isColor(0xff3C4A61));
-      expect(colors.text, isColor(0xffA4B2CD));
-      expect(colors.textHovered, isColor(0xff5B6981));
-      expect(colors.textHoveredText, isColor(0xffCFDDF9));
-      expect(colors.textSplashed, isColor(0xff8290AA));
-      expect(colors.textSplashedText, isColor(0xffF8F8FF));
+      expect(colors.colorBorder, isColor(0xff697790));
+      expect(colors.colorText, isColor(0xffB2C1DC));
+      expect(colors.colorIcon, isColor(0xff98A7C1));
+      expect(colors.colorHovered, isColor(0xff5C6A82));
+      expect(colors.colorHoveredText, isColor(0xffCCDBF6));
+      expect(colors.colorSplashed, isColor(0xff7988A1));
+      expect(colors.colorSplashedText, isColor(0xffEBF1FF));
+      expect(colors.fill, isColor(0xff7D8BA4));
+      expect(colors.fillText, isColor(0xffEFF3FF));
+      expect(colors.fillIcon, isColor(0xffD3E1FD));
+      expect(colors.fillHovered, isColor(0xffA2B0CB));
+      expect(colors.fillHoveredText, isColor(0xff051529));
+      expect(colors.fillSplashed, isColor(0xffBAC8E4));
+      expect(colors.fillSplashedText, isColor(0xff2F3D53));
+      expect(colors.text, isColor(0xffA1AFCA));
+      expect(colors.textHovered, isColor(0xff54627A));
+      expect(colors.textHoveredText, isColor(0xffC7D6F1));
+      expect(colors.textSplashed, isColor(0xff7B8AA3));
+      expect(colors.textSplashedText, isColor(0xffEDF2FF));
     });
   });
 
-  group('helpers', skip: 'helpers like test generators', () {
+  group('regression', () {
+    test('#02174E should have blue border, not white', () {
+      // Very dark blue on very dark background (both ~tone 10) should get
+      // a lighter blue border (~tone 50), not an extreme white fallback.
+      // The L* is conservative to ensure chromatic colors meet contrast.
+      final colors = SafeColors.from(
+        const Color(0xff02174E),
+        backgroundTone: 10.0,
+      );
+      expect(colors.color, isColor(0xff02174E));
+      expect(colors.colorBorder, isColor(0xff6373AD)); // blue at ~tone 50
+    });
+  });
+
+  group('helpers', skip: 'test generators', () {
     const color = Color(0xff334157);
 
     test('generate light mode test code', () {
