@@ -61,10 +61,10 @@ class Scorer {
       final percentage = hueToPercent[i];
       if (percentage == 0.0) continue;
       hueToSmearedPercent[hue] += percentage;
-      for (double i = 1.0; i < smearDistance; i += 1.0) {
-        hueToSmearedPercent[sanitizeDegreesDouble(hue + i).round()] +=
+      for (double offset = 1.0; offset < smearDistance; offset += 1.0) {
+        hueToSmearedPercent[sanitizeDegreesDouble(hue + offset).round()] +=
             percentage;
-        hueToSmearedPercent[sanitizeDegreesDouble(hue - i).round()] +=
+        hueToSmearedPercent[sanitizeDegreesDouble(hue - offset).round()] +=
             percentage;
       }
     }
