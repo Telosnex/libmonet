@@ -6,6 +6,7 @@ import 'package:libmonet/contrast.dart';
 import 'package:libmonet/debug_print.dart';
 import 'package:libmonet/hex_codes.dart';
 import 'package:libmonet/luma.dart';
+
 import 'package:libmonet/util/with_opacity_neue.dart';
 import 'package:libmonet/wcag.dart';
 
@@ -80,7 +81,7 @@ OpacityResult getOpacity({
   // 2. We need the protection layer to create contrast for `foregroundLstar`.
   // What L* will create sufficient contrast?
 
-  final lumaAfterProtection = lumaFromLstar(lstarAfterProtection);
+  
   monetDebug(debug,
       () => 'Protection needs to create L* ${lstarAfterProtection.round()}');
   // 3. Find the opacity.
@@ -110,11 +111,16 @@ OpacityResult getOpacity({
   // - oP = (lPF - lB) / (lP - lB)
 
   // Let's find the opacity for the minimum background / lightest protection.
-  // lPF = lumaAfterProtection
-  // lB = luma(minBgLstar)
-  // lP = 100.0 (maximizing L* minimizes opacity)
-  const lPMin = 100.0;
-  final lBMin = lumaFromLstar(minBgLstar);
+  // We use sRGB-encoded values because alpha blending operates in sRGB space.
+  //
+  // sP = sRGB value of protection layer (1.0 for white, 0.0 for black)
+  // sB = sRGB value of background
+  // sPF = sRGB value needed after blending to achieve target contrast
+  //
+  // oP = (sPF - sB) / (sP - sB)
+  const lstarPMin = 100.0;
+  const sPMin = 1.0; // lumaFromLstar(100.0) / 100 = 1.0 (white)
+  final sBMin = lumaFromLstar(minBgLstar) / 100.0;
   final lstarPFMin = switch (algo) {
     (Algo.wcag21) => lighterLstarUnsafe(
         lstar: foregroundLstar, contrastRatio: absoluteContrast),
@@ -123,16 +129,13 @@ OpacityResult getOpacity({
         absoluteContrast,
       ),
   };
-  final lPFMin = lumaFromLstar(lstarPFMin);
-  // oP = (lPF - lB) / (lP - lB)
-  final oPMinRaw = (lPFMin - lBMin) / (lPMin - lBMin);
+  final sPFMin = lumaFromLstar(lstarPFMin) / 100.0;
+  final oPMinRaw = (sPFMin - sBMin) / (sPMin - sBMin);
 
   // Let's find the opacity for the maximum background / darkest protection.
-  // lPF = lumaAfterProtection
-  // lB = luma(maxBgLstar)
-  // lP = 0.0 (minimizing L* minimizes opacity)
-  const lPMax = 0.0;
-  final lBMax = lumaFromLstar(maxBgLstar);
+  const lstarPMax = 0.0;
+  const sPMax = 0.0; // lumaFromLstar(0.0) / 100 = 0.0 (black)
+  final sBMax = lumaFromLstar(maxBgLstar) / 100.0;
   final lstarPFMax = switch (algo) {
     (Algo.wcag21) => darkerLstarUnsafe(
         lstar: foregroundLstar, contrastRatio: absoluteContrast),
@@ -141,9 +144,8 @@ OpacityResult getOpacity({
         absoluteContrast,
       ),
   };
-  final lPFMax = lumaFromLstar(lstarPFMax);
-  // oP = (lPF - lB) / (lP - lB)
-  final oPMaxRaw = (lPFMax - lBMax) / (lPMax - lBMax);
+  final sPFMax = lumaFromLstar(lstarPFMax) / 100.0;
+  final oPMaxRaw = (sPFMax - sBMax) / (sPMax - sBMax);
 
   double? cleanRawOpacity(double rawOpacity) {
     if (rawOpacity.isInfinite || rawOpacity.isNaN || rawOpacity < 0) {
@@ -158,19 +160,19 @@ OpacityResult getOpacity({
   final oPMax = cleanRawOpacity(oPMaxRaw);
 
   monetDebug(debug,
-      () => 'lPMin: $lPMin lBMin: $lBMin luminance: $lumaAfterProtection');
+      () => 'sPMin: $sPMin sBMin: $sBMin sPFMin: $sPFMin');
   monetDebug(
       debug,
       () =>
-          'opMinRaw: $oPMinRaw = ($lumaAfterProtection - $lBMin) / ($lPMin - $lBMin)');
+          'opMinRaw: $oPMinRaw = ($sPFMin - $sBMin) / ($sPMin - $sBMin)');
   monetDebug(
       debug, () => 'Raw opacity required with white protection: $oPMinRaw');
   monetDebug(debug,
-      () => 'lPMax: $lPMax lBMax: $lBMax luminance: $lumaAfterProtection');
+      () => 'sPMax: $sPMax sBMax: $sBMax sPFMax: $sPFMax');
   monetDebug(
       debug,
       () =>
-          'opMaxRaw: $oPMaxRaw = ($lumaAfterProtection - $lBMax) / ($lPMax - $lBMax)');
+          'opMaxRaw: $oPMaxRaw = ($sPFMax - $sBMax) / ($sPMax - $sBMax)');
   monetDebug(
       debug, () => 'Raw opacity required with black protection: $oPMaxRaw');
   monetDebug(
@@ -197,20 +199,21 @@ OpacityResult getOpacity({
     );
   } else if (oPMin != null && oPMax == null) {
     return OpacityResult(
-        lstar: lPMin, opacity: oPMin, requiredLstar: lstarAfterProtection);
+        lstar: lstarPMin, opacity: oPMin, requiredLstar: lstarAfterProtection);
   } else if (oPMin == null && oPMax != null) {
     return OpacityResult(
-        lstar: lPMax, opacity: oPMax, requiredLstar: lstarAfterProtection);
+        lstar: lstarPMax, opacity: oPMax, requiredLstar: lstarAfterProtection);
   } else {
     // If both are non-null, choose the one that's closer to the foreground.
+    // Visually, people prefer a white scrim for light content, black scrim for dark.
     final minBgDelta = (minBgLstar - foregroundLstar).abs();
     final maxBgDelta = (maxBgLstar - foregroundLstar).abs();
     if (minBgDelta < maxBgDelta) {
       return OpacityResult(
-          lstar: lPMin, opacity: oPMin!, requiredLstar: lstarAfterProtection);
+          lstar: lstarPMin, opacity: oPMin!, requiredLstar: lstarAfterProtection);
     } else {
       return OpacityResult(
-          lstar: lPMax, opacity: oPMax!, requiredLstar: lstarAfterProtection);
+          lstar: lstarPMax, opacity: oPMax!, requiredLstar: lstarAfterProtection);
     }
   }
 }
