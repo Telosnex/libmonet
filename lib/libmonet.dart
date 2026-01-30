@@ -41,7 +41,7 @@ export 'theming/button_style.dart';
 export 'theming/full_color_scheme.dart';
 export 'theming/monet_theme.dart';
 export 'theming/monet_theme_data.dart';
-export 'theming/safe_colors.dart';
+export 'theming/palette.dart';
 export 'theming/slider_flat.dart';
 export 'theming/slider_flat_shape.dart';
 export 'theming/slider_flat_thumb.dart';

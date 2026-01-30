@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/theming/safe_colors.dart';
+import 'package:libmonet/theming/palette.dart';
 import 'package:test/test.dart';
 
 import '../utils/color_matcher.dart';
@@ -9,7 +9,7 @@ import '../utils/color_matcher.dart';
 void main() {
   group('#334157', () {
     test('light mode', () {
-      final colors = SafeColors.from(
+      final colors = Palette.from(
         const Color(0xff334157),
         backgroundTone: 100.0,
       );
@@ -36,7 +36,7 @@ void main() {
     });
 
     test('dark mode', () {
-      final colors = SafeColors.from(
+      final colors = Palette.from(
         const Color(0xff334157),
         backgroundTone: 0.0,
       );
@@ -68,7 +68,7 @@ void main() {
       // Very dark blue on very dark background (both ~tone 10) should get
       // a lighter blue border (~tone 50), not an extreme white fallback.
       // The L* is conservative to ensure chromatic colors meet contrast.
-      final colors = SafeColors.from(
+      final colors = Palette.from(
         const Color(0xff02174E),
         backgroundTone: 10.0,
       );
@@ -81,7 +81,7 @@ void main() {
     const color = Color(0xff334157);
 
     test('generate light mode test code', () {
-      final answers = SafeColors.from(color, backgroundTone: 100.0);
+      final answers = Palette.from(color, backgroundTone: 100.0);
       final code = '''
       expect(colors.color, isColor(${hexFromArgb(color.argb).replaceAll('#', '0xff')}));
       expect(colors.colorBorder, isColor(${hexFromArgb(answers.colorBorder.argb).replaceAll('#', '0xff')}));
@@ -109,7 +109,7 @@ void main() {
     });
 
     test('generate dark mode test code', () {
-      final answers = SafeColors.from(color, backgroundTone: 0.0);
+      final answers = Palette.from(color, backgroundTone: 0.0);
       final code = '''
       expect(colors.color, isColor(${hexFromArgb(color.argb).replaceAll('#', '0xff')}));
       expect(colors.colorBorder, isColor(${hexFromArgb(answers.colorBorder.argb).replaceAll('#', '0xff')}));

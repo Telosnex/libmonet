@@ -1,12 +1,12 @@
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
-import 'package:libmonet/theming/safe_colors.dart';
+import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
 /// Interpolated theme data that lerps the three seed colors in HCT and
-/// constructs SafeColors for each frame, while keeping ThemeData stable by
+/// constructs Palette for each frame, while keeping ThemeData stable by
 /// default to avoid Material transient states.
 class InterpolatedMonetThemeData extends MonetThemeData {
   final MonetThemeData begin;
@@ -24,10 +24,13 @@ class InterpolatedMonetThemeData extends MonetThemeData {
                   begin.backgroundTone, end.backgroundTone, t) ??
               end.backgroundTone,
           brightness: begin.brightness,
-          primary: LerpedSafeColors(a: begin.primary, b: end.primary, t: t),
+          primary: PaletteLerped(
+              a: begin.primary, b: end.primary, t: t),
           secondary:
-              LerpedSafeColors(a: begin.secondary, b: end.secondary, t: t),
-          tertiary: LerpedSafeColors(a: begin.tertiary, b: end.tertiary, t: t),
+              PaletteLerped(
+              a: begin.secondary, b: end.secondary, t: t),
+          tertiary: PaletteLerped(
+              a: begin.tertiary, b: end.tertiary, t: t),
           algo: begin.algo,
           contrast: begin.contrast,
           scale: lerpDouble(begin.scale, end.scale, t) ?? end.scale,
@@ -48,7 +51,7 @@ class InterpolatedMonetThemeData extends MonetThemeData {
   }
 }
 
-/// Implicitly animated wrapper that smooths SafeColors transitions.
+/// Implicitly animated wrapper that smooths Palette transitions.
 /// By default, Material ThemeData is not animated.
 class AnimatedMonetTheme extends StatefulWidget {
   final MonetThemeData begin;
@@ -130,9 +133,9 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
       _begin = MonetThemeData(
         brightness: snapshot.brightness,
         backgroundTone: snapshot.backgroundTone,
-        primary: SnapshotSafeColors.capture(snapshot.primary),
-        secondary: SnapshotSafeColors.capture(snapshot.secondary),
-        tertiary: SnapshotSafeColors.capture(snapshot.tertiary),
+        primary: PaletteSnapshot.capture(snapshot.primary),
+        secondary: PaletteSnapshot.capture(snapshot.secondary),
+        tertiary: PaletteSnapshot.capture(snapshot.tertiary),
         algo: snapshot.algo,
         contrast: snapshot.contrast,
         scale: snapshot.scale,

@@ -47,7 +47,7 @@ enum _Token {
   textSplashedText,
 }
 
-/// SafeColors
+/// Palette
 ///
 /// Roles are conceptualized as a small cross-product:
 /// - Container family (what you paint onto): background, fill (brand on background), color (brand container)
@@ -62,7 +62,7 @@ enum _Token {
 ///
 /// Brand-tinted on-roles use baseColor's hue/chroma; neutral on-background roles use background's hue/chroma.
 /// Tones are solved via contrastingLstar against the container tone using the configured algorithm and contrast dial.
-class SafeColors {
+class Palette {
   // Enable verbose debug logging during development/tests.
   // Tests can toggle this flag to print candidate/cost details.
   static bool debug = false;
@@ -91,7 +91,7 @@ class SafeColors {
   final Map<_Token, Color> _cache = {};
 
   // Constructor now only takes core parameters needed for calculations
-  SafeColors._(
+  Palette._(
       {required Color baseColor,
       required Color baseBackground,
       double? backgroundTone,
@@ -363,15 +363,15 @@ class SafeColors {
     return isValid;
   }
 
-  /// Use for colorful backgrounds: [SafeColors.from] reduces the chroma of the
+  /// Use for colorful backgrounds: [Palette.from] reduces the chroma of the
   /// background color to 16.
-  factory SafeColors.fromColorAndBackground(
+  factory Palette.fromColorAndBackground(
     Color color,
     Color background, {
     double contrast = 0.5,
     Algo algo = Algo.apca,
   }) {
-    return SafeColors._(
+    return Palette._(
       baseColor: color,
       baseBackground: background,
       contrast: contrast,
@@ -379,7 +379,7 @@ class SafeColors {
     );
   }
 
-  factory SafeColors.from(
+  factory Palette.from(
     Color color, {
     required double backgroundTone,
     double contrast = 0.5,
@@ -390,7 +390,7 @@ class SafeColors {
     final backgroundHct =
         Hct.from(colorHct.hue, math.min(16, colorHct.chroma), backgroundTone);
 
-    return SafeColors._(
+    return Palette._(
       baseColor: color,
       baseBackground: backgroundHct.color,
       backgroundTone: backgroundTone,
@@ -515,7 +515,7 @@ class SafeColors {
     required double chroma,
   }) {
     void debugLog(String Function() message) {
-      if (SafeColors.debug) {
+      if (Palette.debug) {
         // ignore: avoid_print
         print(message());
       }
@@ -816,7 +816,7 @@ class SafeColors {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SafeColors &&
+      other is Palette &&
           runtimeType == other.runtimeType &&
           color.argb == other.color.argb &&
           background.argb == other.background.argb &&
@@ -838,15 +838,15 @@ class SafeColors {
       _backgroundToneOverride);
 }
 
-// Interpolated view of SafeColors that HCT-lerps token outputs between two
-// SafeColors instances. Lives in this library to access the private
+// Interpolated view of [Palette] that HCT-lerps token outputs between two
+// [Palette] instances. Lives in this library to access the private
 // constructor.
-class LerpedSafeColors extends SafeColors {
-  final SafeColors a;
-  final SafeColors b;
+class PaletteLerped extends Palette {
+  final Palette a;
+  final Palette b;
   final double t;
 
-  LerpedSafeColors({required this.a, required this.b, required this.t})
+  PaletteLerped({required this.a, required this.b, required this.t})
       : super._(
           baseColor: a.color,
           baseBackground: a.background,
@@ -951,10 +951,10 @@ class LerpedSafeColors extends SafeColors {
   Color get textSplashedText => _lerp(a.textSplashedText, b.textSplashedText);
 }
 
-// Snapshot of SafeColors: captures token outputs at construction time and
+// Snapshot of [Palette]: captures token outputs at construction time and
 // returns the same values thereafter. Lives in this library to access the
 // private constructor.
-class SnapshotSafeColors extends SafeColors {
+class PaletteSnapshot extends Palette {
   // Background
   final Color _background;
   final Color _backgroundText;
@@ -1000,7 +1000,7 @@ class SnapshotSafeColors extends SafeColors {
   final Color _textSplashed;
   final Color _textSplashedText;
 
-  SnapshotSafeColors._(
+  PaletteSnapshot._(
     Color baseColor,
     Color baseBackground,
     Color background,
@@ -1084,8 +1084,8 @@ class SnapshotSafeColors extends SafeColors {
           algo: Algo.apca,
         );
 
-  factory SnapshotSafeColors.capture(SafeColors s) {
-    return SnapshotSafeColors._(
+  factory PaletteSnapshot.capture(Palette s) {
+    return PaletteSnapshot._(
       s.color,
       s.background,
       s.background,

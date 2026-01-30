@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/theming/safe_colors.dart';
+import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
 class MonetTheme extends StatelessWidget {
   final MonetThemeData monetThemeData;
   final Widget child;
 
-  SafeColors get primary => monetThemeData.primary;
-  SafeColors get secondary => monetThemeData.secondary;
-  SafeColors get tertiary => monetThemeData.tertiary;
+  Palette get primary => monetThemeData.primary;
+  Palette get secondary => monetThemeData.secondary;
+  Palette get tertiary => monetThemeData.tertiary;
   Algo get algo => monetThemeData.algo;
   Brightness get brightness => monetThemeData.brightness;
   double get contrast => monetThemeData.contrast;

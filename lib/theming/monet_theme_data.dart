@@ -16,9 +16,9 @@ const _kFontFamilyFallback = [
 ];
 
 class MonetThemeData {
-  final SafeColors primary;
-  final SafeColors secondary;
-  final SafeColors tertiary;
+  final Palette primary;
+  final Palette secondary;
+  final Palette tertiary;
 
   final Algo algo;
   final double backgroundTone;
@@ -83,9 +83,9 @@ class MonetThemeData {
       't${typography.hashCode}'.hashCode;
 
   MonetThemeData copyWith({
-    SafeColors? primary,
-    SafeColors? secondary,
-    SafeColors? tertiary,
+    Palette? primary,
+    Palette? secondary,
+    Palette? tertiary,
     Algo? algo,
     double? backgroundTone,
     Brightness? brightness,
@@ -165,17 +165,17 @@ class MonetThemeData {
     Algo algo = Algo.apca,
     Typography Function(ColorScheme)? typography,
   }) {
-    final primarySafeColors = SafeColors.from(primary,
+    final primaryPalette = Palette.from(primary,
         backgroundTone: backgroundTone, contrast: contrast, algo: algo);
-    final secondarySafeColors = SafeColors.from(secondary,
+    final secondaryPalette = Palette.from(secondary,
         backgroundTone: backgroundTone, contrast: contrast, algo: algo);
-    final tertiarySafeColors = SafeColors.from(tertiary,
+    final tertiaryPalette = Palette.from(tertiary,
         backgroundTone: backgroundTone, contrast: contrast, algo: algo);
     return MonetThemeData(
       brightness: brightness,
-      primary: primarySafeColors,
-      secondary: secondarySafeColors,
-      tertiary: tertiarySafeColors,
+      primary: primaryPalette,
+      secondary: secondaryPalette,
+      tertiary: tertiaryPalette,
       backgroundTone: backgroundTone,
       algo: algo,
       contrast: contrast,
@@ -186,7 +186,7 @@ class MonetThemeData {
 
   String _cacheKey() {
     // Create a unique key based on theme parameters
-    // Avoid triggering expensive SafeColors lazy getters (like fill)
+    // Avoid triggering expensive Palette lazy getters (like fill)
     // in order to build the key. Use base colors + config instead.
     // Skip typography function since it can't be reliably compared.
     return hashCode.toString();
@@ -330,7 +330,7 @@ class MonetThemeData {
     return const ActionIconThemeData();
   }
 
-  static AppBarTheme appBarTheme(SafeColors colors, TextTheme textTheme) {
+  static AppBarTheme appBarTheme(Palette colors, TextTheme textTheme) {
     return AppBarTheme(
       titleTextStyle: textTheme.displayLarge,
       backgroundColor: colors.background,
@@ -341,7 +341,7 @@ class MonetThemeData {
   }
 
   static BadgeThemeData badgeThemeData(
-      BuildContext context, SafeColors colors, TextTheme textTheme) {
+      BuildContext context, Palette colors, TextTheme textTheme) {
     return BadgeThemeData(
       backgroundColor: colors.fill,
       textColor: colors.fillText,
@@ -358,7 +358,7 @@ class MonetThemeData {
   }
 
   static MaterialBannerThemeData bannerThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return MaterialBannerThemeData(
       backgroundColor: colors.fill,
       surfaceTintColor: colors.fill,
@@ -373,7 +373,7 @@ class MonetThemeData {
     );
   }
 
-  static BottomAppBarThemeData bottomAppBarTheme(SafeColors colors) {
+  static BottomAppBarThemeData bottomAppBarTheme(Palette colors) {
     return BottomAppBarThemeData(
       color: colors.background,
       elevation: 0,
@@ -387,7 +387,7 @@ class MonetThemeData {
     );
   }
 
-  static BottomSheetThemeData bottomSheetThemeData(SafeColors colors) {
+  static BottomSheetThemeData bottomSheetThemeData(Palette colors) {
     return BottomSheetThemeData(
       backgroundColor: colors.background,
       elevation: 0,
@@ -403,7 +403,7 @@ class MonetThemeData {
     return const ButtonThemeData();
   }
 
-  static CardThemeData cardTheme(SafeColors colors) {
+  static CardThemeData cardTheme(Palette colors) {
     return CardThemeData(
       clipBehavior: Clip.none, // match default
       color: colors.background,
@@ -418,7 +418,7 @@ class MonetThemeData {
     );
   }
 
-  static CheckboxThemeData checkboxThemeData(SafeColors colors) {
+  static CheckboxThemeData checkboxThemeData(Palette colors) {
     return CheckboxThemeData(
       mouseCursor: const WidgetStatePropertyAll(
           null), // allows widget to default to clickable
@@ -471,7 +471,7 @@ class MonetThemeData {
 
   static ChipThemeData chipThemeData(
     Brightness brightness,
-    SafeColors colors,
+    Palette colors,
     TextTheme textTheme,
   ) {
     return ChipThemeData.fromDefaults(
@@ -521,7 +521,7 @@ class MonetThemeData {
 
   static DatePickerThemeData datePickerThemeData(
     Brightness brightness,
-    SafeColors colors,
+    Palette colors,
     TextTheme textTheme,
   ) {
     final background = WidgetStateProperty.resolveWith(
@@ -606,7 +606,7 @@ class MonetThemeData {
   }
 
   static DialogThemeData createDialogTheme(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return DialogThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
@@ -625,7 +625,7 @@ class MonetThemeData {
   }
 
   static DropdownMenuThemeData dropdownMenuThemeData(
-    SafeColors colors,
+    Palette colors,
     TextTheme textTheme,
   ) {
     return DropdownMenuThemeData(
@@ -638,13 +638,13 @@ class MonetThemeData {
     );
   }
 
-  static ElevatedButtonThemeData elevatedButtonTheme(SafeColors colors) {
+  static ElevatedButtonThemeData elevatedButtonTheme(Palette colors) {
     return ElevatedButtonThemeData(
       style: fillButtonStyle(colors),
     );
   }
 
-  static ExpansionTileThemeData expansionTileThemeData(SafeColors colors) {
+  static ExpansionTileThemeData expansionTileThemeData(Palette colors) {
     return ExpansionTileThemeData(
       backgroundColor: colors.background,
       collapsedBackgroundColor: colors.background,
@@ -675,12 +675,12 @@ class MonetThemeData {
     );
   }
 
-  static FilledButtonThemeData filledButtonTheme(SafeColors colors) {
+  static FilledButtonThemeData filledButtonTheme(Palette colors) {
     return FilledButtonThemeData(style: fillButtonStyle(colors));
   }
 
   static FloatingActionButtonThemeData fabThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return FloatingActionButtonThemeData(
       foregroundColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.pressed)) {
@@ -722,7 +722,7 @@ class MonetThemeData {
     );
   }
 
-  static IconButtonThemeData iconButtonThemeData(SafeColors colors) {
+  static IconButtonThemeData iconButtonThemeData(Palette colors) {
     return IconButtonThemeData(
       style: iconButtonStyle(
         colors,
@@ -731,7 +731,7 @@ class MonetThemeData {
   }
 
   static ListTileThemeData listTileThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return ListTileThemeData(
       dense: true,
       shape: null,
@@ -754,13 +754,13 @@ class MonetThemeData {
     );
   }
 
-  static MenuBarThemeData menuBarThemeData(SafeColors colors) {
+  static MenuBarThemeData menuBarThemeData(Palette colors) {
     return MenuBarThemeData(
       style: createMenuStyleForMenuBar(colors),
     );
   }
 
-  static MenuStyle createMenuStyleForDropdown(SafeColors colors) {
+  static MenuStyle createMenuStyleForDropdown(Palette colors) {
     return MenuStyle(
       backgroundColor: WidgetStatePropertyAll(colors.background),
       shadowColor: WidgetStateProperty.all(Colors.transparent),
@@ -786,7 +786,7 @@ class MonetThemeData {
     );
   }
 
-  static MenuStyle createMenuStyleForMenuBar(SafeColors colors) {
+  static MenuStyle createMenuStyleForMenuBar(Palette colors) {
     return MenuStyle(
       backgroundColor: WidgetStatePropertyAll(colors.background),
       shadowColor: WidgetStateProperty.all(Colors.transparent),
@@ -797,7 +797,7 @@ class MonetThemeData {
     );
   }
 
-  static MenuButtonThemeData menuButtonThemeData(SafeColors colors) {
+  static MenuButtonThemeData menuButtonThemeData(Palette colors) {
     return MenuButtonThemeData(
       style: textButtonStyle(colors).copyWith(
         padding: WidgetStateProperty.all(const EdgeInsets.all(4)),
@@ -810,14 +810,14 @@ class MonetThemeData {
     );
   }
 
-  static MenuThemeData menuThemeData(SafeColors colors) {
+  static MenuThemeData menuThemeData(Palette colors) {
     return MenuThemeData(
       style: createMenuStyleForDropdown(colors),
     );
   }
 
   static NavigationBarThemeData navigationBarThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return NavigationBarThemeData(
       height: 80, // match default
       backgroundColor: colors.background,
@@ -850,7 +850,7 @@ class MonetThemeData {
   }
 
   static BottomNavigationBarThemeData bottomNavigationBarThemeData(
-      SafeColors colors, double scale, TextTheme textTheme) {
+      Palette colors, double scale, TextTheme textTheme) {
     return BottomNavigationBarThemeData(
       backgroundColor: colors.background,
       elevation: 0,
@@ -881,7 +881,7 @@ class MonetThemeData {
   }
 
   static NavigationDrawerThemeData navigationDrawerThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return NavigationDrawerThemeData(
       tileHeight: 56,
       /* match _NavigationDrawerDefaultsM3 */
@@ -904,7 +904,7 @@ class MonetThemeData {
   }
 
   static NavigationRailThemeData navigationRailThemeData(
-      SafeColors colors, double scale, TextTheme textTheme) {
+      Palette colors, double scale, TextTheme textTheme) {
     return NavigationRailThemeData(
       backgroundColor: colors.background,
       elevation: 0,
@@ -926,14 +926,14 @@ class MonetThemeData {
     );
   }
 
-  static OutlinedButtonThemeData outlinedButtonTheme(SafeColors colors) {
+  static OutlinedButtonThemeData outlinedButtonTheme(Palette colors) {
     return OutlinedButtonThemeData(
       style: outlineButtonStyle(colors),
     );
   }
 
   static PopupMenuThemeData popupMenuThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return PopupMenuThemeData(
       mouseCursor:
           WidgetStateProperty.all(SystemMouseCursors.click), // match default
@@ -961,7 +961,7 @@ class MonetThemeData {
   }
 
   static ProgressIndicatorThemeData progressIndicatorThemeData(
-      SafeColors colors) {
+      Palette colors) {
     return ProgressIndicatorThemeData(
       color: colors.fill,
       linearTrackColor: colors.background,
@@ -971,7 +971,7 @@ class MonetThemeData {
     );
   }
 
-  static RadioThemeData radioThemeData(SafeColors colors) {
+  static RadioThemeData radioThemeData(Palette colors) {
     // States have choices that look odd compared to other components.
     // This component is particularly challenging due to it being essentially
     // a fill with a circle surrounding it for hover state. These were
@@ -1000,7 +1000,7 @@ class MonetThemeData {
   }
 
   static SearchBarThemeData searchBarThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return SearchBarThemeData(
       elevation: const WidgetStatePropertyAll(2),
       backgroundColor: WidgetStatePropertyAll(colors.background),
@@ -1035,7 +1035,7 @@ class MonetThemeData {
   }
 
   static SearchViewThemeData searchViewThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return SearchViewThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
@@ -1056,7 +1056,7 @@ class MonetThemeData {
     );
   }
 
-  static SegmentedButtonThemeData segmentedButtonThemeData(SafeColors colors) {
+  static SegmentedButtonThemeData segmentedButtonThemeData(Palette colors) {
     // Button style in-lined due to unique requirements, essentially, a text
     // button when not selected, fillbutton when selected.
     final selectedBackground = widgetPropertyByState(
@@ -1107,7 +1107,7 @@ class MonetThemeData {
   }
 
   static SliderThemeData sliderThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return SliderThemeData(
       overlayShape: const RoundSliderOverlayShape(),
       tickMarkShape: SliderTickMarkShape.noTickMark,
@@ -1150,7 +1150,7 @@ class MonetThemeData {
   }
 
   static SnackBarThemeData snackBarThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return SnackBarThemeData(
       backgroundColor: colors.color,
       actionTextColor: colors.colorText,
@@ -1177,7 +1177,7 @@ class MonetThemeData {
     );
   }
 
-  static SwitchThemeData switchThemeData(SafeColors colors) {
+  static SwitchThemeData switchThemeData(Palette colors) {
     return SwitchThemeData(
       thumbColor: WidgetStatePropertyAll(colors.fill),
       trackColor: WidgetStatePropertyAll(colors.background),
@@ -1215,7 +1215,7 @@ class MonetThemeData {
   }
 
   static TabBarThemeData createTabBarTheme(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     final labelColor = WidgetStateColor.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return colors.text;
@@ -1257,13 +1257,13 @@ class MonetThemeData {
     );
   }
 
-  TextButtonThemeData textButtonTheme(SafeColors colors) {
+  TextButtonThemeData textButtonTheme(Palette colors) {
     return TextButtonThemeData(
       style: textButtonStyle(colors),
     );
   }
 
-  static TextSelectionThemeData textSelectionThemeData(SafeColors colors) {
+  static TextSelectionThemeData textSelectionThemeData(Palette colors) {
     return TextSelectionThemeData(
       cursorColor: colors.fill,
       // Can't induce text to use textHoveredText, so instead, use opacity to
@@ -1275,7 +1275,7 @@ class MonetThemeData {
   }
 
   static TimePickerThemeData timePickerThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return TimePickerThemeData(
       backgroundColor: colors.background,
       cancelButtonStyle: outlineButtonStyle(colors),
@@ -1356,7 +1356,7 @@ class MonetThemeData {
   }
 
   static ToggleButtonsThemeData toggleButtonsThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return ToggleButtonsThemeData(
       textStyle: textTheme.labelLarge,
       constraints: const BoxConstraints(
@@ -1387,7 +1387,7 @@ class MonetThemeData {
   }
 
   static TooltipThemeData tooltipThemeData(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     return TooltipThemeData(
       constraints: BoxConstraints(minHeight: 32),
       padding: switch (defaultTargetPlatform) {
@@ -1424,7 +1424,7 @@ class MonetThemeData {
   }
 
   static InputDecorationTheme inputDecorationTheme(
-      SafeColors colors, TextTheme textTheme) {
+      Palette colors, TextTheme textTheme) {
     final border = OutlineInputBorder(
       borderSide: BorderSide(width: 2, color: colors.fill),
       borderRadius: BorderRadius.circular(8),
@@ -1448,12 +1448,12 @@ class MonetThemeData {
           .copyWith(fontWeight: FontWeight.w700),
       // Can't specify text in hover state: introduce some change in the
       // background, but not so much as to make the text unreadable, as
-      // primarySafeColors.textHovered would do.
+      // primaryPalette.textHovered would do.
       hoverColor: colors.text.withOpacityNeue(0.2),
     );
   }
 
-  static IconThemeData iconThemeData(SafeColors colors, double scale) {
+  static IconThemeData iconThemeData(Palette colors, double scale) {
     return IconThemeData(
       size: 24.0 * scale.sizeScale,
       fill: 0.0,
@@ -1466,7 +1466,7 @@ class MonetThemeData {
     );
   }
 
-  ScrollbarThemeData scrollbarThemeData(SafeColors colors) {
+  ScrollbarThemeData scrollbarThemeData(Palette colors) {
     const thickness = 8.0;
     return ScrollbarThemeData(
       thumbVisibility: const WidgetStatePropertyAll(false),
@@ -1685,7 +1685,7 @@ class MonetThemeData {
     return textTheme;
   }
 
-  DividerThemeData dividerThemeData(SafeColors colors) {
+  DividerThemeData dividerThemeData(Palette colors) {
     return DividerThemeData(
       color: colors.backgroundText,
       space: 4,
@@ -1695,7 +1695,7 @@ class MonetThemeData {
     );
   }
 
-  DrawerThemeData drawerThemeData(SafeColors colors) {
+  DrawerThemeData drawerThemeData(Palette colors) {
     return DrawerThemeData(
       backgroundColor: colors.backgroundText,
       scrimColor: Colors.black.withOpacityNeue(0.54),
@@ -1710,16 +1710,16 @@ class MonetThemeData {
 
 ColorScheme _createColorScheme(
   Brightness brightness,
-  SafeColors primary,
-  SafeColors secondary,
-  SafeColors tertiary,
+  Palette primary,
+  Palette secondary,
+  Palette tertiary,
   double contrast,
   Algo algo,
   Color surface,
 ) {
   final surfaceHct = Hct.fromColor(surface);
 
-  final error = SafeColors.from(
+  final error = Palette.from(
     Colors.red,
     backgroundTone: surfaceHct.tone,
     contrast: contrast,

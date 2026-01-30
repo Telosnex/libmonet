@@ -1,18 +1,18 @@
 import 'package:libmonet/effects/opacity.dart';
 import 'package:libmonet/effects/shadows.dart';
-import 'package:libmonet/theming/safe_colors.dart';
+import 'package:libmonet/theming/palette.dart';
 import 'package:monet_studio/padding.dart';
 
 import 'package:flutter/material.dart';
 import 'package:libmonet/theming/button_style.dart';
 
-class SafeColorsPreviewRow extends StatelessWidget {
-  final SafeColors safeColors;
+class PalettePreviewRow extends StatelessWidget {
+  final Palette palette;
   final OpacityResult? scrim;
   final ShadowResult? shadows;
 
-  const SafeColorsPreviewRow({
-    required this.safeColors,
+  const PalettePreviewRow({
+    required this.palette,
     super.key,
     this.scrim,
     this.shadows,
@@ -20,11 +20,11 @@ class SafeColorsPreviewRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _safeColorsRow(context, safeColors);
+    return _paletteRow(context, palette);
   }
 
-  Widget _safeColorsRow(BuildContext context, SafeColors colors) {
-    final textButtonStyleBase = fillButtonStyle(safeColors);
+  Widget _paletteRow(BuildContext context, Palette colors) {
+    final textButtonStyleBase = fillButtonStyle(palette);
     final textButtonStyle = textButtonStyleBase.copyWith(
         textStyle: WidgetStateProperty.resolveWith((states) {
       final base = textButtonStyleBase.textStyle?.resolve(states);

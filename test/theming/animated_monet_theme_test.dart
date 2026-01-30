@@ -33,7 +33,7 @@ void main() {
     );
   }
 
-  testWidgets('AnimatedMonetTheme animates SafeColors.background', (tester) async {
+  testWidgets('AnimatedMonetTheme animates Palette.background', (tester) async {
     final begin = themeFrom(Colors.blue);
     final end = themeFrom(Colors.purple);
     Color? sampled;

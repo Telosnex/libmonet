@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/theming/safe_colors.dart';
+import 'package:libmonet/theming/palette.dart';
 
 class MonetColorScheme extends ThemeExtension<MonetColorScheme> {
   final Color primaryColor;
@@ -236,10 +236,10 @@ class MonetColorScheme extends ThemeExtension<MonetColorScheme> {
     );
   }
 
-  MonetColorScheme.fromSafeColors({
-    required SafeColors primary,
-    required SafeColors secondary,
-    required SafeColors tertiary,
+  MonetColorScheme.fromPalettes({
+    required Palette primary,
+    required Palette secondary,
+    required Palette tertiary,
   })  : primaryColor = primary.color,
         primaryColorText = primary.colorText,
         primaryColorHover = primary.colorHovered,

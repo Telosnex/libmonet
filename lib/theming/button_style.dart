@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:libmonet/theming/safe_colors.dart';
+import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
 // Resolve Material states to our 3-state model and return a value per state.
@@ -38,7 +38,7 @@ EdgeInsetsGeometry get padding {
 
 // 1) Background button — recolor container per state; never use overlay
 ButtonStyle backgroundButtonStyle(
-  SafeColors sc, {
+  Palette sc, {
   bool showBorder = false,
   TextStyle? textStyle,
   double borderWidth = 2,
@@ -87,7 +87,7 @@ ButtonStyle backgroundButtonStyle(
 
 // 2) Fill button — recolor container per state; never use overlay
 ButtonStyle fillButtonStyle(
-  SafeColors sc, {
+  Palette sc, {
   bool showBorder = true,
   TextStyle? textStyle,
   double borderWidth = 2,
@@ -133,7 +133,7 @@ ButtonStyle fillButtonStyle(
 
 // 3) Color button — recolor container per state; never use overlay
 ButtonStyle colorButtonStyle(
-  SafeColors sc, {
+  Palette sc, {
   bool showBorder = true,
   TextStyle? textStyle,
   double borderWidth = 2,
@@ -181,7 +181,7 @@ ButtonStyle colorButtonStyle(
 
 /// Text button with transparent background, no border.
 ButtonStyle textButtonStyle(
-  SafeColors sc, {
+  Palette sc, {
   TextStyle? textStyle,
 }) {
   return ButtonStyle(
@@ -208,7 +208,7 @@ ButtonStyle textButtonStyle(
 
 /// Icon button: transparent background and stateful icon/text colors.
 ButtonStyle iconButtonStyle(
-  SafeColors sc, {
+  Palette sc, {
   TextStyle? textStyle,
 }) {
   return ButtonStyle(
@@ -245,7 +245,7 @@ ButtonStyle iconButtonStyle(
 
 /// Outlined button with transparent background and border.
 ButtonStyle outlineButtonStyle(
-  SafeColors sc, {
+  Palette sc, {
   TextStyle? textStyle,
   double borderWidth = 2,
 }) {

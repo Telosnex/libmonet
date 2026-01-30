@@ -241,18 +241,18 @@ class Home extends HookConsumerWidget {
           children: [
             Column(
               children: [
-                SafeColorsPreviewRow(
-                  safeColors: MonetTheme.of(context).primary,
+                PalettePreviewRow(
+                  palette: MonetTheme.of(context).primary,
                   scrim: previewRowScrim,
                   shadows: previewRowShadows,
                 ),
-                SafeColorsPreviewRow(
-                  safeColors: MonetTheme.of(context).secondary,
+                PalettePreviewRow(
+                  palette: MonetTheme.of(context).secondary,
                   scrim: previewRowScrim,
                   shadows: previewRowShadows,
                 ),
-                SafeColorsPreviewRow(
-                  safeColors: MonetTheme.of(context).tertiary,
+                PalettePreviewRow(
+                  palette: MonetTheme.of(context).tertiary,
                   scrim: previewRowScrim,
                   shadows: previewRowShadows,
                 ),
