@@ -4,16 +4,7 @@ import 'dart:ui' show FontFeature;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/effects/temperature.dart';
 import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/theming/safe_colors.dart';
-import 'package:libmonet/theming/button_style.dart';
-import 'package:libmonet/theming/slider_flat_shape.dart';
-import 'package:libmonet/theming/slider_flat_thumb.dart';
-import 'package:libmonet/util/lru_cache.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 
 const _kFontFamilyFallback = [
