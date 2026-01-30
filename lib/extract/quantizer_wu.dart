@@ -58,12 +58,7 @@ class QuantizerWu implements Quantizer {
   }
 
   static int getIndex(int r, int g, int b) {
-    return (r << (indexBits * 2)) +
-        (r << (indexBits + 1)) +
-        (g << indexBits) +
-        r +
-        g +
-        b;
+    return r * sideLength * sideLength + g * sideLength + b;
   }
 
   void constructHistogram(Map<int, int> pixels) {
