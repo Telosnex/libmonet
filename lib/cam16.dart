@@ -25,6 +25,11 @@ import 'cam16_viewing_conditions.dart';
 
 /// CAM16, a color appearance model. Colors are not just defined by their hex
 /// code, but rather, a hex code and viewing conditions.
+///
+/// Note: This class uses internal mutable state for performance optimization.
+/// In Dart, this is safe because isolates have separate heaps (objects are
+/// copied when sent between isolates) and the event loop runs synchronous
+/// code atomically.
 class Cam16 {
   /// Like red, orange, yellow, green, etc.
   final double hue;

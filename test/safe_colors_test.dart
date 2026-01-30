@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:libmonet/hex_codes.dart';
 import 'package:libmonet/safe_colors.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'utils/color_matcher.dart';
 

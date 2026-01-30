@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:libmonet/hct.dart';
 import 'package:libmonet/safe_colors.dart';
 

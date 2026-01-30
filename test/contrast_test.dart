@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:libmonet/apca.dart';
 import 'package:libmonet/apca_contrast.dart';
 import 'package:libmonet/contrast.dart';

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/cam16.dart';
 import 'package:libmonet/cam16_viewing_conditions.dart';

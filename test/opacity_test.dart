@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:libmonet/contrast.dart';
 import 'package:libmonet/libmonet.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 
 void main() {

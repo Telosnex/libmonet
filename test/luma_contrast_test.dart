@@ -2,7 +2,7 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:libmonet/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/luma.dart';
 import 'package:libmonet/luma_contrast.dart';
