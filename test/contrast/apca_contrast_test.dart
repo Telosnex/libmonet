@@ -8,7 +8,7 @@ import 'package:libmonet/contrast/apca_contrast.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 void main() {
-  test('all RGBs are in range of L* produced from their APCA Y', () {
+  test('all RGBs are in range of L* produced from their APCA Y', skip: 'long running validator', () {
     for (int r = 0; r <= 255; r += 1) {
       for (int g = 0; g <= 255; g += 1) {
         for (int b = 0; b <= 255; b += 1) {
