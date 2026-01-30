@@ -742,25 +742,22 @@ class SafeColors {
   }
 
   Color _computeFillHoveredText() {
+    final fillTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
     final fillHoveredTone = _solveTone(
-        containerTone: _solveTone(
-            containerTone: _backgroundTone,
-            usage: Usage.fill,
-            dial: _contrast),
-        usage: Usage.text,
-        dial: _hoverDial());
+      containerTone: fillTone,
+      usage: Usage.fill,
+      dial: _hoverDial(),
+    );
     return _brandOn(
         containerTone: fillHoveredTone, usage: Usage.text, dial: _contrast);
   }
 
   Color _computeFillSplashedText() {
+    final fillTone = _solveTone(
+        containerTone: _backgroundTone, usage: Usage.fill, dial: _contrast);
     final fillSplashedTone = _solveTone(
-        containerTone: _solveTone(
-            containerTone: _backgroundTone,
-            usage: Usage.fill,
-            dial: _contrast),
-        usage: Usage.text,
-        dial: _splashDial());
+        containerTone: fillTone, usage: Usage.fill, dial: _splashDial());
     return _brandOn(
         containerTone: fillSplashedTone, usage: Usage.text, dial: _contrast);
   }

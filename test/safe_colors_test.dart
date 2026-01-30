@@ -25,9 +25,9 @@ void main() {
       expect(colors.fillText, isColor(0xff0B1A2F));
       expect(colors.fillIcon, isColor(0xff3A485E));
       expect(colors.fillHovered, isColor(0xff7B89A3));
-      expect(colors.fillHoveredText, isColor(0xffDCE7FF));
+      expect(colors.fillHoveredText, isColor(0xffF0F4FF));
       expect(colors.fillSplashed, isColor(0xff5E6C84));
-      expect(colors.fillSplashedText, isColor(0xffBDCBE7));
+      expect(colors.fillSplashedText, isColor(0xffD0DEFA));
       expect(colors.text, isColor(0xff7B89A2));
       expect(colors.textHovered, isColor(0xffC2D0EC));
       expect(colors.textHoveredText, isColor(0xff3B495F));
@@ -52,9 +52,9 @@ void main() {
       expect(colors.fillText, isColor(0xffFAF9FF));
       expect(colors.fillIcon, isColor(0xffDFE9FF));
       expect(colors.fillHovered, isColor(0xffABB9D4));
-      expect(colors.fillHoveredText, isColor(0xff233147));
+      expect(colors.fillHoveredText, isColor(0xff18263B));
       expect(colors.fillSplashed, isColor(0xffC3D2ED));
-      expect(colors.fillSplashedText, isColor(0xff515F76));
+      expect(colors.fillSplashedText, isColor(0xff3C4A61));
       expect(colors.text, isColor(0xffA4B2CD));
       expect(colors.textHovered, isColor(0xff5B6981));
       expect(colors.textHoveredText, isColor(0xffCFDDF9));
