@@ -90,6 +90,9 @@ class Palette {
   // Cache for lazy-computed values (typed keys)
   final Map<_Token, Color> _cache = {};
 
+  // Cache for tone computations: (containerTone, usage, dial) → solved tone
+  final Map<(double, Usage, double), double> _toneCache = {};
+
   // Constructor now only takes core parameters needed for calculations
   Palette._(
       {required Color baseColor,
@@ -193,14 +196,16 @@ class Palette {
   double _hoverDial() => math.max(_contrast - 0.3, 0.1);
   double _splashDial() => math.max(_contrast - 0.15, 0.25);
 
-  // Tone solver
+  // Tone solver (memoized)
   double _solveTone({
     required double containerTone,
     required Usage usage,
     required double dial,
-  }) =>
-      contrastingLstar(
-          withLstar: containerTone, usage: usage, by: _algo, contrast: dial);
+  }) {
+    final key = (containerTone, usage, dial);
+    return _toneCache[key] ??= contrastingLstar(
+        withLstar: containerTone, usage: usage, by: _algo, contrast: dial);
+  }
 
   // Color constructors from tone
   Color _brandFromTone(double tone) =>
