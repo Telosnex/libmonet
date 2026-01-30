@@ -15,7 +15,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, []);
+      expect(opacities.opacities, []);
     });
 
     test('FG 40', () {
@@ -27,7 +27,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, [1.0, 1.0, 0.5718940716656867]);
+      expect(opacities.opacities, [1.0, 1.0, 1.0]);
     });
 
     test('FG 30', () {
@@ -39,7 +39,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, [1.0, 0.7031085656183739]);
+      expect(opacities.opacities, [1.0, 0.9852060793573316]);
     });
   });
 
@@ -55,7 +55,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, [1.0, 0.01974311408058837]);
+      expect(opacities.opacities, [1.0, 0.301840627819546]);
     });
 
     test('FG 40', () {
@@ -67,7 +67,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, [1.0, 1.0, 0.5718940716656867]);
+      expect(opacities.opacities, [1.0, 1.0, 1.0]);
     });
 
     test('FG 30', () {
@@ -79,7 +79,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, [1.0, 0.7031085656183739]);
+      expect(opacities.opacities, [1.0, 0.9852060793573316]);
     });
 
     test('FG 0', () {
@@ -91,7 +91,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, [1.0, 0.01974311408058837]);
+      expect(opacities.opacities, [1.0, 0.301840627819546]);
     });
   });
 
@@ -108,7 +108,7 @@ void main() {
         blurRadius: 10,
 
       );
-      expect(opacities, [1.0, 0.01974311408058837]);
+      expect(opacities.opacities, [1.0, 0.301840627819546]);
     });
 
     test('FG 90', () {
@@ -120,7 +120,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, [1.0, 0.3011288882432057]);
+      expect(opacities.opacities, [1.0, 0.5832264019821635]);
     });
 
     test('FG 0', () {
@@ -132,7 +132,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities, []);
+      expect(opacities.opacities, []);
     });
   });
 }
