@@ -16,6 +16,10 @@ const double mainTrc = 2.4;
 const double mainTrcEncode = 1.0 / 2.4;
 
 // sRGB coefficients
+//
+// n.b. These are from the canonical APCA code. They do not sum to 1.0. They are 
+// more precise, but not in a way that has impact. libmonet has dealt with this
+// fine, thus it does not seem worth deviating from the spec.
 const double sRco = 0.2126729;
 const double sGco = 0.7151522;
 const double sBco = 0.0721750;
