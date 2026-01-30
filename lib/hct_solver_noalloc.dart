@@ -458,9 +458,38 @@ class HctSolverNoAlloc {
   }
 }
 
-/// Linearized sRGB values for each 8-bit channel value (0-255).
-/// Used for gamut boundary bisection: these are the "critical planes"
-/// where the RGB cube's edges lie in linear RGB space.
+/// Precomputed linear RGB values for sRGB integer boundaries.
+///
+/// ## What problem does this solve?
+///
+/// Picture the RGB cube: a 3D box where each corner is a color (black, white,
+/// red, green, blue, cyan, magenta, yellow). When finding the most saturated
+/// displayable color for a given hue and lightness, we trace a line through
+/// this cube and find where it exits—that exit point is our answer.
+///
+/// The cube's walls are at R, G, or B = 0 or 255. To binary search along an
+/// edge efficiently, we need to know where each integer step (0, 1, 2...255)
+/// lands. Here's the catch: color math happens in *linear* RGB, but the cube's
+/// edges are defined in *sRGB* (gamma-corrected). Gamma correction bunches
+/// values together near black and spreads them out near white:
+///
+/// ```
+/// sRGB:   |  0 | 1 | 2 | 3 |...| 250| 251| 252| 253| 254| 255|   (even steps)
+/// Linear: |▪▪▪▪|▪▪▪|▪▪|▪▪|...|  ▪   |  ▪  |  ▪  |  ▪  |  ▪  |   (uneven steps)
+///         ↑ bunched                               spread out ↑
+/// ```
+///
+/// This table stores where each sRGB boundary falls in linear space, so the
+/// bisection algorithm can jump directly to these "critical planes" rather
+/// than stumbling through the non-linear mapping.
+///
+/// ## Table details
+///
+/// - 255 entries (indices 0-254), each at a half-integer: sRGB 0.5, 1.5...254.5
+/// - Half-integers sit between adjacent integer boundaries, perfect for bisection
+/// - Generated via sRGB linearization: `_criticalPlanes[i] = linearize(i + 0.5)`
+///
+/// To regenerate, call [generateCriticalPlanes] and copy the output.
 const _criticalPlanes = [
   0.015176349177441876,
   0.045529047532325624,
@@ -759,3 +788,25 @@ const _linrgbFromScaledDiscount = [
 
 /// sRGB luminance coefficients (Rec. 709).
 const _yFromLinrgb = [0.2126, 0.7152, 0.0722];
+
+/// Generates the [_criticalPlanes] lookup table as Dart source code.
+///
+/// Usage: `print(generateCriticalPlanes())`, then copy output into this file.
+String generateCriticalPlanes() {
+  final buffer = StringBuffer();
+  buffer.writeln('const _criticalPlanes = [');
+  for (var i = 0; i < 255; i++) {
+    buffer.writeln('  ${_linearizeSrgb(i + 0.5)},');
+  }
+  buffer.writeln('];');
+  return buffer.toString();
+}
+
+/// Converts sRGB (0-255) to linear RGB (0-100). Inverse of `_trueDelinearized`.
+double _linearizeSrgb(double srgb) {
+  final normalized = srgb / 255.0;
+  if (normalized <= 0.040449936) {
+    return normalized / 12.92 * 100.0;
+  }
+  return pow((normalized + 0.055) / 1.055, 2.4) * 100.0;
+}
