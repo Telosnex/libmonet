@@ -360,6 +360,10 @@ class HctSolverNoAlloc {
       var bisectToLimitMid2 = -1.0;
 
       for (var axis = 0; axis < 3; axis++) {
+        // The default cases below are unreachable since axis is always 0, 1, or 2.
+        // StateError is thrown (rather than returning a dummy value) to fail fast
+        // if the loop bounds ever change, satisfying both exhaustiveness checking
+        // and defensive programming practices.
         var leftForAxis = switch (axis) {
           0 => bisectToLimitLeft0,
           1 => bisectToLimitLeft1,
