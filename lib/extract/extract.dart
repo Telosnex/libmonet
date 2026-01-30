@@ -101,7 +101,7 @@ Future<ByteData> imageProviderToScaledRgba(
   listener = ImageStreamListener((frame, sync) async {
     try {
       if (listener != null) {
-        stream.removeListener(listener!);
+        stream.removeListener(listener);
       }
       final image = frame.image;
       final width = image.width;
@@ -133,6 +133,6 @@ Future<ByteData> imageProviderToScaledRgba(
       completer.completeError('Failed to scale image. Error receieved: $e');
     }
   });
-  stream.addListener(listener!);
+  stream.addListener(listener);
   return completer.future;
 }
