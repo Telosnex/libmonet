@@ -64,10 +64,6 @@ extension HexOnColor on Color {
 }
 
 extension Argb on Color {
-  // The `value` property is deprecated, but the replacement requires
-  // manual bit-shifting from normalized 0.0-1.0 components. Using `value`
-  // is simpler and will continue to work; Flutter maintains backwards
-  // compatibility for widely-used deprecated APIs.
-  // ignore: deprecated_member_use
-  int get argb => value;
+  // The `value` property is deprecated, but it is equivalent to `toARGB32()`.
+  int get argb => toARGB32();
 }
