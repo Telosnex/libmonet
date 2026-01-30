@@ -182,12 +182,8 @@ class Palette {
 
 
   // Helper method for lazy computation with caching (typed key)
-  Color _computeOrGet(_Token key, Color Function() compute) {
-    if (!_cache.containsKey(key)) {
-      _cache[key] = compute();
-    }
-    return _cache[key]!;
-  }
+  Color _computeOrGet(_Token key, Color Function() compute) =>
+      _cache[key] ??= compute();
 
   // -------------------------
   // Shared helpers (DRY)
@@ -818,21 +814,17 @@ class Palette {
       identical(this, other) ||
       other is Palette &&
           runtimeType == other.runtimeType &&
-          color.argb == other.color.argb &&
-          background.argb == other.background.argb &&
+          _baseColor.toARGB32() == other._baseColor.toARGB32() &&
+          _baseBackground.toARGB32() == other._baseBackground.toARGB32() &&
           _contrast == other._contrast &&
           _algo == other._algo &&
-          // If backgroundToneOverride was provided, ensure parity.
-          (_backgroundToneOverride == null) ==
-              (other._backgroundToneOverride == null) &&
-          (_backgroundToneOverride == null ||
-              _backgroundToneOverride == other._backgroundToneOverride);
+          _backgroundToneOverride == other._backgroundToneOverride;
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      color.argb,
-      background.argb,
+      _baseColor.argb,
+      _baseBackground.argb,
       _contrast,
       _algo,
       _backgroundToneOverride);
@@ -949,6 +941,18 @@ class PaletteLerped extends Palette {
   Color get textSplashed => _lerp(a.textSplashed, b.textSplashed);
   @override
   Color get textSplashedText => _lerp(a.textSplashedText, b.textSplashedText);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PaletteLerped &&
+          runtimeType == other.runtimeType &&
+          a == other.a &&
+          b == other.b &&
+          t == other.t;
+
+  @override
+  int get hashCode => Object.hash(runtimeType, a, b, t);
 }
 
 // Snapshot of [Palette]: captures token outputs at construction time and
