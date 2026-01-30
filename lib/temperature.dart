@@ -51,7 +51,7 @@ class TemperatureCache {
   /// [count] The number of colors to return, includes the input color.
   /// [divisions] The number of divisions on the color wheel.
   List<Hct> analogous({int count = 5, int divisions = 12}) {
-    final startHue = input.hue.round();
+    final startHue = input.hue.round() % 360;
     final startHct = hctsByHue[startHue];
     var lastTemp = relativeTemperature(startHct);
     List<Hct> allColors = [startHct];
@@ -157,7 +157,7 @@ class TemperatureCache {
     final endHue = startHueIsColdestToWarmest ? coldestHue : warmestHue;
     const directionOfRotation = 1.0;
     var smallestError = 1000.0;
-    var answer = hctsByHue[input.hue.round()];
+    var answer = hctsByHue[input.hue.round() % 360];
 
     final complementRelativeTemp = 1.0 - inputRelativeTemperature;
     // Find the color in the other section, closest to the inverse percentile
@@ -168,7 +168,7 @@ class TemperatureCache {
       if (!isBetween(angle: hue, a: startHue, b: endHue)) {
         continue;
       }
-      final possibleAnswer = hctsByHue[hue.round()];
+      final possibleAnswer = hctsByHue[hue.round() % 360];
       final relativeTemp = (_tempsByHct[possibleAnswer]! - coldestTemp) / range;
       final error = (complementRelativeTemp - relativeTemp).abs();
       if (error < smallestError) {
@@ -243,7 +243,7 @@ class TemperatureCache {
       return _hctsByHue;
     }
     final hcts = <Hct>[];
-    for (var hue = 0.0; hue <= 360.0; hue += 1.0) {
+    for (var hue = 0.0; hue < 360.0; hue += 1.0) {
       final colorAtHue = Hct.from(hue, input.chroma, input.tone);
       hcts.add(colorAtHue);
     }
