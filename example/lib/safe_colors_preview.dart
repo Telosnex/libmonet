@@ -1,9 +1,9 @@
-import 'package:libmonet/opacity.dart';
-import 'package:libmonet/shadows.dart';
+import 'package:libmonet/effects/opacity.dart';
+import 'package:libmonet/effects/shadows.dart';
+import 'package:libmonet/theming/safe_colors.dart';
 import 'package:monet_studio/padding.dart';
 
 import 'package:flutter/material.dart';
-import 'package:libmonet/safe_colors.dart';
 import 'package:libmonet/theming/button_style.dart';
 
 class SafeColorsPreviewRow extends StatelessWidget {

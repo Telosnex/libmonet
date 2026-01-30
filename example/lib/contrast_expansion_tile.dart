@@ -1,4 +1,4 @@
-import 'package:libmonet/contrast.dart';
+import 'package:libmonet/contrast/contrast.dart';
 import 'package:monet_studio/contrast_picker.dart';
 import 'package:monet_studio/contrast_slider.dart';
 import 'package:monet_studio/padding.dart';

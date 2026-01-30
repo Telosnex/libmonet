@@ -1,7 +1,7 @@
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
-import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/theming/safe_colors.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 

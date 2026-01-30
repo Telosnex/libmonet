@@ -4,12 +4,12 @@ import 'dart:ui' show FontFeature;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:libmonet/contrast.dart';
+import 'package:libmonet/contrast/contrast.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
-import 'package:libmonet/hct.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/effects/temperature.dart';
 import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/safe_colors.dart';
-import 'package:libmonet/temperature.dart';
+import 'package:libmonet/theming/safe_colors.dart';
 import 'package:libmonet/theming/button_style.dart';
 import 'package:libmonet/theming/slider_flat_shape.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';
@@ -36,8 +36,8 @@ class MonetThemeData {
   final double scale;
   final Typography Function(ColorScheme)? typography;
 
-  // Static cache shared across all instances
-  static final _themeCache = LruCache<String, ThemeData>(capacity: 10);
+  // Static cache using weak references - allows GC to reclaim unused ThemeData
+  static final _themeCache = <String, WeakReference<ThemeData>>{};
 
   static const double buttonElevation = 4.0;
 
@@ -203,7 +203,8 @@ class MonetThemeData {
 
   ThemeData createThemeData(BuildContext context) {
     final cacheKey = _cacheKey();
-    final cached = _themeCache[cacheKey];
+    final cachedRef = _themeCache[cacheKey];
+    final cached = cachedRef?.target;
     if (cached != null) {
       return cached;
     }
@@ -329,7 +330,7 @@ class MonetThemeData {
     final finalThemeData = themeData.copyWith(
       cupertinoOverrideTheme: cupertinoOverrideTheme,
     );
-    _themeCache[cacheKey] = finalThemeData;
+    _themeCache[cacheKey] = WeakReference(finalThemeData);
     return finalThemeData;
   }
 
@@ -1505,13 +1506,12 @@ class MonetThemeData {
   static const ptsToLp = 96.0 / 72.0;
   static const lpToDp = 160.0 / 96.0;
   static const ptsToDp = 160 / 72.0;
-  // 2x expected # for a theme.
-  // 2x to help avoid undesierable step chance in behavior due to a client
-  static final fontSizeForFamilyAndPts = LruCache<String, double>(capacity: 8);
+  // Cache for font size calculations
+  static final _fontSizeCache = LruCache<String, double>(capacity: 16);
 
   double searchForFontSizeReachingPts(double pts, String fontFamily) {
     final key = '$fontFamily-${pts.toStringAsFixed(3)}';
-    final cached = fontSizeForFamilyAndPts[key];
+    final cached = _fontSizeCache[key];
     if (cached != null) {
       return cached;
     }
@@ -1566,7 +1566,7 @@ class MonetThemeData {
       // Calculate the new font size.
       fontSize = (minFontSize + maxFontSize) / 2;
     }
-    fontSizeForFamilyAndPts[key] = fontSize;
+    _fontSizeCache[key] = fontSize;
     return fontSize;
   }
 

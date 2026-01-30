@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
-import 'package:libmonet/apca.dart';
-import 'package:libmonet/apca_contrast.dart';
-import 'package:libmonet/contrast.dart';
-import 'package:libmonet/wcag.dart';
+import 'package:libmonet/contrast/apca.dart';
+import 'package:libmonet/contrast/apca_contrast.dart';
+import 'package:libmonet/contrast/contrast.dart';
+import 'package:libmonet/contrast/wcag.dart';
 
 void main() {
   group('contrast ratios from percentage and usage', () {

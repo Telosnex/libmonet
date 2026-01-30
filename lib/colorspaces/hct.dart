@@ -17,7 +17,7 @@
 
 import 'dart:ui';
 
-import 'package:libmonet/hct_solver_noalloc.dart';
+import 'package:libmonet/colorspaces/hct_solver_noalloc.dart';
 import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 

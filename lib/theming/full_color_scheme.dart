@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:libmonet/hct.dart';
-import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/theming/safe_colors.dart';
 
 class MonetColorScheme extends ThemeExtension<MonetColorScheme> {
   final Color primaryColor;

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/theming/safe_colors.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
 // Resolve Material states to our 3-state model and return a value per state.

@@ -3,9 +3,9 @@
 import 'dart:math' as math;
 
 import 'package:test/test.dart';
-import 'package:libmonet/apca.dart';
-import 'package:libmonet/apca_contrast.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/contrast/apca.dart';
+import 'package:libmonet/contrast/apca_contrast.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 void main() {
   test('all RGBs are in range of L* produced from their APCA Y', () {

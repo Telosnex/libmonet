@@ -21,7 +21,7 @@
 // languages. Including variable types, though sometimes unnecessary, is a
 // powerful help to verification and avoiding hard-to-debug issues.
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 
 import 'quantizer.dart';

@@ -1,7 +1,7 @@
+import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:libmonet/extract/scorer.dart';
 import 'package:libmonet/extract/scorer_triad.dart';
-import 'package:libmonet/hct.dart';
 import 'package:monet_studio/quantizer_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -67,10 +67,11 @@ class _ColorToCountRow extends StatelessWidget {
 
   _ColorToCountRow({
     required this.quantizerResult,
-
   })  : colorToCount = quantizerResult.argbToCount,
         sortedColorToCount = _sortColorToCount(quantizerResult.argbToCount),
-        totalCount = quantizerResult.argbToCount.values.reduce((a, b) => a + b);
+        totalCount = quantizerResult.argbToCount.isEmpty
+            ? 0
+            : quantizerResult.argbToCount.values.reduce((a, b) => a + b);
 
   static Map<int, int> _sortColorToCount(Map<int, int> colorToCount) {
     var sortedEntries = colorToCount.entries.toList()

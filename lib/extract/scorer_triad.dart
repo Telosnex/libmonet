@@ -1,9 +1,9 @@
 import 'dart:math' as math;
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/effects/temperature.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:libmonet/extract/scorer.dart';
-import 'package:libmonet/hct.dart';
-import 'package:libmonet/temperature.dart';
+import 'package:libmonet/colorspaces/hct.dart';
 
 /// Returns 3 HCTs if [result.argbToCount] is not empty, otherwise returns an
 /// empty list.

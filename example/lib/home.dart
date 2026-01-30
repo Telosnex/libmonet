@@ -1,6 +1,11 @@
 import 'dart:io';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:libmonet/contrast/contrast.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/hex_codes.dart';
+import 'package:libmonet/effects/opacity.dart';
+import 'package:libmonet/effects/shadows.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
@@ -20,11 +25,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/contrast.dart';
-import 'package:libmonet/hex_codes.dart';
-import 'package:libmonet/opacity.dart';
-import 'package:libmonet/shadows.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 
 enum BrightnessSetting {

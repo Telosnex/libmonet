@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:libmonet/apca_contrast.dart';
+import 'package:libmonet/contrast/apca_contrast.dart';
 
 void main() {
   group('unsafe functions return out-of-bounds when impossible', () {

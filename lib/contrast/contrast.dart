@@ -1,9 +1,9 @@
 import 'dart:math' as math;
-import 'package:libmonet/apca.dart';
-import 'package:libmonet/apca_contrast.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/wcag.dart';
-import 'debug_print.dart';
+import 'package:libmonet/contrast/apca.dart';
+import 'package:libmonet/contrast/apca_contrast.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/contrast/wcag.dart';
+import '../util/debug_print.dart';
 
 enum Algo {
   wcag21,

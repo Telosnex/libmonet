@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:libmonet/hex_codes.dart';
-import 'package:libmonet/hct.dart';
-import 'package:libmonet/temperature.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/core/hex_codes.dart';
+import 'package:libmonet/effects/temperature.dart';
 import 'package:test/test.dart';
 
 import 'utils/color_matcher.dart';

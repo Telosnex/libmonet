@@ -1,14 +1,14 @@
 import 'dart:ui' show Color;
 
-import 'package:libmonet/apca_contrast.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/contrast.dart';
-import 'package:libmonet/debug_print.dart';
-import 'package:libmonet/hex_codes.dart';
-import 'package:libmonet/luma.dart';
+import 'package:libmonet/contrast/apca_contrast.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/contrast/contrast.dart';
+import 'package:libmonet/util/debug_print.dart';
+import 'package:libmonet/core/hex_codes.dart';
+import 'package:libmonet/colorspaces/luma.dart';
 
 import 'package:libmonet/util/with_opacity_neue.dart';
-import 'package:libmonet/wcag.dart';
+import 'package:libmonet/contrast/wcag.dart';
 
 class OpacityResult {
   final double lstar;

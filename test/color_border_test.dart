@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:libmonet/hct.dart';
-import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/theming/safe_colors.dart';
 
 void main() {
   group('color border', () {

@@ -1,4 +1,4 @@
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 // sRGB luma coefficients (Rec. 709), scaled by 100 for 0-100 range output.
 // These operate on gamma-encoded sRGB values, not linear RGB.

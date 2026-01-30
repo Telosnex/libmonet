@@ -15,7 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 import 'point_provider.dart';
 

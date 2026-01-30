@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:libmonet/hex_codes.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/core/hex_codes.dart';
 import 'package:monet_studio/brand_colors.dart';
 import 'package:monet_studio/hue_tone_picker.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/hct.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/slider_flat.dart';
 import 'package:libmonet/theming/slider_flat_thumb.dart';

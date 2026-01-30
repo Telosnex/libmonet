@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/contrast.dart';
-import 'package:libmonet/debug_print.dart';
-import 'package:libmonet/hex_codes.dart';
-import 'package:libmonet/luma.dart';
-import 'package:libmonet/opacity.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/contrast/contrast.dart';
+import 'package:libmonet/effects/opacity.dart';
+import 'package:libmonet/util/debug_print.dart';
+import 'package:libmonet/core/hex_codes.dart';
+import 'package:libmonet/colorspaces/luma.dart';
 import 'package:libmonet/util/alpha_neue.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 

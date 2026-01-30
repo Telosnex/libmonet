@@ -14,7 +14,7 @@
 
 import 'dart:ui';
 
-import 'package:libmonet/hex_codes.dart';
+import 'package:libmonet/core/hex_codes.dart';
 import 'package:matcher/matcher.dart';
 
 Matcher isColor(dynamic color) => _ColorMatcher(color);

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:libmonet/debug_print.dart';
+import 'package:libmonet/util/debug_print.dart';
 import 'package:libmonet/libmonet.dart';
 
 /// Calculations for APCA contrast.

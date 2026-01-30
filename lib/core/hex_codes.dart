@@ -19,7 +19,7 @@
 
 import 'dart:ui' show Color;
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 String hexFromColor(Color color, {bool leadingHashSign = true}) {
   return hexFromArgb(color.argb, leadingHashSign: leadingHashSign);

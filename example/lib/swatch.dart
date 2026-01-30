@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:libmonet/hct.dart';
-import 'package:libmonet/hex_codes.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/core/hex_codes.dart';
 
 class Swatch extends StatelessWidget {
   final Color color;

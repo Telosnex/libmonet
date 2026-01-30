@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import 'package:test/test.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/cam16.dart';
-import 'package:libmonet/cam16_viewing_conditions.dart';
-import 'package:libmonet/hct.dart';
-import 'package:libmonet/hex_codes.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/colorspaces/cam16.dart';
+import 'package:libmonet/colorspaces/cam16_viewing_conditions.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/core/hex_codes.dart';
 
 import './utils/color_matcher.dart';
 

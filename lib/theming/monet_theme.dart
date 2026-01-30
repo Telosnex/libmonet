@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:libmonet/contrast.dart';
-import 'package:libmonet/safe_colors.dart';
+import 'package:libmonet/contrast/contrast.dart';
+import 'package:libmonet/theming/safe_colors.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
 class MonetTheme extends StatelessWidget {

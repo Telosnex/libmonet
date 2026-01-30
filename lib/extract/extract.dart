@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/debug_print.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/util/debug_print.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
 import 'dart:async';
 import 'dart:typed_data';

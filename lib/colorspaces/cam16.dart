@@ -18,8 +18,8 @@
 import 'dart:core';
 import 'dart:math' as math;
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/math.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/math.dart';
 
 import 'cam16_viewing_conditions.dart';
 

@@ -3,9 +3,9 @@
 import 'dart:math' as math;
 
 import 'package:test/test.dart';
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/luma.dart';
-import 'package:libmonet/luma_contrast.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/colorspaces/luma.dart';
+import 'package:libmonet/contrast/luma_contrast.dart';
 
 import 'utils/color_matcher.dart';
 

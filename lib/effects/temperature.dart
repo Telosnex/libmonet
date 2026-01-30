@@ -17,8 +17,8 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/hct.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/colorspaces/hct.dart';
 
 /// Design utilities using color temperature theory.
 ///

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/contrast.dart';
+import 'package:libmonet/contrast/contrast.dart';
 
 class ContrastPicker extends HookConsumerWidget {
   final double contrast;

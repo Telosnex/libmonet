@@ -1,5 +1,5 @@
-import 'package:libmonet/contrast.dart';
-import 'package:libmonet/shadows.dart';
+import 'package:libmonet/contrast/contrast.dart';
+import 'package:libmonet/effects/shadows.dart';
 import 'package:test/test.dart';
 
 void main() {

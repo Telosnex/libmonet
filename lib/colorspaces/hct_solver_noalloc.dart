@@ -17,10 +17,10 @@
 
 import 'dart:math';
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/cam16.dart';
-import 'package:libmonet/cam16_viewing_conditions.dart';
-import 'package:libmonet/math.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/colorspaces/cam16.dart';
+import 'package:libmonet/colorspaces/cam16_viewing_conditions.dart';
+import 'package:libmonet/core/math.dart';
 
 /// A class that solves the HCT equation.
 class HctSolverNoAlloc {

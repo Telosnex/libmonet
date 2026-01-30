@@ -1,6 +1,6 @@
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
-import 'package:libmonet/hct.dart';
+import 'package:libmonet/colorspaces/hct.dart';
 
 class Scorer {
   final QuantizerResult quantizerResult;

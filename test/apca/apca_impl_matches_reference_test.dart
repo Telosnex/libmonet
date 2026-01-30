@@ -1,5 +1,5 @@
-import 'package:libmonet/apca.dart';
-import 'package:libmonet/hex_codes.dart';
+import 'package:libmonet/contrast/apca.dart';
+import 'package:libmonet/core/hex_codes.dart';
 import 'package:test/test.dart';
 
 void main() {

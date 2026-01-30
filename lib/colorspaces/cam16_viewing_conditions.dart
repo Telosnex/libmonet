@@ -17,8 +17,8 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/math.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/math.dart';
 
 /// In traditional color spaces, a color can be identified solely by the
 /// observer's measurement of the color. Color appearance models such as CAM16
