@@ -32,6 +32,7 @@ enum Usage {
   text,
   fill,
   large, // 160dp, large text
+  border, // border + blur radius >= 5px, per APCA Lc 15 guidance
 }
 
 double contrastingLstar({
@@ -56,8 +57,8 @@ double contrastingLstar({
         final naiveLighterLstar = switch (usage) {
           (Usage.text) => lighterTextLstar(withLstar, -apca, debug: debug),
           (Usage.fill) => lighterBackgroundLstar(withLstar, apca, debug: debug),
-          (Usage.large) => lighterTextLstar(withLstar, -apca,
-              debug: debug), // 160dp large text
+          (Usage.large) => lighterTextLstar(withLstar, -apca, debug: debug),
+          (Usage.border) => lighterTextLstar(withLstar, -apca, debug: debug),
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         if (naiveLighterLstar.round() <= 100) {
@@ -116,8 +117,8 @@ double contrastingLstar({
           (Usage.text) => darkerTextLstarUnsafe(withLstar, apca, debug: debug),
           (Usage.fill) =>
             darkerBackgroundLstarUnsafe(withLstar, -apca, debug: debug),
-          (Usage.large) => darkerTextLstarUnsafe(withLstar, apca,
-              debug: debug), // 160dp large text
+          (Usage.large) => darkerTextLstarUnsafe(withLstar, apca, debug: debug),
+          (Usage.border) => darkerTextLstarUnsafe(withLstar, apca, debug: debug),
         };
         monetDebug(debug, () => 'naiveDarkerLstar: $naiveDarkerLstar');
         if (naiveDarkerLstar.round() >= 0) {
@@ -128,8 +129,8 @@ double contrastingLstar({
             lighterTextLstarUnsafe(withLstar, -apca, debug: debug),
           (Usage.fill) =>
             lighterBackgroundLstarUnsafe(withLstar, apca, debug: debug),
-          (Usage.large) => lighterTextLstarUnsafe(withLstar, -apca,
-              debug: debug), // 160dp large text
+          (Usage.large) => lighterTextLstarUnsafe(withLstar, -apca, debug: debug),
+          (Usage.border) => lighterTextLstarUnsafe(withLstar, -apca, debug: debug),
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
         // Compare actual contrast error: which is closer to desired?
@@ -201,6 +202,7 @@ double contrastRatioInterpolation(
     (Usage.text) => 4.5,
     (Usage.fill) => 3.0,
     (Usage.large) => 3.0, // WCAG21 3.0 for large text (same as fill)
+    (Usage.border) => 1.5, // Lower requirement for visible non-text
   };
   const end = 21.0;
   final actualPercent = (percent > 0.5 ? percent - 0.5 : percent) / 0.5;
@@ -218,6 +220,7 @@ double apcaInterpolation({required double percent, required Usage usage}) {
     (Usage.fill) => 45.0, // "APCA Lc 45 'similar' to WCAG 3.0"
     (Usage.large) => 30.0, // APCA Lc 30 is minimum for legible semantic elements
     // > 5.5 CSS px in at least one dimension.
+    (Usage.border) => 15.0, // APCA Lc 15 for non-text >= 5px (border + blur)
   };
   // Earlier, assumed end was 100. But, at high contrast, this wasn't leading
   // to white/black as expected. 110 seems to work better...but better to have

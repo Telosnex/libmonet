@@ -42,7 +42,7 @@ void main() {
         backgroundTone: 0.0,
       );
       expect(colors.color, isColor(0xff334157));
-      expect(colors.colorBorder, isColor(0xff697790));
+      expect(colors.colorBorder, isColor(0xff45536A));
       expect(colors.colorText, isColor(0xffB2C1DC));
       expect(colors.colorIcon, isColor(0xff98A7C1));
       expect(colors.colorHovered, isColor(0xff5C6A82));
@@ -74,7 +74,7 @@ void main() {
         backgroundTone: 10.0,
       );
       expect(colors.color, isColor(0xff02174E));
-      expect(colors.colorBorder, isColor(0xff6373AD)); // blue at ~tone 50
+      expect(colors.colorBorder, isColor(0xff415189)); // blue at ~tone 38
     });
 
     test('#D29C57 should have darker border, not lighter', () {
@@ -86,7 +86,33 @@ void main() {
         backgroundTone: lstarFromArgb(0xffFFCA88),
       );
       expect(colors.color, isColor(0xffD29C57));
-      expect(colors.colorBorder, isColor(0xffBA8744)); // blue at ~tone 50
+      expect(colors.colorBorder, isColor(0xffD29C57)); // same as input (already meets Lc 15)
+    });
+
+    test('#D29C57 should have darker border, not lighter', () {
+      // Very dark blue on very dark background (both ~tone 10) should get
+      // a lighter blue border (~tone 50), not an extreme white fallback.
+      // The L* is conservative to ensure chromatic colors meet contrast.
+      final colors = Palette.from(
+        const Color(0xffD29C57),
+        backgroundTone: lstarFromArgb(0xffFFCA88),
+      );
+      expect(colors.color, isColor(0xffD29C57));
+      expect(colors.colorBorder, isColor(0xffD29C57)); // same as input (already meets Lc 15)
+    });
+
+    test('#A57B43 has darker border visually, feels intense as stroke', () {
+      // Very dark blue on very dark background (both ~tone 10) should get
+      // a lighter blue border (~tone 50), not an extreme white fallback.
+      // The L* is conservative to ensure chromatic colors meet contrast.
+      final colors = Palette.from(
+        const Color(0xffA57B43),
+        backgroundTone: lstarFromArgb(0xff986E38),
+      );
+      expect(colors.color, isColor(0xffA57B43));
+      expect(colors.colorBorder, isColor(0xff76511D)); // subtle shadow, not harsh hole
+      expect(lstarFromArgb(colors.color.argb), closeTo(54.627, 0.001));
+      expect(lstarFromArgb(colors.colorBorder.argb), closeTo(37.527, 0.001));
     });
   });
 

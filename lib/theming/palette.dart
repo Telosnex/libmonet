@@ -458,7 +458,7 @@ class Palette {
   Color _computeBackgroundHoveredBorder() {
     final overlayTone = _solveTone(
         containerTone: _backgroundTone, usage: Usage.fill, dial: _hoverDial());
-    final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    final required = _algo.getAbsoluteContrast(_contrast, Usage.border);
     final baseVsOverlay =
         _algo.getContrastBetweenLstars(bg: overlayTone, fg: _baseTone).abs();
     final baseVsBg = _algo
@@ -473,7 +473,7 @@ class Palette {
   Color _computeBackgroundSplashedBorder() {
     final overlayTone = _solveTone(
         containerTone: _backgroundTone, usage: Usage.fill, dial: _splashDial());
-    final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    final required = _algo.getAbsoluteContrast(_contrast, Usage.border);
     final baseVsOverlay =
         _algo.getContrastBetweenLstars(bg: overlayTone, fg: _baseTone).abs();
     final baseVsBg = _algo
@@ -497,7 +497,7 @@ class Palette {
       innerTone: innerTone,
       baseTone: _baseTone,
       backgroundTone: _backgroundTone,
-      requiredContrast: _algo.getAbsoluteContrast(_contrast, Usage.large),
+      requiredContrast: _algo.getAbsoluteContrast(_contrast, Usage.border),
       hue: _baseHue,
       chroma: _baseChroma,
     );
@@ -700,7 +700,7 @@ class Palette {
       innerTone: innerTone,
       baseTone: innerTone,
       backgroundTone: _backgroundTone,
-      requiredContrast: _algo.getAbsoluteContrast(_contrast, Usage.large),
+      requiredContrast: _algo.getAbsoluteContrast(_contrast, Usage.border),
       hue: _baseHue,
       chroma: _baseChroma,
     );
@@ -735,7 +735,7 @@ class Palette {
   Color _computeColorHoveredBorder() {
     final colorHoveredTone = _solveTone(
         containerTone: _baseTone, usage: Usage.fill, dial: _hoverDial());
-    final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    final required = _algo.getAbsoluteContrast(_contrast, Usage.border);
     final baseVsHovered = _algo.getContrastBetweenLstars(bg: colorHoveredTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
     if (baseVsHovered >= required && baseVsBg >= required) return _baseColor;
@@ -746,7 +746,7 @@ class Palette {
   Color _computeColorSplashedBorder() {
     final colorSplashedTone = _solveTone(
         containerTone: _baseTone, usage: Usage.fill, dial: _splashDial());
-    final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    final required = _algo.getAbsoluteContrast(_contrast, Usage.border);
     final baseVsSplashed = _algo.getContrastBetweenLstars(bg: colorSplashedTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
     if (baseVsSplashed >= required && baseVsBg >= required) return _baseColor;
@@ -814,7 +814,7 @@ class Palette {
             dial: _contrast),
         usage: Usage.fill,
         dial: _hoverDial());
-    final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    final required = _algo.getAbsoluteContrast(_contrast, Usage.border);
     final baseVsHovered = _algo.getContrastBetweenLstars(bg: fillHoveredTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
     if (baseVsHovered >= required && baseVsBg >= required) return _baseColor;
@@ -830,7 +830,7 @@ class Palette {
             dial: _contrast),
         usage: Usage.fill,
         dial: _splashDial());
-    final required = _algo.getAbsoluteContrast(_contrast, Usage.large);
+    final required = _algo.getAbsoluteContrast(_contrast, Usage.border);
     final baseVsSplashed = _algo.getContrastBetweenLstars(bg: fillSplashedTone, fg: _baseTone).abs();
     final baseVsBg = _algo.getContrastBetweenLstars(bg: _backgroundTone, fg: _baseTone).abs();
     if (baseVsSplashed >= required && baseVsBg >= required) return _baseColor;
