@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:libmonet/core/hex_codes.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:test/test.dart';
 
@@ -74,6 +75,18 @@ void main() {
       );
       expect(colors.color, isColor(0xff02174E));
       expect(colors.colorBorder, isColor(0xff6373AD)); // blue at ~tone 50
+    });
+
+    test('#D29C57 should have darker border, not lighter', () {
+      // Very dark blue on very dark background (both ~tone 10) should get
+      // a lighter blue border (~tone 50), not an extreme white fallback.
+      // The L* is conservative to ensure chromatic colors meet contrast.
+      final colors = Palette.from(
+        const Color(0xffD29C57),
+        backgroundTone: lstarFromArgb(0xffFFCA88),
+      );
+      expect(colors.color, isColor(0xffD29C57));
+      expect(colors.colorBorder, isColor(0xffBA8744)); // blue at ~tone 50
     });
   });
 

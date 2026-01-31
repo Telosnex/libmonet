@@ -602,6 +602,12 @@ class Palette {
 
     final validCandidates = candidateTones.where(hasValidContrast).toList();
 
+    // Prefer darker tones (shadow-like) when available - they look more natural
+    // as borders. Only fall back to lighter tones if no darker ones meet contrast.
+    final darkerValid = validCandidates.where((t) => t < innerTone).toList();
+    final lighterValid = validCandidates.where((t) => t >= innerTone).toList();
+    final preferredCandidates = darkerValid.isNotEmpty ? darkerValid : lighterValid;
+
     debugLog(() =>
         'borderSolve: inner=${innerTone.toStringAsFixed(1)} bg=${backgroundTone.toStringAsFixed(1)} req=${requiredContrast.toStringAsFixed(1)}');
     debugLog(() =>
@@ -619,11 +625,15 @@ class Palette {
     }
     debugLog(() =>
         'Valid     : ${validCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
+    debugLog(() =>
+        'Darker    : ${darkerValid.map((t) => t.toStringAsFixed(1)).toList()}');
+    debugLog(() =>
+        'Preferred : ${preferredCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
 
     double calculateTotalDelta(double tone) =>
         (tone - innerTone).abs() + (tone - backgroundTone).abs();
 
-    if (validCandidates.isEmpty) {
+    if (preferredCandidates.isEmpty) {
       // Evaluate extremes by either-side cost and choose lower-cost; tie → smaller total delta.
       double costFor(double t) {
         final lcBg =
@@ -646,12 +656,13 @@ class Palette {
     }
 
     // Primary selection with pass-oriented tie-break.
-    double bestTone = validCandidates.first;
+    // Use preferredCandidates (darker first, then lighter as fallback).
+    double bestTone = preferredCandidates.first;
     double bestCost = double.infinity;
     double bestTotalDist = double.infinity;
     double bestDInner = double.infinity;
     double bestDBg = double.infinity;
-    for (final t in validCandidates) {
+    for (final t in preferredCandidates) {
       final lcBg =
           _algo.getContrastBetweenLstars(bg: backgroundTone, fg: t).abs();
       final lcIn = _algo.getContrastBetweenLstars(bg: innerTone, fg: t).abs();
