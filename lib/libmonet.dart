@@ -6,7 +6,9 @@ export 'core/math.dart';
 // Color spaces
 export 'colorspaces/cam16.dart';
 export 'colorspaces/cam16_viewing_conditions.dart';
+export 'colorspaces/gamut.dart';
 export 'colorspaces/hct.dart';
+export 'colorspaces/hct_solver.dart';
 export 'colorspaces/luma.dart';
 
 // Contrast algorithms
