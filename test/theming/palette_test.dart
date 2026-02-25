@@ -1,7 +1,7 @@
 import 'dart:ui';
 
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:test/test.dart';
 
