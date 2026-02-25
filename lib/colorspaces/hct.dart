@@ -17,8 +17,11 @@
 
 import 'dart:ui';
 
+import 'package:libmonet/colorspaces/cam16.dart';
+import 'package:libmonet/colorspaces/cam16_viewing_conditions.dart';
 import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 
 /// HCT, hue, chroma, and tone. A color system that provides a perceptually
