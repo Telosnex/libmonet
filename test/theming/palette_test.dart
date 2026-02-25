@@ -222,15 +222,15 @@ void main() {
     });
 
     test('#D29C57 should have darker border, not lighter', () {
-      // Golden-brown (T≈68) on a warm light background (T≈83).
-      // The border should be a subtle shadow darker than the surface,
-      // not identical to it (the old fast-path returned the base tone).
+      // Golden-brown (T≈68) on warm light background (T≈83).
+      // Only ~Lc 20 between them — below fill-level visibility,
+      // so a darker border is solved to help delineate the edge.
       final colors = Palette.from(
         const Color(0xffD29C57),
         backgroundTone: lstarFromArgb(0xffFFCA88),
       );
       expect(colors.color, isColor(0xffD29C57));
-      expect(colors.colorBorder, isColor(0xffA87836)); // darker shadow (~T52)
+      expect(colors.colorBorder, isColor(0xffA87836)); // darker border (~T52)
     });
 
     test('#A57B43 has darker border visually, feels intense as stroke', () {

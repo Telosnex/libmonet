@@ -153,6 +153,10 @@ class Palette {
   late final double _borderContrast =
       _algo.getAbsoluteContrast(_contrast, Usage.border);
 
+  /// Contrast a fg layer needs to be visible on its own (no border help).
+  late final double _fgContrast =
+      _algo.getAbsoluteContrast(_contrast, Usage.fill);
+
   // ── Shared intermediate tones ─────────────────────────────────
   //
   // These are the "spine" of the palette.  Each surface is solved against
@@ -434,6 +438,18 @@ class Palette {
         // ignore: avoid_print
         print(message());
       }
+    }
+
+    // If the fg already meets fill-level contrast against the background,
+    // it's visible on its own — the border IS the fg edge.
+    final fgVsBg =
+        _algo.getContrastBetweenLstars(bg: backgroundTone, fg: innerTone).abs();
+    if (fgVsBg >= _fgContrast) {
+      debugLog(() =>
+          'border fast-path: fg visible vs bg '
+          '(|Lc|=${fgVsBg.toStringAsFixed(1)} >= '
+          '${_fgContrast.toStringAsFixed(1)})');
+      return Hct.colorFrom(hue, chroma, innerTone);
     }
 
     // Candidate tones (avoid duplicates).
