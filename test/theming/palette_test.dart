@@ -2,10 +2,13 @@ import 'dart:ui';
 
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
+import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:test/test.dart';
 
 import '../utils/color_matcher.dart';
+
+double _tone(Color c) => Hct.fromColor(c).tone;
 
 /// Minimal class mirroring Palette's `late final` pattern.
 /// Tracks evaluation counts to prove laziness.
@@ -81,6 +84,72 @@ void main() {
       expect(probe.bCount, 0);
       expect(probe.cCount, 0);
     });
+  });
+
+  group('polarity consistency', () {
+    // The invariant: siblings solved against the **same container** must
+    // land on the same side of that container (both lighter or both darker).
+    //
+    //   background ─┬─ fill  ┐ same polarity vs background
+    //              └─ text  ┘
+    //
+    //   fill ─┬─ fillText  ┐ same polarity vs fill
+    //         └─ fillIcon  ┘
+    //
+    //   color ─┬─ colorText ┐ same polarity vs color
+    //          └─ colorIcon ┘
+
+    const brandColor = Color(0xFF1565C0); // a blue
+
+    /// Returns +1 if b is lighter than a, -1 if darker.
+    /// Asserts the difference is non-trivial (> 1 tone).
+    double dir(Color a, Color b, String label) {
+      final ta = _tone(a);
+      final tb = _tone(b);
+      final d = tb - ta;
+      expect(d.abs(), greaterThan(1.0),
+          reason: '$label: tones too close '
+              '(${ta.toStringAsFixed(1)} vs ${tb.toStringAsFixed(1)})');
+      return d.sign;
+    }
+
+    for (final bgTone in [10, 20, 30, 40, 50, 55, 60, 70, 80, 90, 95]) {
+      group('bgTone=$bgTone', () {
+        late Palette p;
+        setUp(() => p = Palette.from(brandColor,
+            backgroundTone: bgTone.toDouble()));
+
+        test('fill and text share polarity vs background', () {
+          final fillDir = dir(p.background, p.fill, 'bg→fill');
+          final textDir = dir(p.background, p.text, 'bg→text');
+          expect(fillDir, textDir,
+              reason: 'fill (T${_tone(p.fill).round()}) and '
+                  'text (T${_tone(p.text).round()}) should both be '
+                  '${fillDir > 0 ? "lighter" : "darker"} than '
+                  'background (T${_tone(p.background).round()})');
+        });
+
+        test('fillText and fillIcon share polarity vs fill', () {
+          final fillToText = dir(p.fill, p.fillText, 'fill→fillText');
+          final fillToIcon = dir(p.fill, p.fillIcon, 'fill→fillIcon');
+          expect(fillToText, fillToIcon,
+              reason: 'fillText (T${_tone(p.fillText).round()}) and '
+                  'fillIcon (T${_tone(p.fillIcon).round()}) should both be '
+                  '${fillToText > 0 ? "lighter" : "darker"} than '
+                  'fill (T${_tone(p.fill).round()})');
+        });
+
+        test('colorText and colorIcon share polarity vs color', () {
+          final colorToText = dir(p.color, p.colorText, 'color→colorText');
+          final colorToIcon = dir(p.color, p.colorIcon, 'color→colorIcon');
+          expect(colorToText, colorToIcon,
+              reason: 'colorText (T${_tone(p.colorText).round()}) and '
+                  'colorIcon (T${_tone(p.colorIcon).round()}) should both be '
+                  '${colorToText > 0 ? "lighter" : "darker"} than '
+                  'color (T${_tone(p.color).round()})');
+        });
+      });
+    }
   });
 
   group('#334157', () {

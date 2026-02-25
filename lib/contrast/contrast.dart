@@ -35,19 +35,40 @@ enum Usage {
   border, // border + blur radius >= 5px, per APCA Lc 15 guidance
 }
 
+/// Polarity override for [contrastingLstar].
+///
+/// When passed as [contrastingLstar]'s `forceDirection`, the solver will
+/// only try the specified direction.  If the target contrast is
+/// unreachable, it clamps to the extreme in that direction (T100 for
+/// [lighter], T0 for [darker]) instead of flipping to the opposite side.
+///
+/// Use this to ensure siblings solved against the same container always
+/// land on the same side.
+enum ContrastDirection { lighter, darker }
+
 double contrastingLstar({
   required double withLstar,
   required Usage usage,
   Algo by = Algo.apca,
   required double contrast,
   bool debug = false,
+  /// When non-null, overrides the default polarity decision
+  /// ([lstarPrefersLighterPair]).  When the forced direction is
+  /// unreachable, the solver clamps to the extreme in that direction
+  /// instead of flipping to the other side.
+  ContrastDirection? forceDirection,
 }) {
   monetDebug(debug, () => '== CONTRASTING LSTAR ENTER');
   monetDebug(
       debug,
       () =>
           '== Looking for $contrast contrast with $usage usage using $by algo on L* $withLstar');
-  final prefersLighter = lstarPrefersLighterPair(withLstar);
+  final prefersLighter = switch (forceDirection) {
+    ContrastDirection.lighter => true,
+    ContrastDirection.darker => false,
+    null => lstarPrefersLighterPair(withLstar),
+  };
+  final forced = forceDirection != null;
   monetDebug(debug, () => 'prefersLighter: $prefersLighter');
   if (prefersLighter) {
     switch (by) {
@@ -64,8 +85,12 @@ double contrastingLstar({
         if (naiveLighterLstar.round() <= 100) {
           return naiveLighterLstar.clamp(0, 100);
         }
-        // Lighter direction impossible; fall back to black or white
-        // Compare actual contrast error: which is closer to desired?
+        // Lighter direction impossible.
+        if (forced) {
+          monetDebug(debug, () => 'forced lighter; clamping to 100');
+          return 100.0;
+        }
+        // Compare actual contrast error: which extreme is closer?
         final apcaYWith = lstarToApcaY(withLstar);
         final blackContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(0)).abs();
         final whiteContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(100)).abs();
@@ -91,8 +116,12 @@ double contrastingLstar({
         if (naiveLighterLstar.round() <= 100) {
           return naiveLighterLstar.clamp(0, 100);
         }
-        // Lighter direction impossible; fall back to black or white
-        // Compare actual contrast error: which is closer to desired?
+        // Lighter direction impossible.
+        if (forced) {
+          monetDebug(debug, () => 'forced lighter; clamping to 100');
+          return 100.0;
+        }
+        // Compare actual contrast error: which extreme is closer?
         final blackContrast = contrastRatioOfLstars(withLstar, 0);
         final whiteContrast = contrastRatioOfLstars(withLstar, 100);
         final blackError = (ratio - blackContrast).abs();
@@ -124,6 +153,11 @@ double contrastingLstar({
         if (naiveDarkerLstar.round() >= 0) {
           return naiveDarkerLstar.clamp(0.0, 100.0);
         }
+        // Darker direction impossible.
+        if (forced) {
+          monetDebug(debug, () => 'forced darker; clamping to 0');
+          return 0.0;
+        }
         final naiveLighterLstar = switch (usage) {
           (Usage.text) =>
             lighterTextLstarUnsafe(withLstar, -apca, debug: debug),
@@ -133,7 +167,7 @@ double contrastingLstar({
           (Usage.border) => lighterTextLstarUnsafe(withLstar, -apca, debug: debug),
         };
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
-        // Compare actual contrast error: which is closer to desired?
+        // Compare actual contrast error: which extreme is closer?
         final apcaYWith = lstarToApcaY(withLstar);
         final blackContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(0)).abs();
         final whiteContrast = apcaContrastOfApcaY(apcaYWith, lstarToApcaY(100)).abs();
@@ -159,12 +193,17 @@ double contrastingLstar({
         if (naiveDarkerLstar.round() >= 0) {
           return naiveDarkerLstar.clamp(0.0, 100.0);
         }
+        // Darker direction impossible.
+        if (forced) {
+          monetDebug(debug, () => 'forced darker; clamping to 0');
+          return 0.0;
+        }
         final naiveLighterLstar = lighterLstarUnsafe(
           lstar: withLstar,
           contrastRatio: ratio,
         );
         monetDebug(debug, () => 'naiveLighterLstar: $naiveLighterLstar');
-        // Compare actual contrast error: which is closer to desired?
+        // Compare actual contrast error: which extreme is closer?
         final blackContrast = contrastRatioOfLstars(withLstar, 0);
         final whiteContrast = contrastRatioOfLstars(withLstar, 100);
         final blackError = (ratio - blackContrast).abs();

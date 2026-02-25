@@ -107,6 +107,40 @@ class Palette {
   late final double _backgroundTone =
       _backgroundToneOverride ?? _baseBackgroundHct.tone;
 
+  // ── Per-container polarity ───────────────────────────────
+  //
+  // Siblings solved against the same container must land on the same side.
+  // The *hardest* sibling (text, which needs the most contrast) solves
+  // first without constraint.  Its actual result determines the direction
+  // that every easier sibling (fill, icon, hover, …) is forced to follow.
+
+  /// Text tone on the background — solved first, unconstrained.
+  late final double _bgTextTone =
+      _solve(_backgroundTone, Usage.text, _contrast);
+
+  late final ContrastDirection _bgDirection =
+      _bgTextTone >= _backgroundTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
+
+  /// Text tone on the fill surface — solved first, unconstrained.
+  late final double _fillTextTone =
+      _solve(_bgFillTone, Usage.text, _contrast);
+
+  late final ContrastDirection _fillDirection =
+      _fillTextTone >= _bgFillTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
+
+  /// Text tone on the color surface — solved first, unconstrained.
+  late final double _colorTextTone =
+      _solve(_colorTone, Usage.text, _contrast);
+
+  late final ContrastDirection _colorDirection =
+      _colorTextTone >= _colorTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
+
   // ── Contrast dials & thresholds ───────────────────────────────
 
   /// Hover state uses a lower contrast dial (subtler shift).
@@ -134,47 +168,55 @@ class Palette {
 
   /// Fill surface tone on the background.
   late final double _bgFillTone =
-      _solve(_backgroundTone, Usage.fill, _contrast);
+      _solve(_backgroundTone, Usage.fill, _contrast, _bgDirection);
 
   /// Hover overlay tone on the background.
   late final double _bgHoverTone =
-      _solve(_backgroundTone, Usage.fill, _hoverDial);
+      _solve(_backgroundTone, Usage.fill, _hoverDial, _bgDirection);
 
   /// Splash overlay tone on the background.
   late final double _bgSplashTone =
-      _solve(_backgroundTone, Usage.fill, _splashDial);
+      _solve(_backgroundTone, Usage.fill, _splashDial, _bgDirection);
 
   /// Hover overlay tone on the color surface.
   late final double _colorHoverTone =
-      _solve(_colorTone, Usage.fill, _hoverDial);
+      _solve(_colorTone, Usage.fill, _hoverDial, _colorDirection);
 
   /// Splash overlay tone on the color surface.
   late final double _colorSplashTone =
-      _solve(_colorTone, Usage.fill, _splashDial);
+      _solve(_colorTone, Usage.fill, _splashDial, _colorDirection);
 
   /// Hover overlay tone on the fill surface.
   late final double _fillHoverTone =
-      _solve(_bgFillTone, Usage.fill, _hoverDial);
+      _solve(_bgFillTone, Usage.fill, _hoverDial, _fillDirection);
 
   /// Splash overlay tone on the fill surface.
   late final double _fillSplashTone =
-      _solve(_bgFillTone, Usage.fill, _splashDial);
+      _solve(_bgFillTone, Usage.fill, _splashDial, _fillDirection);
 
   /// Text-hover tone on the background (used by textHovered family).
   late final double _textHoverTone =
-      _solve(_backgroundTone, Usage.text, _hoverDial);
+      _solve(_backgroundTone, Usage.text, _hoverDial, _bgDirection);
 
   /// Text-splash tone on the background (used by textSplashed family).
   late final double _textSplashTone =
-      _solve(_backgroundTone, Usage.text, _splashDial);
+      _solve(_backgroundTone, Usage.text, _splashDial, _bgDirection);
 
   // ── Tone solver & color constructors ──────────────────────────
 
   /// Solve for the tone that achieves [usage]-level contrast against
   /// [containerTone] at the given contrast [dial].
-  double _solve(double containerTone, Usage usage, double dial) =>
+  ///
+  /// When [direction] is provided, siblings solved against the same
+  /// container are guaranteed to land on the same side.
+  double _solve(double containerTone, Usage usage, double dial,
+          [ContrastDirection? direction]) =>
       contrastingLstar(
-          withLstar: containerTone, usage: usage, by: _algo, contrast: dial);
+          withLstar: containerTone,
+          usage: usage,
+          by: _algo,
+          contrast: dial,
+          forceDirection: direction);
 
   /// Color at [tone] using the base color's hue and chroma.
   Color _withColorsChroma(double tone) =>
@@ -193,16 +235,14 @@ class Palette {
   Color get background => _baseBackground;
 
   /// Neutral high-contrast text on the background.
-  late final Color backgroundText =
-      _withBackgroundsChroma(_solve(_backgroundTone, Usage.text, _contrast));
+  late final Color backgroundText = _withBackgroundsChroma(_bgTextTone);
 
   /// Neutral medium-contrast fill on the background.
   late final Color backgroundFill = _withBackgroundsChroma(_bgFillTone);
 
-  /// Border around the background — uses neutral hue but brand chroma
-  /// so it's tinted without being loud.
-  late final Color backgroundBorder = Hct.colorFrom(
-      _backgroundHue, _colorChroma, _solve(_backgroundTone, Usage.large, _contrast));
+  /// Achromatic border around the background.
+  late final Color backgroundBorder = _withBackgroundsChroma(
+      _solve(_backgroundTone, Usage.large, _contrast, _bgDirection));
 
   /// Brand-tinted hover overlay on the background.
   late final Color backgroundHovered = _withColorsChroma(_bgHoverTone);
@@ -241,12 +281,11 @@ class Palette {
   Color get color => _baseColor;
 
   /// High-contrast brand text on the color surface.
-  late final Color colorText =
-      _withColorsChroma(_solve(_colorTone, Usage.text, _contrast));
+  late final Color colorText = _withColorsChroma(_colorTextTone);
 
   /// Medium-contrast brand icon on the color surface.
   late final Color colorIcon =
-      _withColorsChroma(_solve(_colorTone, Usage.fill, _contrast));
+      _withColorsChroma(_solve(_colorTone, Usage.fill, _contrast, _colorDirection));
 
   /// Hover overlay on the color surface.
   late final Color colorHovered = _withColorsChroma(_colorHoverTone);
@@ -291,12 +330,11 @@ class Palette {
   late final Color fill = _withColorsChroma(_bgFillTone);
 
   /// High-contrast brand text on the fill surface.
-  late final Color fillText =
-      _withColorsChroma(_solve(_bgFillTone, Usage.text, _contrast));
+  late final Color fillText = _withColorsChroma(_fillTextTone);
 
   /// Medium-contrast brand icon on the fill surface.
   late final Color fillIcon =
-      _withColorsChroma(_solve(_bgFillTone, Usage.fill, _contrast));
+      _withColorsChroma(_solve(_bgFillTone, Usage.fill, _contrast, _fillDirection));
 
   /// Hover overlay on the fill surface.
   late final Color fillHovered = _withColorsChroma(_fillHoverTone);
@@ -338,8 +376,7 @@ class Palette {
   // ═════════════════════════════════════════════════════════════════
 
   /// Brand text on the background (high contrast).
-  late final Color text =
-      _withColorsChroma(_solve(_backgroundTone, Usage.text, _contrast));
+  late final Color text = _withColorsChroma(_bgTextTone);
 
   /// Hovered brand text on the background.
   late final Color textHovered = _withColorsChroma(_textHoverTone);
