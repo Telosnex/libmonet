@@ -178,7 +178,7 @@ void main() {
       expect(contrastMax.abs(), greaterThanOrEqualTo(contrastExpected),
           reason: 'contrast against white bg + scrim should meet requirement');
       expect(result.protectionArgb, 0xFFFFFFFF);
-      expect(result.opacity, 0.91);
+      expect(result.opacity, 0.92);
     });
 
     test('#5B746B on zebra, APCA contrast 1.0 (impossible, best effort)', () {

@@ -79,7 +79,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(46.686, 0.001));
+      expect(lstar, closeTo(49.877, 0.001));
     });
 
     test('darker fill', () {
@@ -100,7 +100,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(37.628, 0.001));
+      expect(lstar, closeTo(40.970, 0.001));
     });
   });
 
@@ -122,7 +122,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(86.723, 0.001));
+      expect(lstar, closeTo(87.818, 0.001));
     });
 
     test('darker fill', () {
@@ -143,7 +143,7 @@ void main() {
         by: Algo.apca,
         contrast: contrast,
       );
-      expect(lstar, closeTo(82.039, 0.001));
+      expect(lstar, closeTo(83.005, 0.001));
     });
   });
 
@@ -164,7 +164,7 @@ void main() {
         by: Algo.apca,
         contrast: 0.5,
       );
-      expect(lstar, closeTo(71.271, 0.001));
+      expect(lstar, closeTo(72.445, 0.001));
     });
 
     test('darker fill', () {
@@ -185,7 +185,7 @@ void main() {
         by: Algo.apca,
         contrast: 0.5,
       );
-      expect(lstar, closeTo(57.540, 0.001));
+      expect(lstar, closeTo(60.029, 0.001));
     });
   });
   group('contrasting L* WCAG', () {

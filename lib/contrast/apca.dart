@@ -89,8 +89,14 @@ int apcaYToGrayscaleArgb(double apcaY, {bool debug = false}) {
   return argbFromRgb(channel, channel, channel);
 }
 
+/// Converts a CIE L* value to an APCA perceptual luminance (apcaY).
+///
+/// The path is L* → CIE Y → sRGB gamma (float) → APCA simpleExp.
+/// Uses [delinearized] for the transfer step, staying in float precision
+/// (no 8-bit quantization).
 double lstarToApcaY(double lstar) {
-  return apcaYFromArgb(argbFromLstar(lstar));
+  final srgb = delinearized(yFromLstar(lstar) / 100.0);
+  return (sRco + sGco + sBco) * math.pow(srgb.clamp(0.0, 1.0), mainTrc);
 }
 
 double apcaYFromArgb(int argb) {

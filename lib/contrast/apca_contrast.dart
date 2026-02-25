@@ -54,7 +54,7 @@ double lighterBackgroundLstar(double textLstar, double apca,
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* ENTER');
   final lighterBackgroundApcaYValue =
       lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
-  return apcaYToLstarRange(lighterBackgroundApcaYValue).closestTo(textLstar).clamp(0.0, 100.0);
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest.clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a lighter text that achieves [apca] contrast
@@ -104,10 +104,10 @@ double lighterTextLstar(double backgroundLstar, double apca,
           debug,
           () =>
               'asked for lighter, but darker is in bounds. darkerTextApcaYValue: $darkerTextApcaYValue');
-      return apcaYToLstarRange(darkerTextApcaYValue).closestTo(backgroundLstar).clamp(0.0, 100.0);
+      return apcaYToLstarRange(darkerTextApcaYValue).darkest.clamp(0.0, 100.0);
     }
   }
-  return apcaYToLstarRange(lighterTextApcaYValue).closestTo(backgroundLstar).clamp(0.0, 100.0);
+  return apcaYToLstarRange(lighterTextApcaYValue).lightest.clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a darker background that achieves [apca] contrast
@@ -156,11 +156,10 @@ double darkerBackgroundLstar(double textLstar, double apca,
         return 100.0;
       }
     }
-    // Fallback: use closestTo for least disruptive result.
-    return apcaYToLstarRange(lighterBackgroundApcaYValue).closestTo(textLstar).clamp(0.0, 100.0);
+    return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest.clamp(0.0, 100.0);
   }
 
-  return apcaYToLstarRange(darkerBackgroundApcaYValue).closestTo(textLstar).clamp(0.0, 100.0);
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).darkest.clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a darker text that achieves [apca] contrast
@@ -213,11 +212,10 @@ double darkerTextLstar(double backgroundYLstar, double apca,
           debug,
           () =>
               'asked for darker, but lighter is in bounds. lighterTextApcaYValue: $lighterTextApcaYValue');
-      // Fallback: use closestTo for least disruptive result.
-      return apcaYToLstarRange(lighterTextApcaYValue).closestTo(backgroundYLstar).clamp(0.0, 100.0);
+      return apcaYToLstarRange(lighterTextApcaYValue).lightest.clamp(0.0, 100.0);
     }
   }
-  return apcaYToLstarRange(darkerTextApcaYValue).closestTo(backgroundYLstar).clamp(0.0, 100.0);
+  return apcaYToLstarRange(darkerTextApcaYValue).darkest.clamp(0.0, 100.0);
 }
 
 double lighterBackgroundApcaY(double textApcaY, double apca,
@@ -459,13 +457,10 @@ double _extrapolateGrayscaleLstar(double apcaY) {
   final sign = apcaY < 0 ? -1.0 : 1.0;
 
   // Step 1: apcaY → normalized channel (invert apcaY = x^2.4)
-  final normalized = math.pow(apcaY.abs(), 1.0 / mainTrc);
+  final normalized = math.pow(apcaY.abs(), 1.0 / mainTrc).toDouble();
 
-  // Step 2: normalized channel → Y (sRGB transfer function)
-  final y = (normalized <= 0.040449936
-          ? normalized / 12.92
-          : math.pow((normalized + 0.055) / 1.055, 2.4) as double) *
-      100.0;
+  // Step 2: normalized channel → Y (sRGB linearization)
+  final y = linearized(normalized) * 100.0;
 
   // Step 3: Y → L*
   return sign * lstarFromY(y);

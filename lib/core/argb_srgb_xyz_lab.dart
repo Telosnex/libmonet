@@ -199,17 +199,49 @@ double lstarFromY(double y) {
   return _labF(y / 100.0) * 116.0 - 16.0;
 }
 
+// ── sRGB transfer functions ──────────────────────────────────────────────────
+//
+// The sRGB specification defines a piecewise transfer function that converts
+// between linear-light tristimulus values and gamma-encoded display values.
+// Both directions operate on values normalized to [0, 1].
+//
+// These two functions are the single source of truth for the transfer curve.
+// All other helpers (linear(), delinear(), lstarToApcaY, …) are thin wrappers
+// that add scaling or quantization on top.
+
+/// Delinearizes a normalized channel: linear [0,1] → sRGB gamma-encoded [0,1].
+///
+///   value ≤ 0.0031308  →  12.92 × value
+///   value > 0.0031308  →  1.055 × value^(1/2.4) − 0.055
+///
+/// Float-precision equivalent of [delinear] (which also scales and quantizes
+/// to 8-bit).
+double delinearized(double linearNorm) {
+  if (linearNorm <= 0.0031308) {
+    return linearNorm * 12.92;
+  }
+  return 1.055 * pow(linearNorm, 1.0 / 2.4) - 0.055;
+}
+
+/// Linearizes a normalized channel: sRGB gamma-encoded [0,1] → linear [0,1].
+///
+///   value ≤ 0.04045  →  value / 12.92
+///   value > 0.04045  →  ((value + 0.055) / 1.055)^2.4
+///
+/// Float-precision equivalent of [linear] (which also scales from 8-bit).
+double linearized(double srgbNorm) {
+  if (srgbNorm <= 0.040449936) {
+    return srgbNorm / 12.92;
+  }
+  return pow((srgbNorm + 0.055) / 1.055, 2.4).toDouble();
+}
+
 /// Linearizes an RGB component.
 ///
 /// [rgbComponent] 0 <= rgb_component <= 255, represents R/G/B channel.
 /// Returns 0.0 <= output <= 100.0, color channel converted to linear RGB.
 double linear(int rgbComponent) {
-  final normalized = rgbComponent / 255.0;
-  if (normalized <= 0.040449936) {
-    return normalized / 12.92 * 100.0;
-  } else {
-    return pow((normalized + 0.055) / 1.055, 2.4).toDouble() * 100.0;
-  }
+  return linearized(rgbComponent / 255.0) * 100.0;
 }
 
 /// Delinearizes an RGB component.
@@ -219,15 +251,7 @@ double linear(int rgbComponent) {
 ///
 /// Returns 0 <= output <= 255, color channel converted to regular RGB.
 int delinear(double rgbComponent) {
-  final normalized = rgbComponent / 100.0;
-  var delinearized = 0.0;
-  if (normalized <= 0.0031308) {
-    delinearized = normalized * 12.92;
-  } else {
-    delinearized = 1.055 * pow(normalized, 1.0 / 2.4).toDouble() - 0.055;
-  }
-  final raw = delinearized * 255.0;
-  return raw.clamp(0, 255).round();
+  return (delinearized(rgbComponent / 100.0) * 255.0).clamp(0, 255).round();
 }
 
 /// Ensures [degrees] is between 0 and 360.

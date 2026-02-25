@@ -442,8 +442,11 @@ class Palette {
 
     // If the fg already meets fill-level contrast against the background,
     // it's visible on its own — the border IS the fg edge.
-    final fgVsBg =
-        _algo.getContrastBetweenLstars(bg: backgroundTone, fg: innerTone).abs();
+    // Check both APCA polarities: the fill was solved in one direction,
+    // but visibility works either way.
+    final fgVsBg = math.max(
+        _algo.getContrastBetweenLstars(bg: backgroundTone, fg: innerTone).abs(),
+        _algo.getContrastBetweenLstars(bg: innerTone, fg: backgroundTone).abs());
     if (fgVsBg >= _fgContrast) {
       debugLog(() =>
           'border fast-path: fg visible vs bg '

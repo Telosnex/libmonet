@@ -9,6 +9,7 @@
 import 'dart:math';
 
 import 'package:libmonet/colorspaces/matrix_utils.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 /// Defines the gamut-specific constants that the HCT solver needs.
 ///
@@ -105,14 +106,7 @@ class Gamut {
 
   /// sRGB OETF: linear [0..100] → display [0..255].
   static double _srgbTrueDelinearize(double rgbComponent) {
-    final normalized = rgbComponent / 100.0;
-    double delinearized;
-    if (normalized <= 0.0031308) {
-      delinearized = normalized * 12.92;
-    } else {
-      delinearized = 1.055 * pow(normalized, 1.0 / 2.4) - 0.055;
-    }
-    return delinearized * 255.0;
+    return delinearized(rgbComponent / 100.0) * 255.0;
   }
 
   /// sRGB EOTF: display [0..255] → linear [0..100].

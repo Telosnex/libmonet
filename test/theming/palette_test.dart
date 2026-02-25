@@ -152,6 +152,22 @@ void main() {
     }
   });
 
+  group('#1177AA bgTone=10', () {
+    test('snapshot', () {
+      final p = Palette.from(
+        const Color(0xff1177AA),
+        backgroundTone: 10,
+      );
+      expect(p.color, isColor(0xff1177AA));
+      expect(p.colorBorder, isColor(0xff005C86));
+      expect(p.fill, isColor(0xff499CD1));
+      expect(p.fillBorder, isColor(0xff499CD1));
+      expect(p.text, isColor(0xff6DBDF4));
+      expect(p.fillText, isColor(0xffFFFFFF));
+      expect(p.fillIcon, isColor(0xffDDEEFF));
+    });
+  });
+
   group('#334157', () {
     test('light mode', () {
       final colors = Palette.from(
@@ -160,24 +176,24 @@ void main() {
       );
       expect(colors.color, isColor(0xff334157));
       expect(colors.colorBorder, isColor(0xff334157));
-      expect(colors.colorText, isColor(0xffB2C1DC));
-      expect(colors.colorIcon, isColor(0xff98A7C1));
-      expect(colors.colorHovered, isColor(0xff5C6A82));
-      expect(colors.colorHoveredText, isColor(0xffCCDBF6));
-      expect(colors.colorSplashed, isColor(0xff7988A1));
-      expect(colors.colorSplashedText, isColor(0xffEBF1FF));
+      expect(colors.colorText, isColor(0xffB5C3DE));
+      expect(colors.colorIcon, isColor(0xff9BA9C4));
+      expect(colors.colorHovered, isColor(0xff64728B));
+      expect(colors.colorHoveredText, isColor(0xffD5E3FF));
+      expect(colors.colorSplashed, isColor(0xff808EA8));
+      expect(colors.colorSplashedText, isColor(0xffF5F7FF));
       expect(colors.fill, isColor(0xffA4B3CD));
-      expect(colors.fillText, isColor(0xff0B1A2F));
+      expect(colors.fillText, isColor(0xff0B1A2E));
       expect(colors.fillIcon, isColor(0xff3A485E));
-      expect(colors.fillHovered, isColor(0xff7B89A3));
-      expect(colors.fillHoveredText, isColor(0xffEDF2FF));
+      expect(colors.fillHovered, isColor(0xff7B89A2));
+      expect(colors.fillHoveredText, isColor(0xffF0F3FF));
       expect(colors.fillSplashed, isColor(0xff5E6C84));
-      expect(colors.fillSplashedText, isColor(0xffCDDCF7));
+      expect(colors.fillSplashedText, isColor(0xffD0DFFB));
       expect(colors.text, isColor(0xff7B89A2));
       expect(colors.textHovered, isColor(0xffC2D0EC));
-      expect(colors.textHoveredText, isColor(0xff3B495F));
+      expect(colors.textHoveredText, isColor(0xff3A485E));
       expect(colors.textSplashed, isColor(0xffA2B0CB));
-      expect(colors.textSplashedText, isColor(0xff051529));
+      expect(colors.textSplashedText, isColor(0xff061529));
     });
 
     test('dark mode', () {
@@ -187,24 +203,24 @@ void main() {
       );
       expect(colors.color, isColor(0xff334157));
       expect(colors.colorBorder, isColor(0xff45536A));
-      expect(colors.colorText, isColor(0xffB2C1DC));
-      expect(colors.colorIcon, isColor(0xff98A7C1));
-      expect(colors.colorHovered, isColor(0xff5C6A82));
-      expect(colors.colorHoveredText, isColor(0xffCCDBF6));
-      expect(colors.colorSplashed, isColor(0xff7988A1));
-      expect(colors.colorSplashedText, isColor(0xffEBF1FF));
-      expect(colors.fill, isColor(0xff7D8BA4));
-      expect(colors.fillText, isColor(0xffEFF3FF));
-      expect(colors.fillIcon, isColor(0xffD3E1FD));
-      expect(colors.fillHovered, isColor(0xffA2B0CB));
-      expect(colors.fillHoveredText, isColor(0xff051529));
-      expect(colors.fillSplashed, isColor(0xffBAC8E4));
-      expect(colors.fillSplashedText, isColor(0xff2F3D53));
-      expect(colors.text, isColor(0xffA1AFCA));
-      expect(colors.textHovered, isColor(0xff54627A));
-      expect(colors.textHoveredText, isColor(0xffC7D6F1));
-      expect(colors.textSplashed, isColor(0xff7B8AA3));
-      expect(colors.textSplashedText, isColor(0xffEDF2FF));
+      expect(colors.colorText, isColor(0xffB5C3DE));
+      expect(colors.colorIcon, isColor(0xff9BA9C4));
+      expect(colors.colorHovered, isColor(0xff64728B));
+      expect(colors.colorHoveredText, isColor(0xffD5E3FF));
+      expect(colors.colorSplashed, isColor(0xff808EA8));
+      expect(colors.colorSplashedText, isColor(0xffF5F7FF));
+      expect(colors.fill, isColor(0xff8391AB));
+      expect(colors.fillText, isColor(0xffFAF9FF));
+      expect(colors.fillIcon, isColor(0xffDFE9FF));
+      expect(colors.fillHovered, isColor(0xffAAB8D3));
+      expect(colors.fillHoveredText, isColor(0xff162439));
+      expect(colors.fillSplashed, isColor(0xffC3D1ED));
+      expect(colors.fillSplashedText, isColor(0xff3C4A60));
+      expect(colors.text, isColor(0xffA4B2CD));
+      expect(colors.textHovered, isColor(0xff5B6981));
+      expect(colors.textHoveredText, isColor(0xffCEDDF9));
+      expect(colors.textSplashed, isColor(0xff8290AA));
+      expect(colors.textSplashedText, isColor(0xffF8F8FF));
     });
   });
 
@@ -242,9 +258,9 @@ void main() {
         backgroundTone: lstarFromArgb(0xff986E38),
       );
       expect(colors.color, isColor(0xffA57B43));
-      expect(colors.colorBorder, isColor(0xff76511D)); // subtle shadow, not harsh hole
+      expect(colors.colorBorder, isColor(0xff75511D)); // subtle shadow, not harsh hole
       expect(lstarFromArgb(colors.color.argb), closeTo(54.627, 0.001));
-      expect(lstarFromArgb(colors.colorBorder.argb), closeTo(37.527, 0.001));
+      expect(lstarFromArgb(colors.colorBorder.argb), closeTo(37.400, 0.001));
     });
   });
 

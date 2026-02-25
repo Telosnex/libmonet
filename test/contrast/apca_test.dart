@@ -10,7 +10,7 @@ void main() {
 
       final result = lighterTextLstarUnsafe(backgroundLstar, contrast);
 
-      expect(result, closeTo(125.123, 0.001));
+      expect(result, closeTo(125.001, 0.001));
     });
 
     test('darkerTextLstarUnsafe returns <0 when impossible', () {
@@ -20,7 +20,7 @@ void main() {
 
       final result = darkerTextLstarUnsafe(backgroundLstar, contrast);
 
-      expect(result, closeTo(-61.231, 0.001));
+      expect(result, closeTo(-61.242, 0.001));
     });
 
     test('lighterBackgroundLstarUnsafe returns >100 when impossible', () {
@@ -30,7 +30,7 @@ void main() {
 
       final result = lighterBackgroundLstarUnsafe(textLstar, contrast);
 
-      expect(result, closeTo(128.698, 0.001));
+      expect(result, closeTo(128.575, 0.001));
     });
 
     test('darkerBackgroundLstarUnsafe returns <0 when impossible', () {
@@ -40,7 +40,7 @@ void main() {
 
       final result = darkerBackgroundLstarUnsafe(textLstar, contrast);
 
-      expect(result, closeTo(-60.841, 0.001));
+      expect(result, closeTo(-60.848, 0.001));
     });
 
     test('unsafe vs safe: unsafe is honest, safe falls back', () {
@@ -64,19 +64,19 @@ void main() {
     test('T0', () {
       const textLstar = 0.0;
       final backgroundLstar = lighterBackgroundLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(70.304, 0.001));
-    });
-
-    test('T10', () {
-      const textLstar = 10.0;
-      final backgroundLstar = lighterBackgroundLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(71.593, 0.001));
-    });
-
-    test('T50', () {
-      const textLstar = 50.0;
-      final backgroundLstar = lighterBackgroundLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(93.180, 0.001));
+      expect(backgroundLstar, closeTo(71.335, 0.001));
+          });
+      
+          test('T10', () {
+            const textLstar = 10.0;
+            final backgroundLstar = lighterBackgroundLstar(textLstar, 60);
+            expect(backgroundLstar, closeTo(72.445, 0.001));
+          });
+      
+          test('T50', () {
+            const textLstar = 50.0;
+            final backgroundLstar = lighterBackgroundLstar(textLstar, 60);
+            expect(backgroundLstar, closeTo(93.676, 0.001));
     });
 
     test('T80', () {
@@ -120,19 +120,19 @@ void main() {
     test('T80', () {
       const textLstar = 80.0;
       final backgroundLstar = darkerBackgroundLstar(textLstar, -60);
-      expect(backgroundLstar, closeTo(30.399, 0.001));
-    });
-
-    test('T90', () {
-      const textLstar = 90.0;
-      final backgroundLstar = darkerBackgroundLstar(textLstar, -60);
-      expect(backgroundLstar, closeTo(48.281, 0.001));
-    });
-
-    test('T100', () {
-      const textLstar = 100.0;
-      final backgroundLstar = darkerBackgroundLstar(textLstar, -60);
-      expect(backgroundLstar, closeTo(63.462, 0.001));
+      expect(backgroundLstar, closeTo(26.230, 0.001));
+          });
+      
+          test('T90', () {
+            const textLstar = 90.0;
+            final backgroundLstar = darkerBackgroundLstar(textLstar, -60);
+            expect(backgroundLstar, closeTo(45.629, 0.001));
+          });
+      
+          test('T100', () {
+            const textLstar = 100.0;
+            final backgroundLstar = darkerBackgroundLstar(textLstar, -60);
+            expect(backgroundLstar, closeTo(61.507, 0.001));
     });
   });
 
@@ -140,19 +140,19 @@ void main() {
     test('T0', () {
       const textLstar = 0.0;
       final backgroundLstar = lighterTextLstar(textLstar, -60);
-      expect(backgroundLstar, closeTo(71.271, 0.001));
-    });
-
-    test('T10', () {
-      const textLstar = 10.0;
-      final backgroundLstar = lighterTextLstar(textLstar, -60);
-      expect(backgroundLstar, closeTo(72.236, 0.001));
-    });
-
-    test('T50', () {
-      const textLstar = 50.0;
-      final backgroundLstar = lighterTextLstar(textLstar, -60);
-      expect(backgroundLstar, closeTo(90.450, 0.001));
+      expect(backgroundLstar, closeTo(72.445, 0.001));
+          });
+      
+          test('T10', () {
+            const textLstar = 10.0;
+            final backgroundLstar = lighterTextLstar(textLstar, -60);
+            expect(backgroundLstar, closeTo(73.552, 0.001));
+          });
+      
+          test('T50', () {
+            const textLstar = 50.0;
+            final backgroundLstar = lighterTextLstar(textLstar, -60);
+            expect(backgroundLstar, closeTo(91.303, 0.001));
     });
 
     test('T80', () {
@@ -178,37 +178,37 @@ void main() {
     test('T0', () {
       const textLstar = 0.0;
       final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(71.271, 0.001));
-    });
-
-    test('T10', () {
-      const textLstar = 10.0;
-      final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(72.236, 0.001));
-    });
-
-    test('T50', () {
-      const textLstar = 50.0;
-      final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(90.450, 0.001));
+      expect(backgroundLstar, closeTo(72.445, 0.001));
+          });
+      
+          test('T10', () {
+            const textLstar = 10.0;
+            final backgroundLstar = darkerTextLstar(textLstar, 60);
+            expect(backgroundLstar, closeTo(73.552, 0.001));
+          });
+      
+          test('T50', () {
+            const textLstar = 50.0;
+            final backgroundLstar = darkerTextLstar(textLstar, 60);
+            expect(backgroundLstar, closeTo(91.303, 0.001));
     });
 
     test('T80', () {
       const textLstar = 80.0;
       final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(28.653, 0.001));
-    });
-
-    test('T90', () {
-      const textLstar = 90.0;
-      final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(45.059, 0.001));
-    });
-
-    test('T100', () {
-      const textLstar = 100.0;
-      final backgroundLstar = darkerTextLstar(textLstar, 60);
-      expect(backgroundLstar, closeTo(59.260, 0.001));
+      expect(backgroundLstar, closeTo(24.589, 0.001));
+          });
+      
+          test('T90', () {
+            const textLstar = 90.0;
+            final backgroundLstar = darkerTextLstar(textLstar, 60);
+            expect(backgroundLstar, closeTo(42.215, 0.001));
+          });
+      
+          test('T100', () {
+            const textLstar = 100.0;
+            final backgroundLstar = darkerTextLstar(textLstar, 60);
+            expect(backgroundLstar, closeTo(56.798, 0.001));
     });
   });
 }
