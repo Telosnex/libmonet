@@ -1,4 +1,3 @@
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/effects/opacity.dart';
 import 'package:libmonet/effects/shadows.dart';
@@ -17,24 +16,24 @@ class ScrimExpansionTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final monetTheme = MonetTheme.of(context);
     final primaryColors = monetTheme.primary;
-    final scrimOpacity = getOpacity(
-      minBgLstar: 0,
-      maxBgLstar: 100,
+    final fgArgb = primaryColors.backgroundText.argb;
+    final scrimOpacity = getOpacityForArgbs(
+      foregroundArgb: fgArgb,
+      minBackgroundArgb: 0xFF000000,
+      maxBackgroundArgb: 0xFFFFFFFF,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast,
     );
-    final shadows = getShadowOpacities(
-      minBgLstar: 0,
-      maxBgLstar: 100,
+    final shadows = getShadowOpacitiesForArgbs(
+      foregroundArgb: fgArgb,
+      minBackgroundArgb: 0xFF000000,
+      maxBackgroundArgb: 0xFFFFFFFF,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast,
       blurRadius: 5,
       contentRadius: 3,
     );
     final shadowString = StringBuffer();
-    shadowString.write('Shadows: ');
     if (shadows.opacities.isEmpty) {
       shadowString.write('none');
     } else {
@@ -43,19 +42,29 @@ class ScrimExpansionTile extends ConsumerWidget {
         shadowString.write('${oneHundredPercent.length} @ 100%, 1 @ ');
       }
       shadowString.write(
-          '${(shadows.opacities.last * 100).round()}% of ${hexFromArgb(argbFromLstar(shadows.lstar))}');
+          '${(shadows.opacities.last * 100).round()}% of ${hexFromArgb(shadows.shadowArgb)}');
     }
 
     final scrimString = StringBuffer();
-    scrimString.write('Scrim: ');
     final scrimPercentageInt =
         (scrimOpacity.opacity * 100).ceil().clamp(0, 100);
     if (scrimPercentageInt == 0) {
       scrimString.write('none');
     } else {
       scrimString.write(
-          '${(scrimOpacity.opacity * 100).ceil()}% of ${hexFromArgb(argbFromLstar(scrimOpacity.lstar))}');
+          '${(scrimOpacity.opacity * 100).ceil()}% of ${hexFromArgb(scrimOpacity.protectionArgb)}');
     }
+
+    final inputsText = 'Inputs\n'
+        '  Text color: ${hexFromArgb(fgArgb)}\n'
+        '  Min background: ${hexFromArgb(0xFF000000)} (black)\n'
+        '  Max background: ${hexFromArgb(0xFFFFFFFF)} (white)\n'
+        '  Target contrast: $contrast\n'
+        '  Algorithm: ${monetTheme.algo.name}\n'
+        '\n'
+        'Results\n'
+        '  Scrim: $scrimString\n'
+        '  Shadows: $shadowString';
 
     return ExpansionTile(
       title: Text(
@@ -69,15 +78,16 @@ class ScrimExpansionTile extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(scrimString.toString()),
-              Text(shadowString.toString()),
-            ],
+          child: SelectableText(
+            inputsText,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  fontFamily: 'monospace',
+                  color: primaryColors.text,
+                ),
           ),
         ),
         const VerticalPadding(),
+        _label(context, 'With scrim', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -89,18 +99,11 @@ class ScrimExpansionTile extends ConsumerWidget {
                 child: Container(
               color: scrimOpacity.color,
             )),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "This is Major Tom to Ground Control. I'm stepping through the door And I'm floating in a most peculiar way And the stars look very different today",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(color: primaryColors.backgroundText),
-              ),
-            ),
+            _sampleText(context, primaryColors),
           ],
         ),
+        const VerticalPadding(),
+        _label(context, 'No protection', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -108,18 +111,11 @@ class ScrimExpansionTile extends ConsumerWidget {
                 painter: ChessBoardPainter(squareSize: 16),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "This is Major Tom to Ground Control. I'm stepping through the door And I'm floating in a most peculiar way And the stars look very different today",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(color: primaryColors.backgroundText),
-              ),
-            ),
+            _sampleText(context, primaryColors),
           ],
         ),
+        const VerticalPadding(),
+        _label(context, 'With shadows', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -137,8 +133,33 @@ class ScrimExpansionTile extends ConsumerWidget {
               ),
             ),
           ],
-        )
+        ),
       ],
+    );
+  }
+
+  Widget _label(BuildContext context, String text, dynamic primaryColors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+              color: primaryColors.text,
+            ),
+      ),
+    );
+  }
+
+  Widget _sampleText(BuildContext context, dynamic primaryColors) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        "This is Major Tom to Ground Control. I'm stepping through the door And I'm floating in a most peculiar way And the stars look very different today",
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(color: primaryColors.backgroundText),
+      ),
     );
   }
 }

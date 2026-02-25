@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/effects/opacity.dart';
 import 'package:libmonet/effects/shadows.dart';
@@ -11,6 +10,7 @@ import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/color_picker.dart';
+import 'package:monet_studio/gamut_chart.dart';
 import 'package:monet_studio/components_widget.dart';
 import 'package:monet_studio/contrast_expansion_tile.dart';
 import 'package:monet_studio/extracted_widget.dart';
@@ -19,6 +19,7 @@ import 'package:monet_studio/quantizer_provider.dart';
 import 'package:monet_studio/safe_colors_preview.dart';
 import 'package:monet_studio/scaling_expansion_tile.dart';
 import 'package:monet_studio/scrim_expansion_tile.dart';
+import 'package:monet_studio/custom_bg_expansion_tile.dart';
 import 'package:monet_studio/tokens_expansion_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -136,6 +137,10 @@ class Home extends HookConsumerWidget {
                                   contrast: contrast.value,
                                 ),
                                 const VerticalPadding(),
+                                CustomBgExpansionTile(
+                                  contrast: contrast.value,
+                                ),
+                                const VerticalPadding(),
                                 ExpansionTile(
                                   title: Text(
                                     'Material Components',
@@ -159,6 +164,8 @@ class Home extends HookConsumerWidget {
                                 ScalingExpansionTile(
                                   scaleValueNotifier: scale,
                                 ),
+                                const VerticalPadding(),
+                                const GamutChart(initialHue: 27.0),
                                 const VerticalPadding(),
                               ],
                             ),
@@ -214,18 +221,19 @@ class Home extends HookConsumerWidget {
   ) {
     final monetTheme = MonetTheme.of(context);
     final primaryColors = monetTheme.primary;
-    final scrimOpacity = getOpacity(
-      minBgLstar: 0,
-      maxBgLstar: 100,
+    final fgArgb = primaryColors.backgroundText.argb;
+    final scrimOpacity = getOpacityForArgbs(
+      foregroundArgb: fgArgb,
+      minBackgroundArgb: 0xFF000000,
+      maxBackgroundArgb: 0xFFFFFFFF,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast.value,
     );
-    final shadows = getShadowOpacities(
-      minBgLstar: 0,
-      maxBgLstar: 100,
+    final shadows = getShadowOpacitiesForArgbs(
+      foregroundArgb: fgArgb,
+      minBackgroundArgb: 0xFF000000,
+      maxBackgroundArgb: 0xFFFFFFFF,
       algo: monetTheme.algo,
-      foregroundLstar: lstarFromArgb(primaryColors.backgroundText.argb),
       contrast: contrast.value,
       blurRadius: 5,
       contentRadius: 3,
@@ -283,7 +291,7 @@ class Home extends HookConsumerWidget {
         shadowString.write('${oneHundredPercent.length} @ 100%\n1 @ ');
       }
       shadowString.write(
-          '${(shadows.opacities.last * 100).round()}% of ${hexFromArgb(argbFromLstar(shadows.lstar))}');
+          '${(shadows.opacities.last * 100).round()}% of ${hexFromArgb(shadows.shadowArgb)}');
     }
 
     final scrimString = StringBuffer();
@@ -294,7 +302,7 @@ class Home extends HookConsumerWidget {
       scrimString.write('none');
     } else {
       scrimString.write(
-          '${(scrimOpacity.opacity * 100).ceil()}% ${hexFromArgb(argbFromLstar(scrimOpacity.lstar))}');
+          '${(scrimOpacity.opacity * 100).ceil()}% ${hexFromArgb(scrimOpacity.protectionArgb)}');
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
