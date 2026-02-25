@@ -86,19 +86,7 @@ void main() {
         backgroundTone: lstarFromArgb(0xffFFCA88),
       );
       expect(colors.color, isColor(0xffD29C57));
-      expect(colors.colorBorder, isColor(0xffD29C57)); // same as input (already meets Lc 15)
-    });
-
-    test('#D29C57 should have darker border, not lighter', () {
-      // Very dark blue on very dark background (both ~tone 10) should get
-      // a lighter blue border (~tone 50), not an extreme white fallback.
-      // The L* is conservative to ensure chromatic colors meet contrast.
-      final colors = Palette.from(
-        const Color(0xffD29C57),
-        backgroundTone: lstarFromArgb(0xffFFCA88),
-      );
-      expect(colors.color, isColor(0xffD29C57));
-      expect(colors.colorBorder, isColor(0xffD29C57)); // same as input (already meets Lc 15)
+      expect(colors.colorBorder, isColor(0xffA87836)); // darker shadow (~T52)
     });
 
     test('#A57B43 has darker border visually, feels intense as stroke', () {
