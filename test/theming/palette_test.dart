@@ -7,7 +7,82 @@ import 'package:test/test.dart';
 
 import '../utils/color_matcher.dart';
 
+/// Minimal class mirroring Palette's `late final` pattern.
+/// Tracks evaluation counts to prove laziness.
+class _LazyProbe {
+  int aCount = 0;
+  int bCount = 0;
+  int cCount = 0;
+
+  /// Computed once on first access, never again.
+  late final int a = _computeA();
+
+  /// Depends on [a] — still lazy, evaluated on first access of [b].
+  late final int b = _computeB();
+
+  /// Independent of [a] and [b].
+  late final int c = _computeC();
+
+  int _computeA() {
+    aCount++;
+    return 1;
+  }
+
+  int _computeB() {
+    bCount++;
+    return a + 10;
+  }
+
+  int _computeC() {
+    cCount++;
+    return 99;
+  }
+}
+
 void main() {
+  group('late final laziness', () {
+    test('fields are not evaluated at construction time', () {
+      final probe = _LazyProbe();
+      expect(probe.aCount, 0);
+      expect(probe.bCount, 0);
+      expect(probe.cCount, 0);
+    });
+
+    test('accessing a field evaluates it exactly once', () {
+      final probe = _LazyProbe();
+      expect(probe.a, 1);
+      expect(probe.aCount, 1);
+      // Second access — no recomputation.
+      expect(probe.a, 1);
+      expect(probe.aCount, 1);
+      // b and c still untouched.
+      expect(probe.bCount, 0);
+      expect(probe.cCount, 0);
+    });
+
+    test('dependent field triggers its dependency but each runs once', () {
+      final probe = _LazyProbe();
+      // Access b first — should trigger a (dependency), then b.
+      expect(probe.b, 11);
+      expect(probe.aCount, 1);
+      expect(probe.bCount, 1);
+      // Access a again — already cached.
+      expect(probe.a, 1);
+      expect(probe.aCount, 1);
+      // c still untouched.
+      expect(probe.cCount, 0);
+    });
+
+    test('unused fields are never evaluated', () {
+      final probe = _LazyProbe();
+      // Only touch a.
+      expect(probe.a, 1);
+      expect(probe.aCount, 1);
+      expect(probe.bCount, 0);
+      expect(probe.cCount, 0);
+    });
+  });
+
   group('#334157', () {
     test('light mode', () {
       final colors = Palette.from(
