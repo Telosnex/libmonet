@@ -27,7 +27,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities.opacities, [1.0, 1.0, 1.0]);
+      expect(opacities.opacities, [1.0, 1.0, 1.0, 0.18541183084166843]);
     });
 
     test('FG 30', () {
@@ -39,7 +39,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities.opacities, [1.0, 0.9852060793573316]);
+      expect(opacities.opacities, [1.0, 1.0, 0.047476344013871886]);
     });
   });
 
@@ -55,7 +55,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities.opacities, [1.0, 0.301840627819546]);
+      expect(opacities.opacities, [1.0, 0.34203859555706284]);
     });
 
     test('FG 40', () {
@@ -67,7 +67,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities.opacities, [1.0, 1.0, 1.0]);
+      expect(opacities.opacities, [1.0, 1.0, 1.0, 0.18541183084166843]);
     });
 
     test('FG 30', () {
@@ -79,7 +79,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities.opacities, [1.0, 0.9852060793573316]);
+      expect(opacities.opacities, [1.0, 1.0, 0.047476344013871886]);
     });
 
     test('FG 0', () {
@@ -91,7 +91,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities.opacities, [1.0, 0.301840627819546]);
+      expect(opacities.opacities, [1.0, 0.34203859555706284]);
     });
   });
 
@@ -108,7 +108,7 @@ void main() {
         blurRadius: 10,
 
       );
-      expect(opacities.opacities, [1.0, 0.301840627819546]);
+      expect(opacities.opacities, [1.0, 0.34203859555706284]);
     });
 
     test('FG 90', () {
@@ -120,7 +120,7 @@ void main() {
         algo: Algo.wcag21,
         blurRadius: 10,
       );
-      expect(opacities.opacities, [1.0, 0.5832264019821635]);
+      expect(opacities.opacities, [1.0, 0.6234243697196804]);
     });
 
     test('FG 0', () {

@@ -12,11 +12,18 @@ import 'package:libmonet/util/with_opacity_neue.dart';
 
 class ShadowResult {
   final double blurRadius;
-  final double lstar;
+  
+  /// ARGB of the shadow color (typically black or white).
+  final int shadowArgb;
+  
+  /// Opacities for each shadow layer.
   final List<double> opacities;
 
-  ShadowResult(
-      {required this.blurRadius, required this.lstar, required this.opacities});
+  ShadowResult({
+    required this.blurRadius,
+    required this.shadowArgb,
+    required this.opacities,
+  });
 
   List<Shadow>? _shadows;
   List<Shadow> get shadows {
@@ -29,7 +36,7 @@ class ShadowResult {
     } else {
       resolvedShadows = opacities.map((e) {
         return Shadow(
-          color: Color(argbFromLstar(lstar)).withOpacityNeue(e),
+          color: Color(shadowArgb).withOpacityNeue(e),
           blurRadius: blurRadius,
           offset: const Offset(0, 0),
         );
@@ -40,10 +47,15 @@ class ShadowResult {
   }
 }
 
-ShadowResult getShadowOpacities({
-  required double minBgLstar,
-  required double maxBgLstar,
-  required double foregroundLstar,
+/// Core shadow calculation.
+///
+/// Given a foreground color and a range of possible background colors,
+/// calculates the shadow layers needed to ensure the foreground meets
+/// the target contrast against all backgrounds.
+ShadowResult getShadowOpacitiesForArgbs({
+  required int foregroundArgb,
+  required int minBackgroundArgb,
+  required int maxBackgroundArgb,
   required double contrast,
   required Algo algo,
   required double blurRadius,
@@ -51,10 +63,11 @@ ShadowResult getShadowOpacities({
   bool debug = false,
 }) {
   contentRadius = contentRadius <= 0.0 ? blurRadius : contentRadius;
-  final opacityResult = getOpacity(
-    minBgLstar: minBgLstar,
-    maxBgLstar: maxBgLstar,
-    foregroundLstar: foregroundLstar,
+  
+  final opacityResult = getOpacityForArgbs(
+    foregroundArgb: foregroundArgb,
+    minBackgroundArgb: minBackgroundArgb,
+    maxBackgroundArgb: maxBackgroundArgb,
     contrast: contrast,
     algo: algo,
     debug: debug,
@@ -62,23 +75,23 @@ ShadowResult getShadowOpacities({
   final requiredOpacity = opacityResult.opacity;
 
   if (requiredOpacity == 0.0) {
-    return ShadowResult(blurRadius: 0, lstar: 0, opacities: []);
+    return ShadowResult(blurRadius: 0, shadowArgb: 0xFF000000, opacities: []);
   }
   if (blurRadius.round() == 0) {
     if (kDebugMode) {
       print(
           'WARNING: blurRadius is 0; without blur, shadows are not visible. Returning 0 shadows');
     }
-    return ShadowResult(blurRadius: 0, lstar: 0, opacities: []);
+    return ShadowResult(blurRadius: 0, shadowArgb: 0xFF000000, opacities: []);
   }
+  
   monetDebug(
       debug,
-      () =>
-          'object being blurred is color ${hexFromArgb(argbFromLstar(foregroundLstar))}');
+      () => 'object being blurred is color ${hexFromArgb(foregroundArgb)}');
   monetDebug(
       debug,
-      () =>
-          'shadow is color ${hexFromArgb(argbFromLstar(opacityResult.lstar))}');
+      () => 'shadow is color ${hexFromArgb(opacityResult.protectionArgb)}');
+  
   final sigma = convertRadiusToSigma(blurRadius);
   final gaussians = List.generate(blurRadius.round() * 2 + 1, (index) {
     final i = index - blurRadius;
@@ -103,19 +116,19 @@ ShadowResult getShadowOpacities({
   if (effectiveOpacity >= requiredOpacity) {
     return ShadowResult(
       blurRadius: blurRadius,
-      lstar: opacityResult.lstar,
+      shadowArgb: opacityResult.protectionArgb,
       opacities: [requiredOpacity / effectiveOpacity],
     );
   }
-  var bgColor = Color(argbFromLstar(minBgLstar));
+  var bgColor = Color(minBackgroundArgb);
   final shadowColor =
-      Color(argbFromLstar(opacityResult.lstar)).withOpacityNeue(effectiveOpacity);
+      Color(opacityResult.protectionArgb).withOpacityNeue(effectiveOpacity);
   var blended = Color.alphaBlend(shadowColor, bgColor);
   assert(blended.alphaNeue == 255);
   monetDebug(
       debug,
       () =>
-          'added ${Color(argbFromLstar(opacityResult.lstar))} at ${(1.0 * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.argb)}');
+          'added ${Color(opacityResult.protectionArgb)} at ${(1.0 * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.argb)}');
 
   var netOpacity = effectiveOpacity;
   final allOpacities = [1.0];
@@ -155,7 +168,7 @@ ShadowResult getShadowOpacities({
         () =>
             'gap is $gap. effectiveOpacity is $currentEffectiveOpacity. therefore nextOpacity is $nextOpacity');
 
-    final shadowColor = Color(argbFromLstar(opacityResult.lstar))
+    final shadowColor = Color(opacityResult.protectionArgb)
         .withOpacityNeue(nextOpacity * currentEffectiveOpacity);
 
     blended = Color.alphaBlend(shadowColor, blended);
@@ -164,7 +177,7 @@ ShadowResult getShadowOpacities({
     monetDebug(
         debug,
         () =>
-            'added ${Color(argbFromLstar(opacityResult.lstar))} at ${(nextOpacity * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.argb)}');
+            'added ${Color(opacityResult.protectionArgb)} at ${(nextOpacity * 100).toStringAsFixed(2)}. blended: $blended. lstar: ${lstarFromArgb(blended.argb)}');
 
     netOpacity += (1.0 - netOpacity) * nextOpacity * effectiveOpacity;
 
@@ -174,21 +187,140 @@ ShadowResult getShadowOpacities({
       break;
     }
   }
+  
+  final minBgLuma = lumaFromArgb(minBackgroundArgb);
+  final maxBgLuma = lumaFromArgb(maxBackgroundArgb);
+  final protectionLuma = lumaFromArgb(opacityResult.protectionArgb);
+  final targetLuma = lumaFromArgb(argbFromLstar(opacityResult.targetLstar));
+  
   final rawMath = numApplications(
-      lumaFromLstar(opacityResult.requiredLstar),
-      lumaFromLstar(opacityResult.lstar),
-      opacityResult.lstar > minBgLstar
-          ? lumaFromLstar(minBgLstar)
-          : lumaFromLstar(maxBgLstar),
+      targetLuma,
+      protectionLuma,
+      opacityResult.protectionLstar > lstarFromArgb(minBackgroundArgb)
+          ? minBgLuma
+          : maxBgLuma,
       effectiveOpacity);
   monetDebug(
       debug, () => 'raw math says $rawMath, turns says ${allOpacities.length}');
+  
   return ShadowResult(
     blurRadius: blurRadius,
-    lstar: opacityResult.lstar,
+    shadowArgb: opacityResult.protectionArgb,
     opacities: allOpacities,
   );
 }
+
+// =============================================================================
+// Convenience APIs
+// =============================================================================
+
+/// Calculate shadow layers for foreground to contrast with background.
+///
+/// Most common case: you know both colors exactly.
+ShadowResult getShadowOpacitiesForColors({
+  required Color foreground,
+  required Color background,
+  required double contrast,
+  required Algo algo,
+  required double blurRadius,
+  double contentRadius = -1.0,
+  bool debug = false,
+}) {
+  return getShadowOpacitiesForArgbs(
+    foregroundArgb: foreground.argb,
+    minBackgroundArgb: background.argb,
+    maxBackgroundArgb: background.argb,
+    contrast: contrast,
+    algo: algo,
+    blurRadius: blurRadius,
+    contentRadius: contentRadius,
+    debug: debug,
+  );
+}
+
+/// Calculate shadow layers that work across a set of possible backgrounds.
+///
+/// Use case: element over an image, sampled at multiple points.
+ShadowResult getShadowOpacitiesForBackgrounds({
+  required Color foreground,
+  required Iterable<Color> backgrounds,
+  required double contrast,
+  required Algo algo,
+  required double blurRadius,
+  double contentRadius = -1.0,
+  bool debug = false,
+}) {
+  // Find the backgrounds with min and max luma
+  int? minLumaArgb;
+  int? maxLumaArgb;
+  double? minLuma;
+  double? maxLuma;
+
+  for (final bg in backgrounds) {
+    final luma = lumaFromArgb(bg.argb);
+    if (minLuma == null || luma < minLuma) {
+      minLuma = luma;
+      minLumaArgb = bg.argb;
+    }
+    if (maxLuma == null || luma > maxLuma) {
+      maxLuma = luma;
+      maxLumaArgb = bg.argb;
+    }
+  }
+
+  if (minLumaArgb == null || maxLumaArgb == null) {
+    throw ArgumentError('backgrounds cannot be empty');
+  }
+
+  return getShadowOpacitiesForArgbs(
+    foregroundArgb: foreground.argb,
+    minBackgroundArgb: minLumaArgb,
+    maxBackgroundArgb: maxLumaArgb,
+    contrast: contrast,
+    algo: algo,
+    blurRadius: blurRadius,
+    contentRadius: contentRadius,
+    debug: debug,
+  );
+}
+
+// =============================================================================
+// Deprecated L*-based API (backward compatibility)
+// =============================================================================
+
+/// Calculate shadow layers from L* values.
+///
+/// ⚠️ DEPRECATED: Prefer [getShadowOpacitiesForColors] for accurate results.
+///
+/// This converts L* to grayscale colors internally. For chromatic colors,
+/// use [getShadowOpacitiesForColors] instead.
+@Deprecated(
+    'Use getShadowOpacitiesForColors() or getShadowOpacitiesForArgbs() for accurate results')
+ShadowResult getShadowOpacities({
+  required double minBgLstar,
+  required double maxBgLstar,
+  required double foregroundLstar,
+  required double contrast,
+  required Algo algo,
+  required double blurRadius,
+  double contentRadius = -1.0,
+  bool debug = false,
+}) {
+  return getShadowOpacitiesForArgbs(
+    foregroundArgb: argbFromLstar(foregroundLstar),
+    minBackgroundArgb: argbFromLstar(minBgLstar),
+    maxBackgroundArgb: argbFromLstar(maxBgLstar),
+    contrast: contrast,
+    algo: algo,
+    blurRadius: blurRadius,
+    contentRadius: contentRadius,
+    debug: debug,
+  );
+}
+
+// =============================================================================
+// Internal helpers
+// =============================================================================
 
 double numApplications(double finalBg, double fg, double bg, double opacity) {
   return math.log((finalBg - fg) / (bg - fg)) / math.log(1.0 - opacity);

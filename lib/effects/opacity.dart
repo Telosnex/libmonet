@@ -6,28 +6,477 @@ import 'package:libmonet/contrast/contrast.dart';
 import 'package:libmonet/util/debug_print.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/colorspaces/luma.dart';
-
-import 'package:libmonet/util/with_opacity_neue.dart';
 import 'package:libmonet/contrast/wcag.dart';
 
+/// Result of an opacity calculation.
 class OpacityResult {
-  final double lstar;
-  final double opacity;
-  final double requiredLstar;
+  /// ARGB of the protection layer.
+  final int protectionArgb;
 
-  Color get color => Color(argbFromLstar(lstar)).withOpacityNeue(opacity);
-  OpacityResult(
-      {required this.lstar,
-      required this.opacity,
-      required this.requiredLstar});
+  /// Opacity of the protection layer (0.0 to 1.0).
+  final double opacity;
+
+  /// Target L* that the protection layer achieves after blending.
+  final double targetLstar;
+
+  OpacityResult({
+    required this.protectionArgb,
+    required this.opacity,
+    required this.targetLstar,
+  });
+
+  /// Whether a protection layer is needed at all.
+  bool get needsProtection => opacity > 0.0;
+
+  /// Protection layer as a color with opacity applied.
+  Color get color {
+    final r = redFromArgb(protectionArgb);
+    final g = greenFromArgb(protectionArgb);
+    final b = blueFromArgb(protectionArgb);
+    return Color.fromARGB((opacity * 255).round(), r, g, b);
+  }
+
+  /// L* of the protection layer.
+  double get protectionLstar => lstarFromArgb(protectionArgb);
+
+  /// Luma of the protection layer (0.0 to 100.0).
+  double get protectionLuma => lumaFromArgb(protectionArgb);
+
+  // Backward compat
+  @Deprecated('Use protectionLstar')
+  double get lstar => protectionLstar;
+
+  @Deprecated('Use targetLstar')
+  double get requiredLstar => targetLstar;
 }
 
-// Need to know: min/max of BG
-// | Derive                          | Given                                   |
-// |---------------------------------|-----------------------------------------|
-// | opacity of protection layer     | L* of protection, L* of text            |
-// | L* of protection layer          | L* of protection, opacity of layer      |
-// | L* of text                      | L* of protection, opacity of protection |
+const _white = 0xFFFFFFFF;
+const _black = 0xFF000000;
+
+/// Core opacity calculation.
+///
+/// Given a foreground color and a range of possible background colors,
+/// calculates the minimum opacity needed for a protection layer (black or white)
+/// to ensure the foreground meets the target contrast against all backgrounds.
+OpacityResult getOpacityForArgbs({
+  required int foregroundArgb,
+  required int minBackgroundArgb,
+  required int maxBackgroundArgb,
+  required double contrast,
+  required Algo algo,
+  bool debug = false,
+}) {
+  final absoluteContrast = algo.getAbsoluteContrast(contrast, Usage.text);
+
+  final foregroundLstar = lstarFromArgb(foregroundArgb);
+  final minBgLstar = lstarFromArgb(minBackgroundArgb);
+  final maxBgLstar = lstarFromArgb(maxBackgroundArgb);
+
+  // 1. Check if we even need a protection layer.
+  final contrastWithMin =
+      algo.getContrastBetweenLstars(bg: minBgLstar, fg: foregroundLstar);
+  final contrastWithMax =
+      algo.getContrastBetweenLstars(bg: maxBgLstar, fg: foregroundLstar);
+
+  if (absoluteContrast <= contrastWithMin &&
+      absoluteContrast <= contrastWithMax) {
+    monetDebug(
+        debug,
+        () =>
+            '== No protection needed, desired contrast is $absoluteContrast, '
+            'against min bg is $contrastWithMin, against max bg is $contrastWithMax');
+    return OpacityResult(
+      protectionArgb: foregroundArgb,
+      opacity: 0.0,
+      targetLstar: foregroundLstar,
+    );
+  }
+
+  monetDebug(
+      debug,
+      () => '== Protection needed, desired contrast is $absoluteContrast, '
+          'against min bg is $contrastWithMin, against max bg is $contrastWithMax');
+
+  // 2. Try white protection (lighten bg) and black protection (darken bg).
+
+  // White protection on darkest background (where lightening helps most)
+  final whiteProt = _calculateProtection(
+    protectionArgb: _white,
+    backgroundArgb: minBackgroundArgb,
+    foregroundLstar: foregroundLstar,
+    absoluteContrast: absoluteContrast,
+    algo: algo,
+    lightenBackground: true,
+    debug: debug,
+  );
+
+  // Black protection on lightest background (where darkening helps most)
+  final blackProt = _calculateProtection(
+    protectionArgb: _black,
+    backgroundArgb: maxBackgroundArgb,
+    foregroundLstar: foregroundLstar,
+    absoluteContrast: absoluteContrast,
+    algo: algo,
+    lightenBackground: false,
+    debug: debug,
+  );
+
+  monetDebug(debug, () => 'White protection opacity: ${whiteProt?.opacity}');
+  monetDebug(debug, () => 'Black protection opacity: ${blackProt?.opacity}');
+
+  // 3. Choose the best protection.
+  final result = _chooseBestProtection(
+    whiteProt: whiteProt,
+    blackProt: blackProt,
+    foregroundArgb: foregroundArgb,
+    minBackgroundArgb: minBackgroundArgb,
+    maxBackgroundArgb: maxBackgroundArgb,
+    foregroundLstar: foregroundLstar,
+    absoluteContrast: absoluteContrast,
+    algo: algo,
+    debug: debug,
+  );
+
+  return result;
+}
+
+/// Calculate protection for a specific protection color and background.
+OpacityResult? _calculateProtection({
+  required int protectionArgb,
+  required int backgroundArgb,
+  required double foregroundLstar,
+  required double absoluteContrast,
+  required Algo algo,
+  required bool lightenBackground,
+  required bool debug,
+}) {
+  // Calculate what L* we need the background to become
+  final targetLstar = lightenBackground
+      ? _lighterTargetLstar(foregroundLstar, absoluteContrast, algo)
+      : _darkerTargetLstar(foregroundLstar, absoluteContrast, algo);
+
+  if (targetLstar == null) {
+    monetDebug(debug,
+        () => 'No valid target L* for ${lightenBackground ? "lighter" : "darker"} protection');
+    return null;
+  }
+
+  // Convert to luma for alpha blending math
+  // Target is grayscale-ish (we're blending toward black or white), so L* -> luma is close
+  final targetLuma = lumaFromArgb(argbFromLstar(targetLstar));
+  final protectionLuma = lumaFromArgb(protectionArgb);
+  final backgroundLuma = lumaFromArgb(backgroundArgb);
+
+  // Guard against division by zero
+  final denominator = protectionLuma - backgroundLuma;
+  if (denominator.abs() < 1e-10) {
+    monetDebug(debug,
+        () => 'Protection luma equals background luma, cannot compute opacity');
+    return null;
+  }
+
+  // Alpha blending: blended = α * protection + (1 - α) * background
+  // Solving for α: α = (target - background) / (protection - background)
+  final rawOpacity = (targetLuma - backgroundLuma) / denominator;
+
+  // Validate opacity is in valid range
+  if (rawOpacity.isNaN || rawOpacity.isInfinite || rawOpacity < 0.0) {
+    monetDebug(debug, () => 'Invalid raw opacity: $rawOpacity');
+    return null;
+  }
+
+  // Add 0.01 then ceiling to ensure contrast is met after RGB integer rounding.
+  // Without this, edge cases can miss contrast by ~0.04 due to rounding.
+  final opacity = ((rawOpacity + 0.01) * 100.0).ceil() / 100.0;
+  if (opacity > 1.0) {
+    monetDebug(
+        debug, () => 'Opacity $opacity exceeds 1.0, protection insufficient');
+    return null;
+  }
+
+  return OpacityResult(
+    protectionArgb: protectionArgb,
+    opacity: opacity,
+    targetLstar: targetLstar,
+  );
+}
+
+double? _lighterTargetLstar(
+    double foregroundLstar, double contrast, Algo algo) {
+  return switch (algo) {
+    Algo.wcag21 =>
+      lighterLstarUnsafe(lstar: foregroundLstar, contrastRatio: contrast),
+    Algo.apca => lighterBackgroundLstar(foregroundLstar, contrast),
+  };
+}
+
+double? _darkerTargetLstar(
+    double foregroundLstar, double contrast, Algo algo) {
+  return switch (algo) {
+    Algo.wcag21 =>
+      darkerLstarUnsafe(lstar: foregroundLstar, contrastRatio: contrast),
+    Algo.apca => darkerBackgroundLstar(foregroundLstar, contrast),
+  };
+}
+
+/// Verify that a protection result achieves contrast against BOTH backgrounds.
+bool _protectionWorksBothSides({
+  required OpacityResult prot,
+  required int foregroundArgb,
+  required int minBackgroundArgb,
+  required int maxBackgroundArgb,
+  required double absoluteContrast,
+  required Algo algo,
+  required bool debug,
+}) {
+  final foregroundLstar = lstarFromArgb(foregroundArgb);
+  final protColor = prot.color;
+
+  final minBlended = Color.alphaBlend(protColor, Color(minBackgroundArgb));
+  final maxBlended = Color.alphaBlend(protColor, Color(maxBackgroundArgb));
+
+  final contrastMin = algo.getContrastBetweenLstars(
+    bg: lstarFromArgb(minBlended.argb),
+    fg: foregroundLstar,
+  );
+  final contrastMax = algo.getContrastBetweenLstars(
+    bg: lstarFromArgb(maxBlended.argb),
+    fg: foregroundLstar,
+  );
+
+  monetDebug(debug, () => 'Verifying ${hexFromArgb(prot.protectionArgb)} '
+      'at ${prot.opacity}: contrastMin=$contrastMin, contrastMax=$contrastMax, '
+      'need=$absoluteContrast');
+
+  return contrastMin.abs() >= absoluteContrast &&
+      contrastMax.abs() >= absoluteContrast;
+}
+
+OpacityResult _chooseBestProtection({
+  required OpacityResult? whiteProt,
+  required OpacityResult? blackProt,
+  required int foregroundArgb,
+  required int minBackgroundArgb,
+  required int maxBackgroundArgb,
+  required double foregroundLstar,
+  required double absoluteContrast,
+  required Algo algo,
+  required bool debug,
+}) {
+  // Verify each candidate works for BOTH backgrounds, not just the one
+  // it was calculated against.
+  final whiteValid = whiteProt != null &&
+      _protectionWorksBothSides(
+        prot: whiteProt,
+        foregroundArgb: foregroundArgb,
+        minBackgroundArgb: minBackgroundArgb,
+        maxBackgroundArgb: maxBackgroundArgb,
+        absoluteContrast: absoluteContrast,
+        algo: algo,
+        debug: debug,
+      );
+  final blackValid = blackProt != null &&
+      _protectionWorksBothSides(
+        prot: blackProt,
+        foregroundArgb: foregroundArgb,
+        minBackgroundArgb: minBackgroundArgb,
+        maxBackgroundArgb: maxBackgroundArgb,
+        absoluteContrast: absoluteContrast,
+        algo: algo,
+        debug: debug,
+      );
+
+  if (whiteValid && blackValid) {
+    return whiteProt.opacity <= blackProt.opacity ? whiteProt : blackProt;
+  } else if (whiteValid) {
+    return whiteProt;
+  } else if (blackValid) {
+    return blackProt;
+  }
+
+  // Natural pairings didn't work for both sides. Try crossed pairings:
+  // - Black protection on min background
+  // - White protection on max background
+  monetDebug(debug, () => 'Natural pairings failed both-sides check, trying crossed pairings');
+
+  final blackOnMin = _calculateProtection(
+    protectionArgb: _black,
+    backgroundArgb: minBackgroundArgb,
+    foregroundLstar: foregroundLstar,
+    absoluteContrast: absoluteContrast,
+    algo: algo,
+    lightenBackground: false,
+    debug: debug,
+  );
+
+  final whiteOnMax = _calculateProtection(
+    protectionArgb: _white,
+    backgroundArgb: maxBackgroundArgb,
+    foregroundLstar: foregroundLstar,
+    absoluteContrast: absoluteContrast,
+    algo: algo,
+    lightenBackground: true,
+    debug: debug,
+  );
+
+  final blackOnMinValid = blackOnMin != null &&
+      _protectionWorksBothSides(
+        prot: blackOnMin,
+        foregroundArgb: foregroundArgb,
+        minBackgroundArgb: minBackgroundArgb,
+        maxBackgroundArgb: maxBackgroundArgb,
+        absoluteContrast: absoluteContrast,
+        algo: algo,
+        debug: debug,
+      );
+  final whiteOnMaxValid = whiteOnMax != null &&
+      _protectionWorksBothSides(
+        prot: whiteOnMax,
+        foregroundArgb: foregroundArgb,
+        minBackgroundArgb: minBackgroundArgb,
+        maxBackgroundArgb: maxBackgroundArgb,
+        absoluteContrast: absoluteContrast,
+        algo: algo,
+        debug: debug,
+      );
+
+  monetDebug(debug, () => 'Crossed: black on min = ${blackOnMin?.opacity} valid=$blackOnMinValid');
+  monetDebug(debug, () => 'Crossed: white on max = ${whiteOnMax?.opacity} valid=$whiteOnMaxValid');
+
+  if (blackOnMinValid && whiteOnMaxValid) {
+    return blackOnMin.opacity <= whiteOnMax.opacity ? blackOnMin : whiteOnMax;
+  } else if (blackOnMinValid) {
+    return blackOnMin;
+  } else if (whiteOnMaxValid) {
+    return whiteOnMax;
+  }
+
+  // All pairings failed — contrast is impossible. Return best effort at 100%.
+  // Pick whichever (white or black) gets closest to the target contrast.
+  monetDebug(debug, () => 'All pairings failed, returning best effort at 100%');
+  return _bestEffortFullOpacity(
+    foregroundArgb: foregroundArgb,
+    minBackgroundArgb: minBackgroundArgb,
+    maxBackgroundArgb: maxBackgroundArgb,
+    foregroundLstar: foregroundLstar,
+    absoluteContrast: absoluteContrast,
+    algo: algo,
+    debug: debug,
+  );
+}
+
+/// When the target contrast is impossible, return 100% opacity in whichever
+/// direction (black or white) gets closest.
+OpacityResult _bestEffortFullOpacity({
+  required int foregroundArgb,
+  required int minBackgroundArgb,
+  required int maxBackgroundArgb,
+  required double foregroundLstar,
+  required double absoluteContrast,
+  required Algo algo,
+  required bool debug,
+}) {
+  // Evaluate white at 100% — pure white replaces the background entirely.
+  final whiteContrast = algo.getContrastBetweenLstars(
+    bg: 100.0,
+    fg: foregroundLstar,
+  ).abs();
+
+  // Evaluate black at 100% — pure black replaces the background entirely.
+  final blackContrast = algo.getContrastBetweenLstars(
+    bg: 0.0,
+    fg: foregroundLstar,
+  ).abs();
+
+  monetDebug(debug, () => 'Best effort: white@100% contrast=$whiteContrast, '
+      'black@100% contrast=$blackContrast');
+
+  final useWhite = whiteContrast >= blackContrast;
+  return OpacityResult(
+    protectionArgb: useWhite ? _white : _black,
+    opacity: 1.0,
+    targetLstar: useWhite ? 100.0 : 0.0,
+  );
+}
+
+// =============================================================================
+// Convenience APIs
+// =============================================================================
+
+/// Calculate opacity needed for foreground to contrast with background.
+///
+/// Most common case: you know both colors exactly.
+OpacityResult getOpacityForColors({
+  required Color foreground,
+  required Color background,
+  required double contrast,
+  required Algo algo,
+  bool debug = false,
+}) {
+  return getOpacityForArgbs(
+    foregroundArgb: foreground.argb,
+    minBackgroundArgb: background.argb,
+    maxBackgroundArgb: background.argb,
+    contrast: contrast,
+    algo: algo,
+    debug: debug,
+  );
+}
+
+/// Calculate opacity that works across a set of possible backgrounds.
+///
+/// Use case: text over an image, sampled at multiple points.
+OpacityResult getOpacityForBackgrounds({
+  required Color foreground,
+  required Iterable<Color> backgrounds,
+  required double contrast,
+  required Algo algo,
+  bool debug = false,
+}) {
+  // Find the backgrounds with min and max luma
+  int? minLumaArgb;
+  int? maxLumaArgb;
+  double? minLuma;
+  double? maxLuma;
+
+  for (final bg in backgrounds) {
+    final luma = lumaFromArgb(bg.argb);
+    if (minLuma == null || luma < minLuma) {
+      minLuma = luma;
+      minLumaArgb = bg.argb;
+    }
+    if (maxLuma == null || luma > maxLuma) {
+      maxLuma = luma;
+      maxLumaArgb = bg.argb;
+    }
+  }
+
+  if (minLumaArgb == null || maxLumaArgb == null) {
+    throw ArgumentError('backgrounds cannot be empty');
+  }
+
+  return getOpacityForArgbs(
+    foregroundArgb: foreground.argb,
+    minBackgroundArgb: minLumaArgb,
+    maxBackgroundArgb: maxLumaArgb,
+    contrast: contrast,
+    algo: algo,
+    debug: debug,
+  );
+}
+
+// =============================================================================
+// Deprecated L*-based API (backward compatibility)
+// =============================================================================
+
+/// Calculate opacity from L* values.
+///
+/// ⚠️ DEPRECATED: Prefer [getOpacityForColors] for accurate results.
+///
+/// This converts L* to grayscale colors internally. For chromatic colors,
+/// use [getOpacityForColors] instead.
+@Deprecated(
+    'Use getOpacityForColors() or getOpacityForArgbs() for accurate results')
 OpacityResult getOpacity({
   required double minBgLstar,
   required double maxBgLstar,
@@ -36,227 +485,12 @@ OpacityResult getOpacity({
   required Algo algo,
   bool debug = false,
 }) {
-  final absoluteContrast = algo.getAbsoluteContrast(contrast, Usage.text);
-
-  // 1. Check if we even need a protection layer.
-  final noProtectionContrastWithMin =
-      algo.getContrastBetweenLstars(bg: minBgLstar, fg: foregroundLstar);
-  final noProtectionContrastWithMax =
-      algo.getContrastBetweenLstars(bg: maxBgLstar, fg: foregroundLstar);
-
-  if (absoluteContrast <= noProtectionContrastWithMin &&
-      absoluteContrast <= noProtectionContrastWithMax) {
-    monetDebug(
-        debug,
-        () =>
-            '== No protection needed, desired contrast is $absoluteContrast, against min bg is $noProtectionContrastWithMin, against max bg is $noProtectionContrastWithMax');
-    return OpacityResult(
-      lstar: foregroundLstar,
-      opacity: 0.0,
-      requiredLstar: foregroundLstar,
-    );
-  } else {
-    monetDebug(
-        debug,
-        () => '''call
-    getOpacity(
-      minBgLstar: $minBgLstar,
-      maxBgLstar: $maxBgLstar,
-      foregroundLstar: $foregroundLstar,
-      contrast: $contrast,
-      algo: $algo,
-    );
-    ''');
-    monetDebug(
-        debug,
-        () =>
-            '== Protection needed, desired contrast is $absoluteContrast, against min bg is $noProtectionContrastWithMin, against max bg is $noProtectionContrastWithMax');
-  }
-  final lstarAfterProtection = contrastingLstar(
-    withLstar: foregroundLstar,
-    usage: Usage.text,
-    by: algo,
+  return getOpacityForArgbs(
+    foregroundArgb: argbFromLstar(foregroundLstar),
+    minBackgroundArgb: argbFromLstar(minBgLstar),
+    maxBackgroundArgb: argbFromLstar(maxBgLstar),
     contrast: contrast,
+    algo: algo,
+    debug: debug,
   );
-  // 2. We need the protection layer to create contrast for `foregroundLstar`.
-  // What L* will create sufficient contrast?
-
-  
-  monetDebug(debug,
-      () => 'Protection needs to create L* ${lstarAfterProtection.round()}');
-  // 3. Find the opacity.
-  // We know the end state:
-  // - A protection layer, with some opacity O and L*, and when the O and L*
-  //
-  // We know colors are blended linearly in RGB.
-  // - For example, blending RGB 120 0 0 with opacity 25% with a background of
-  //   RGB 0 0 0 leads to 0.25 * 120 + 0.75 * 0 = 30.
-  //
-  // Let's use the blending formula to find the opacity.
-  //
-  // Let's define some constants:
-  // - oP is opacity of protection layer, from 0.0 to 1.0
-  // - lP is luma of protection layer, from 0.0 to 100.0
-  // - lB is luma of the background, from 0.0 to 100.0, i.e the min/max lstar.
-  // - lPF is the final luma of the protection layer, the luma resulting from
-  //   its opacity applied to its L*.
-  //
-  // Let's derive a formula for oP:
-  // - BLENDED = O * PROTECTION + (1 - O) * BACKGROUND
-  // - lPF = oP * lP + (1 - oP) * lB
-  // - lPF = oP * lP + lB - oP * lB
-  // - lPF - lB = oP * lP - oP * lB
-  // - lPF - lB = oP * (lP - lB)
-  // - (lPF - lB) / (lP - lB) = oP
-  // - oP = (lPF - lB) / (lP - lB)
-
-  // Let's find the opacity for the minimum background / lightest protection.
-  // We use sRGB-encoded values because alpha blending operates in sRGB space.
-  //
-  // sP = sRGB value of protection layer (1.0 for white, 0.0 for black)
-  // sB = sRGB value of background
-  // sPF = sRGB value needed after blending to achieve target contrast
-  //
-  // oP = (sPF - sB) / (sP - sB)
-  const lstarPMin = 100.0;
-  const sPMin = 1.0; // lumaFromLstar(100.0) / 100 = 1.0 (white)
-  final sBMin = lumaFromLstar(minBgLstar) / 100.0;
-  final lstarPFMin = switch (algo) {
-    (Algo.wcag21) => lighterLstarUnsafe(
-        lstar: foregroundLstar, contrastRatio: absoluteContrast),
-    (Algo.apca) => lighterBackgroundLstar(
-        foregroundLstar,
-        absoluteContrast,
-      ),
-  };
-  final sPFMin = lumaFromLstar(lstarPFMin) / 100.0;
-  // Guard against division by zero when protection L* matches background L*
-  final oPMinRaw = (sPMin - sBMin).abs() < 1e-10 
-      ? double.nan 
-      : (sPFMin - sBMin) / (sPMin - sBMin);
-
-  // Let's find the opacity for the maximum background / darkest protection.
-  const lstarPMax = 0.0;
-  const sPMax = 0.0; // lumaFromLstar(0.0) / 100 = 0.0 (black)
-  final sBMax = lumaFromLstar(maxBgLstar) / 100.0;
-  final lstarPFMax = switch (algo) {
-    (Algo.wcag21) => darkerLstarUnsafe(
-        lstar: foregroundLstar, contrastRatio: absoluteContrast),
-    (Algo.apca) => darkerBackgroundLstar(
-        foregroundLstar,
-        absoluteContrast,
-      ),
-  };
-  final sPFMax = lumaFromLstar(lstarPFMax) / 100.0;
-  // Guard against division by zero when protection L* matches background L*
-  final oPMaxRaw = (sPMax - sBMax).abs() < 1e-10 
-      ? double.nan 
-      : (sPFMax - sBMax) / (sPMax - sBMax);
-
-  double? cleanRawOpacity(double rawOpacity) {
-    if (rawOpacity.isInfinite || rawOpacity.isNaN || rawOpacity < 0) {
-      return null;
-    }
-    final clamped = rawOpacity.clamp(0.0, 1.0);
-    final ceilingedToNearestHundredth = (clamped * 100.0).ceil() / 100.0;
-    return ceilingedToNearestHundredth;
-  }
-
-  final oPMin = cleanRawOpacity(oPMinRaw);
-  final oPMax = cleanRawOpacity(oPMaxRaw);
-
-  monetDebug(debug,
-      () => 'sPMin: $sPMin sBMin: $sBMin sPFMin: $sPFMin');
-  monetDebug(
-      debug,
-      () =>
-          'opMinRaw: $oPMinRaw = ($sPFMin - $sBMin) / ($sPMin - $sBMin)');
-  monetDebug(
-      debug, () => 'Raw opacity required with white protection: $oPMinRaw');
-  monetDebug(debug,
-      () => 'sPMax: $sPMax sBMax: $sBMax sPFMax: $sPFMax');
-  monetDebug(
-      debug,
-      () =>
-          'opMaxRaw: $oPMaxRaw = ($sPFMax - $sBMax) / ($sPMax - $sBMax)');
-  monetDebug(
-      debug, () => 'Raw opacity required with black protection: $oPMaxRaw');
-  monetDebug(
-      debug,
-      () =>
-          'Opacity required with white protection: $oPMin. Goal is to hit $lstarPFMin, which is hex ${hexFromArgb(argbFromLstar(lstarPFMin))}');
-  monetDebug(
-      debug,
-      () =>
-          'Opacity required with black protection: $oPMax. Goal is to hit $lstarPFMax, which is hex ${hexFromArgb(argbFromLstar(lstarPFMax))}');
-
-  // Ensure opacity is null if it's completely impossible.
-  //
-  // This occurs when the background L* is equal to the protection L*.
-  // (either maxBgLo - maxBgLstar or minBgLo - minBgLstar ~= 0.0)
-  //
-  // Floating point precision creates equivalent cases when the background is
-  // very close to the protection.
-  if (oPMin == null && oPMax == null) {
-    // Both natural pairings failed (white protection on white bg, black on black).
-    // Try "crossed" pairings: black protection on minBg, white protection on maxBg.
-    
-    // Black protection (L*=0) on minBg
-    final oPMinCrossedRaw = (sPMax - sBMin).abs() < 1e-10
-        ? double.nan
-        : (sPFMax - sBMin) / (sPMax - sBMin);
-    final oPMinCrossed = cleanRawOpacity(oPMinCrossedRaw);
-    
-    // White protection (L*=100) on maxBg  
-    final oPMaxCrossedRaw = (sPMin - sBMax).abs() < 1e-10
-        ? double.nan
-        : (sPFMin - sBMax) / (sPMin - sBMax);
-    final oPMaxCrossed = cleanRawOpacity(oPMaxCrossedRaw);
-    
-    monetDebug(debug, () => 'Both natural pairings failed, trying crossed pairings');
-    monetDebug(debug, () => 'oPMinCrossed (black on minBg): $oPMinCrossed');
-    monetDebug(debug, () => 'oPMaxCrossed (white on maxBg): $oPMaxCrossed');
-    
-    if (oPMinCrossed != null && oPMaxCrossed != null) {
-      // Choose the one with lower opacity (more subtle protection)
-      if (oPMinCrossed <= oPMaxCrossed) {
-        return OpacityResult(
-            lstar: lstarPMax, opacity: oPMinCrossed, requiredLstar: lstarAfterProtection);
-      } else {
-        return OpacityResult(
-            lstar: lstarPMin, opacity: oPMaxCrossed, requiredLstar: lstarAfterProtection);
-      }
-    } else if (oPMinCrossed != null) {
-      return OpacityResult(
-          lstar: lstarPMax, opacity: oPMinCrossed, requiredLstar: lstarAfterProtection);
-    } else if (oPMaxCrossed != null) {
-      return OpacityResult(
-          lstar: lstarPMin, opacity: oPMaxCrossed, requiredLstar: lstarAfterProtection);
-    }
-    
-    // All pairings failed - return fallback (this should be rare)
-    return OpacityResult(
-      lstar: 0.0,
-      opacity: 0.0,
-      requiredLstar: lstarAfterProtection,
-    );
-  } else if (oPMin != null && oPMax == null) {
-    return OpacityResult(
-        lstar: lstarPMin, opacity: oPMin, requiredLstar: lstarAfterProtection);
-  } else if (oPMin == null && oPMax != null) {
-    return OpacityResult(
-        lstar: lstarPMax, opacity: oPMax, requiredLstar: lstarAfterProtection);
-  } else {
-    // If both are non-null, choose the one that's closer to the foreground.
-    // Visually, people prefer a white scrim for light content, black scrim for dark.
-    final minBgDelta = (minBgLstar - foregroundLstar).abs();
-    final maxBgDelta = (maxBgLstar - foregroundLstar).abs();
-    if (minBgDelta < maxBgDelta) {
-      return OpacityResult(
-          lstar: lstarPMin, opacity: oPMin!, requiredLstar: lstarAfterProtection);
-    } else {
-      return OpacityResult(
-          lstar: lstarPMax, opacity: oPMax!, requiredLstar: lstarAfterProtection);
-    }
-  }
 }
