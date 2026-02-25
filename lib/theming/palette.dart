@@ -555,15 +555,6 @@ class Palette {
       }
     }
 
-    // Fast-path: if brand color already meets contrast vs background, keep it.
-    final vsBg =
-        _algo.getContrastBetweenLstars(bg: backgroundTone, fg: baseTone).abs();
-    if (vsBg >= requiredContrast) {
-      debugLog(() =>
-          'border fast-path: base meets vs bg (|Lc|=${vsBg.toStringAsFixed(1)} ≥ ${requiredContrast.toStringAsFixed(1)})');
-      return Hct.colorFrom(hue, chroma, baseTone);
-    }
-
     // Candidate tones (avoid duplicates).
     // Use "unsafe" variants that return out-of-bounds values when impossible,
     // so we can filter consistently.

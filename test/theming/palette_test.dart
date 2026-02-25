@@ -78,9 +78,9 @@ void main() {
     });
 
     test('#D29C57 should have darker border, not lighter', () {
-      // Very dark blue on very dark background (both ~tone 10) should get
-      // a lighter blue border (~tone 50), not an extreme white fallback.
-      // The L* is conservative to ensure chromatic colors meet contrast.
+      // Golden-brown (T≈68) on a warm light background (T≈83).
+      // The border should be a subtle shadow darker than the surface,
+      // not identical to it (the old fast-path returned the base tone).
       final colors = Palette.from(
         const Color(0xffD29C57),
         backgroundTone: lstarFromArgb(0xffFFCA88),
