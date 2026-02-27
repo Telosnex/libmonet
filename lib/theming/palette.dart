@@ -245,8 +245,12 @@ class Palette {
   late final Color backgroundFill = _withBackgroundsChroma(_bgFillTone);
 
   /// Achromatic border around the background.
+  ///
+  /// Borders aren't read like text — APCA polarity doesn't apply.
+  /// Prefers a darker (shadow-like) tone; falls back to lighter when the
+  /// background is too close to black.
   late final Color backgroundBorder = _withBackgroundsChroma(
-      _solve(_backgroundTone, Usage.large, _contrast, _bgDirection));
+      _solveBorderTone(_backgroundTone, Usage.large, _contrast));
 
   /// Brand-tinted hover overlay on the background.
   late final Color backgroundHovered = _withColorsChroma(_bgHoverTone);
@@ -397,8 +401,45 @@ class Palette {
       _withColorsChroma(_solve(_textSplashTone, Usage.text, _contrast));
 
   // ═════════════════════════════════════════════════════════════════
-  //  PRIVATE — Border solvers
+  //  PRIVATE — Border helpers
   // ═════════════════════════════════════════════════════════════════
+
+  /// Filters [tones] to those darker than [referenceTone].
+  /// Returns the darker subset when non-empty, otherwise all [tones].
+  ///
+  /// Borders aren't read like text, so APCA polarity is irrelevant.
+  /// Darker (shadow-like) tones look more natural; lighter is the fallback
+  /// when the surface is already near black.
+  static List<double> _preferDarkerTones(
+      List<double> tones, double referenceTone) {
+    final darker = tones.where((t) => t < referenceTone).toList();
+    return darker.isNotEmpty ? darker : tones;
+  }
+
+  /// Solves a border tone against a single container surface.
+  ///
+  /// Tries darker first; verifies it actually meets contrast; falls back to
+  /// lighter.  Used by [backgroundBorder].
+  double _solveBorderTone(
+      double containerTone, Usage usage, double dial) {
+    final darkerTone =
+        _solve(containerTone, usage, dial, ContrastDirection.darker);
+    final lighterTone =
+        _solve(containerTone, usage, dial, ContrastDirection.lighter);
+    final requiredLc = _algo.getAbsoluteContrast(dial, usage);
+
+    bool meets(double t) =>
+        _algo
+            .getContrastBetweenLstars(bg: containerTone, fg: t)
+            .abs() >=
+        requiredLc;
+
+    final valid = [darkerTone, lighterTone].where(meets).toList();
+    if (valid.isEmpty) return lighterTone; // best effort
+    return _preferDarkerTones(valid, containerTone).first;
+  }
+
+  // ── Either-side & overlay border solvers ────────────────────────────
 
   /// Overlay-border shortcut used by all `*HoveredBorder` / `*SplashedBorder`
   /// getters.  Returns the base color if it already contrasts against both
@@ -492,11 +533,8 @@ class Palette {
 
     // Prefer darker tones (shadow-like) when available — they look more
     // natural as borders.  Only fall back to lighter if no darker ones work.
-    final darkerValid = validCandidates.where((t) => t < innerTone).toList();
-    final lighterValid =
-        validCandidates.where((t) => t >= innerTone).toList();
     final preferredCandidates =
-        darkerValid.isNotEmpty ? darkerValid : lighterValid;
+        _preferDarkerTones(validCandidates, innerTone);
 
     debugLog(() =>
         'borderSolve: inner=${innerTone.toStringAsFixed(1)} '
@@ -521,8 +559,6 @@ class Palette {
     }
     debugLog(() =>
         'Valid     : ${validCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
-    debugLog(() =>
-        'Darker    : ${darkerValid.map((t) => t.toStringAsFixed(1)).toList()}');
     debugLog(() =>
         'Preferred : ${preferredCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
 
