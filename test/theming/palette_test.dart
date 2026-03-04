@@ -129,6 +129,29 @@ void main() {
                   'background (T${_tone(p.background).round()})');
         });
 
+        test('hovered overlay fill and text share polarity vs hovered overlay',
+            () {
+          final fillDir =
+              dir(p.backgroundHovered, p.backgroundHoveredFill, 'bgHover→fill');
+          final textDir =
+              dir(p.backgroundHovered, p.backgroundHoveredText, 'bgHover→text');
+          expect(fillDir, textDir,
+              reason: 'backgroundHoveredFill and backgroundHoveredText '
+                  'should be on the same side of backgroundHovered');
+        });
+
+        test(
+            'splashed overlay fill and text share polarity vs splashed overlay',
+            () {
+          final fillDir = dir(
+              p.backgroundSplashed, p.backgroundSplashedFill, 'bgSplash→fill');
+          final textDir = dir(
+              p.backgroundSplashed, p.backgroundSplashedText, 'bgSplash→text');
+          expect(fillDir, textDir,
+              reason: 'backgroundSplashedFill and backgroundSplashedText '
+                  'should be on the same side of backgroundSplashed');
+        });
+
         test('fillText and fillIcon share polarity vs fill', () {
           final fillToText = dir(p.fill, p.fillText, 'fill→fillText');
           final fillToIcon = dir(p.fill, p.fillIcon, 'fill→fillIcon');

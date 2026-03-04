@@ -206,6 +206,36 @@ class Palette {
   late final double _textSplashTone =
       _solve(_backgroundTone, Usage.text, _splashDial, _bgDirection);
 
+  /// Text tone on the hovered background overlay — solved first,
+  /// unconstrained, then used to derive shared sibling polarity.
+  late final double _bgHoverTextTone =
+      _solve(_bgHoverTone, Usage.text, _contrast);
+
+  late final ContrastDirection _bgHoverDirection =
+      _bgHoverTextTone >= _bgHoverTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
+
+  /// Fill tone on the hovered background overlay.
+  /// Shares polarity with [_bgHoverTextTone].
+  late final double _bgHoverFillTone =
+      _solve(_bgHoverTone, Usage.fill, _contrast, _bgHoverDirection);
+
+  /// Text tone on the splashed background overlay — solved first,
+  /// unconstrained, then used to derive shared sibling polarity.
+  late final double _bgSplashTextTone =
+      _solve(_bgSplashTone, Usage.text, _contrast);
+
+  late final ContrastDirection _bgSplashDirection =
+      _bgSplashTextTone >= _bgSplashTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
+
+  /// Fill tone on the splashed background overlay.
+  /// Shares polarity with [_bgSplashTextTone].
+  late final double _bgSplashFillTone =
+      _solve(_bgSplashTone, Usage.fill, _contrast, _bgSplashDirection);
+
   // ── Tone solver & color constructors ──────────────────────────
 
   /// Solve for the tone that achieves [usage]-level contrast against
@@ -260,19 +290,19 @@ class Palette {
 
   /// Brand fill sitting on the hover overlay.
   late final Color backgroundHoveredFill =
-      _withColorsChroma(_solve(_bgHoverTone, Usage.fill, _contrast));
+      _withColorsChroma(_bgHoverFillTone);
 
   /// Brand fill sitting on the splash overlay.
   late final Color backgroundSplashedFill =
-      _withColorsChroma(_solve(_bgSplashTone, Usage.fill, _contrast));
+      _withColorsChroma(_bgSplashFillTone);
 
   /// Brand text on the hover overlay.
   late final Color backgroundHoveredText =
-      _withColorsChroma(_solve(_bgHoverTone, Usage.text, _contrast));
+      _withColorsChroma(_bgHoverTextTone);
 
   /// Brand text on the splash overlay.
   late final Color backgroundSplashedText =
-      _withColorsChroma(_solve(_bgSplashTone, Usage.text, _contrast));
+      _withColorsChroma(_bgSplashTextTone);
 
   /// Border for the hover overlay (must contrast both overlay and background).
   late final Color backgroundHoveredBorder = _overlayBorder(_bgHoverTone);
