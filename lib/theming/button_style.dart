@@ -59,9 +59,9 @@ ButtonStyle backgroundButtonStyle(
         hover: () => sc.backgroundHoveredText,
         splash: () => sc.backgroundSplashedText),
     iconColor: widgetPropertyByState(
-        normal: () => sc.backgroundText,
-        hover: () => sc.backgroundHoveredText,
-        splash: () => sc.backgroundSplashedText),
+        normal: () => sc.backgroundFill,
+        hover: () => sc.backgroundHoveredFill,
+        splash: () => sc.backgroundSplashedFill),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSize),
     maximumSize: WidgetStatePropertyAll(maximumSize),
