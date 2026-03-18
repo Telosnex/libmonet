@@ -103,11 +103,10 @@ ButtonStyle fillButtonStyle(
         normal: () => sc.fillText,
         hover: () => sc.fillHoveredText,
         splash: () => sc.fillSplashedText),
-    // For icons, use the icon role if available; hover/splash fall back to text roles.
     iconColor: widgetPropertyByState(
         normal: () => sc.fillIcon,
-        hover: () => sc.fillHoveredText,
-        splash: () => sc.fillSplashedText),
+        hover: () => sc.fillHoveredIcon,
+        splash: () => sc.fillSplashedIcon),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSize),
     maximumSize: WidgetStatePropertyAll(maximumSize),
@@ -152,8 +151,8 @@ ButtonStyle colorButtonStyle(
         splash: () => sc.colorSplashedText),
     iconColor: widgetPropertyByState(
         normal: () => sc.colorIcon,
-        hover: () => sc.colorHoveredText,
-        splash: () => sc.colorSplashedText),
+        hover: () => sc.colorHoveredIcon,
+        splash: () => sc.colorSplashedIcon),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSize),
     maximumSize: WidgetStatePropertyAll(maximumSize),

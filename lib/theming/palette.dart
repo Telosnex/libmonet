@@ -339,6 +339,14 @@ class Palette {
   late final Color colorSplashedText =
       _withColorsChroma(_solve(_colorSplashTone, Usage.text, _contrast));
 
+  /// Medium-contrast brand icon on the hovered color surface.
+  late final Color colorHoveredIcon =
+      _withColorsChroma(_solve(_colorHoverTone, Usage.fill, _contrast));
+
+  /// Medium-contrast brand icon on the splashed color surface.
+  late final Color colorSplashedIcon =
+      _withColorsChroma(_solve(_colorSplashTone, Usage.fill, _contrast));
+
   /// Border around the color surface.
   ///
   /// Uses the either-side solver: the border must contrast with at least
@@ -387,6 +395,14 @@ class Palette {
   /// Text on the splashed fill surface.
   late final Color fillSplashedText =
       _withColorsChroma(_solve(_fillSplashTone, Usage.text, _contrast));
+
+  /// Medium-contrast brand icon on the hovered fill surface.
+  late final Color fillHoveredIcon =
+      _withColorsChroma(_solve(_fillHoverTone, Usage.fill, _contrast));
+
+  /// Medium-contrast brand icon on the splashed fill surface.
+  late final Color fillSplashedIcon =
+      _withColorsChroma(_solve(_fillSplashTone, Usage.fill, _contrast));
 
   /// Border around the fill surface.
   ///
