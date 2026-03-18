@@ -186,17 +186,53 @@ class Palette {
   late final double _colorHoverTone =
       _solve(_colorTone, Usage.fill, _hoverDial, _colorDirection);
 
+  /// Text on the hovered color surface — solved first, unconstrained.
+  late final double _colorHoverTextTone =
+      _solve(_colorHoverTone, Usage.text, _contrast);
+
+  late final ContrastDirection _colorHoverDirection =
+      _colorHoverTextTone >= _colorHoverTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
+
   /// Splash overlay tone on the color surface.
   late final double _colorSplashTone =
       _solve(_colorTone, Usage.fill, _splashDial, _colorDirection);
+
+  /// Text on the splashed color surface — solved first, unconstrained.
+  late final double _colorSplashTextTone =
+      _solve(_colorSplashTone, Usage.text, _contrast);
+
+  late final ContrastDirection _colorSplashDirection =
+      _colorSplashTextTone >= _colorSplashTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
 
   /// Hover overlay tone on the fill surface.
   late final double _fillHoverTone =
       _solve(_bgFillTone, Usage.fill, _hoverDial, _fillDirection);
 
+  /// Text on the hovered fill surface — solved first, unconstrained.
+  late final double _fillHoverTextTone =
+      _solve(_fillHoverTone, Usage.text, _contrast);
+
+  late final ContrastDirection _fillHoverDirection =
+      _fillHoverTextTone >= _fillHoverTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
+
   /// Splash overlay tone on the fill surface.
   late final double _fillSplashTone =
       _solve(_bgFillTone, Usage.fill, _splashDial, _fillDirection);
+
+  /// Text on the splashed fill surface — solved first, unconstrained.
+  late final double _fillSplashTextTone =
+      _solve(_fillSplashTone, Usage.text, _contrast);
+
+  late final ContrastDirection _fillSplashDirection =
+      _fillSplashTextTone >= _fillSplashTone
+          ? ContrastDirection.lighter
+          : ContrastDirection.darker;
 
   /// Text-hover tone on the background (used by textHovered family).
   late final double _textHoverTone =
@@ -333,19 +369,19 @@ class Palette {
 
   /// Text on the hovered color surface.
   late final Color colorHoveredText =
-      _withColorsChroma(_solve(_colorHoverTone, Usage.text, _contrast));
+      _withColorsChroma(_colorHoverTextTone);
 
   /// Text on the splashed color surface.
   late final Color colorSplashedText =
-      _withColorsChroma(_solve(_colorSplashTone, Usage.text, _contrast));
+      _withColorsChroma(_colorSplashTextTone);
 
   /// Medium-contrast brand icon on the hovered color surface.
   late final Color colorHoveredIcon =
-      _withColorsChroma(_solve(_colorHoverTone, Usage.fill, _contrast));
+      _withColorsChroma(_solve(_colorHoverTone, Usage.fill, _contrast, _colorHoverDirection));
 
   /// Medium-contrast brand icon on the splashed color surface.
   late final Color colorSplashedIcon =
-      _withColorsChroma(_solve(_colorSplashTone, Usage.fill, _contrast));
+      _withColorsChroma(_solve(_colorSplashTone, Usage.fill, _contrast, _colorSplashDirection));
 
   /// Border around the color surface.
   ///
@@ -390,19 +426,19 @@ class Palette {
 
   /// Text on the hovered fill surface.
   late final Color fillHoveredText =
-      _withColorsChroma(_solve(_fillHoverTone, Usage.text, _contrast));
+      _withColorsChroma(_fillHoverTextTone);
 
   /// Text on the splashed fill surface.
   late final Color fillSplashedText =
-      _withColorsChroma(_solve(_fillSplashTone, Usage.text, _contrast));
+      _withColorsChroma(_fillSplashTextTone);
 
   /// Medium-contrast brand icon on the hovered fill surface.
   late final Color fillHoveredIcon =
-      _withColorsChroma(_solve(_fillHoverTone, Usage.fill, _contrast));
+      _withColorsChroma(_solve(_fillHoverTone, Usage.fill, _contrast, _fillHoverDirection));
 
   /// Medium-contrast brand icon on the splashed fill surface.
   late final Color fillSplashedIcon =
-      _withColorsChroma(_solve(_fillSplashTone, Usage.fill, _contrast));
+      _withColorsChroma(_solve(_fillSplashTone, Usage.fill, _contrast, _fillSplashDirection));
 
   /// Border around the fill surface.
   ///
