@@ -274,6 +274,10 @@ class Palette {
   /// Neutral medium-contrast fill on the background.
   late final Color backgroundFill = _withBackgroundsChroma(_bgFillTone);
 
+  /// Brand-tinted medium-contrast icon on the background.
+  late final Color backgroundIcon =
+      _withColorsChroma(_solve(_backgroundTone, Usage.fill, _contrast, _bgDirection));
+
   /// Achromatic border around the background.
   ///
   /// Borders aren't read like text — APCA polarity doesn't apply.
