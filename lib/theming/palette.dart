@@ -316,7 +316,7 @@ class Palette {
   /// Prefers a darker (shadow-like) tone; falls back to lighter when the
   /// background is too close to black.
   late final Color backgroundBorder = _withBackgroundsChroma(
-      _solveBorderTone(_backgroundTone, Usage.large, _contrast));
+      _solveBorderTone(_backgroundTone, Usage.border, _contrast));
 
   /// Brand-tinted hover overlay on the background.
   late final Color backgroundHovered = _withColorsChroma(_bgHoverTone);

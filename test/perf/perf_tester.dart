@@ -1,19 +1,91 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'perf_profiler.dart';
+
+/// Small utility for comparing two implementations on the same inputs.
+///
+/// It verifies output parity first, then runs a warmup phase and a benchmark
+/// phase, finally printing a human-readable summary of the results.
+///
+/// ## Testing after you've already edited the file
+///
+/// The most common scenario: you've already changed a method and want to
+/// benchmark old vs new. The old code lives in `git diff` — here's how to
+/// recover it.
+///
+/// 1. **Extract the old version** next to the current one:
+///    ```bash
+///    # Dump the committed (pre-edit) file:
+///    git show HEAD:lib/path/to/foo.dart > test/perf/foo_old.dart
+///    ```
+///    Then trim it to just the function(s) you care about. Remove
+///    framework imports that won't resolve in a plain `dart run` context.
+///
+/// 2. **Extract the new version** the same way — copy the function(s) from
+///    the working-tree file into `test/perf/foo_new.dart`.
+///
+///    Why copy both instead of importing the real file? If the real file
+///    has framework imports (Flutter, provider, etc.) and you want to run
+///    outside Flutter, standalone copies keep the test runnable with
+///    `dart run`. If you're fine using `flutter test`, you can import
+///    the real file directly.
+///
+/// 3. **Make private methods public** in the copies. The copies are
+///    throwaway test scaffolding — visibility doesn't matter.
+///
+/// 4. **Import with prefixes** in your perf test:
+///    ```dart
+///    import 'foo_old.dart' as old;
+///    import 'foo_new.dart' as current;
+///    ```
+///
+/// 5. **Wire into PerfTester** as `implementation1` (old) and
+///    `implementation2` (new).
+///
+/// 6. **Run:**
+///    ```bash
+///    # Pure Dart:
+///    dart run test/perf/foo_perf_test.dart
+///
+///    # Flutter (code imports flutter packages):
+///    flutter test test/perf/foo_perf_test.dart
+///
+///    # Flutter + CPU profiling:
+///    flutter test --enable-vmservice --no-dds test/perf/foo_perf_test.dart
+///    ```
 class PerfTester<Input, Output> {
+  /// A short label used in the benchmark output.
   final String testName;
+
+  /// Inputs that will be fed to both implementations.
   final List<Input> testCases;
-  final Output? Function(Input) implementation1;
-  final Output? Function(Input) implementation2;
+
+  /// The baseline implementation being measured.
+  final FutureOr<Output?> Function(Input) implementation1;
+
+  /// The candidate implementation being measured.
+  final FutureOr<Output?> Function(Input) implementation2;
+
+  /// Display name for [implementation1].
   final String impl1Name;
+
+  /// Display name for [implementation2].
   final String impl2Name;
+
+  /// Optional custom equality check for result comparison.
   final bool Function(Output?, Output?)? equalityCheck;
 
+  /// Stable RNG used to select warmup inputs reproducibly.
   final _random = math.Random(42);
+
+  /// Measured runtime samples for [implementation1], in milliseconds.
   final List<double> impl1Times = [];
+
+  /// Measured runtime samples for [implementation2], in milliseconds.
   final List<double> impl2Times = [];
 
   PerfTester({
@@ -26,90 +98,296 @@ class PerfTester<Input, Output> {
     this.equalityCheck,
   });
 
-  void run({
+  // ── Output helpers ──────────────────────────────────────────────────
+
+  static const _ruleDouble =
+      '══════════════════════════════════════════════════════';
+  static const _ruleSingle =
+      '──────────────────────────────────────────────────────';
+
+  void _header(String title) {
+    print('');
+    print(_ruleDouble);
+    print(' PerfTester: $title');
+    print(_ruleDouble);
+  }
+
+  void _step(int n, int total, String msg) {
+    print('');
+    print('[$n/$total] $msg');
+  }
+
+  void _sub(String msg) => print('      $msg');
+
+  // ── Public entry point ──────────────────────────────────────────────
+
+  /// Runs the full comparison flow.
+  ///
+  /// The default flow is: verify outputs, warm up both implementations, then
+  /// benchmark them and print a summary.
+  ///
+  /// ## CPU profiling
+  ///
+  /// Set [profile] to `true` to collect a CPU sample profile during the
+  /// benchmark phase and print the top-N hottest functions afterward.
+  ///
+  /// ### Pure Dart tests
+  ///
+  /// ```bash
+  /// dart run --enable-vm-service test/perf/some_perf_test.dart
+  /// ```
+  ///
+  /// ### Flutter tests (code depends on Flutter)
+  ///
+  /// Flutter tests need two extra flags and one code change:
+  ///
+  /// ```bash
+  /// flutter test --enable-vmservice --no-dds test/perf/some_perf_test.dart
+  /// ```
+  ///
+  /// Why both flags:
+  /// - `--enable-vmservice` starts the VM service (off by default in tests).
+  /// - `--no-dds` disables the Dart Development Service, which otherwise
+  ///   puts the VM service in single-client mode and silently drops our
+  ///   WebSocket connection (causing an infinite hang).
+  ///
+  /// In your test, pass `tester.runAsync` to escape the fake async zone
+  /// that Flutter's test framework uses. Without it, the VM service
+  /// WebSocket connection (real I/O) never completes:
+  ///
+  /// ```dart
+  /// testWidgets('perf', (tester) async {
+  ///   await myTester.run(
+  ///     profile: true,
+  ///     runAsync: tester.runAsync,
+  ///   );
+  /// });
+  /// ```
+  ///
+  /// Without the VM service flags, profiling is silently skipped and the
+  /// benchmark runs normally.
+  Future<void> run({
     int warmupRuns = 100,
     int benchmarkRuns = 100,
     bool skipEqualityCheck = false,
-  }) {
+    bool profile = false,
+    int profileTopN = 50,
+    int profileRuns = 100,
+
+    /// Pass `tester.runAsync` when running inside a Flutter widget test.
+    /// Real I/O (VM service connection) needs to escape the fake async zone.
+    Future<T?> Function<T>(
+      Future<T> Function() callback, {
+      Duration additionalTime,
+    })?
+    runAsync,
+  }) async {
+    final totalSteps = 2 + (skipEqualityCheck ? 0 : 1) + (profile ? 1 : 0);
+    var step = 0;
+
+    _header(testName);
+    final steps = [
+      if (!skipEqualityCheck) 'Verify',
+      'Warmup',
+      'Benchmark',
+      if (profile) 'Profile (×2)',
+    ];
+    print(' Steps: ${steps.join(' → ')}');
+    print(_ruleSingle);
+
+    // ── Verify ──
     if (!skipEqualityCheck) {
-      _verifyImplementations();
+      step++;
+      _step(
+        step,
+        totalSteps,
+        'Verify: checking $impl1Name vs $impl2Name produce identical output...',
+      );
+      await _verifyImplementations();
     }
-    _warmup(warmupRuns);
-    _benchmark(benchmarkRuns);
+
+    // ── Warmup ──
+    step++;
+    _step(
+      step,
+      totalSteps,
+      'Warmup: $warmupRuns randomly selected test case${warmupRuns == 1 ? '' : 's'}...',
+    );
+    await _warmup(warmupRuns);
+
+    // ── Benchmark ──
+    step++;
+    _step(
+      step,
+      totalSteps,
+      'Benchmark: $benchmarkRuns run${benchmarkRuns == 1 ? '' : 's'}, ${testCases.length} test case${testCases.length == 1 ? '' : 's'} each...',
+    );
+    await _benchmark(benchmarkRuns);
     _printResults();
+
+    // ── Profile ──
+    if (profile) {
+      step++;
+
+      Future<void> doProfile() async {
+        final profiler = PerfProfiler();
+        final connected = await profiler.connect();
+        if (connected) {
+          _step(
+            step,
+            totalSteps,
+            'Profile: running each implementation separately...',
+          );
+          for (final (name, impl) in [
+            (impl1Name, implementation1),
+            (impl2Name, implementation2),
+          ]) {
+            await profiler.clearSamples();
+            // Detect sync vs async: try one call.
+            final probe = impl(testCases.first);
+            if (probe is Future) await probe;
+            final isSync = probe is! Future;
+            for (int r = 0; r < profileRuns; r++) {
+              if (isSync) {
+                // Tight sync loop — no await/Future/microtask overhead.
+                for (final input in testCases) {
+                  impl(input);
+                }
+              } else {
+                for (final input in testCases) {
+                  await _invoke(impl, input);
+                }
+              }
+            }
+            await profiler.collectAndPrint(topN: profileTopN, label: name);
+          }
+          await profiler.dispose();
+        } else {
+          _step(
+            step,
+            totalSteps,
+            'Profile: skipped (VM service not available).',
+          );
+        }
+      }
+
+      // Real I/O (VM service websocket) must run outside the fake async zone.
+      if (runAsync != null) {
+        await runAsync(doProfile);
+      } else {
+        await doProfile();
+      }
+    }
   }
 
-  void _verifyImplementations() {
-    print('Verifying implementations...');
+  // ── Verify ────────────────────────────────────────────────────────────
+
+  /// Executes both implementations for every test case and checks that the
+  /// outputs match.
+  Future<void> _verifyImplementations() async {
     var allEqual = true;
 
     for (var i = 0; i < testCases.length; i++) {
       final input = testCases[i];
-      final result1 = implementation1(input);
-      final result2 = implementation2(input);
+      final result1 = await _invoke(implementation1, input);
+      final result2 = await _invoke(implementation2, input);
 
-      bool isEqual;
-      if (equalityCheck != null) {
-        isEqual = equalityCheck!(result1, result2);
-      } else {
-        // Default equality check using JSON encoding for deep comparison
-        final str1 = jsonEncode(result1);
-        final str2 = jsonEncode(result2);
-        isEqual = str1 == str2;
-      }
+      final encoded1 = _safeEncode(result1);
+      final encoded2 = _safeEncode(result2);
+      final isEqual = equalityCheck != null
+          ? equalityCheck!(result1, result2)
+          : encoded1 == encoded2;
 
       if (!isEqual) {
-        final result1String = result1?.toString() ?? 'null';
-        final result1LengthLimited = result1String.length > 1000
-            ? '${result1String.substring(0, 1000)}...truncated after 1000 characters'
-            : result1String;
-        final result2String = result2?.toString() ?? 'null';
-        final result2LengthLimited = result2String.length > 1000
-            ? '${result2String.substring(0, 1000)}...truncated after 1000 characters'
-            : result2String;
-        print('\nMismatch found for test case $i:');
-        print('Input: $input');
-        print('$impl1Name: $result1LengthLimited');
-        print('$impl2Name: $result2LengthLimited');
+        _sub('❌ Mismatch on test case $i:');
+        _sub('Input: $input');
+
+        if (encoded1.length > 1000 || encoded2.length > 1000) {
+          _printStringDiff(
+            encoded1,
+            encoded2,
+            labelA: impl1Name,
+            labelB: impl2Name,
+          );
+        } else {
+          _sub('$impl1Name: $encoded1');
+          _sub('$impl2Name: $encoded2');
+        }
         allEqual = false;
       }
     }
 
     if (allEqual) {
-      print('\nAll test cases produced identical output! ✅');
+      _sub(
+        '✅ All ${testCases.length} test case${testCases.length == 1 ? '' : 's'} match.',
+      );
     } else {
-      print('\nWarning: Differences found in outputs! ❌');
+      _sub('❌ Differences found in outputs!');
     }
   }
 
-  void _warmup(int runs) {
-    print('\nWarming up...');
+  // ── Warmup ────────────────────────────────────────────────────────────
+
+  /// Performs a short warmup using random test cases to reduce cold-start
+  /// effects before the timed benchmark begins.
+  Future<void> _warmup(int runs) async {
+    final sw = Stopwatch()..start();
     for (var i = 0; i < runs; i++) {
       final input = testCases[_random.nextInt(testCases.length)];
-      implementation1(input);
-      implementation2(input);
+      await _invoke(implementation1, input);
+      await _invoke(implementation2, input);
     }
+    sw.stop();
+    _sub('Done (${sw.elapsedMilliseconds} ms).');
   }
 
-  void _benchmark(int runs) {
-    print('\nRunning benchmark...');
+  // ── Benchmark ─────────────────────────────────────────────────────────
+
+  /// Measures both implementations across the full test suite.
+  ///
+  /// The order alternates each run to reduce bias from cache or VM effects.
+  Future<void> _benchmark(int runs) async {
+    // Detect sync implementations to avoid await overhead in hot loop.
+    final probe1 = implementation1(testCases.first);
+    if (probe1 is Future) await probe1;
+    final probe2 = implementation2(testCases.first);
+    if (probe2 is Future) await probe2;
+    final isSync = probe1 is! Future && probe2 is! Future;
+
     for (var run = 0; run < runs; run++) {
+      final runIterationSw = Stopwatch()..start();
+
       var testA = run % 2 == 0;
-      // print('\nRun ${run + 1}:');
 
       // First run
-      var startTime = DateTime.now().microsecondsSinceEpoch;
-      for (var input in testCases) {
-        testA ? implementation1(input) : implementation2(input);
+      final impl1st = testA ? implementation1 : implementation2;
+      final stopwatch1 = Stopwatch()..start();
+      if (isSync) {
+        for (var input in testCases) {
+          impl1st(input);
+        }
+      } else {
+        for (var input in testCases) {
+          await _invoke(impl1st, input);
+        }
       }
-      var time1 = (DateTime.now().microsecondsSinceEpoch - startTime) / 1000.0;
+      stopwatch1.stop();
+      var time1 = stopwatch1.elapsedMicroseconds / 1000.0;
 
       // Second run
-      startTime = DateTime.now().microsecondsSinceEpoch;
-      for (var input in testCases) {
-        testA ? implementation2(input) : implementation1(input);
+      final impl2nd = testA ? implementation2 : implementation1;
+      final stopwatch2 = Stopwatch()..start();
+      if (isSync) {
+        for (var input in testCases) {
+          impl2nd(input);
+        }
+      } else {
+        for (var input in testCases) {
+          await _invoke(impl2nd, input);
+        }
       }
-      var time2 = (DateTime.now().microsecondsSinceEpoch - startTime) / 1000.0;
+      stopwatch2.stop();
+      var time2 = stopwatch2.elapsedMicroseconds / 1000.0;
 
       // Store results
       if (testA) {
@@ -119,14 +397,38 @@ class PerfTester<Input, Output> {
         impl2Times.add(time1);
         impl1Times.add(time2);
       }
+      runIterationSw.stop();
+      // Print at most 10 progress messages.
+      final printStep = math.max(1, runs ~/ 10);
+      if ((run + 1) % printStep == 0 || run == runs - 1) {
+        _sub(
+          'Run ${run + 1}/$runs (${runIterationSw.elapsedMilliseconds} ms).',
+        );
+      }
     }
   }
 
+  Future<Output?> _invoke(
+    FutureOr<Output?> Function(Input) implementation,
+    Input input,
+  ) async {
+    final result = implementation(input);
+    if (result is Future<Output?>) {
+      return await result;
+    }
+    return result;
+  }
+
+  // ── Results ───────────────────────────────────────────────────────────
+
+  /// Prints the final timing summary and a distribution view.
   void _printResults() {
     _printStats();
     _printVisualizations();
   }
 
+  /// Prints aggregate statistics such as total time, mean, median, and
+  /// standard deviation.
   void _printStats() {
     impl1Times.sort();
     impl2Times.sort();
@@ -208,11 +510,11 @@ class PerfTester<Input, Output> {
     maxWidth1 += 2;
     maxWidth2 += 2;
 
-    print('\n=== $testName Performance Summary ===');
-    print('Total Operations: $totalOps');
+    print('');
+    _sub('Results:');
 
     // Print header
-    print(
+    _sub(
       '${''.padRight(maxLabelWidth)}'
       '${impl2Name.padRight(maxWidth1)}'
       '${impl1Name.padRight(maxWidth2)}'
@@ -276,7 +578,7 @@ class PerfTester<Input, Output> {
         comparisonInfo = 'No difference';
       }
 
-      print(
+      _sub(
         '${label.padRight(maxLabelWidth)}'
         '${formattedVal1.padRight(maxWidth1)}'
         '${formattedVal2.padRight(maxWidth2)}'
@@ -304,18 +606,18 @@ class PerfTester<Input, Output> {
     );
   }
 
+  /// Builds a compact ASCII histogram for the two timing distributions.
   String _generateDistributionPair(
     List<double> data1,
     List<double> data2, {
     String label1 = 'Data 1',
     String label2 = 'Data 2',
-    int width = 30,
   }) {
     if (data1.isEmpty || data2.isEmpty) return '';
 
     // Calculate full ranges and percentiles
-    var sorted1 = List<double>.of(data1)..sort();
-    var sorted2 = List<double>.of(data2)..sort();
+    var sorted1 = List.of(data1)..sort();
+    var sorted2 = List.of(data2)..sort();
 
     var min1 = sorted1.first;
     var min2 = sorted2.first;
@@ -329,30 +631,30 @@ class PerfTester<Input, Output> {
     var visMin = math.min(min1, min2);
 
     // Create histograms
-    var binCount = width;
+    var binCount = 30;
     var binSize = (visMax - visMin) / binCount;
-    var histogram1 = List<int>.filled(binCount, 0);
-    var histogram2 = List<int>.filled(binCount, 0);
+    var histogram1 = List.filled(binCount, 0);
+    var histogram2 = List.filled(binCount, 0);
     var outliers1 = 0;
     var outliers2 = 0;
 
-    void addToHistogram(double value, List<int> hist, var outliersRef) {
+    for (var value in data1) {
       if (value > visMax) {
-        outliersRef++;
-        return;
+        outliers1++;
+        continue;
       }
       var bin = ((value - visMin) / binSize).floor();
-      // rationale: would be too confusing, its confusing already!
-      // ignore: avoid-unnecessary-reassignment
       bin = math.min(math.max(bin, 0), binCount - 1);
-      hist[bin]++;
-    }
-
-    for (var value in data1) {
-      addToHistogram(value, histogram1, outliers1);
+      histogram1[bin]++;
     }
     for (var value in data2) {
-      addToHistogram(value, histogram2, outliers2);
+      if (value > visMax) {
+        outliers2++;
+        continue;
+      }
+      var bin = ((value - visMin) / binSize).floor();
+      bin = math.min(math.max(bin, 0), binCount - 1);
+      histogram2[bin]++;
     }
 
     var maxCount = math.max(
@@ -409,20 +711,21 @@ class PerfTester<Input, Output> {
 
     var result = StringBuffer();
     result.writeln(
-      'Distribution (showing ${formatValue(visMin)}-${formatValue(visMax)}ms):',
+      '      Distribution (showing ${formatValue(visMin)}-${formatValue(visMax)}ms):',
     );
     result.writeln(
-      getDistributionLine(histogram1, label1, outliers1, min1, max1),
+      '      ${getDistributionLine(histogram1, label1, outliers1, min1, max1)}',
     );
-    result.writeln(
-      getDistributionLine(histogram2, label2, outliers2, min2, max2),
+    result.write(
+      '      ${getDistributionLine(histogram2, label2, outliers2, min2, max2)}',
     );
 
     return result.toString();
   }
 
+  /// Prints the histogram-style timing visualization.
   void _printVisualizations() {
-    print('\n');
+    print('');
     print(
       _generateDistributionPair(
         impl1Times,
@@ -432,4 +735,100 @@ class PerfTester<Input, Output> {
       ),
     );
   }
+}
+
+/// Encodes a value for comparison, falling back to `toString()` if JSON
+/// encoding is not possible.
+String _safeEncode(Object? value) {
+  try {
+    return jsonEncode(value);
+  } catch (_) {
+    return value?.toString() ?? 'null';
+  }
+}
+
+/// Prints a compact diff between two long strings by showing the common
+/// prefix/suffix and the differing middle segments with context.
+void _printStringDiff(
+  String a,
+  String b, {
+  String labelA = 'A',
+  String labelB = 'B',
+  // rationale: clarity for callers
+  // ignore: avoid-never-passed-parameters
+  int context = 200,
+  // ignore: avoid-never-passed-parameters
+  int maxMiddle = 600,
+}) {
+  // Find common prefix
+  final minLen = a.length < b.length ? a.length : b.length;
+  var prefix = 0;
+  while (prefix < minLen && a.codeUnitAt(prefix) == b.codeUnitAt(prefix)) {
+    prefix++;
+  }
+
+  // Find common suffix without overlapping the prefix
+  var suffix = 0;
+  while (suffix < minLen - prefix &&
+      a.codeUnitAt(a.length - 1 - suffix) ==
+          b.codeUnitAt(b.length - 1 - suffix)) {
+    suffix++;
+  }
+
+  final aMidStart = prefix;
+  final aMidEnd = a.length - suffix;
+  final bMidStart = prefix;
+  final bMidEnd = b.length - suffix;
+
+  String safeSlice(String s, int start, int end) {
+    if (start < 0) start = 0;
+    if (end > s.length) end = s.length;
+    if (start > end) start = end;
+    return s.substring(start, end);
+  }
+
+  // Limit middle segments to maxMiddle each for readability
+  final aMid = safeSlice(
+    a,
+    aMidStart,
+    (aMidStart + maxMiddle).clamp(0, aMidEnd),
+  );
+  final bMid = safeSlice(
+    b,
+    bMidStart,
+    (bMidStart + maxMiddle).clamp(0, bMidEnd),
+  );
+
+  // Metadata
+  print('--- Diff summary ---');
+  print('Lengths: $labelA=${a.length}, $labelB=${b.length}');
+  print('Common prefix: $prefix chars, Common suffix: $suffix chars');
+
+  // Show diff with context
+  if (prefix > 0) {
+    final prefixSnippet = safeSlice(
+      a,
+      (prefix - context).clamp(0, a.length),
+      prefix,
+    );
+
+    print('...${prefixSnippet.replaceAll('\n', '\\n')}');
+  }
+  print('<<< $labelA differs >>>');
+  print(aMid.replaceAll('\n', '\\n'));
+  print('>>> $labelB differs <<<');
+  print(bMid.replaceAll('\n', '\\n'));
+  if (suffix > 0) {
+    final hasSuffixEllipsis = suffix > context;
+
+    final suffixSnippet = safeSlice(
+      a,
+      a.length - suffix,
+      (a.length - suffix + context).clamp(0, a.length),
+    );
+    print(
+      '${suffixSnippet.replaceAll('\n', '\\n')}${hasSuffixEllipsis ? '...' : ''}',
+    );
+  }
+  print('--- End diff ---');
 }

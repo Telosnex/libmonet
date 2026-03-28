@@ -187,8 +187,8 @@ void main() {
       expect(p.fillBorder, isColor(0xff499CD1));
       expect(p.text, isColor(0xff6DBDF4));
       expect(p.fillText, isColor(0xffFFFFFF));
-      expect(p.fillIcon, isColor(0xffDDEEFF));
-    });
+      expect(p.fillIcon, isColor(0xffDDEEFF));    });
+
   });
 
   group('#334157', () {
@@ -284,6 +284,21 @@ void main() {
       expect(colors.colorBorder, isColor(0xff75511D)); // subtle shadow, not harsh hole
       expect(lstarFromArgb(colors.color.argb), closeTo(54.627, 0.001));
       expect(lstarFromArgb(colors.colorBorder.argb), closeTo(37.400, 0.001));
+    });
+
+    test('backgroundBorder uses Usage.border, not Usage.large', () {
+      // At bgTone=10, Usage.large (Lc 30) forced backgroundBorder to T~51
+      // because APCA is flat in the deep darks. With Usage.border (Lc 15)
+      // it correctly lands at T~37 — still lighter (no darker headroom at
+      // T10), but a much more reasonable delta.
+      final p = Palette.from(
+        const Color(0xff1177AA),
+        backgroundTone: 10,
+      );
+      expect(p.backgroundBorder, isColor(0xff485966));
+      expect(_tone(p.backgroundBorder), closeTo(36.896, 0.5));
+      // The old bug produced T~51; ensure we're well below that.
+      expect(_tone(p.backgroundBorder), lessThan(45));
     });
   });
 
