@@ -1728,8 +1728,11 @@ ColorScheme _createColorScheme(
   final onSurface = Hct.colorFrom(
     surfaceHct.hue,
     surfaceHct.chroma,
-    contrastingLstar(
-      withLstar: surfaceHct.tone,
+    contrastingTone(
+      withArgb: surface.argb,
+      withTone: surfaceHct.tone,
+      targetHue: surfaceHct.hue,
+      targetChroma: surfaceHct.chroma,
       usage: Usage.text,
       contrast: contrast,
     ),

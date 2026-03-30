@@ -1,4 +1,6 @@
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:libmonet/colorspaces/hct_solver.dart';
 import 'package:libmonet/contrast/apca.dart';
 import 'package:libmonet/contrast/apca_contrast.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
@@ -18,6 +20,21 @@ enum Algo {
     }
   }
 
+  /// Contrast between two actual sRGB colors.
+  ///
+  /// For APCA this uses per-channel apcaY (the real signal).
+  /// For WCAG 2.1 this uses luminance (Y), which is equivalent to L*.
+  double contrastBetweenArgbs({required int bgArgb, required int fgArgb}) {
+    switch (this) {
+      case Algo.apca:
+        return apcaFromArgbs(fgArgb, bgArgb);
+      case Algo.wcag21:
+        return contrastRatioOfLstars(
+            lstarFromArgb(bgArgb), lstarFromArgb(fgArgb));
+    }
+  }
+
+  @visibleForTesting
   double getContrastBetweenLstars({required double bg, required double fg}) {
     switch (this) {
       case Algo.wcag21:
@@ -45,6 +62,125 @@ enum Usage {
 /// Use this to ensure siblings solved against the same container always
 /// land on the same side.
 enum ContrastDirection { lighter, darker }
+
+/// Solve for a tone that achieves [usage]-level contrast against
+/// a reference surface, using actual ARGB for APCA precision.
+///
+/// [withArgb] is the actual ARGB of the reference surface.
+/// [withTone] is the L* tone of that surface (used as initial guess seed).
+/// [targetHue] / [targetChroma] define the HCT color at the solved tone.
+///
+/// For WCAG 2.1, delegates to [contrastingLstar] (L*-based is exact).
+double contrastingTone({
+  required int withArgb,
+  required double withTone,
+  required double targetHue,
+  required double targetChroma,
+  required Usage usage,
+  Algo by = Algo.apca,
+  required double contrast,
+  bool debug = false,
+  ContrastDirection? forceDirection,
+  }) {
+  // For WCAG, L*-based is exact (Y ↔ L* is bijective).
+  if (by == Algo.wcag21) {
+    return contrastingLstar(
+      withLstar: withTone,
+      usage: usage,
+      by: by,
+      contrast: contrast,
+      debug: debug,
+      forceDirection: forceDirection,
+    );
+  }
+
+  final target = apcaInterpolation(percent: contrast, usage: usage);
+  final prefersLighter = switch (forceDirection) {
+    ContrastDirection.lighter => true,
+    ContrastDirection.darker => false,
+    null => lstarPrefersLighterPair(withTone),
+  };
+  final forced = forceDirection != null;
+
+  // Precompute reference apcaY once — it's constant across all iterations.
+  final refY = apcaYFromArgb(withArgb);
+
+  // ARGB-based contrast for a candidate tone, using precomputed ref.
+  double lcAt(double tone) {
+    final argb = HctSolver.solveToInt(targetHue, targetChroma, tone);
+    return apcaContrastOfApcaY(apcaYFromArgb(argb), refY).abs();
+  }
+
+  // L*-based analytical seed narrows the search range.
+  // Max chromatic L*↔apcaY drift is 4.79T (measured exhaustively in
+  // apca_contrast_test.dart).  We use 6T margin for safety.
+  const kIter = 15; // 100/2^15 ≈ 0.003T precision
+  const kSeedMargin = 6.0;
+
+  double? lstarSeed() {
+    try {
+      if (prefersLighter) {
+        final s = lighterTextLstar(withTone, -target);
+        return (s >= 0 && s <= 100) ? s : null;
+      } else {
+        final s = darkerTextLstarUnsafe(withTone, target);
+        return (s >= 0 && s <= 100) ? s : null;
+      }
+    } catch (_) {
+      return null;
+    }
+  }
+
+  if (prefersLighter) {
+    final maxLc = lcAt(100);
+    if (maxLc < target) {
+      if (forced) return 100.0;
+      final minLc = lcAt(0);
+      return (target - minLc).abs() <= (target - maxLc).abs() ? 0.0 : 100.0;
+    }
+    final seed = lstarSeed();
+    double lo = seed != null
+        ? (seed - kSeedMargin).clamp(withTone, 100.0)
+        : withTone;
+    double hi = seed != null
+        ? (seed + kSeedMargin).clamp(withTone, 100.0)
+        : 100.0;
+    if (lcAt(hi) < target) hi = 100.0; // widen if bracket broken
+    for (int i = 0; i < kIter; i++) {
+      final mid = (lo + hi) / 2.0;
+      if (lcAt(mid) >= target) {
+        hi = mid;
+      } else {
+        lo = mid;
+      }
+    }
+    return hi.clamp(0.0, 100.0);
+  } else {
+    final minLc = lcAt(0);
+    if (minLc < target) {
+      if (forced) return 0.0;
+      final maxLc = lcAt(100);
+      return (target - minLc).abs() <= (target - maxLc).abs() ? 0.0 : 100.0;
+    }
+    final seed = lstarSeed();
+    double lo = seed != null
+        ? (seed - kSeedMargin).clamp(0.0, withTone)
+        : 0.0;
+    double hi = seed != null
+        ? (seed + kSeedMargin).clamp(0.0, withTone)
+        : withTone;
+    if (lcAt(lo) < target) lo = 0.0; // widen if bracket broken
+    for (int i = 0; i < kIter; i++) {
+      final mid = (lo + hi) / 2.0;
+      if (lcAt(mid) >= target) {
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    }
+    return lo.clamp(0.0, 100.0);
+  }
+}
 
 double contrastingLstar({
   required double withLstar,

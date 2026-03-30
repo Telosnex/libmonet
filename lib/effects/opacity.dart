@@ -69,14 +69,12 @@ OpacityResult getOpacityForArgbs({
   final absoluteContrast = algo.getAbsoluteContrast(contrast, Usage.text);
 
   final foregroundLstar = lstarFromArgb(foregroundArgb);
-  final minBgLstar = lstarFromArgb(minBackgroundArgb);
-  final maxBgLstar = lstarFromArgb(maxBackgroundArgb);
 
   // 1. Check if we even need a protection layer.
   final contrastWithMin =
-      algo.getContrastBetweenLstars(bg: minBgLstar, fg: foregroundLstar);
+      algo.contrastBetweenArgbs(bgArgb: minBackgroundArgb, fgArgb: foregroundArgb);
   final contrastWithMax =
-      algo.getContrastBetweenLstars(bg: maxBgLstar, fg: foregroundLstar);
+      algo.contrastBetweenArgbs(bgArgb: maxBackgroundArgb, fgArgb: foregroundArgb);
 
   if (absoluteContrast <= contrastWithMin &&
       absoluteContrast <= contrastWithMax) {
@@ -229,19 +227,18 @@ bool _protectionWorksBothSides({
   required Algo algo,
   required bool debug,
 }) {
-  final foregroundLstar = lstarFromArgb(foregroundArgb);
   final protColor = prot.color;
 
   final minBlended = Color.alphaBlend(protColor, Color(minBackgroundArgb));
   final maxBlended = Color.alphaBlend(protColor, Color(maxBackgroundArgb));
 
-  final contrastMin = algo.getContrastBetweenLstars(
-    bg: lstarFromArgb(minBlended.argb),
-    fg: foregroundLstar,
+  final contrastMin = algo.contrastBetweenArgbs(
+    bgArgb: minBlended.argb,
+    fgArgb: foregroundArgb,
   );
-  final contrastMax = algo.getContrastBetweenLstars(
-    bg: lstarFromArgb(maxBlended.argb),
-    fg: foregroundLstar,
+  final contrastMax = algo.contrastBetweenArgbs(
+    bgArgb: maxBlended.argb,
+    fgArgb: foregroundArgb,
   );
 
   monetDebug(debug, () => 'Verifying ${hexFromArgb(prot.protectionArgb)} '
@@ -377,15 +374,15 @@ OpacityResult _bestEffortFullOpacity({
   required bool debug,
 }) {
   // Evaluate white at 100% — pure white replaces the background entirely.
-  final whiteContrast = algo.getContrastBetweenLstars(
-    bg: 100.0,
-    fg: foregroundLstar,
+  final whiteContrast = algo.contrastBetweenArgbs(
+    bgArgb: _white,
+    fgArgb: foregroundArgb,
   ).abs();
 
   // Evaluate black at 100% — pure black replaces the background entirely.
-  final blackContrast = algo.getContrastBetweenLstars(
-    bg: 0.0,
-    fg: foregroundLstar,
+  final blackContrast = algo.contrastBetweenArgbs(
+    bgArgb: _black,
+    fgArgb: foregroundArgb,
   ).abs();
 
   monetDebug(debug, () => 'Best effort: white@100% contrast=$whiteContrast, '

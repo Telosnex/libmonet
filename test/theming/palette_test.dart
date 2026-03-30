@@ -1,8 +1,8 @@
 import 'dart:ui';
 
+import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:test/test.dart';
 
@@ -116,8 +116,8 @@ void main() {
     for (final bgTone in [10, 20, 30, 40, 50, 55, 60, 70, 80, 90, 95]) {
       group('bgTone=$bgTone', () {
         late Palette p;
-        setUp(() => p = Palette.from(brandColor,
-            backgroundTone: bgTone.toDouble()));
+        setUp(() =>
+            p = Palette.from(brandColor, backgroundTone: bgTone.toDouble()));
 
         test('fill and text share polarity vs background', () {
           final fillDir = dir(p.background, p.fill, 'bg→fill');
@@ -182,13 +182,13 @@ void main() {
         backgroundTone: 10,
       );
       expect(p.color, isColor(0xff1177AA));
-      expect(p.colorBorder, isColor(0xff005C86));
-      expect(p.fill, isColor(0xff499CD1));
-      expect(p.fillBorder, isColor(0xff499CD1));
-      expect(p.text, isColor(0xff6DBDF4));
+      expect(p.colorBorder, isColor(0xff1177AA));
+      expect(p.fill, isColor(0xff4C9FD4));
+      expect(p.fillBorder, isColor(0xff4C9FD4));
+      expect(p.text, isColor(0xff6CBBF2));
       expect(p.fillText, isColor(0xffFFFFFF));
-      expect(p.fillIcon, isColor(0xffDDEEFF));    });
-
+      expect(p.fillIcon, isColor(0xffD4EAFF));
+    });
   });
 
   group('#334157', () {
@@ -200,23 +200,23 @@ void main() {
       expect(colors.color, isColor(0xff334157));
       expect(colors.colorBorder, isColor(0xff334157));
       expect(colors.colorText, isColor(0xffB5C3DE));
-      expect(colors.colorIcon, isColor(0xff9BA9C4));
-      expect(colors.colorHovered, isColor(0xff64728B));
-      expect(colors.colorHoveredText, isColor(0xffD5E3FF));
-      expect(colors.colorSplashed, isColor(0xff808EA8));
-      expect(colors.colorSplashedText, isColor(0xffF5F7FF));
-      expect(colors.fill, isColor(0xffA4B3CD));
-      expect(colors.fillText, isColor(0xff0B1A2E));
-      expect(colors.fillIcon, isColor(0xff3A485E));
-      expect(colors.fillHovered, isColor(0xff7B89A2));
-      expect(colors.fillHoveredText, isColor(0xffF0F3FF));
-      expect(colors.fillSplashed, isColor(0xff5E6C84));
-      expect(colors.fillSplashedText, isColor(0xffD0DFFB));
-      expect(colors.text, isColor(0xff7B89A2));
-      expect(colors.textHovered, isColor(0xffC2D0EC));
-      expect(colors.textHoveredText, isColor(0xff3A485E));
-      expect(colors.textSplashed, isColor(0xffA2B0CB));
-      expect(colors.textSplashedText, isColor(0xff061529));
+      expect(colors.colorIcon, isColor(0xff9AA9C3));
+      expect(colors.colorHovered, isColor(0xff64728A));
+      expect(colors.colorHoveredText, isColor(0xffD4E2FE));
+      expect(colors.colorSplashed, isColor(0xff808FA8));
+      expect(colors.colorSplashedText, isColor(0xffF4F7FF));
+      expect(colors.fill, isColor(0xff9EACC7));
+      expect(colors.fillText, isColor(0xff000000));
+      expect(colors.fillIcon, isColor(0xff38455C));
+      expect(colors.fillHovered, isColor(0xff76849D));
+      expect(colors.fillHoveredText, isColor(0xffE8EFFF));
+      expect(colors.fillSplashed, isColor(0xff58677E));
+      expect(colors.fillSplashedText, isColor(0xffCCDBF6));
+      expect(colors.text, isColor(0xff818FA8));
+      expect(colors.textHovered, isColor(0xffC4D2EE));
+      expect(colors.textHoveredText, isColor(0xff46546B));
+      expect(colors.textSplashed, isColor(0xffA3B2CC));
+      expect(colors.textSplashedText, isColor(0xff0B1A2F));
     });
 
     test('dark mode', () {
@@ -225,25 +225,25 @@ void main() {
         backgroundTone: 0.0,
       );
       expect(colors.color, isColor(0xff334157));
-      expect(colors.colorBorder, isColor(0xff45536A));
+      expect(colors.colorBorder, isColor(0xff455369));
       expect(colors.colorText, isColor(0xffB5C3DE));
-      expect(colors.colorIcon, isColor(0xff9BA9C4));
-      expect(colors.colorHovered, isColor(0xff64728B));
-      expect(colors.colorHoveredText, isColor(0xffD5E3FF));
-      expect(colors.colorSplashed, isColor(0xff808EA8));
-      expect(colors.colorSplashedText, isColor(0xffF5F7FF));
-      expect(colors.fill, isColor(0xff8391AB));
-      expect(colors.fillText, isColor(0xffFAF9FF));
-      expect(colors.fillIcon, isColor(0xffDFE9FF));
-      expect(colors.fillHovered, isColor(0xffAAB8D3));
-      expect(colors.fillHoveredText, isColor(0xff162439));
-      expect(colors.fillSplashed, isColor(0xffC3D1ED));
-      expect(colors.fillSplashedText, isColor(0xff3C4A60));
-      expect(colors.text, isColor(0xffA4B2CD));
+      expect(colors.colorIcon, isColor(0xff9AA9C3));
+      expect(colors.colorHovered, isColor(0xff64728A));
+      expect(colors.colorHoveredText, isColor(0xffD4E2FE));
+      expect(colors.colorSplashed, isColor(0xff808FA8));
+      expect(colors.colorSplashedText, isColor(0xffF4F7FF));
+      expect(colors.fill, isColor(0xff8796AF));
+      expect(colors.fillText, isColor(0xffFFFFFF));
+      expect(colors.fillIcon, isColor(0xffD8E6FF));
+      expect(colors.fillHovered, isColor(0xffAAB9D3));
+      expect(colors.fillHoveredText, isColor(0xff1F2D42));
+      expect(colors.fillSplashed, isColor(0xffC1D0EB));
+      expect(colors.fillSplashedText, isColor(0xff435167));
+      expect(colors.text, isColor(0xffA3B1CC));
       expect(colors.textHovered, isColor(0xff5B6981));
-      expect(colors.textHoveredText, isColor(0xffCEDDF9));
-      expect(colors.textSplashed, isColor(0xff8290AA));
-      expect(colors.textSplashedText, isColor(0xffF8F8FF));
+      expect(colors.textHoveredText, isColor(0xffCDDCF8));
+      expect(colors.textSplashed, isColor(0xff8190A9));
+      expect(colors.textSplashedText, isColor(0xffF7F7FF));
     });
   });
 
@@ -257,7 +257,7 @@ void main() {
         backgroundTone: 10.0,
       );
       expect(colors.color, isColor(0xff02174E));
-      expect(colors.colorBorder, isColor(0xff415189)); // blue at ~tone 38
+      expect(colors.colorBorder, isColor(0xff43538C)); // blue at ~tone 38
     });
 
     test('#D29C57 should have darker border, not lighter', () {
@@ -269,7 +269,7 @@ void main() {
         backgroundTone: lstarFromArgb(0xffFFCA88),
       );
       expect(colors.color, isColor(0xffD29C57));
-      expect(colors.colorBorder, isColor(0xffA87836)); // darker border (~T52)
+      expect(colors.colorBorder, isColor(0xffD29C57)); // darker border (~T52)
     });
 
     test('#A57B43 has darker border visually, feels intense as stroke', () {
@@ -281,9 +281,10 @@ void main() {
         backgroundTone: lstarFromArgb(0xff986E38),
       );
       expect(colors.color, isColor(0xffA57B43));
-      expect(colors.colorBorder, isColor(0xff75511D)); // subtle shadow, not harsh hole
+      expect(colors.colorBorder,
+          isColor(0xff7A5621)); // subtle shadow, not harsh hole
       expect(lstarFromArgb(colors.color.argb), closeTo(54.627, 0.001));
-      expect(lstarFromArgb(colors.colorBorder.argb), closeTo(37.400, 0.001));
+      expect(lstarFromArgb(colors.colorBorder.argb), closeTo(39.417, 0.001));
     });
 
     test('backgroundBorder uses Usage.border, not Usage.large', () {

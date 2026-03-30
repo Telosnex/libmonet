@@ -114,9 +114,23 @@ class Palette {
   // first without constraint.  Its actual result determines the direction
   // that every easier sibling (fill, icon, hover, …) is forced to follow.
 
+  // Cached ARGBs for container surfaces used as _solve references.
+  late final int _backgroundArgb = _baseBackground.argb;
+  late final int _colorArgb = _baseColor.argb;
+
+  // Cached Colors for derived surfaces — avoids duplicate HctSolver calls.
+  // Each tone gets solved exactly once, then reused for ARGB and public Color.
+  late final Color _fillColor = _withColorsChroma(_bgFillTone);
+  late final Color _bgHoverColor = _withColorsChroma(_bgHoverTone);
+  late final Color _bgSplashColor = _withColorsChroma(_bgSplashTone);
+  late final Color _colorHoverColor = _withColorsChroma(_colorHoverTone);
+  late final Color _colorSplashColor = _withColorsChroma(_colorSplashTone);
+  late final Color _fillHoverColor = _withColorsChroma(_fillHoverTone);
+  late final Color _fillSplashColor = _withColorsChroma(_fillSplashTone);
+
   /// Text tone on the background — solved first, unconstrained.
   late final double _bgTextTone =
-      _solve(_backgroundTone, Usage.text, _contrast);
+      _solve(_backgroundTone, _backgroundArgb, _backgroundHue, _backgroundChroma, Usage.text, _contrast);
 
   late final ContrastDirection _bgDirection =
       _bgTextTone >= _backgroundTone
@@ -125,7 +139,7 @@ class Palette {
 
   /// Text tone on the fill surface — solved first, unconstrained.
   late final double _fillTextTone =
-      _solve(_bgFillTone, Usage.text, _contrast);
+      _solve(_bgFillTone, _fillColor.argb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _fillDirection =
       _fillTextTone >= _bgFillTone
@@ -134,7 +148,7 @@ class Palette {
 
   /// Text tone on the color surface — solved first, unconstrained.
   late final double _colorTextTone =
-      _solve(_colorTone, Usage.text, _contrast);
+      _solve(_colorTone, _colorArgb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _colorDirection =
       _colorTextTone >= _colorTone
@@ -172,23 +186,23 @@ class Palette {
 
   /// Fill surface tone on the background.
   late final double _bgFillTone =
-      _solve(_backgroundTone, Usage.fill, _contrast, _bgDirection);
+      _solve(_backgroundTone, _backgroundArgb, _colorHue, _colorChroma, Usage.fill, _contrast, _bgDirection);
 
   /// Hover overlay tone on the background.
   late final double _bgHoverTone =
-      _solve(_backgroundTone, Usage.fill, _hoverDial, _bgDirection);
+      _solve(_backgroundTone, _backgroundArgb, _colorHue, _colorChroma, Usage.fill, _hoverDial, _bgDirection);
 
   /// Splash overlay tone on the background.
   late final double _bgSplashTone =
-      _solve(_backgroundTone, Usage.fill, _splashDial, _bgDirection);
+      _solve(_backgroundTone, _backgroundArgb, _colorHue, _colorChroma, Usage.fill, _splashDial, _bgDirection);
 
   /// Hover overlay tone on the color surface.
   late final double _colorHoverTone =
-      _solve(_colorTone, Usage.fill, _hoverDial, _colorDirection);
+      _solve(_colorTone, _colorArgb, _colorHue, _colorChroma, Usage.fill, _hoverDial, _colorDirection);
 
   /// Text on the hovered color surface — solved first, unconstrained.
   late final double _colorHoverTextTone =
-      _solve(_colorHoverTone, Usage.text, _contrast);
+      _solve(_colorHoverTone, _colorHoverColor.argb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _colorHoverDirection =
       _colorHoverTextTone >= _colorHoverTone
@@ -197,11 +211,11 @@ class Palette {
 
   /// Splash overlay tone on the color surface.
   late final double _colorSplashTone =
-      _solve(_colorTone, Usage.fill, _splashDial, _colorDirection);
+      _solve(_colorTone, _colorArgb, _colorHue, _colorChroma, Usage.fill, _splashDial, _colorDirection);
 
   /// Text on the splashed color surface — solved first, unconstrained.
   late final double _colorSplashTextTone =
-      _solve(_colorSplashTone, Usage.text, _contrast);
+      _solve(_colorSplashTone, _colorSplashColor.argb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _colorSplashDirection =
       _colorSplashTextTone >= _colorSplashTone
@@ -210,11 +224,11 @@ class Palette {
 
   /// Hover overlay tone on the fill surface.
   late final double _fillHoverTone =
-      _solve(_bgFillTone, Usage.fill, _hoverDial, _fillDirection);
+      _solve(_bgFillTone, _fillColor.argb, _colorHue, _colorChroma, Usage.fill, _hoverDial, _fillDirection);
 
   /// Text on the hovered fill surface — solved first, unconstrained.
   late final double _fillHoverTextTone =
-      _solve(_fillHoverTone, Usage.text, _contrast);
+      _solve(_fillHoverTone, _fillHoverColor.argb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _fillHoverDirection =
       _fillHoverTextTone >= _fillHoverTone
@@ -223,11 +237,11 @@ class Palette {
 
   /// Splash overlay tone on the fill surface.
   late final double _fillSplashTone =
-      _solve(_bgFillTone, Usage.fill, _splashDial, _fillDirection);
+      _solve(_bgFillTone, _fillColor.argb, _colorHue, _colorChroma, Usage.fill, _splashDial, _fillDirection);
 
   /// Text on the splashed fill surface — solved first, unconstrained.
   late final double _fillSplashTextTone =
-      _solve(_fillSplashTone, Usage.text, _contrast);
+      _solve(_fillSplashTone, _fillSplashColor.argb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _fillSplashDirection =
       _fillSplashTextTone >= _fillSplashTone
@@ -236,16 +250,16 @@ class Palette {
 
   /// Text-hover tone on the background (used by textHovered family).
   late final double _textHoverTone =
-      _solve(_backgroundTone, Usage.text, _hoverDial, _bgDirection);
+      _solve(_backgroundTone, _backgroundArgb, _colorHue, _colorChroma, Usage.text, _hoverDial, _bgDirection);
 
   /// Text-splash tone on the background (used by textSplashed family).
   late final double _textSplashTone =
-      _solve(_backgroundTone, Usage.text, _splashDial, _bgDirection);
+      _solve(_backgroundTone, _backgroundArgb, _colorHue, _colorChroma, Usage.text, _splashDial, _bgDirection);
 
   /// Text tone on the hovered background overlay — solved first,
   /// unconstrained, then used to derive shared sibling polarity.
   late final double _bgHoverTextTone =
-      _solve(_bgHoverTone, Usage.text, _contrast);
+      _solve(_bgHoverTone, _bgHoverColor.argb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _bgHoverDirection =
       _bgHoverTextTone >= _bgHoverTone
@@ -255,12 +269,12 @@ class Palette {
   /// Fill tone on the hovered background overlay.
   /// Shares polarity with [_bgHoverTextTone].
   late final double _bgHoverFillTone =
-      _solve(_bgHoverTone, Usage.fill, _contrast, _bgHoverDirection);
+      _solve(_bgHoverTone, _bgHoverColor.argb, _colorHue, _colorChroma, Usage.fill, _contrast, _bgHoverDirection);
 
   /// Text tone on the splashed background overlay — solved first,
   /// unconstrained, then used to derive shared sibling polarity.
   late final double _bgSplashTextTone =
-      _solve(_bgSplashTone, Usage.text, _contrast);
+      _solve(_bgSplashTone, _bgSplashColor.argb, _colorHue, _colorChroma, Usage.text, _contrast);
 
   late final ContrastDirection _bgSplashDirection =
       _bgSplashTextTone >= _bgSplashTone
@@ -270,23 +284,37 @@ class Palette {
   /// Fill tone on the splashed background overlay.
   /// Shares polarity with [_bgSplashTextTone].
   late final double _bgSplashFillTone =
-      _solve(_bgSplashTone, Usage.fill, _contrast, _bgSplashDirection);
+      _solve(_bgSplashTone, _bgSplashColor.argb, _colorHue, _colorChroma, Usage.fill, _contrast, _bgSplashDirection);
 
   // ── Tone solver & color constructors ──────────────────────────
 
+  // Precomputed solver contexts — one per (hue, chroma) pair.
+  // Eliminates ~6 redundant transcendentals per solveToInt call.
+
   /// Solve for the tone that achieves [usage]-level contrast against
-  /// [containerTone] at the given contrast [dial].
+  /// a container surface, using actual ARGB for APCA precision.
   ///
-  /// When [direction] is provided, siblings solved against the same
-  /// container are guaranteed to land on the same side.
-  double _solve(double containerTone, Usage usage, double dial,
-          [ContrastDirection? direction]) =>
-      contrastingLstar(
-          withLstar: containerTone,
-          usage: usage,
-          by: _algo,
-          contrast: dial,
-          forceDirection: direction);
+  /// [containerArgb] is the real ARGB of the container surface.
+  /// [ctx] is the precomputed solver context for the target's hue/chroma.
+  double _solve(
+    double containerTone,
+    int containerArgb,
+    double targetHue,
+    double targetChroma,
+    Usage usage,
+    double dial, [
+    ContrastDirection? direction,
+  ]) =>
+      contrastingTone(
+        withArgb: containerArgb,
+        withTone: containerTone,
+        targetHue: targetHue,
+        targetChroma: targetChroma,
+        usage: usage,
+        by: _algo,
+        contrast: dial,
+        forceDirection: direction,
+      );
 
   /// Color at [tone] using the base color's hue and chroma.
   Color _withColorsChroma(double tone) =>
@@ -316,13 +344,14 @@ class Palette {
   /// Prefers a darker (shadow-like) tone; falls back to lighter when the
   /// background is too close to black.
   late final Color backgroundBorder = _withBackgroundsChroma(
-      _solveBorderTone(_backgroundTone, Usage.border, _contrast));
+      _solveBorderTone(_backgroundTone, _backgroundArgb,
+          _backgroundHue, _backgroundChroma, Usage.border, _contrast));
 
   /// Brand-tinted hover overlay on the background.
-  late final Color backgroundHovered = _withColorsChroma(_bgHoverTone);
+  late final Color backgroundHovered = _bgHoverColor;
 
   /// Brand-tinted splash overlay on the background.
-  late final Color backgroundSplashed = _withColorsChroma(_bgSplashTone);
+  late final Color backgroundSplashed = _bgSplashColor;
 
   /// Brand fill sitting on the hover overlay.
   late final Color backgroundHoveredFill =
@@ -359,13 +388,13 @@ class Palette {
 
   /// Medium-contrast brand icon on the color surface.
   late final Color colorIcon =
-      _withColorsChroma(_solve(_colorTone, Usage.fill, _contrast, _colorDirection));
+      _withColorsChroma(_solve(_colorTone, _colorArgb, _colorHue, _colorChroma, Usage.fill, _contrast, _colorDirection));
 
   /// Hover overlay on the color surface.
-  late final Color colorHovered = _withColorsChroma(_colorHoverTone);
+  late final Color colorHovered = _colorHoverColor;
 
   /// Splash overlay on the color surface.
-  late final Color colorSplashed = _withColorsChroma(_colorSplashTone);
+  late final Color colorSplashed = _colorSplashColor;
 
   /// Text on the hovered color surface.
   late final Color colorHoveredText =
@@ -377,11 +406,11 @@ class Palette {
 
   /// Medium-contrast brand icon on the hovered color surface.
   late final Color colorHoveredIcon =
-      _withColorsChroma(_solve(_colorHoverTone, Usage.fill, _contrast, _colorHoverDirection));
+      _withColorsChroma(_solve(_colorHoverTone, _colorHoverColor.argb, _colorHue, _colorChroma, Usage.fill, _contrast, _colorHoverDirection));
 
   /// Medium-contrast brand icon on the splashed color surface.
   late final Color colorSplashedIcon =
-      _withColorsChroma(_solve(_colorSplashTone, Usage.fill, _contrast, _colorSplashDirection));
+      _withColorsChroma(_solve(_colorSplashTone, _colorSplashColor.argb, _colorHue, _colorChroma, Usage.fill, _contrast, _colorSplashDirection));
 
   /// Border around the color surface.
   ///
@@ -395,6 +424,7 @@ class Palette {
     requiredContrast: _borderContrast,
     hue: _colorHue,
     chroma: _colorChroma,
+    
   );
 
   /// Border for the hovered color surface.
@@ -409,20 +439,20 @@ class Palette {
   // ═════════════════════════════════════════════════════════════════
 
   /// Brand fill on the background (medium contrast).
-  late final Color fill = _withColorsChroma(_bgFillTone);
+  late final Color fill = _fillColor;
 
   /// High-contrast brand text on the fill surface.
   late final Color fillText = _withColorsChroma(_fillTextTone);
 
   /// Medium-contrast brand icon on the fill surface.
   late final Color fillIcon =
-      _withColorsChroma(_solve(_bgFillTone, Usage.fill, _contrast, _fillDirection));
+      _withColorsChroma(_solve(_bgFillTone, _fillColor.argb, _colorHue, _colorChroma, Usage.fill, _contrast, _fillDirection));
 
   /// Hover overlay on the fill surface.
-  late final Color fillHovered = _withColorsChroma(_fillHoverTone);
+  late final Color fillHovered = _fillHoverColor;
 
   /// Splash overlay on the fill surface.
-  late final Color fillSplashed = _withColorsChroma(_fillSplashTone);
+  late final Color fillSplashed = _fillSplashColor;
 
   /// Text on the hovered fill surface.
   late final Color fillHoveredText =
@@ -434,11 +464,11 @@ class Palette {
 
   /// Medium-contrast brand icon on the hovered fill surface.
   late final Color fillHoveredIcon =
-      _withColorsChroma(_solve(_fillHoverTone, Usage.fill, _contrast, _fillHoverDirection));
+      _withColorsChroma(_solve(_fillHoverTone, _fillHoverColor.argb, _colorHue, _colorChroma, Usage.fill, _contrast, _fillHoverDirection));
 
   /// Medium-contrast brand icon on the splashed fill surface.
   late final Color fillSplashedIcon =
-      _withColorsChroma(_solve(_fillSplashTone, Usage.fill, _contrast, _fillSplashDirection));
+      _withColorsChroma(_solve(_fillSplashTone, _fillSplashColor.argb, _colorHue, _colorChroma, Usage.fill, _contrast, _fillSplashDirection));
 
   /// Border around the fill surface.
   ///
@@ -452,6 +482,7 @@ class Palette {
     requiredContrast: _borderContrast,
     hue: _colorHue,
     chroma: _colorChroma,
+    
   );
 
   /// Border for the hovered fill surface.
@@ -476,11 +507,11 @@ class Palette {
 
   /// Text on the hovered-text highlight surface.
   late final Color textHoveredText =
-      _withColorsChroma(_solve(_textHoverTone, Usage.text, _contrast));
+      _withColorsChroma(_solve(_textHoverTone, _withColorsChroma(_textHoverTone).argb, _colorHue, _colorChroma, Usage.text, _contrast));
 
   /// Text on the splashed-text highlight surface.
   late final Color textSplashedText =
-      _withColorsChroma(_solve(_textSplashTone, Usage.text, _contrast));
+      _withColorsChroma(_solve(_textSplashTone, _withColorsChroma(_textSplashTone).argb, _colorHue, _colorChroma, Usage.text, _contrast));
 
   // ═════════════════════════════════════════════════════════════════
   //  PRIVATE — Border helpers
@@ -503,18 +534,19 @@ class Palette {
   /// Tries darker first; verifies it actually meets contrast; falls back to
   /// lighter.  Used by [backgroundBorder].
   double _solveBorderTone(
-      double containerTone, Usage usage, double dial) {
+      double containerTone, int containerArgb,
+      double targetHue, double targetChroma,
+      Usage usage, double dial) {
     final darkerTone =
-        _solve(containerTone, usage, dial, ContrastDirection.darker);
+        _solve(containerTone, containerArgb, targetHue, targetChroma, usage, dial, ContrastDirection.darker);
     final lighterTone =
-        _solve(containerTone, usage, dial, ContrastDirection.lighter);
+        _solve(containerTone, containerArgb, targetHue, targetChroma, usage, dial, ContrastDirection.lighter);
     final requiredLc = _algo.getAbsoluteContrast(dial, usage);
 
-    bool meets(double t) =>
-        _algo
-            .getContrastBetweenLstars(bg: containerTone, fg: t)
-            .abs() >=
-        requiredLc;
+    bool meets(double t) {
+      final tArgb = HctSolver.solveToInt(targetHue, targetChroma, t);
+      return _algo.contrastBetweenArgbs(bgArgb: containerArgb, fgArgb: tArgb).abs() >= requiredLc;
+    }
 
     final valid = [darkerTone, lighterTone].where(meets).toList();
     if (valid.isEmpty) return lighterTone; // best effort
@@ -528,19 +560,23 @@ class Palette {
   /// [overlayTone] and the background; otherwise solves via
   /// [_twoRefBorderTone].
   Color _overlayBorder(double overlayTone) {
+    final overlayArgb = _withColorsChroma(overlayTone).argb;
     final vsOverlay = _algo
-        .getContrastBetweenLstars(bg: overlayTone, fg: _colorTone)
+        .contrastBetweenArgbs(bgArgb: overlayArgb, fgArgb: _colorArgb)
         .abs();
     final vsBg = _algo
-        .getContrastBetweenLstars(bg: _backgroundTone, fg: _colorTone)
+        .contrastBetweenArgbs(bgArgb: _backgroundArgb, fgArgb: _colorArgb)
         .abs();
     if (vsOverlay >= _borderContrast && vsBg >= _borderContrast) {
       return _baseColor;
     }
     return _withColorsChroma(_twoRefBorderTone(
         refA: overlayTone,
+        refAArgb: overlayArgb,
         refB: _backgroundTone,
-        requiredContrast: _borderContrast));
+        refBArgb: _backgroundArgb,
+        requiredContrast: _borderContrast,
+        hue: _colorHue, chroma: _colorChroma));
   }
 
   /// Selects a border tone that contrasts with at least one of
@@ -563,39 +599,44 @@ class Palette {
       }
     }
 
+    // Use cached ARGBs when possible, otherwise materialize.
+    final bgArgb = (backgroundTone == _backgroundTone)
+        ? _backgroundArgb
+        : HctSolver.solveToInt(_backgroundHue, _backgroundChroma, backgroundTone);
+    final innerArgb = (innerTone == _colorTone)
+        ? _colorArgb
+        : HctSolver.solveToInt(hue, chroma, innerTone);
+
     // If the fg already meets fill-level contrast against the background,
     // it's visible on its own — the border IS the fg edge.
     // Check both APCA polarities: the fill was solved in one direction,
     // but visibility works either way.
     final fgVsBg = math.max(
-        _algo.getContrastBetweenLstars(bg: backgroundTone, fg: innerTone).abs(),
-        _algo.getContrastBetweenLstars(bg: innerTone, fg: backgroundTone).abs());
+        _algo.contrastBetweenArgbs(bgArgb: bgArgb, fgArgb: innerArgb).abs(),
+        _algo.contrastBetweenArgbs(bgArgb: innerArgb, fgArgb: bgArgb).abs());
     if (fgVsBg >= _fgContrast) {
       debugLog(() =>
           'border fast-path: fg visible vs bg '
           '(|Lc|=${fgVsBg.toStringAsFixed(1)} >= '
           '${_fgContrast.toStringAsFixed(1)})');
-      return Hct.colorFrom(hue, chroma, innerTone);
+      return Color(HctSolver.solveToInt(hue, chroma, innerTone));
     }
 
-    // Candidate tones (avoid duplicates).
-    // Use "unsafe" variants that return out-of-bounds values when impossible,
-    // so we can filter consistently.
+    // Candidate tones via ARGB-aware binary search (APCA) or L*-based
+    // analytical inverse (WCAG).  Avoid duplicates.
     final Set<double> candidateSet = {};
     // Background-side candidates
-    final bgLighterTone = _lighterCandidate(backgroundTone, requiredContrast);
-    final bgDarkerTone = _darkerCandidate(backgroundTone, requiredContrast);
+    final bgLighterTone = _lighterCandidate(
+        backgroundTone, bgArgb, hue, chroma, requiredContrast);
+    final bgDarkerTone = _darkerCandidate(
+        backgroundTone, bgArgb, hue, chroma, requiredContrast);
     if (bgLighterTone <= 100) candidateSet.add(bgLighterTone.clamp(0, 100));
     if (bgDarkerTone >= 0) candidateSet.add(bgDarkerTone.clamp(0, 100));
     // Inner-side candidates
-    final inLighterTone = (_algo == Algo.apca)
-        ? lighterBackgroundLstarUnsafe(innerTone, requiredContrast)
-        : lighterLstarUnsafe(
-            lstar: innerTone, contrastRatio: requiredContrast);
-    final inDarkerTone = (_algo == Algo.apca)
-        ? darkerBackgroundLstarUnsafe(innerTone, -requiredContrast)
-        : darkerLstarUnsafe(
-            lstar: innerTone, contrastRatio: requiredContrast);
+    final inLighterTone = _lighterCandidate(
+        innerTone, innerArgb, hue, chroma, requiredContrast);
+    final inDarkerTone = _darkerCandidate(
+        innerTone, innerArgb, hue, chroma, requiredContrast);
     if (inLighterTone <= 100) candidateSet.add(inLighterTone.clamp(0, 100));
     if (inDarkerTone >= 0) candidateSet.add(inDarkerTone.clamp(0, 100));
     // Include base tone for smooth transitions
@@ -603,46 +644,54 @@ class Palette {
 
     final candidateTones = candidateSet.toList();
 
-    bool hasValidContrast(double t) {
-      final lcBg =
-          _algo.getContrastBetweenLstars(bg: backgroundTone, fg: t).abs();
-      final lcIn =
-          _algo.getContrastBetweenLstars(bg: innerTone, fg: t).abs();
-      return lcBg >= requiredContrast || lcIn >= requiredContrast;
+    // Compute ARGB + contrast for all candidates ONCE.
+    // Avoids duplicate HctSolver calls in validation vs scoring.
+    final candArgbs = <double, int>{};
+    final candLcBg = <double, double>{};
+    final candLcIn = <double, double>{};
+    for (final t in candidateTones) {
+      final tArgb = HctSolver.solveToInt(hue, chroma, t);
+      candArgbs[t] = tArgb;
+      candLcBg[t] = _algo.contrastBetweenArgbs(bgArgb: bgArgb, fgArgb: tArgb).abs();
+      candLcIn[t] = _algo.contrastBetweenArgbs(bgArgb: innerArgb, fgArgb: tArgb).abs();
     }
 
-    final validCandidates = candidateTones.where(hasValidContrast).toList();
+    final validCandidates = candidateTones
+        .where((t) => candLcBg[t]! >= requiredContrast || candLcIn[t]! >= requiredContrast)
+        .toList();
 
     // Prefer darker tones (shadow-like) when available — they look more
-    // natural as borders.  Only fall back to lighter if no darker ones work.
+    // natural as borders.  Tones within 1T of innerTone count as "dark
+    // enough" so the surface itself isn't rejected when it meets contrast.
+    // Only fall back to lighter if no darker-ish ones work.
+    final darkerIsh = validCandidates
+        .where((t) => t < innerTone || (t - innerTone).abs() <= 1.0)
+        .toList();
     final preferredCandidates =
-        _preferDarkerTones(validCandidates, innerTone);
+        darkerIsh.isNotEmpty ? darkerIsh : validCandidates;
 
-    debugLog(() =>
-        'borderSolve: inner=${innerTone.toStringAsFixed(1)} '
-        'bg=${backgroundTone.toStringAsFixed(1)} '
-        'req=${requiredContrast.toStringAsFixed(1)}');
-    debugLog(() =>
-        'Candidates: ${candidateTones.map((t) => t.toStringAsFixed(1)).toList()}');
-    for (final t in candidateTones) {
-      final lcBg =
-          _algo.getContrastBetweenLstars(bg: backgroundTone, fg: t).abs();
-      final lcIn =
-          _algo.getContrastBetweenLstars(bg: innerTone, fg: t).abs();
-      final best = math.max(lcBg, lcIn);
-      final cost = math.max(0.0, requiredContrast - best);
-      final dIn = (t - innerTone).abs();
-      final dBg = (t - backgroundTone).abs();
+    if (Palette.debug) {
       debugLog(() =>
-          '  cand T${t.toStringAsFixed(1)} '
-          'lcBg=${lcBg.toStringAsFixed(1)} lcIn=${lcIn.toStringAsFixed(1)} '
-          'cost=${cost.toStringAsFixed(1)} '
-          'dInner=${dIn.toStringAsFixed(1)} dBg=${dBg.toStringAsFixed(1)}');
+          'borderSolve: inner=${innerTone.toStringAsFixed(1)} '
+          'bg=${backgroundTone.toStringAsFixed(1)} '
+          'req=${requiredContrast.toStringAsFixed(1)}');
+      debugLog(() =>
+          'Candidates: ${candidateTones.map((t) => t.toStringAsFixed(1)).toList()}');
+      for (final t in candidateTones) {
+        final lcBg = candLcBg[t]!, lcIn = candLcIn[t]!;
+        final best = math.max(lcBg, lcIn);
+        final cost = math.max(0.0, requiredContrast - best);
+        debugLog(() =>
+            '  cand T${t.toStringAsFixed(1)} '
+            'lcBg=${lcBg.toStringAsFixed(1)} lcIn=${lcIn.toStringAsFixed(1)} '
+            'cost=${cost.toStringAsFixed(1)} '
+            'dInner=${(t - innerTone).abs().toStringAsFixed(1)} dBg=${(t - backgroundTone).abs().toStringAsFixed(1)}');
+      }
+      debugLog(() =>
+          'Valid     : ${validCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
+      debugLog(() =>
+          'Preferred : ${preferredCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
     }
-    debugLog(() =>
-        'Valid     : ${validCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
-    debugLog(() =>
-        'Preferred : ${preferredCandidates.map((t) => t.toStringAsFixed(1)).toList()}');
 
     double calculateTotalDelta(double tone) =>
         (tone - innerTone).abs() + (tone - backgroundTone).abs();
@@ -650,11 +699,12 @@ class Palette {
     if (preferredCandidates.isEmpty) {
       // Evaluate extremes by either-side cost; tie → smaller total delta.
       double costFor(double t) {
+        final tArgb = HctSolver.solveToInt(hue, chroma, t);
         final lcBg = _algo
-            .getContrastBetweenLstars(bg: backgroundTone, fg: t)
+            .contrastBetweenArgbs(bgArgb: bgArgb, fgArgb: tArgb)
             .abs();
         final lcIn =
-            _algo.getContrastBetweenLstars(bg: innerTone, fg: t).abs();
+            _algo.contrastBetweenArgbs(bgArgb: innerArgb, fgArgb: tArgb).abs();
         final best = math.max(lcBg, lcIn);
         return math.max(0.0, requiredContrast - best);
       }
@@ -670,7 +720,7 @@ class Palette {
           'Fallback extremes: cost(T0)=${costBlack.toStringAsFixed(1)} '
           'cost(T100)=${costWhite.toStringAsFixed(1)} '
           '-> T${fb.toStringAsFixed(0)}');
-      return Hct.colorFrom(hue, chroma, fb.toDouble());
+      return Color(HctSolver.solveToInt(hue, chroma, fb.toDouble()));
     }
 
     // Primary selection: lexicographic on (cost, totalDist, distToInner, distToBg).
@@ -680,10 +730,8 @@ class Palette {
     double bestDInner = double.infinity;
     double bestDBg = double.infinity;
     for (final t in preferredCandidates) {
-      final lcBg =
-          _algo.getContrastBetweenLstars(bg: backgroundTone, fg: t).abs();
-      final lcIn =
-          _algo.getContrastBetweenLstars(bg: innerTone, fg: t).abs();
+      final lcBg = candLcBg[t]!;
+      final lcIn = candLcIn[t]!;
       final best = math.max(lcBg, lcIn);
       final cost = math.max(0.0, requiredContrast - best);
       final dIn = (t - innerTone).abs();
@@ -713,7 +761,7 @@ class Palette {
         'totalDist=${bestTotalDist.toStringAsFixed(1)} '
         'dInner=${bestDInner.toStringAsFixed(1)} '
         'dBg=${bestDBg.toStringAsFixed(1)}');
-    return Hct.colorFrom(hue, chroma, bestTone);
+    return Color(HctSolver.solveToInt(hue, chroma, bestTone));
   }
 
   /// Lexicographic comparison for border tone selection.
@@ -742,25 +790,70 @@ class Palette {
   //  PRIVATE — Two-reference border solver
   // ═════════════════════════════════════════════════════════════════
 
-  /// APCA/WCAG candidate tones (lighter/darker) around a reference.
-  double _lighterCandidate(double tone, double requiredContrast) =>
-      (_algo == Algo.apca)
-          ? lighterTextLstarUnsafe(tone, -requiredContrast)
-          : lighterLstarUnsafe(
-              lstar: tone, contrastRatio: requiredContrast);
-  double _darkerCandidate(double tone, double requiredContrast) =>
-      (_algo == Algo.apca)
-          ? darkerTextLstarUnsafe(tone, requiredContrast)
-          : darkerLstarUnsafe(
-              lstar: tone, contrastRatio: requiredContrast);
+  /// Minimum tone in [startTone, 100] whose ARGB contrast vs [refArgb]
+  /// reaches [requiredContrast].  Returns > 100 if impossible.
+  ///
+  /// Uses 15 binary-search iterations (0.003T precision) with precomputed
+  /// reference apcaY and direct HctSolver calls.
+  double _lighterCandidate(
+      double startTone, int refArgb, double hue, double chroma,
+      double requiredContrast) {
+    if (_algo != Algo.apca) {
+      return lighterLstarUnsafe(
+          lstar: startTone, contrastRatio: requiredContrast);
+    }
+    final refY = apcaYFromArgb(refArgb);
+    double lcAt(double t) => apcaContrastOfApcaY(
+        apcaYFromArgb(HctSolver.solveToInt(hue, chroma, t)), refY).abs();
+    if (lcAt(100) < requiredContrast) return 101.0;
+    double lo = startTone, hi = 100.0;
+    for (int i = 0; i < 15; i++) {
+      final mid = (lo + hi) / 2;
+      if (lcAt(mid) >= requiredContrast) {
+        hi = mid;
+      } else {
+        lo = mid;
+      }
+    }
+    return hi;
+  }
+
+  /// Maximum tone in [0, startTone] whose ARGB contrast vs [refArgb]
+  /// reaches [requiredContrast].  Returns < 0 if impossible.
+  double _darkerCandidate(
+      double startTone, int refArgb, double hue, double chroma,
+      double requiredContrast) {
+    if (_algo != Algo.apca) {
+      return darkerLstarUnsafe(
+          lstar: startTone, contrastRatio: requiredContrast);
+    }
+    final refY = apcaYFromArgb(refArgb);
+    double lcAt(double t) => apcaContrastOfApcaY(
+        apcaYFromArgb(HctSolver.solveToInt(hue, chroma, t)), refY).abs();
+    if (lcAt(0) < requiredContrast) return -1.0;
+    double lo = 0.0, hi = startTone;
+    for (int i = 0; i < 15; i++) {
+      final mid = (lo + hi) / 2;
+      if (lcAt(mid) >= requiredContrast) {
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    }
+    return lo;
+  }
 
   /// Finds a tone that contrasts with two references ([refA] and [refB]).
   /// Prefers lighter/darker relative to [refA]; ties broken by minimal
   /// total distance to both references.
   double _twoRefBorderTone({
     required double refA,
+    required int refAArgb,
     required double refB,
+    required int refBArgb,
     required double requiredContrast,
+    required double hue,
+    required double chroma,
   }) {
     bool hasValid(double t) => _hasValidContrastHelper(
           tone: t,
@@ -771,10 +864,10 @@ class Palette {
     double delta(double t) => (t - refA).abs() + (t - refB).abs();
 
     final Set<double> candidateSet = {};
-    final aLight = _lighterCandidate(refA, requiredContrast);
-    final aDark = _darkerCandidate(refA, requiredContrast);
-    final bLight = _lighterCandidate(refB, requiredContrast);
-    final bDark = _darkerCandidate(refB, requiredContrast);
+    final aLight = _lighterCandidate(refA, refAArgb, hue, chroma, requiredContrast);
+    final aDark = _darkerCandidate(refA, refAArgb, hue, chroma, requiredContrast);
+    final bLight = _lighterCandidate(refB, refBArgb, hue, chroma, requiredContrast);
+    final bDark = _darkerCandidate(refB, refBArgb, hue, chroma, requiredContrast);
     if (aLight <= 100) candidateSet.add(aLight.clamp(0, 100));
     if (aDark >= 0) candidateSet.add(aDark.clamp(0, 100));
     if (bLight <= 100) candidateSet.add(bLight.clamp(0, 100));
@@ -826,24 +919,20 @@ class Palette {
     required double colorTone,
     required double requiredContrast,
   }) {
-    final bgFg =
-        _algo.getContrastBetweenLstars(bg: backgroundTone, fg: tone);
-    final colorFg =
-        _algo.getContrastBetweenLstars(bg: colorTone, fg: tone);
-    final toneBgBg =
-        _algo.getContrastBetweenLstars(bg: tone, fg: backgroundTone);
-    final toneBgColor =
-        _algo.getContrastBetweenLstars(bg: tone, fg: colorTone);
+    final toneArgb = HctSolver.solveToInt(_colorHue, _colorChroma, tone);
+    final bgArgb = HctSolver.solveToInt(_backgroundHue, _backgroundChroma, backgroundTone);
+    final colorArgb = HctSolver.solveToInt(_colorHue, _colorChroma, colorTone);
 
-    return (_algo == Algo.apca)
-        ? (bgFg.abs() >= requiredContrast ||
-            colorFg.abs() >= requiredContrast ||
-            toneBgBg.abs() >= requiredContrast ||
-            toneBgColor.abs() >= requiredContrast)
-        : (bgFg >= requiredContrast ||
-            colorFg >= requiredContrast ||
-            toneBgBg >= requiredContrast ||
-            toneBgColor >= requiredContrast);
+    // Check both polarities (border is symmetric — not read like text).
+    final lc1 = _algo.contrastBetweenArgbs(bgArgb: bgArgb, fgArgb: toneArgb).abs();
+    final lc2 = _algo.contrastBetweenArgbs(bgArgb: colorArgb, fgArgb: toneArgb).abs();
+    final lc3 = _algo.contrastBetweenArgbs(bgArgb: toneArgb, fgArgb: bgArgb).abs();
+    final lc4 = _algo.contrastBetweenArgbs(bgArgb: toneArgb, fgArgb: colorArgb).abs();
+
+    return lc1 >= requiredContrast ||
+        lc2 >= requiredContrast ||
+        lc3 >= requiredContrast ||
+        lc4 >= requiredContrast;
   }
 
   // ── Equality ──────────────────────────────────────────────────
