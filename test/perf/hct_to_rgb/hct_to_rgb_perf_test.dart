@@ -10,8 +10,9 @@ import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 import '../perf_tester.dart';
 
-import 'base/hct_to_argb.dart' as base;
-import 'attempt_1/hct_to_argb.dart' as attempt;
+import 'package:libmonet/colorspaces/hct_solver.dart';
+import 'attempt_3/hct_to_argb.dart' as attempt;
+
 
 void main() async {
   // ── Generate test cases: valid HCT triples from real sRGB colors ──
@@ -32,10 +33,10 @@ void main() async {
   final tester = PerfTester<(double, double, double), int>(
     testName: 'HCT to RGB',
     testCases: testCases,
-    implementation1: base.hctToArgb,
+    implementation1: (args) => HctSolver.solveToInt(args.$1, args.$2, args.$3),
     implementation2: attempt.hctToArgb,
-    impl1Name: 'Base',
-    impl2Name: 'Attempt',
+    impl1Name: 'lib/ (on disk)',
+    impl2Name: 'attempt_3 (standalone)',
   );
 
   await tester.run(
