@@ -303,7 +303,36 @@ void main() {
     });
   });
 
-  group('helpers', skip: 'test generators', () {
+  test('chromatic background keeps chroma in hover/splash', () {
+    // Regression: fromColorAndBackground with a high-tone color whose
+    // chroma is gamut-capped (e.g. #E7F5FF, H:233 C:12 T:96) and a
+    // mid-tone chromatic background (#7BB1CF, H:233 C:32 T:70).
+    //
+    // _colorChroma used to come solely from the base color, so
+    // backgroundHovered/Splashed (built via _withColorsChroma) would
+    // inherit the gamut-capped chroma ~12 while background itself was a
+    // raw pass-through at chroma ~32 — a jarring desaturation on hover.
+    //
+    // Fix: _colorChroma = max(baseColor.chroma, baseBackground.chroma).
+    final p = Palette.fromColorAndBackground(
+      const Color(0xFFE7F5FF), // H:233 C:12.2 T:95.8 (gamut-capped)
+      const Color(0xFF7BB1CF), // H:233 C:32.1 T:69.6
+    );
+    final bgChroma = Hct.fromColor(p.background).chroma;
+    final hovChroma = Hct.fromColor(p.backgroundHovered).chroma;
+    final splChroma = Hct.fromColor(p.backgroundSplashed).chroma;
+
+    // Hover and splash chroma should be at least as high as the
+    // background's, not collapsed to the base color's gamut-capped value.
+    expect(hovChroma, greaterThanOrEqualTo(bgChroma - 1),
+        reason: 'backgroundHovered chroma ($hovChroma) should be '
+            'close to background chroma ($bgChroma)');
+    expect(splChroma, greaterThanOrEqualTo(bgChroma - 1),
+        reason: 'backgroundSplashed chroma ($splChroma) should be '
+            'close to background chroma ($bgChroma)');
+  });
+
+group('helpers', skip: 'test generators', () {
     const color = Color(0xff334157);
 
     test('generate light mode test code', () {

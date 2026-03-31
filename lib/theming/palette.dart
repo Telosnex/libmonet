@@ -99,7 +99,8 @@ class Palette {
   late final Hct _baseBackgroundHct = Hct.fromColor(_baseBackground);
 
   late final double _colorHue = _baseColorHct.hue;
-  late final double _colorChroma = _baseColorHct.chroma;
+  late final double _colorChroma =
+      math.max(_baseColorHct.chroma, _baseBackgroundHct.chroma);
   late final double _colorTone = _baseColorHct.tone;
 
   late final double _backgroundHue = _baseBackgroundHct.hue;
