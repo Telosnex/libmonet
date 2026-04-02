@@ -66,5 +66,6 @@ class _MonetInheritedTheme extends InheritedTheme {
   }
 
   @override
-  bool updateShouldNotify(_MonetInheritedTheme old) => theme != old.theme;
+  bool updateShouldNotify(_MonetInheritedTheme old) =>
+      theme.monetThemeData != old.theme.monetThemeData;
 }
