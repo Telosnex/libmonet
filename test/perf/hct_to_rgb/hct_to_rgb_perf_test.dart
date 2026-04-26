@@ -5,7 +5,7 @@
 
 // ignore_for_file: avoid_print
 
-import 'package:libmonet/colorspaces/cam16.dart';
+import 'package:libmonet/colorspaces/cam16/cam16.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 import '../perf_tester.dart';

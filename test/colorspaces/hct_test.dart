@@ -14,8 +14,8 @@
 
 import 'package:test/test.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/colorspaces/cam16.dart';
-import 'package:libmonet/colorspaces/cam16_viewing_conditions.dart';
+import 'package:libmonet/colorspaces/cam16/cam16.dart';
+import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
 import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/core/hex_codes.dart';
 

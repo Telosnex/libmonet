@@ -19,8 +19,8 @@ import 'dart:math';
 
 import 'package:libmonet/colorspaces/gamut.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/colorspaces/cam16.dart';
-import 'package:libmonet/colorspaces/cam16_viewing_conditions.dart';
+import 'package:libmonet/colorspaces/cam16/cam16.dart';
+import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
 import 'package:libmonet/core/math.dart';
 
 const _inv0_42 = 1.0 / 0.42;
