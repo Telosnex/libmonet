@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/contrast/contrast.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
@@ -11,6 +12,7 @@ class MonetTheme extends StatelessWidget {
   Palette get secondary => monetThemeData.secondary;
   Palette get tertiary => monetThemeData.tertiary;
   Algo get algo => monetThemeData.algo;
+  ColorModel get colorModel => monetThemeData.colorModel;
   Brightness get brightness => monetThemeData.brightness;
   double get contrast => monetThemeData.contrast;
   double get scale => monetThemeData.scale;

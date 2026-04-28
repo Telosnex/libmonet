@@ -25,20 +25,21 @@ class PaletteLerped extends Palette {
           baseBackground: a.background,
           contrast: 0.5,
           algo: Algo.apca,
+          colorModel: a.colorModel,
         );
 
   Color _lerp(Color x, Color y) {
     if (t <= 0.0) return x;
     if (t >= 1.0) return y;
-    final ha = Hct.fromColor(x);
-    final hb = Hct.fromColor(y);
+    final ha = Hct.fromColor(x, model: a.colorModel);
+    final hb = Hct.fromColor(y, model: a.colorModel);
     double dh = hb.hue - ha.hue;
     if (dh > 180) dh -= 360;
     if (dh < -180) dh += 360;
     final hue = (ha.hue + dh * t) % 360.0;
     final chroma = ha.chroma + (hb.chroma - ha.chroma) * t;
     final tone = ha.tone + (hb.tone - ha.tone) * t;
-    return Hct.from(hue, chroma, tone).color;
+    return Hct.from(hue, chroma, tone, model: a.colorModel).color;
   }
 
   // Background family
@@ -130,7 +131,8 @@ class PaletteLerped extends Palette {
           runtimeType == other.runtimeType &&
           a == other.a &&
           b == other.b &&
-          t == other.t;
+          t == other.t &&
+          a.colorModel == other.a.colorModel;
 
   @override
   int get hashCode => Object.hash(runtimeType, a, b, t);

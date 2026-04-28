@@ -248,7 +248,12 @@ class TemperatureCache {
     }
     final hcts = <Hct>[];
     for (var hue = 0.0; hue < 360.0; hue += 1.0) {
-      final colorAtHue = Hct.from(hue, input.chroma, input.tone);
+      final colorAtHue = Hct.from(
+        hue,
+        input.chroma,
+        input.tone,
+        model: input.colorModel,
+      );
       hcts.add(colorAtHue);
     }
     _hctsByHue = List.from(hcts, growable: false);

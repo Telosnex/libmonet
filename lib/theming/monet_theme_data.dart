@@ -4,6 +4,7 @@ import 'dart:ui' show FontFeature;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 
@@ -21,6 +22,7 @@ class MonetThemeData {
   final Palette tertiary;
 
   final Algo algo;
+  final ColorModel colorModel;
   final double backgroundTone;
   final Brightness brightness;
   final double contrast;
@@ -50,6 +52,7 @@ class MonetThemeData {
     required this.secondary,
     required this.tertiary,
     this.algo = Algo.apca,
+    this.colorModel = ColorModel.kDefault,
     this.contrast = 0.5,
     this.scale = 1.0,
     this.typography,
@@ -64,6 +67,7 @@ class MonetThemeData {
           secondary == other.secondary &&
           tertiary == other.tertiary &&
           algo == other.algo &&
+          colorModel == other.colorModel &&
           backgroundTone == other.backgroundTone &&
           brightness == other.brightness &&
           contrast == other.contrast &&
@@ -76,6 +80,7 @@ class MonetThemeData {
       's${secondary.hashCode}'.hashCode ^
       't${tertiary.hashCode}'.hashCode ^
       'a${algo.hashCode}'.hashCode ^
+      'cm${colorModel.hashCode}'.hashCode ^
       'b${backgroundTone.hashCode}'.hashCode ^
       'br${brightness.hashCode}'.hashCode ^
       'c${contrast.hashCode}'.hashCode ^
@@ -87,6 +92,7 @@ class MonetThemeData {
     Palette? secondary,
     Palette? tertiary,
     Algo? algo,
+    ColorModel? colorModel,
     double? backgroundTone,
     Brightness? brightness,
     double? contrast,
@@ -98,6 +104,7 @@ class MonetThemeData {
       secondary: secondary ?? this.secondary,
       tertiary: tertiary ?? this.tertiary,
       algo: algo ?? this.algo,
+      colorModel: colorModel ?? this.colorModel,
       backgroundTone: backgroundTone ?? this.backgroundTone,
       brightness: brightness ?? this.brightness,
       contrast: contrast ?? this.contrast,
@@ -111,11 +118,14 @@ class MonetThemeData {
     required Brightness brightness,
     required Color color,
     Algo algo = Algo.apca,
+    ColorModel colorModel = ColorModel.kDefault,
     double contrast = 0.5,
     double scale = 1.0,
     Typography Function(ColorScheme)? typography,
   }) {
-    final temperatureCache = TemperatureCache(Hct.fromColor(color));
+    final temperatureCache = TemperatureCache(
+      Hct.fromColor(color, model: colorModel),
+    );
     final complement = temperatureCache.complement;
     final analogous = temperatureCache.analogous()[1];
     return MonetThemeData.fromColors(
@@ -126,6 +136,7 @@ class MonetThemeData {
       tertiary: complement.color,
       contrast: contrast,
       algo: algo,
+      colorModel: colorModel,
       scale: scale,
       typography: typography,
     );
@@ -136,11 +147,15 @@ class MonetThemeData {
     required double backgroundTone,
     required QuantizerResult quantizerResult,
     Algo algo = Algo.apca,
+    ColorModel colorModel = ColorModel.kDefault,
     double contrast = 0.5,
     double scale = 1.0,
     Typography Function(ColorScheme)? typography,
   }) {
-    final triad = ScorerTriad.threeColorsFromQuantizer(quantizerResult);
+    final triad = ScorerTriad.threeColorsFromQuantizer(
+      quantizerResult,
+      colorModel: colorModel,
+    );
     return MonetThemeData.fromColors(
       brightness: brightness,
       backgroundTone: backgroundTone,
@@ -149,6 +164,7 @@ class MonetThemeData {
       tertiary: triad[2].color,
       contrast: contrast,
       algo: algo,
+      colorModel: colorModel,
       scale: scale,
       typography: typography,
     );
@@ -163,14 +179,30 @@ class MonetThemeData {
     double contrast = 0.5,
     double scale = 1.0,
     Algo algo = Algo.apca,
+    ColorModel colorModel = ColorModel.kDefault,
     Typography Function(ColorScheme)? typography,
   }) {
-    final primaryPalette = Palette.from(primary,
-        backgroundTone: backgroundTone, contrast: contrast, algo: algo);
-    final secondaryPalette = Palette.from(secondary,
-        backgroundTone: backgroundTone, contrast: contrast, algo: algo);
-    final tertiaryPalette = Palette.from(tertiary,
-        backgroundTone: backgroundTone, contrast: contrast, algo: algo);
+    final primaryPalette = Palette.from(
+      primary,
+      backgroundTone: backgroundTone,
+      contrast: contrast,
+      algo: algo,
+      colorModel: colorModel,
+    );
+    final secondaryPalette = Palette.from(
+      secondary,
+      backgroundTone: backgroundTone,
+      contrast: contrast,
+      algo: algo,
+      colorModel: colorModel,
+    );
+    final tertiaryPalette = Palette.from(
+      tertiary,
+      backgroundTone: backgroundTone,
+      contrast: contrast,
+      algo: algo,
+      colorModel: colorModel,
+    );
     return MonetThemeData(
       brightness: brightness,
       primary: primaryPalette,
@@ -178,6 +210,7 @@ class MonetThemeData {
       tertiary: tertiaryPalette,
       backgroundTone: backgroundTone,
       algo: algo,
+      colorModel: colorModel,
       contrast: contrast,
       scale: scale,
       typography: typography,
@@ -200,7 +233,8 @@ class MonetThemeData {
       return cached;
     }
     final primaryColorLight =
-        Hct.fromColor(primary.fill).tone > Hct.fromColor(primary.color).tone
+        Hct.fromColor(primary.fill, model: colorModel).tone >
+                Hct.fromColor(primary.color, model: colorModel).tone
             ? primary.fill
             : primary.color;
     final primaryColorDark =
@@ -212,7 +246,8 @@ class MonetThemeData {
       tertiary,
       contrast,
       algo,
-      Hct.from(0, 0, backgroundTone).color,
+      Hct.from(0, 0, backgroundTone, model: colorModel).color,
+      colorModel,
     );
 
     final typographyData =
@@ -1716,13 +1751,15 @@ ColorScheme _createColorScheme(
   double contrast,
   Algo algo,
   Color surface,
+  ColorModel colorModel,
 ) {
-  final surfaceHct = Hct.fromColor(surface);
+  final surfaceHct = Hct.fromColor(surface, model: colorModel);
 
   final error = Palette.from(
     Colors.red,
     backgroundTone: surfaceHct.tone,
     contrast: contrast,
+    colorModel: colorModel,
   );
 
   final onSurface = Hct.colorFrom(
@@ -1735,7 +1772,9 @@ ColorScheme _createColorScheme(
       targetChroma: surfaceHct.chroma,
       usage: Usage.text,
       contrast: contrast,
+      colorModel: colorModel,
     ),
+    model: colorModel,
   );
   return ColorScheme(
     brightness: brightness,

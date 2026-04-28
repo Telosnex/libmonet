@@ -16,10 +16,14 @@
 // limitations under the License.
 
 import 'dart:ui';
+import 'dart:math' as math;
 
 import 'package:libmonet/colorspaces/cam16/cam16.dart';
 import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
+import 'package:libmonet/colorspaces/cam16V11/cam16_v11.dart';
+import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/colorspaces/hct_solver.dart';
+import 'package:libmonet/colorspaces/oklch.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
@@ -32,15 +36,26 @@ class Hct {
   late double _chroma;
   late double _tone;
   late int _argb;
+  late ColorModel _colorModel;
 
   /// 0 <= [hue] < 360; invalid values are corrected.
   /// 0 <= [chroma] <= ?; Informally, colorfulness. The color returned may be
   ///    lower than the requested chroma. Chroma has a different maximum for any
   ///    given hue and tone.
   /// 0 <= [tone] <= 100; informally, lightness. Invalid values are corrected.
-  static Hct from(double hue, double chroma, double tone) {
-    final argb = HctSolver.solveToInt(hue, chroma, tone);
-    return Hct._(argb);
+  static Hct from(
+    double hue,
+    double chroma,
+    double tone, {
+    ColorModel model = ColorModel.kDefault,
+  }) {
+    final argb = HctSolver.solveToIntForModel(
+      hue,
+      chroma,
+      tone,
+      model: model,
+    );
+    return Hct._(argb, model: model);
   }
 
   @override
@@ -48,11 +63,11 @@ class Hct {
     if (other is! Hct) {
       return false;
     }
-    return other._argb == _argb;
+    return other._argb == _argb && other._colorModel == _colorModel;
   }
 
   @override
-  int get hashCode => _argb.hashCode;
+  int get hashCode => Object.hash(_argb, _colorModel);
 
   @override
   String toString() {
@@ -60,18 +75,31 @@ class Hct {
   }
 
   /// HCT representation of [argb].
-  static Hct fromInt(int argb) {
-    return Hct._(argb);
+  static Hct fromInt(int argb, {ColorModel model = ColorModel.kDefault}) {
+    return Hct._(argb, model: model);
   }
 
-  static Color colorFrom(double hue, double chroma, double tone) {
-    final argb = HctSolver.solveToInt(hue, chroma, tone);
+  static Color colorFrom(
+    double hue,
+    double chroma,
+    double tone, {
+    ColorModel model = ColorModel.kDefault,
+  }) {
+    final argb = HctSolver.solveToIntForModel(
+      hue,
+      chroma,
+      tone,
+      model: model,
+    );
     return Color(argb);
   }
 
-  factory Hct.fromColor(Color color) {
+  factory Hct.fromColor(
+    Color color, {
+    ColorModel model = ColorModel.kDefault,
+  }) {
     final argb = color.argb;
-    return Hct._(argb);
+    return Hct._(argb, model: model);
   }
 
   int toInt() {
@@ -82,42 +110,86 @@ class Hct {
     return Color(_argb);
   }
 
-  static Color lerpKeepHue(Color colorA, Color colorB, double t) {
-    final a = Hct.fromColor(colorA);
-    final b = Hct.fromColor(colorB);
+  ColorModel get colorModel => _colorModel;
+
+  static Color lerpKeepHue(
+    Color colorA,
+    Color colorB,
+    double t, {
+    ColorModel model = ColorModel.kDefault,
+  }) {
+    final a = Hct.fromColor(colorA, model: model);
+    final b = Hct.fromColor(colorB, model: model);
     final lstar = lerpDouble(a.tone, b.tone, t)!;
     final chroma = lerpDouble(a.chroma, b.chroma, t)!;
     final hue = _lerpKeepHueAngle(a.hue, b.hue, t);
     final opacity = lerpDouble(colorA.opacityNeue, colorB.opacityNeue, t);
-    return Hct.from(hue, chroma, lstar).color.withOpacityNeue(opacity!);
+    return Hct.from(hue, chroma, lstar, model: model)
+        .color
+        .withOpacityNeue(opacity!);
   }
 
   /// Linearly interpolates between two colors in HCT space, allowing both hue
-  /// and chroma to shift as needed. 
-  /// 
+  /// and chroma to shift as needed.
+  ///
   /// For example, interpolating between a saturated red and a saturated blue
   /// would pass through grays.
-  static Color lerpLoseHueAndChroma(Color colorA, Color colorB, double t) {
-    final camA = Cam16.fromInt(colorA.argb);
-    final camB = Cam16.fromInt(colorB.argb);
-    final aStar = lerpDouble(camA.astar, camB.astar, t)!;
-    final bStar = lerpDouble(camA.bstar, camB.bstar, t)!;
-    final jStar = lerpDouble(camA.jstar, camB.jstar, t)!;
-    final camMerged = Cam16.fromUcs(jStar, aStar, bStar);
+  static Color lerpLoseHueAndChroma(
+    Color colorA,
+    Color colorB,
+    double t, {
+    ColorModel model = ColorModel.kDefault,
+  }) {
     final aTone = lstarFromArgb(colorA.argb);
     final bTone = lstarFromArgb(colorB.argb);
     final tone = lerpDouble(aTone, bTone, t)!;
-    final opacity = lerpDouble(colorA.opacityNeue, colorB.opacityNeue, t);
+    final opacity = lerpDouble(colorA.opacityNeue, colorB.opacityNeue, t)!;
 
-    return Hct.from(camMerged.hue, camMerged.chroma, tone)
-        .color
-        .withOpacityNeue(opacity!);
+    switch (model) {
+      case ColorModel.cam16:
+        final camA = Cam16.fromInt(colorA.argb);
+        final camB = Cam16.fromInt(colorB.argb);
+        final aStar = lerpDouble(camA.astar, camB.astar, t)!;
+        final bStar = lerpDouble(camA.bstar, camB.bstar, t)!;
+        final jStar = lerpDouble(camA.jstar, camB.jstar, t)!;
+        final camMerged = Cam16.fromUcs(jStar, aStar, bStar);
+        return Hct.from(camMerged.hue, camMerged.chroma, tone, model: model)
+            .color
+            .withOpacityNeue(opacity);
+      case ColorModel.cam16v11:
+        final camA = Cam16V11.fromInt(colorA.argb);
+        final camB = Cam16V11.fromInt(colorB.argb);
+        final aStar = lerpDouble(camA.astar, camB.astar, t)!;
+        final bStar = lerpDouble(camA.bstar, camB.bstar, t)!;
+        final jStar = lerpDouble(camA.jstar, camB.jstar, t)!;
+        final camMerged = Cam16V11.fromUcs(jStar, aStar, bStar);
+        return Hct.from(camMerged.hue, camMerged.chroma, tone, model: model)
+            .color
+            .withOpacityNeue(opacity);
+      case ColorModel.oklch:
+        final okA = Oklch.fromInt(colorA.argb);
+        final okB = Oklch.fromInt(colorB.argb);
+        final aA = okA.chroma * math.cos(okA.hue * math.pi / 180.0);
+        final bA = okA.chroma * math.sin(okA.hue * math.pi / 180.0);
+        final aB = okB.chroma * math.cos(okB.hue * math.pi / 180.0);
+        final bB = okB.chroma * math.sin(okB.hue * math.pi / 180.0);
+        final aMerged = lerpDouble(aA, aB, t)!;
+        final bMerged = lerpDouble(bA, bB, t)!;
+        final chroma = math.sqrt(aMerged * aMerged + bMerged * bMerged);
+        var hue = math.atan2(bMerged, aMerged) * 180.0 / math.pi;
+        if (hue < 0.0) hue += 360.0;
+        return Hct.from(hue, chroma, tone, model: model)
+            .color
+            .withOpacityNeue(opacity);
+    }
   }
 
   static double _lerpKeepHueAngle(double a, double b, double t) {
     final delta = ((b - a + 540.0) % 360.0) - 180.0;
     final interpolatedAngle = (a + delta * t) % 360.0;
-    return interpolatedAngle < 0 ? interpolatedAngle + 360.0 : interpolatedAngle;
+    return interpolatedAngle < 0
+        ? interpolatedAngle + 360.0
+        : interpolatedAngle;
   }
 
   /// A number, in degrees, representing ex. red, orange, yellow, etc.
@@ -132,10 +204,15 @@ class Hct {
   /// representation. If the HCT color is outside of the sRGB gamut, chroma
   /// will decrease until it is inside the gamut.
   set hue(double newHue) {
-    _argb = HctSolver.solveToInt(newHue, chroma, tone);
-    final cam16 = Cam16.fromInt(_argb);
-    _hue = cam16.hue;
-    _chroma = cam16.chroma;
+    _argb = HctSolver.solveToIntForModel(
+      newHue,
+      chroma,
+      tone,
+      model: _colorModel,
+    );
+    final cam = _camFromInt(_argb, _colorModel);
+    _hue = cam.hue;
+    _chroma = cam.chroma;
     _tone = lstarFromArgb(_argb);
   }
 
@@ -149,10 +226,15 @@ class Hct {
   /// representation. If the HCT color is outside of the sRGB gamut, chroma
   /// will decrease until it is inside the gamut.
   set chroma(double newChroma) {
-    _argb = HctSolver.solveToInt(hue, newChroma, tone);
-    final cam16 = Cam16.fromInt(_argb);
-    _hue = cam16.hue;
-    _chroma = cam16.chroma;
+    _argb = HctSolver.solveToIntForModel(
+      hue,
+      newChroma,
+      tone,
+      model: _colorModel,
+    );
+    final cam = _camFromInt(_argb, _colorModel);
+    _hue = cam.hue;
+    _chroma = cam.chroma;
     _tone = lstarFromArgb(_argb);
   }
 
@@ -167,19 +249,42 @@ class Hct {
   /// representation. If the HCT color is outside of the sRGB gamut, chroma
   /// will decrease until it is inside the gamut.
   set tone(double newTone) {
-    _argb = HctSolver.solveToInt(hue, chroma, newTone);
-    final cam16 = Cam16.fromInt(_argb);
-    _hue = cam16.hue;
-    _chroma = cam16.chroma;
+    _argb = HctSolver.solveToIntForModel(
+      hue,
+      chroma,
+      newTone,
+      model: _colorModel,
+    );
+    final cam = _camFromInt(_argb, _colorModel);
+    _hue = cam.hue;
+    _chroma = cam.chroma;
     _tone = lstarFromArgb(_argb);
   }
 
-  Hct._(int argb) {
+  Hct._(int argb, {ColorModel model = ColorModel.kDefault}) {
     _argb = argb;
-    final cam16 = Cam16.fromInt(argb);
-    _hue = cam16.hue;
-    _chroma = cam16.chroma;
+    _colorModel = model;
+    final cam = _camFromInt(argb, model);
+    _hue = cam.hue;
+    _chroma = cam.chroma;
     _tone = lstarFromArgb(_argb);
+  }
+
+  static ({double hue, double chroma}) _camFromInt(
+    int argb,
+    ColorModel model,
+  ) {
+    switch (model) {
+      case ColorModel.cam16:
+        final cam16 = Cam16.fromInt(argb);
+        return (hue: cam16.hue, chroma: cam16.chroma);
+      case ColorModel.cam16v11:
+        final cam16v11 = Cam16V11.fromInt(argb);
+        return (hue: cam16v11.hue, chroma: cam16v11.chroma);
+      case ColorModel.oklch:
+        final oklch = Oklch.fromInt(argb);
+        return (hue: oklch.hue, chroma: oklch.chroma);
+    }
   }
 
   /// Translate a color into different [ViewingConditions].
@@ -214,6 +319,7 @@ class Hct {
       recastInVc.hue,
       recastInVc.chroma,
       lstarFromY(viewedInVc[1]),
+      model: _colorModel,
     );
     return recastHct;
   }

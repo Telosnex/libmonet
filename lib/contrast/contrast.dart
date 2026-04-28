@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/colorspaces/hct_solver.dart';
 import 'package:libmonet/contrast/apca.dart';
 import 'package:libmonet/contrast/apca_contrast.dart';
@@ -81,7 +82,8 @@ double contrastingTone({
   required double contrast,
   bool debug = false,
   ContrastDirection? forceDirection,
-  }) {
+  ColorModel colorModel = ColorModel.kDefault,
+}) {
   // For WCAG, L*-based is exact (Y ↔ L* is bijective).
   if (by == Algo.wcag21) {
     return contrastingLstar(
@@ -107,7 +109,12 @@ double contrastingTone({
 
   // ARGB-based contrast for a candidate tone, using precomputed ref.
   double lcAt(double tone) {
-    final argb = HctSolver.solveToInt(targetHue, targetChroma, tone);
+    final argb = HctSolver.solveToIntForModel(
+      targetHue,
+      targetChroma,
+      tone,
+      model: colorModel,
+    );
     return apcaContrastOfApcaY(apcaYFromArgb(argb), refY).abs();
   }
 

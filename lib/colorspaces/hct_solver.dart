@@ -17,10 +17,14 @@
 
 import 'dart:math';
 
-import 'package:libmonet/colorspaces/gamut.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/colorspaces/cam16/cam16.dart';
 import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
+import 'package:libmonet/colorspaces/cam16V11/cam16_v11.dart';
+import 'package:libmonet/colorspaces/cam16V11/cam16_v11_viewing_conditions.dart';
+import 'package:libmonet/colorspaces/color_model.dart';
+import 'package:libmonet/colorspaces/gamut.dart';
+import 'package:libmonet/colorspaces/oklch.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/math.dart';
 
 const _inv0_42 = 1.0 / 0.42;
@@ -111,8 +115,7 @@ class HctSolver {
 
   /// Returns the hue of [r] [g] [b], a linear RGB color, in CAM16, in
   /// radians.
-  static double _hueOfComponents(
-      double r, double g, double b, Gamut gamut) {
+  static double _hueOfComponents(double r, double g, double b, Gamut gamut) {
     final matrix = gamut.scaledDiscountFromLinrgb;
     final scaledDiscountR =
         r * matrix[0][0] + g * matrix[0][1] + b * matrix[0][2];
@@ -184,8 +187,8 @@ class HctSolver {
     // ===========================================================
     final viewingConditions = Cam16ViewingConditions.standard;
     // CAM16 constants: 1.64, 0.29, 0.73 are from the CAM16 specification
-    final inner = 1.64 -
-        exp(viewingConditions.backgroundYToWhitePointY * log(0.29));
+    final inner =
+        1.64 - exp(viewingConditions.backgroundYToWhitePointY * log(0.29));
     final tInnerCoeff = 1.0 / exp(0.73 * log(inner));
     final eHue = 0.25 * (cos(hueRadians + 2.0) + 3.8);
     final p1 =
@@ -255,6 +258,72 @@ class HctSolver {
     return null;
   }
 
+  /// Finds a CAM16 v11 color with the given hue, chroma, and Y.
+  ///
+  /// This mirrors [_findResultByJ], but uses the Hellwig/Fairchild 2022 inverse
+  /// equations. The initial Newton update approximation is intentionally kept
+  /// the same as the legacy solver; gamut fallback still preserves hue because
+  /// CAM16 v11 uses the same opponent hue definition.
+  static (double, double, double)? _findResultByJv11(
+      double hueRadians, double chroma, double y, Gamut gamut) {
+    var j = sqrt(y) * 11.0;
+    final viewingConditions = Cam16V11ViewingConditions.standard;
+    final eHue = Cam16V11.hueEccentricity(hueRadians);
+    final hSin = sin(hueRadians);
+    final hCos = cos(hueRadians);
+    final invCZ = 1.0 / (viewingConditions.c * viewingConditions.z);
+    final opponentMagnitude = chroma <= 0.0
+        ? 0.0
+        : (chroma * viewingConditions.aw / 35.0) /
+            (43.0 * viewingConditions.nC * eHue);
+    final a = opponentMagnitude * hCos;
+    final b = opponentMagnitude * hSin;
+
+    for (var iterationRound = 0; iterationRound < 8; iterationRound++) {
+      final jNormalized = j / 100.0;
+      if (jNormalized <= 0.0) {
+        return null;
+      }
+      final ac = viewingConditions.aw * exp(invCZ * log(jNormalized));
+      final p2 = ac;
+      final rA = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0;
+      final gA = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0;
+      final bA = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0;
+      final rCScaled = _inverseChromaticAdaptation(rA);
+      final gCScaled = _inverseChromaticAdaptation(gA);
+      final bCScaled = _inverseChromaticAdaptation(bA);
+      final matrix = gamut.linrgbFromScaledDiscount;
+      final linR = rCScaled * matrix[0][0] +
+          gCScaled * matrix[0][1] +
+          bCScaled * matrix[0][2];
+      final linG = rCScaled * matrix[1][0] +
+          gCScaled * matrix[1][1] +
+          bCScaled * matrix[1][2];
+      final linB = rCScaled * matrix[2][0] +
+          gCScaled * matrix[2][1] +
+          bCScaled * matrix[2][2];
+
+      if (linR < 0 || linG < 0 || linB < 0) {
+        return null;
+      }
+      final kR = gamut.yFromLinrgb[0];
+      final kG = gamut.yFromLinrgb[1];
+      final kB = gamut.yFromLinrgb[2];
+      final fnj = kR * linR + kG * linG + kB * linB;
+      if (fnj <= 0) {
+        return null;
+      }
+      if (iterationRound == 7 || (fnj - y).abs() < 0.002) {
+        if (linR > 100.01 || linG > 100.01 || linB > 100.01) {
+          return null;
+        }
+        return (linR, linG, linB);
+      }
+      j = j - (fnj - y) * j / (2 * fnj);
+    }
+    return null;
+  }
+
   /// Finds an sRGB color with the given hue, chroma, and L*, if
   /// possible.
   ///
@@ -263,7 +332,8 @@ class HctSolver {
   /// [lstar], respectively. If it is impossible to satisfy all three
   /// constraints, the hue and L* will be sufficiently close, and the
   /// chroma will be maximized.
-  static int solveToInt(double hueDegrees, double chroma, double lstar, [String callSite = '?']) {
+  static int solveToInt(double hueDegrees, double chroma, double lstar,
+      [String callSite = '?']) {
     final sc = _sc;
     if (chroma < 0.0001 || lstar < 0.0001 || lstar > 99.9999) {
       final y = yFromLstar(lstar);
@@ -286,6 +356,140 @@ class HctSolver {
         (_delinearSrgb(linR) << 16) |
         (_delinearSrgb(linG) << 8) |
         _delinearSrgb(linB);
+  }
+
+  /// Model-aware variant of [solveToInt].
+  static int solveToIntForModel(
+    double hueDegrees,
+    double chroma,
+    double lstar, {
+    ColorModel model = ColorModel.kDefault,
+  }) {
+    switch (model) {
+      case ColorModel.cam16:
+        return solveToInt(hueDegrees, chroma, lstar);
+      case ColorModel.cam16v11:
+        final sc = _sc;
+        if (chroma < 0.0001 || lstar < 0.0001 || lstar > 99.9999) {
+          final y = yFromLstar(lstar);
+          final v = y / sc.kSum;
+          final c = _delinearSrgb(v);
+          return 0xFF000000 | (c << 16) | (c << 8) | c;
+        }
+        hueDegrees = sanitizeDegreesDouble(hueDegrees);
+        final hueRadians = hueDegrees / 180 * pi;
+        final y = yFromLstar(lstar);
+        final exact = _findResultByJv11(hueRadians, chroma, y, Gamut.srgb);
+        final (linR, linG, linB) =
+            exact ?? _bisectToLimitSrgb(sc, y, hueRadians);
+        return 0xFF000000 |
+            (_delinearSrgb(linR) << 16) |
+            (_delinearSrgb(linG) << 8) |
+            _delinearSrgb(linB);
+      case ColorModel.oklch:
+        final (linR, linG, linB) = _solveOklchToLinrgb(
+          hueDegrees,
+          chroma,
+          lstar,
+        );
+        return 0xFF000000 |
+            (_delinearSrgb(linR) << 16) |
+            (_delinearSrgb(linG) << 8) |
+            _delinearSrgb(linB);
+    }
+  }
+
+  static (double, double, double) _solveOklchToLinrgb(
+    double hueDegrees,
+    double chroma,
+    double lstar,
+  ) {
+    final y = yFromLstar(lstar);
+    if (chroma < 0.0001 || lstar < 0.0001 || lstar > 99.9999) {
+      return (y, y, y);
+    }
+
+    hueDegrees = sanitizeDegreesDouble(hueDegrees);
+    final maxChroma = _findMaxOklchChroma(hueDegrees, chroma, y);
+    return _linrgbFromOklchAndY(hueDegrees, maxChroma, y);
+  }
+
+  static double _findMaxOklchChroma(
+    double hueDegrees,
+    double chroma,
+    double y,
+  ) {
+    if (_oklchChromaIsInGamut(hueDegrees, chroma, y)) {
+      return chroma;
+    }
+
+    var low = 0.0;
+    var high = chroma;
+    for (var i = 0; i < 24; i++) {
+      final mid = (low + high) * 0.5;
+      if (_oklchChromaIsInGamut(hueDegrees, mid, y)) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+    return low;
+  }
+
+  static bool _oklchChromaIsInGamut(
+    double hueDegrees,
+    double chroma,
+    double y,
+  ) {
+    final (r, g, b) = _linrgbFromOklchAndY(hueDegrees, chroma, y);
+    return r >= 0.0 &&
+        r <= 100.0 &&
+        g >= 0.0 &&
+        g <= 100.0 &&
+        b >= 0.0 &&
+        b <= 100.0;
+  }
+
+  static (double, double, double) _linrgbFromOklchAndY(
+    double hueDegrees,
+    double chroma,
+    double y,
+  ) {
+    var low = 0.0;
+    var high = 1.1;
+    for (var i = 0; i < 24; i++) {
+      final mid = (low + high) * 0.5;
+      final xyzY = _yFromOklch(mid, chroma, hueDegrees);
+      if (xyzY < y) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+
+    return _rawLinrgbFromOklch((low + high) * 0.5, chroma, hueDegrees);
+  }
+
+  static double _yFromOklch(double l, double chroma, double hueDegrees) {
+    final xyz = Oklch.toXyz(l, chroma, hueDegrees);
+    return xyz[1];
+  }
+
+  static (double, double, double) _rawLinrgbFromOklch(
+    double l,
+    double chroma,
+    double hueDegrees,
+  ) {
+    final xyz = Oklch.toXyz(l, chroma, hueDegrees);
+    const m = [
+      [3.2413774792388685, -1.5376652402851851, -0.49885366846268053],
+      [-0.9691452513005321, 1.8758853451067872, 0.04156585616912061],
+      [0.05562093689691305, -0.20395524564742123, 1.0571799111220335],
+    ];
+    final r = m[0][0] * xyz[0] + m[0][1] * xyz[1] + m[0][2] * xyz[2];
+    final g = m[1][0] * xyz[0] + m[1][1] * xyz[1] + m[1][2] * xyz[2];
+    final b = m[2][0] * xyz[0] + m[2][1] * xyz[1] + m[2][2] * xyz[2];
+    return (r, g, b);
   }
 
   /// sRGB delinearize: linear [0,100] → 8-bit [0,255].
@@ -750,6 +954,49 @@ class HctSolver {
     }
 
     return bisectToLimit(y, hueRadians);
+  }
+
+  /// Model-aware variant of [solveToLinrgb]. Defaults to legacy CAM16.
+  static (double, double, double) solveToLinrgbForModel(
+    double hueDegrees,
+    double chroma,
+    double lstar, {
+    Gamut? gamut,
+    ColorModel model = ColorModel.cam16,
+  }) {
+    switch (model) {
+      case ColorModel.cam16:
+        return solveToLinrgb(hueDegrees, chroma, lstar, gamut: gamut);
+      case ColorModel.cam16v11:
+        gamut ??= Gamut.srgb;
+        if (chroma < 0.0001 || lstar < 0.0001 || lstar > 99.9999) {
+          final y = yFromLstar(lstar);
+          final kSum = gamut.yFromLinrgb[0] +
+              gamut.yFromLinrgb[1] +
+              gamut.yFromLinrgb[2];
+          final v = y / kSum;
+          return (v, v, v);
+        }
+        hueDegrees = sanitizeDegreesDouble(hueDegrees);
+        final hueRadians = hueDegrees / 180 * pi;
+        final y = yFromLstar(lstar);
+        final exact = _findResultByJv11(hueRadians, chroma, y, gamut);
+        if (exact != null) {
+          return exact;
+        }
+        if (identical(gamut, Gamut.srgb)) {
+          return _bisectToLimitSrgb(_sc, y, hueRadians);
+        }
+        // The gamut-boundary fallback only depends on Y and CAM16 opponent hue,
+        // which are unchanged in v11. Ask the legacy path for an impossible
+        // chroma so it falls through to its generic bisection fallback.
+        return solveToLinrgb(hueDegrees, 1.0e9, lstar, gamut: gamut);
+      case ColorModel.oklch:
+        if (gamut != null && !identical(gamut, Gamut.srgb)) {
+          throw UnsupportedError('OKLCH solving currently supports sRGB only');
+        }
+        return _solveOklchToLinrgb(hueDegrees, chroma, lstar);
+    }
   }
 
   /// Solves for the display-encoded RGB color in [0..1] for the given [gamut].

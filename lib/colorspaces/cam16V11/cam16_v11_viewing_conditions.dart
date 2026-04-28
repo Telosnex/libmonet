@@ -20,17 +20,11 @@ import 'dart:math' as math;
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/math.dart';
 
-/// In traditional color spaces, a color can be identified solely by the
-/// observer's measurement of the color. Color appearance models such as CAM16
-/// also use information about the environment where the color was
-/// observed, known as the viewing conditions.
+/// Viewing conditions for Hellwig/Fairchild 2022 CAM16 v11.
 ///
-/// For example, white under the traditional assumption of a midday sun white
-/// point is accurately measured as a slightly chromatic blue by CAM16.
-/// (roughly, hue 203, chroma 3, lightness 100)
-///
-/// This class caches intermediate values of the CAM16 conversion process that
-/// depend only on viewing conditions, enabling speed ups.
+/// CAT16, discounting, luminance adaptation, surround, and `z` are unchanged
+/// from legacy CAM16. The cached achromatic response to white, [aw], uses the
+/// revised v11 achromatic equation.
 class Cam16V11ViewingConditions {
   static final standard = sRgb;
   static final sRgb = Cam16V11ViewingConditions.make();
@@ -43,8 +37,15 @@ class Cam16V11ViewingConditions {
 
   final double backgroundYToWhitePointY;
   final double aw;
+
+  /// Legacy luminance-level induction factor retained for diagnostics and API
+  /// symmetry. CAM16 v11 appearance equations do not use it.
   final double nbb;
+
+  /// Legacy chromatic brightness induction factor retained for diagnostics and
+  /// API symmetry. CAM16 v11 appearance equations do not use it.
   final double ncb;
+
   final double c;
   final double nC;
   final List<double> rgbD;
@@ -87,7 +88,8 @@ class Cam16V11ViewingConditions {
     // A background of pure black is non-physical and leads to infinities that
     // represent the idea that any color viewed in pure black can't be seen.
     backgroundLstar = math.max(0.1, backgroundLstar);
-    // Transform test illuminant white in XYZ to 'cone'/'rgb' responses
+
+    // Transform test illuminant white in XYZ to CAT16 responses.
     final xyz = whitePoint;
     final rW = xyz[0] * 0.401288 + xyz[1] * 0.650173 + xyz[2] * -0.051461;
     final gW = xyz[0] * -0.250268 + xyz[1] * 1.204414 + xyz[2] * 0.045854;
@@ -164,7 +166,10 @@ class Cam16V11ViewingConditions {
       (400.0 * rgbAFactors[2]) / (rgbAFactors[2] + 27.13),
     ];
 
-    final aw = (40.0 * rgbA[0] + 20.0 * rgbA[1] + rgbA[2]) / 20.0 * nbb;
+    // Colour's Hellwig2022 implementation adds 0.1 during response compression
+    // and subtracts 0.305 in achromatic_response_forward. This port keeps
+    // adapted responses offset-free, so the equivalent expression omits both.
+    final aw = 2.0 * rgbA[0] + rgbA[1] + 0.05 * rgbA[2];
 
     return Cam16V11ViewingConditions(
       whitePoint: whitePoint,

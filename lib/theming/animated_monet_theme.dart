@@ -33,6 +33,7 @@ class InterpolatedMonetThemeData extends MonetThemeData {
           tertiary: PaletteLerped(
               a: begin.tertiary, b: end.tertiary, t: t),
           algo: begin.algo,
+          colorModel: begin.colorModel,
           contrast: begin.contrast,
           scale: lerpDouble(begin.scale, end.scale, t) ?? end.scale,
           typography: begin.typography,
@@ -93,6 +94,7 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
       secondary: _begin.secondary,
       tertiary: _begin.tertiary,
       algo: _begin.algo,
+      colorModel: _begin.colorModel,
       contrast: _begin.contrast,
       scale: _begin.scale,
       typography: _end.typography,
@@ -138,6 +140,7 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
         secondary: PaletteSnapshot.capture(snapshot.secondary),
         tertiary: PaletteSnapshot.capture(snapshot.tertiary),
         algo: snapshot.algo,
+        colorModel: snapshot.colorModel,
         contrast: snapshot.contrast,
         scale: snapshot.scale,
         typography: widget.end.typography,

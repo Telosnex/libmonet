@@ -52,6 +52,7 @@ class PaletteSnapshot extends Palette {
   PaletteSnapshot._({
     required super.baseColor,
     required super.baseBackground,
+    required super.colorModel,
     required Color background,
     required Color backgroundText,
     required Color backgroundFill,
@@ -136,6 +137,7 @@ class PaletteSnapshot extends Palette {
     return PaletteSnapshot._(
       baseColor: s.color,
       baseBackground: s.background,
+      colorModel: s.colorModel,
       background: s.background,
       backgroundText: s.backgroundText,
       backgroundFill: s.backgroundFill,

@@ -23,22 +23,40 @@ import 'package:libmonet/core/math.dart';
 
 import 'cam16_v11_viewing_conditions.dart';
 
-/// CAM16, a color appearance model. Colors are not just defined by their hex
-/// code, but rather, a hex code and viewing conditions.
+// Appendix A and inverse CAM16 v11 use 43. Equation 23 uses 47, likely before
+// the final eccentricity refit.
+const double _kColorfulnessScale = 43.0;
+
+/// Coordinates in a Euclidean CAM16-UCS-style space.
+class Cam16V11UcsCoordinates {
+  final double j;
+  final double a;
+  final double b;
+
+  const Cam16V11UcsCoordinates(this.j, this.a, this.b);
+
+  double distance(Cam16V11UcsCoordinates other) {
+    final dJ = j - other.j;
+    final dA = a - other.a;
+    final dB = b - other.b;
+    return math.sqrt(dJ * dJ + dA * dA + dB * dB);
+  }
+}
+
+/// Hellwig/Fairchild 2022 revision of CAM16.
 ///
-/// Note: This class uses internal mutable state for performance optimization.
-/// In Dart, this is safe because isolates have separate heaps (objects are
-/// copied when sent between isolates) and the event loop runs synchronous
-/// code atomically.
+/// This intentionally forks the legacy [Cam16] implementation rather than
+/// branching inside it. Hue still comes from the CAT16 opponent dimensions, but
+/// brightness, colorfulness, chroma, saturation, and UCS coordinates follow the
+/// revised equations.
 class Cam16V11 {
   /// Like red, orange, yellow, green, etc.
   final double hue;
 
-  /// Informally, colorfulness / color intensity. Like saturation in HSL,
-  /// except perceptually accurate.
+  /// Chroma, relative to the adapted white/context.
   final double chroma;
 
-  /// Lightness
+  /// Lightness.
   final double j;
 
   /// Brightness; ratio of lightness to white point's lightness
@@ -50,13 +68,13 @@ class Cam16V11 {
   /// Saturation; ratio of chroma to white point's chroma
   final double s;
 
-  /// CAM16-UCS J coordinate
+  /// Relative CAM16 v11 UCS J' coordinate.
   final double jstar;
 
-  /// CAM16-UCS a coordinate
+  /// Relative CAM16 v11 UCS a' coordinate.
   final double astar;
 
-  /// CAM16-UCS b coordinate
+  /// Relative CAM16 v11 UCS b' coordinate.
   final double bstar;
 
   /// All of the CAM16 dimensions can be calculated from 3 of the dimensions, in
@@ -78,25 +96,37 @@ class Cam16V11 {
     this.bstar,
   );
 
-  /// CAM16 instances also have coordinates in the CAM16-UCS space, called J*,
-  /// a*, b*, or jstar, astar, bstar in code. CAM16-UCS is included in the CAM16
-  /// specification, and should be used when measuring distances between colors.
-  double distance(Cam16V11 other) {
-    final dJ = jstar - other.jstar;
-    final dA = astar - other.astar;
-    final dB = bstar - other.bstar;
-    final dEPrime = math.sqrt(dJ * dJ + dA * dA + dB * dB);
-    final dE = 1.41 * math.pow(dEPrime, 0.63);
-    return dE;
+  /// Relative v11 UCS coordinates J'a'b'.
+  Cam16V11UcsCoordinates relativeUcs() =>
+      Cam16V11UcsCoordinates(jstar, astar, bstar);
+
+  /// Absolute v11 UCS coordinates Q'p't'.
+  Cam16V11UcsCoordinates absoluteUcs() {
+    final hRad = hue * math.pi / 180.0;
+    final qPrime = 0.86 * 1.7 * q / (1.0 + 0.007 * j);
+    final mPrime = 2.0 * math.log(1.0 + 0.094 * m) / 0.094;
+    return Cam16V11UcsCoordinates(
+      qPrime,
+      mPrime * math.cos(hRad),
+      mPrime * math.sin(hRad),
+    );
   }
 
-  /// Convert [argb] to CAM16, assuming the color was viewed in default viewing
-  /// conditions.
+  /// Euclidean distance in relative CAM16 v11 UCS. Unlike legacy CAM16-UCS,
+  /// v11 distances are not compressed with `1.41 * dEPrime^0.63`.
+  double distance(Cam16V11 other) =>
+      relativeUcs().distance(other.relativeUcs());
+
+  /// Distance in absolute CAM16 v11 UCS.
+  double absoluteDistance(Cam16V11 other) =>
+      absoluteUcs().distance(other.absoluteUcs());
+
+  /// Convert [argb] to CAM16 v11, assuming default viewing conditions.
   static Cam16V11 fromInt(int argb) {
     return fromIntInViewingConditions(argb, Cam16V11ViewingConditions.sRgb);
   }
 
-  /// Given [viewingConditions], convert [argb] to CAM16.
+  /// Given [viewingConditions], convert [argb] to CAM16 v11.
   static Cam16V11 fromIntInViewingConditions(
       int argb, Cam16V11ViewingConditions viewingConditions) {
     final r = linear(redFromArgb(argb));
@@ -110,7 +140,7 @@ class Cam16V11 {
   }
 
   /// Given color expressed in XYZ and viewed in [viewingConditions], convert to
-  /// CAM16.
+  /// CAM16 v11.
   static Cam16V11 fromXyzInViewingConditions(double x, double y, double z,
       Cam16V11ViewingConditions viewingConditions) {
     // Transform XYZ to 'cone'/'rgb' responses
@@ -139,11 +169,7 @@ class Cam16V11 {
     // yellowness-blueness
     final b = (rA + gA - 2.0 * bA) / 9.0;
 
-    // auxiliary components
-    final u = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0;
-    final p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0;
-
-    // hue
+    // Hue.
     final atan2 = math.atan2(b, a);
     final atanDegrees = atan2 * 180.0 / math.pi;
     final hue = atanDegrees < 0
@@ -154,92 +180,91 @@ class Cam16V11 {
     final hueRadians = hue * math.pi / 180.0;
     assert(hue >= 0 && hue < 360, 'hue was really $hue');
 
-    // achromatic response to color
-    final ac = p2 * viewingConditions.nbb;
+    // Revised achromatic response. Colour's Hellwig2022 implementation adds
+    // 0.1 during response compression and subtracts 0.305 here. This port keeps
+    // adapted responses offset-free, so the equivalent expression omits both.
+    final ac = 2.0 * rA + gA + 0.05 * bA;
 
-    // CAM16 lightness and brightness
     final J = 100.0 *
         math.pow(ac / viewingConditions.aw,
             viewingConditions.c * viewingConditions.z);
-    final Q = (4.0 / viewingConditions.c) *
-        math.sqrt(J / 100.0) *
-        (viewingConditions.aw + 4.0) *
-        (viewingConditions.fLRoot);
+    final Q = (2.0 / viewingConditions.c) * (J / 100.0) * viewingConditions.aw;
 
-    final huePrime = (hue < 20.14) ? hue + 360 : hue;
-    final eHue =
-        (1.0 / 4.0) * (math.cos(huePrime * math.pi / 180.0 + 2.0) + 3.8);
-    final p1 =
-        50000.0 / 13.0 * eHue * viewingConditions.nC * viewingConditions.ncb;
-    final t = p1 * math.sqrt(a * a + b * b) / (u + 0.305);
-    final alpha = math.pow(t, 0.9) *
-        math.pow(
-            1.64 - math.pow(0.29, viewingConditions.backgroundYToWhitePointY),
-            0.73);
-    // CAM16 chroma, colorfulness, chroma
-    final C = alpha * math.sqrt(J / 100.0);
-    final M = C * viewingConditions.fLRoot;
-    final s = 50.0 *
-        math.sqrt((alpha * viewingConditions.c) / (viewingConditions.aw + 4.0));
+    // eHue scales reported C/M; it does not change the CAT16 opponent hue.
+    final eHue = hueEccentricity(hueRadians);
+    final opponentMagnitude = math.sqrt(a * a + b * b);
+    final M =
+        _kColorfulnessScale * viewingConditions.nC * eHue * opponentMagnitude;
+    final C = 35.0 * M / viewingConditions.aw;
+    final saturation = Q == 0.0 ? 0.0 : 100.0 * M / Q;
 
-    // CAM16-UCS components
-    final jstar = (1.0 + 100.0 * 0.007) * J / (1.0 + 0.007 * J);
-    final mstar = math.log(1.0 + 0.0228 * M) / 0.0228;
-    final astar = mstar * math.cos(hueRadians);
-    final bstar = mstar * math.sin(hueRadians);
-    return Cam16V11(hue, C, J, Q, M, s, jstar, astar, bstar);
+    final (jstar, astar, bstar) = _relativeUcsFromJch(J, C, hueRadians);
+    return Cam16V11(hue, C, J, Q, M, saturation, jstar, astar, bstar);
   }
 
-  /// Create a CAM16 color from lightness [j], chroma [c], and hue [h],
-  /// assuming the color was viewed in default viewing conditions.
+  /// Revised hue eccentricity function. [hueRadians] must be in radians.
+  static double hueEccentricity(double hueRadians) {
+    final h = hueRadians;
+    // Keep this polynomial verbatim with Colour's Hellwig2022 implementation;
+    // the first cosine sign is easy to transpose from older CAM16 drafts.
+    return 1.0 +
+        -0.0582 * math.cos(h) -
+        0.0258 * math.cos(2.0 * h) -
+        0.1347 * math.cos(3.0 * h) +
+        0.0289 * math.cos(4.0 * h) -
+        0.1475 * math.sin(h) -
+        0.0308 * math.sin(2.0 * h) +
+        0.0385 * math.sin(3.0 * h) +
+        0.0096 * math.sin(4.0 * h);
+  }
+
+  static (double, double, double) _relativeUcsFromJch(
+      double J, double C, double hueRadians) {
+    final jstar = 1.7 * J / (1.0 + 0.007 * J);
+    final cstar = 2.4 * math.log(1.0 + 0.098 * C) / 0.098;
+    final astar = cstar * math.cos(hueRadians);
+    final bstar = cstar * math.sin(hueRadians);
+    return (jstar, astar, bstar);
+  }
+
+  /// Create a CAM16 v11 color from lightness [j], chroma [c], and hue [h],
+  /// assuming default viewing conditions.
   static Cam16V11 fromJch(double j, double c, double h) {
     return fromJchInViewingConditions(j, c, h, Cam16V11ViewingConditions.sRgb);
   }
 
-  /// Create a CAM16 color from lightness [j], chroma [c], and hue [h],
-  /// in [viewingConditions].
+  /// Create a CAM16 v11 color from lightness [j], chroma [c], and hue [h], in
+  /// [viewingConditions].
   static Cam16V11 fromJchInViewingConditions(double J, double C, double h,
       Cam16V11ViewingConditions viewingConditions) {
-    final Q = (4.0 / viewingConditions.c) *
-        math.sqrt(J / 100.0) *
-        (viewingConditions.aw + 4.0) *
-        (viewingConditions.fLRoot);
-    final M = C * viewingConditions.fLRoot;
-    final alpha = C / math.sqrt(J / 100.0);
-    final s = 50.0 *
-        math.sqrt((alpha * viewingConditions.c) / (viewingConditions.aw + 4.0));
+    final Q = (2.0 / viewingConditions.c) * (J / 100.0) * viewingConditions.aw;
+    final M = C * viewingConditions.aw / 35.0;
+    final s = Q == 0.0 ? 0.0 : 100.0 * M / Q;
 
     final hueRadians = h * math.pi / 180.0;
-    final jstar = (1.0 + 100.0 * 0.007) * J / (1.0 + 0.007 * J);
-    final mstar = 1.0 / 0.0228 * math.log(1.0 + 0.0228 * M);
-    final astar = mstar * math.cos(hueRadians);
-    final bstar = mstar * math.sin(hueRadians);
+    final (jstar, astar, bstar) = _relativeUcsFromJch(J, C, hueRadians);
     return Cam16V11(h, C, J, Q, M, s, jstar, astar, bstar);
   }
 
-  /// Create a CAM16 color from CAM16-UCS coordinates [jstar], [astar], [bstar].
-  /// assuming the color was viewed in default viewing conditions.
+  /// Create a CAM16 v11 color from relative UCS coordinates J'a'b'.
   static Cam16V11 fromUcs(double jstar, double astar, double bstar) {
     return fromUcsInViewingConditions(
         jstar, astar, bstar, Cam16V11ViewingConditions.standard);
   }
 
-  /// Create a CAM16 color from CAM16-UCS coordinates [jstar], [astar], [bstar].
-  /// in [viewingConditions].
+  /// Create a CAM16 v11 color from relative UCS coordinates J'a'b' in
+  /// [viewingConditions].
   static Cam16V11 fromUcsInViewingConditions(double jstar, double astar,
       double bstar, Cam16V11ViewingConditions viewingConditions) {
-    final a = astar;
-    final b = bstar;
-    final m = math.sqrt(a * a + b * b);
-    final M = (math.exp(m * 0.0228) - 1.0) / 0.0228;
-    final c = M / viewingConditions.fLRoot;
-    var h = math.atan2(b, a) * (180.0 / math.pi);
+    final cstar = math.sqrt(astar * astar + bstar * bstar);
+    final C = (math.exp(cstar * 0.098 / 2.4) - 1.0) / 0.098;
+    var h = math.atan2(bstar, astar) * (180.0 / math.pi);
     if (h < 0.0) {
       h += 360.0;
     }
-    final j = jstar / (1 - (jstar - 100) * 0.007);
+    final J = jstar / (1.7 - 0.007 * jstar);
 
-    return Cam16V11.fromJchInViewingConditions(j, c, h, viewingConditions);
+    return Cam16V11.fromJchInViewingConditions(J, C, h, viewingConditions);
   }
 
   /// ARGB representation of color, assuming the color was viewed in default
@@ -252,62 +277,42 @@ class Cam16V11 {
   final _viewedArray = <double>[0, 0, 0];
 
   /// ARGB representation of a color, given the color was viewed in
-  /// [viewingConditions]
+  /// [viewingConditions].
   int viewed(Cam16V11ViewingConditions viewingConditions) {
     final xyz = xyzInViewingConditions(viewingConditions, array: _viewedArray);
     final argb = argbFromXyz(xyz[0], xyz[1], xyz[2]);
     return argb;
   }
 
-  /// XYZ representation of CAM16 seen in [viewingConditions].
+  /// XYZ representation of CAM16 v11 seen in [viewingConditions].
   List<double> xyzInViewingConditions(
       Cam16V11ViewingConditions viewingConditions,
       {List<double>? array}) {
-    final alpha =
-        (chroma == 0.0 || j == 0.0) ? 0.0 : chroma / math.sqrt(j / 100.0);
-
-    final t = math.pow(
-        alpha /
-            math.pow(
-              1.64 - math.pow(0.29, viewingConditions.backgroundYToWhitePointY),
-              0.73,
-            ),
-        1.0 / 0.9);
     final hRad = hue * math.pi / 180.0;
-
-    final eHue = 0.25 * (math.cos(hRad + 2.0) + 3.8);
-    final ac = viewingConditions.aw *
-        math.pow(j / 100.0, 1.0 / viewingConditions.c / viewingConditions.z);
-    final p1 =
-        eHue * (50000.0 / 13.0) * viewingConditions.nC * viewingConditions.ncb;
-
-    final p2 = (ac / viewingConditions.nbb);
-
     final hSin = math.sin(hRad);
     final hCos = math.cos(hRad);
 
-    final gamma = 23.0 *
-        (p2 + 0.305) *
-        t /
-        (23.0 * p1 + 11 * t * hCos + 108.0 * t * hSin);
-    final a = gamma * hCos;
-    final b = gamma * hSin;
+    final M = chroma * viewingConditions.aw / 35.0;
+    // Inverting divides by the same eHue factor applied in fromXyz..., so
+    // source-seeded palettes mostly treat eccentricity as a chroma unit scale.
+    final eHue = hueEccentricity(hRad);
+    final opponentMagnitude = (M == 0.0 || eHue == 0.0)
+        ? 0.0
+        : M / (_kColorfulnessScale * viewingConditions.nC * eHue);
+    final a = opponentMagnitude * hCos;
+    final b = opponentMagnitude * hSin;
+
+    final ac = viewingConditions.aw *
+        math.pow(j / 100.0, 1.0 / viewingConditions.c / viewingConditions.z);
+    final p2 = ac;
+
     final rA = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0;
     final gA = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0;
     final bA = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0;
 
-    final rCBase = math.max(0, (27.13 * rA.abs()) / (400.0 - rA.abs()));
-    final rC = signum(rA) *
-        (100.0 / viewingConditions.fl) *
-        math.pow(rCBase, 1.0 / 0.42);
-    final gCBase = math.max(0, (27.13 * gA.abs()) / (400.0 - gA.abs()));
-    final gC = signum(gA) *
-        (100.0 / viewingConditions.fl) *
-        math.pow(gCBase, 1.0 / 0.42);
-    final bCBase = math.max(0, (27.13 * bA.abs()) / (400.0 - bA.abs()));
-    final bC = signum(bA) *
-        (100.0 / viewingConditions.fl) *
-        math.pow(bCBase, 1.0 / 0.42);
+    final rC = _inverseAdaptedResponse(rA, viewingConditions.fl);
+    final gC = _inverseAdaptedResponse(gA, viewingConditions.fl);
+    final bC = _inverseAdaptedResponse(bA, viewingConditions.fl);
     final rF = rC / viewingConditions.rgbD[0];
     final gF = gC / viewingConditions.rgbD[1];
     final bF = bC / viewingConditions.rgbD[2];
@@ -324,5 +329,15 @@ class Cam16V11 {
     } else {
       return [x, y, z];
     }
+  }
+
+  static double _inverseAdaptedResponse(double adapted, double fl) {
+    final adaptedAbs = adapted.abs();
+    final denominator = 400.0 - adaptedAbs;
+    if (denominator <= 0.0) {
+      return 0.0;
+    }
+    final base = math.max(0.0, (27.13 * adaptedAbs) / denominator);
+    return signum(adapted) * (100.0 / fl) * math.pow(base, 1.0 / 0.42);
   }
 }
