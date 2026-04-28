@@ -10,12 +10,11 @@ import 'package:libmonet/extract/scorer_triad.dart';
 
 void main() {
   for (final fixture in _fixtures) {
-    testWidgets('${fixture.name} quantizer and CAM16 v1.1 triad are stable', (
-      tester,
-    ) async {
+    testWidgets('${fixture.name} ${fixture.maxColors} colors quantizer and '
+        'CAM16 v1.1 triad are stable', (tester) async {
       await tester.runAsync(() async {
         final image = FileImage(File(fixture.path));
-        final result = await Extract.quantize(image, 32);
+        final result = await Extract.quantize(image, fixture.maxColors);
         final triad = ScorerTriad.threeColorsFromQuantizer(
           result,
           colorModel: ColorModel.cam16v11,
@@ -110,16 +109,46 @@ const _fixtures = [
         'colors=32 total=6144 top=#021C32:708,#062738:520,#052942:513,#020D15:481,#0A3549:481,#031523:461,#13445A:406,#0C3A56:362',
     triadHexes: ['#092738', '#764037', '#F7DCC8'],
   ),
+  _WallpaperFixture(
+    name: 'aaron-burden-OA6OuqfSWew-unsplash.jpg',
+    maxColors: 256,
+    quantizerFingerprint:
+        'colors=256 total=6912 top=#ADAD7B:81,#AAAD73:77,#DEB198:76,#DC9D7A:65,#D29173:65,#A5A471:64,#CF9578:62,#D4A179:61',
+    triadHexes: ['#ADAD7B', '#3D5C48', '#DFB09A'],
+  ),
+  _WallpaperFixture(
+    name: 'curated-lifestyle-7lQlYxH0Ljs-unsplash.jpg',
+    maxColors: 256,
+    quantizerFingerprint:
+        'colors=248 total=6144 top=#CCCDC7:555,#CBCCC6:456,#CECFC9:434,#12130E:291,#D0D1CB:255,#0F110B:213,#C9CAC4:179,#C8C9C3:126',
+    triadHexes: ['#CCCDC7', '#CECDC5', '#CBCDCB'],
+  ),
+  _WallpaperFixture(
+    name: 'lorin-both-2ScC2nkYYDk-unsplash.jpg',
+    maxColors: 256,
+    quantizerFingerprint:
+        'colors=256 total=7104 top=#B740F3:263,#A31CE2:229,#AD2FEB:221,#AB27EA:219,#7202A6:219,#A61FE5:215,#69029A:213,#B236F0:209',
+    triadHexes: ['#B83FF2', '#302E05', '#303F17'],
+  ),
+  _WallpaperFixture(
+    name: 'zhenyu-luo-0MM2JsXz2aI-unsplash.jpg',
+    maxColors: 256,
+    quantizerFingerprint:
+        'colors=256 total=6144 top=#000B10:157,#010D16:155,#021D32:143,#011321:139,#022134:125,#011B2D:124,#05283A:116,#011C34:115',
+    triadHexes: ['#002134', '#4B8582', '#D39A8C'],
+  ),
 ];
 
 class _WallpaperFixture {
   const _WallpaperFixture({
     required this.name,
+    this.maxColors = 32,
     required this.quantizerFingerprint,
     required this.triadHexes,
   });
 
   final String name;
+  final int maxColors;
   final String quantizerFingerprint;
   final List<String> triadHexes;
 
