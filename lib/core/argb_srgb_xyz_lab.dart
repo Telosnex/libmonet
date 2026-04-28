@@ -16,6 +16,7 @@
 // limitations under the License.
 
 import 'dart:math';
+import 'dart:typed_data';
 
 /// Returns the standard white point, D65. Blue-white of a sunny day.
 const whitePointD65 = [95.047, 100.0, 108.883];
@@ -26,6 +27,13 @@ const kSrgbToXyz = [
 ];
 const _midgrayY = 18.418651851244416; /* yFromLstar(50.0) */
 const srgbAdaptingLuminance = 200.0 / pi * _midgrayY / 100.0;
+final Float64List _linearizedByteCache = Float64List.fromList(
+  List<double>.generate(
+    256,
+    (component) => linearized(component / 255.0) * 100.0,
+    growable: false,
+  ),
+);
 
 const _xyzToSrgb = [
   [
@@ -124,6 +132,13 @@ int argbFromLab(double l, double a, double b) {
 /// [argb] the ARGB representation of a color
 /// Returns 3 doubles representing L*, a*, and b*.
 List<double> labFromArgb(int argb) {
+  final lab = List<double>.filled(3, 0);
+  labFromArgbTo(argb, lab);
+  return lab;
+}
+
+/// Convert a color from ARGB to L*a*b* into [out] at [offset].
+void labFromArgbTo(int argb, List<double> out, [int offset = 0]) {
   final linearR = linear(redFromArgb(argb));
   final linearG = linear(greenFromArgb(argb));
   final linearB = linear(blueFromArgb(argb));
@@ -140,10 +155,9 @@ List<double> labFromArgb(int argb) {
   final fx = _labF(xNormalized);
   final fy = _labF(yNormalized);
   final fz = _labF(zNormalized);
-  final l = 116.0 * fy - 16;
-  final a = 500.0 * (fx - fy);
-  final b = 200.0 * (fy - fz);
-  return [l, a, b];
+  out[offset] = 116.0 * fy - 16;
+  out[offset + 1] = 500.0 * (fx - fy);
+  out[offset + 2] = 200.0 * (fy - fz);
 }
 
 List<double> xyzFromArgb(int argb) {
@@ -241,7 +255,7 @@ double linearized(double srgbNorm) {
 /// [rgbComponent] 0 <= rgb_component <= 255, represents R/G/B channel.
 /// Returns 0.0 <= output <= 100.0, color channel converted to linear RGB.
 double linear(int rgbComponent) {
-  return linearized(rgbComponent / 255.0) * 100.0;
+  return _linearizedByteCache[rgbComponent];
 }
 
 /// Delinearizes an RGB component.
