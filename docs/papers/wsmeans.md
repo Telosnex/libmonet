@@ -1,685 +1,543 @@
 <!-- page 0 -->
 
-International Journal of Pattern Recognition and Artificial Intelligence, 26(7): 1250018, 2012
+# Fast Color Quantization Using Weighted
 
-International Journal of Pattern Recognition and Artificial Intelligence, 26(7): 1250018, 2012
-
-$\langle\!\rangle$ World Scientific Publishing Company
-
-Deterministic Initialization of the K-Means Algorithm Using Hierarchical Clustering
+# Sort-Means Clustering
 
 M. Emre Celebi
 
-Department of Computer Science
-
-Louisiana State University, Shreveport, LA, USA
+Dept. of Computer Science, Louisiana State University, Shreveport, LA, USA
 
 ecelebi@lsus.edu
-
-Hassan A. Kingravi
-
-School of Electrical and Computer Engineering
-
-Georgia Institute of Technology, Atlanta, GA, USA
-
-kingravi@gatech.edu
-
-> K-means is undoubtedly the most widely used partitional clustering algorithm. Unfortunately, due to its gradient descent nature, this algorithm is highly sensitive to the initial placement of the cluster centers. Numerous initialization methods have been proposed to address this problem. Many of these methods, however, have superlinear complexity in the number of data points, making them impractical for large data sets. On the other hand, linear methods are often random and/or order-sensitive, which renders their results unrepeatable. Recently, Su and Dy proposed two highly successful hierarchical initialization methods named Var-Part and PCA-Part that are not only linear, but also deterministic (non-random) and order-invariant. In this paper, we propose a discriminant analysis based approach that addresses a common deficiency of these two methods. Experiments on a large and diverse collection of data sets from the UCI Machine Learning Repository demonstrate that Var-Part and PCA-Part are highly competitive with one of the best random initialization methods to date, i.e., k-means++, and that the proposed approach significantly improves the performance of both hierarchical methods.
->
-> Keywords: Partitional clustering; sum of squared error criterion; k-means; cluster center initialization; thresholding.
-
-## 1 Introduction
-
-Clustering, the unsupervised classification of patterns into groups, is one of the most important tasks in exploratory data analysis *[1]*. Primary goals of clustering include gaining insight into data (detecting anomalies, identifying salient features, etc.), classifying data, and compressing data. Clustering has a long and rich history in a variety of scientific disciplines including anthropology, biology, medicine, psychology, statistics, mathematics, engineering, and computer science. As a result, numerous clustering algorithms have been proposed since the early 1950s *[2]*.
-
-Clustering algorithms can be broadly classified into two groups: hierarchical and partitional *[2]*. Hierarchical algorithms recursively find nested clusters either in a top-down (divisive) or bottom-up (agglomerative) fashion. In contrast, partitional
 
 
 <!-- page 1 -->
 
-algorithms find all the clusters simultaneously as a partition of the data and do not impose a hierarchical structure. Most hierarchical algorithms have quadratic or higher complexity in the number of data points *[1]* and therefore are not suitable for large data sets, whereas partitional algorithms often have lower complexity.
+Color quantization is an important operation with numerous applications in graphics and image processing. Most quantization methods are essentially based on data clustering algorithms. However, despite its popularity as a general purpose clustering algorithm, k-means has not received much respect in the color quantization literature because of its high computational requirements and sensitivity to initialization. In this paper, a fast color quantization method based on k-means is presented. The method involves several modifications to the conventional (batch) k-means algorithm including data reduction, sample weighting, and the use of triangle inequality to speed up the nearest neighbor search. Experiments on a diverse set of images demonstrate that, with the proposed modifications, k-means becomes very competitive with state-of-the-art color quantization methods in terms of both effectiveness and efficiency.
 
-Given a data set $\mathcal{X}=\{\mathbf{x}_{1},\mathbf{x}_{2},\ldots,\mathbf{x}_{N}\}$ in $\mathbb{R}^{D}$, i.e., $N$ points (vectors) each with $D$ attributes (components), hard partitional algorithms divide $\mathcal{X}$ into $K$ exhaustive and mutually exclusive clusters $\mathcal{P}=\{P_{1},P_{2},\ldots,P_{K}\},\;\;\bigcup_{i=1}^{K}P_{i}=\mathcal{X},\;\;P_{i}\cap P_{j}=\emptyset$ for $1\leq i\neq j\leq K$. These algorithms usually generate clusters by optimizing a criterion function. The most intuitive and frequently used criterion function is the Sum of Squared Error (SSE) given by:
+© 2018 Optical Society of America
 
-$\mathrm{SSE}=\sum_{i=1}^{K}\sum_{\mathbf{x}_{j}\in P_{i}}\|\mathbf{x}_{j}-\mathbf{c}_{i}\|_{2}^{2}$ (1)
+OCIS codes: 100.2000,100.5010
 
-where $\|.\|_{2}$ denotes the Euclidean ($\mathcal{L}_{2}$) norm and $\mathbf{c}_{i}=1/|P_{i}|\sum_{\mathbf{x}_{j}\in P_{i}}\mathbf{x}_{j}$ is the centroid of cluster $P_{i}$ whose cardinality is $|P_{i}|$. The optimization of (1) is often referred to as the minimum SSE clustering (MSSC) problem.
+## 1 Introduction
 
-The number of ways in which a set of $N$ objects can be partitioned into $K$ non-empty groups is given by Stirling numbers of the second kind:
-
-$\mathcal{S}(N,K)=\frac{1}{K!}\sum_{i=0}^{K}(-1)^{K-i}\binom{K}{i}i^{N}$ (2)
-
-which can be approximated by $K^{N}/K!$ It can be seen that a complete enumeration of all possible clusterings to determine the global minimum of (1) is clearly computationally prohibitive except for very small data sets *[3]*. In fact, this non-convex optimization problem is proven to be NP-hard even for $K=2$ *[4]* or $D=2$ *[5]*. Consequently, various heuristics have been developed to provide approximate solutions to this problem *[6]*. Among these heuristics, Lloyd’s algorithm *[7]*, often referred to as the (batch) k-means algorithm, is the simplest and most commonly used one. This algorithm starts with $K$ arbitrary centers, typically chosen uniformly at random from the data points. Each point is assigned to the nearest center and then each center is recalculated as the mean of all points assigned to it. These two steps are repeated until a predefined termination criterion is met.
-
-The k-means algorithm is undoubtedly the most widely used partitional clustering algorithm *[2]*. Its popularity can be attributed to several reasons. First, it is conceptually simple and easy to implement. Virtually every data mining software includes an implementation of it. Second, it is versatile, i.e., almost every aspect of the algorithm (initialization, distance function, termination criterion, etc.) can be modified. This is evidenced by hundreds of publications over the last fifty years that extend k-means in various ways. Third, it has a time complexity that is linear in $N$, $D$, and $K$ (in general, $D\ll N$ and $K\ll N$). For this reason, it can be used to initialize more expensive clustering algorithms such as expectation maximization *[8]*, DBSCAN *[9]*, and spectral clustering *[10]*. Furthermore, numerous sequential *[11, 12
+True-color images typically contain thousands of colors, which makes their display, storage, transmission, and processing problematic. For this reason, color quantization (reduction) is commonly used as a preprocessing step for various graphics and image processing tasks. In the past, color quantization was a necessity due to the limita
 
 
 <!-- page 2 -->
 
-and parallel *[13]* acceleration techniques are available in the literature. Fourth, it has a storage complexity that is linear in $N$, $D$, and $K$. In addition, there exist disk-based variants that do not require all points to be stored in memory *[14]*. Fifth, it is guaranteed to converge *[15]* at a quadratic rate *[16]*. Finally, it is invariant to data ordering, i.e., random shufflings of the data points.
+tions of the display hardware, which could not handle the 16 million possible colors in 24-bit images. Although 24-bit display hardware has become more common, color quantization still maintains its practical value [1]. Modern applications of color quantization include: (i) image compression [2], (ii) image segmentation [3], (iii) image analysis [4], (iv) image watermarking [5], and (v) content-based image retrieval [6].
 
-On the other hand, k-means has several significant disadvantages. First, it requires the number of clusters, $K$, to be specified in advance. The value of this parameter can be determined automatically by means of various internal/relative cluster validity measures *[17]*. Second, it can only detect compact, hyperspherical clusters that are well separated. This can be alleviated by using a more general distance function such as the Mahalanobis distance, which permits the detection of hyperellipsoidal clusters *[18]*. Third, due its utilization of the squared Euclidean distance, it is sensitive to noise and outlier points since even a few such points can significantly influence the means of their respective clusters. This can be addressed by outlier pruning *[19]* or using a more robust distance function such as City-block ($\mathcal{L}_{1}$) distance. Fourth, due to its gradient descent nature, it often converges to a local minimum of the criterion function *[15]*. For the same reason, it is highly sensitive to the selection of the initial centers *[20]*. Adverse effects of improper initialization include empty clusters, slower convergence, and a higher chance of getting stuck in bad local minima *[21]*. Fortunately, except for the first two, these drawbacks can be remedied by using an adaptive initialization method (IM).
+The process of color quantization is mainly comprised of two phases: palette design (the selection of a small set of colors that represents the original image colors) and pixel mapping (the assignment of each input pixel to one of the palette colors). The primary objective is to reduce the number of unique colors, $N^{\prime}$, in an image to $K$ ($K\ll N^{\prime}$) with minimal distortion. In most applications, 24-bit pixels in the original image are reduced to 8 bits or fewer. Since natural images often contain a large number of colors, faithful representation of these images with a limited size palette is a difficult problem.
 
-A large number of IMs have been proposed in the literature *[22, 23, 21, 20]*. Unfortunately, many of these have superlinear complexity in $N$ *[24, 25, 26, 3, 27, 28, 29, 30, 31, 32]*, which makes them impractical for large data sets (note that k-means itself has linear complexity). In contrast, linear IMs are often random and/or order-sensitive *[33, 34, 35, 36, 37, 38, 8, 39]*, which renders their results unrepeatable. Su and Dy proposed two divisive hierarchical initialization methods named Var-Part and PCA-Part that are not only linear, but also deterministic and order-invariant *[40]*. In this study, we propose a simple modification to these methods that improves their performance significantly.
-
-The rest of the paper is organized as follows. Section 2 presents a brief overview of some of the most popular linear, order-invariant k-means IMs and the proposed modification to Var-Part and PCA-Part. Section 3 presents the experimental results, while Section 4 analyzes these results. Finally, Section 5 gives the conclusions.
-
-## 2 Linear, Order-Invariant Initialization Methods for K-Means
-
-### 2.1 Overview of the Existing Methods
-
-Forgy’s method *[33]* assigns each point to one of the $K$ clusters uniformly at random. The centers are then given by the centroids of these initial clusters. This method has no theoretical basis, as such random clusters have no internal homogeneity *[41]*.
-
-MacQueen *[35]* proposed two different methods. The first one, which is the default option in the Quick Cluster procedure of IBM SPSS Statistics *[42]*, takes the
+Color quantization methods can be broadly classified into two categories [7]: image-independent methods that determine a universal (fixed) palette without regard to any specific image [8], and image-dependent methods that determine a custom (adaptive) palette based on the color distribution of the images. Despite being very fast, image-independent methods usually give poor results since they do not take into account the image contents. Therefore, most of the studies in the literature consider only image-dependent methods, which strive to achieve a better balance between computational efficiency and visual quality of the quantization output.
 
 
 <!-- page 3 -->
 
-first $K$ points in $\mathcal{X}$ as the centers. An obvious drawback of this method is its sensitivity to data ordering. The second method chooses the centers randomly from the data points. The rationale behind this method is that random selection is likely to pick points from dense regions, i.e., points that are good candidates to be centers. However, there is no mechanism to avoid choosing outliers or points that are too close to each other *[41]*. Multiple runs of this method is the standard way of initializing k-means *[8]*. It should be noted that this second method is often mistakenly attributed to Forgy *[33]*.
+Numerous image-dependent color quantization methods have been developed in the past three decades. These can be categorized into two families: preclustering methods and postclustering methods [1]. Preclustering methods are mostly based on the statistical analysis of the color distribution of the images. Divisive preclustering methods start with a single cluster that contains all $N$ image pixels. This initial cluster is recursively subdivided until $K$ clusters are obtained. Well-known divisive methods include median-cut [9], octree [10], variance-based method [11], binary splitting [12], greedy orthogonal bipartitioning [13], center-cut [14], and rwm-cut [15]. More recent methods can be found in [16; 17; 18]. On the other hand, agglomerative preclustering methods [19; 20; 21; 22; 23] start with $N$ singleton clusters each of which contains one image pixel. These clusters are repeatedly merged until $K$ clusters remain. In contrast to preclustering methods that compute the palette only once, postclutering methods first determine an initial palette and then improve it iteratively. Essentially, any data clustering method can be used for this purpose. Since these methods involve iterative or stochastic optimization, they can obtain higher quality results when compared to preclustering methods at the expense of increased computational time. Clustering algorithms adapted to color quantization include k-means [24; 25; 26; 27], minmax [28], competitive learning [29; 30; 31], fuzzy c-means [32; 33], BIRCH [34], and self-organizing maps [35; 36; 37].
 
-The maximin method *[43]* chooses the first center $\mathbf{c}_{1}$ arbitrarily and the $i$-th ($i\in\{2,3,\ldots,K\}$) center $\mathbf{c}_{i}$ is chosen to be the point that has the greatest minimum-distance to the previously selected centers, i.e., $\mathbf{c}_{1},\mathbf{c}_{2},\ldots,\mathbf{c}_{i-1}$. This method was originally developed as a 2-approximation to the $K$-center clustering problem.
-
-The k-means++ method *[39]* interpolates between MacQueen’s second method and the maximin method. It chooses the first center randomly and the $i$-th ($i\in\{2,3,\ldots,K\}$) center is chosen to be $\mathbf{x}^{\prime}\in\mathcal{X}$ with a probability of $\frac{md(\mathbf{x}^{\prime})^{\text{2}}}{\sum_{j=1}^{N}md(\mathbf{x}_{j})^{\text{2}}}$, where $md(\mathbf{x})$ denotes the minimum-distance from a point $\mathbf{x}$ to the previously selected centers. This method yields an $\Theta(\log K)$ approximation to the MSSC problem.
-
-The PCA-Part method *[40]* uses a divisive hierarchical approach based on PCA (Principal Component Analysis) *[44]*. Starting from an initial cluster that contains the entire data set, the method iteratively selects the cluster with the greatest SSE and divides it into two subclusters using a hyperplane that passes through the cluster centroid and is orthogonal to the principal eigenvector of the cluster covariance matrix. This procedure is repeated until $K$ clusters are obtained. The centers are then given by the centroids of these clusters. The Var-Part method *[40]* is an approximation to PCA-Part, where the covariance matrix of the cluster to be split is assumed to be diagonal. In this case, the splitting hyperplane is orthogonal to the coordinate axis with the greatest variance.
-
-Figure 1 illustrates the Var-Part procedure on a toy data set with four natural clusters *[45]*. In iteration 1, the initial cluster that contains the entire data set is split into two subclusters along the Y axis using a line (one-dimensional hyperplane) that passes through the mean point (92.026667). Between the resulting two clusters, the one above the line has a greater SSE. In iteration 2, this cluster is therefore split along the X axis at the mean point (66.975000). In the final iteration, the cluster with the greatest SSE, i.e., the bottom cluster, is split along the X axis at the mean point (41.057143). In Figure 1(d), the centroids of the final four clusters are denoted by stars.
+In this paper, a fast color quantization method based on the k-means clustering algorithm [38] is presented. The method first reduces the amount of data to be clus
 
 
 <!-- page 4 -->
 
-![img-0.jpeg](img-0.jpeg)
-(a) Input data set
+tered by sampling only the pixels with unique colors. In order to incorporate the color distribution of the pixels into the clustering procedure, each color sample is assigned a weight proportional to its frequency. These weighted samples are then clustered using a fast and exact variant of the k-means algorithm. The set of final cluster centers is taken as the quantization palette.
 
-![img-1.jpeg](img-1.jpeg)
-(b) Iteration 1
+The rest of the paper is organized as follows. Section 2 describes the conventional k-means clustering algorithm and the proposed modifications. Section 3 describes the experimental setup and presents the comparison of the proposed method with other color quantization methods. Finally, Section 4 gives the conclusions.
 
-![img-2.jpeg](img-2.jpeg)
-(c) Iteration 2
-Fig. 1. Illustration of Var-Part on the Ruspini data set
+## 2 Color Quantization Using K-Means Clustering Algorithm
 
-![img-3.jpeg](img-3.jpeg)
-(d) Iteration 3
+The k-means (KM) algorithm is inarguably one of the most widely used methods for data clustering *[39]*. Given a data set $X=\{\mathbf{x}_{1},\ldots,\mathbf{x}_{N}\}\in\mathbb{R}^{D}$, the objective of KM is to partition $X$ into $K$ exhaustive and mutually exclusive clusters $S=\left\{S_{1},\ldots,S_{k}\right\},\ \ \bigcup_{k=1}^{K}S_{k}=X,\ \ S_{i}\cap S_{j}\equiv\emptyset$ for $i\neq j$ by minimizing the sum of squared error (SSE):
 
-# 2.2. Proposed Modification to Var-Part and PCA-Part
+$\mathrm{SSE}=\sum_{k=1}^{K}\sum_{\mathbf{x}_{i}\in S_{k}}\left\|\mathbf{x}_{i}-\mathbf{c}_{k}\right\|_{2}^{2}$ (1)
 
-Su and Dy  $^{40}$  demonstrated that, besides being computationally efficient, Var-Part and PCA-Part perform very well on a variety of data sets. Recall that in each iteration these methods select the cluster with the greatest SSE and then project the  $D$ -dimensional points in this cluster on a partitioning axis. The difference between the two methods is the choice of this axis. In Var-Part, the partitioning axis is the coordinate axis with the greatest variance, whereas in PCA-Part it is the major axis. After the projection operation, both methods use the mean point on the partitioning axis as a 'threshold' to divide the points between two clusters. In other words, each point is assigned to one of the two subclusters depending on which side of the mean point its projection falls to. It should be noted that the choice of this threshold is primarily motivated by computational convenience. Here, we propose a better alternative based on discriminant analysis.
-
-The projections of the points on the partitioning axis can be viewed as a discrete probability distribution, which can be conveniently represented by a histogram.
+where, $\left\|\,\right\|_{2}$ denotes the Euclidean ($L_{2}$) norm and $\mathbf{c}_{k}$ is the center of cluster $S_{k}$ calculated as the mean of the points that belong to this cluster. This problem is known to be computationally intractable even for $K=2$ *[40]*, but a heuristic method
 
 
 <!-- page 5 -->
 
-The problem of dividing a histogram into two partitions is a well studied one in the field of image processing. A plethora of histogram partitioning, a.k.a. thresholding, methods has been proposed in the literature with the early ones dating back to the 1960s *[46]*. Among these, Otsu’s method *[47]* has become the method of choice as confirmed by numerous comparative studies *[48, 49, 50, 46, 51, 52]*.
+developed by Lloyd [41] offers a simple solution. Lloyd's algorithm starts with  $K$  arbitrary centers, typically chosen uniformly at random from the data points [42]. Each point is then assigned to the nearest center, and each center is recalculated as the mean of all points assigned to it. These two steps are repeated until a predefined termination criterion is met. The pseudocode for this procedure is given in Algo. (1) (bold symbols denote vectors). Here,  $m[i]$  denotes the membership of point  $\mathbf{x}_i$ , i.e. index of the cluster center that is nearest to  $\mathbf{x}_i$ .
 
-Given an image represented by $L$ gray levels $\{0,1,\ldots,L-1\}$, a thresholding method partitions the image pixels into two classes $\mathcal{C}_{0}=\{0,1,\ldots,t\}$ and $\mathcal{C}_{1}=\{t+1,t+2,\,\ldots,L-1\}$ (object and background, or vice versa) at gray level $t$. In other words, pixels with gray levels less than or equal to the threshold $t$ are assigned to $\mathcal{C}_{0}$, whereas the remaining pixels are assigned to $\mathcal{C}_{1}$.
+input :  $X = \{\mathbf{x}_1,\dots ,\mathbf{x}_N\} \in \mathbb{R}^D$  ( $N\times D$  input data set)
 
-Let $n_{i}$ be the number of pixels with gray level $i$. The total number of pixels in the image is then given by $n=\sum_{i=0}^{L-1}n_{i}$. The normalized gray level histogram of the image can be regarded as a probability mass function:
+output:  $C = \{\mathbf{c}_1,\dots ,\mathbf{c}_K\} \in \mathbb{R}^D$  ( $K$  cluster centers)
 
-$p_{i}=\frac{n_{i}}{n},\quad p_{i}\geq 0,\quad\sum_{i=0}^{L-1}p_{i}=1$
+Select a random subset  $C$  of  $X$  as the initial set of cluster centers;
 
-Let $p_{0}(t)=\sum_{i=0}^{t}p_{i}$ and $p_{1}(t)=1-p_{0}(t)$ denote the probabilities of $\mathcal{C}_{0}$ and $\mathcal{C}_{1}$, respectively. The means of the respective classes are then given by:
+while termination criterion is not met do
 
-$\mu_{0}(t)$ $=\mu(t)/p_{0}(t)$
-$\mu_{1}(t)$ $=(\mu_{T}-\mu(t))/p_{1}(t)$
+```txt
+for  $(i = 1;i\leq N;i = i + 1)$  do Assign  $\mathbf{x}_i$  to the nearest cluster;  $m[i] = \underset {k\in \{1,\dots ,K\}}{\mathrm{argmin}}\| \mathbf{x}_i - \mathbf{c}_k\| ^2;$  end Recalculate the cluster centers; for  $(k = 1;k\leq K;k = k + 1)$  do Cluster  $S_{k}$  contains the set of points  $\mathbf{x}_i$  that are nearest to the center  $\mathbf{c}_k$  .  $S_{k} = \{\mathbf{x}_{i}|m[i] = k\}$  Calculate the new center  $\mathbf{c}_k$  as the mean of the points that belong to  $S_{k}$  .  $\mathbf{c}_k = \frac{1}{|S_k|}\sum_{\mathbf{x}_i\in S_k}\mathbf{x}_i;$  end
+```
 
-where $\mu(t)=\sum_{i=0}^{t}ip_{i}$ and $\mu_{T}=\mu(L-1)$ denote the first moment of the histogram up to gray level $t$ and mean gray level of the image, respectively.
+Algorithm 1: Conventional K-Means Algorithm
 
-Otsu’s method adopts between-class variance, i.e., $\sigma_{B}^{2}(t)=p_{0}(t)p_{1}(t)\left[\mu_{0}(t)-\mu_{1}(t)\right]^{2}$, from the discriminant analysis literature as its objective function and determines the optimal threshold $t^{*}$ as the gray level that maximizes $\sigma_{B}^{2}(t)$, i.e., $t^{*}=\underset{t\in\{0,1,\ldots,L-1\}}{\operatorname{argmax}}\ \sigma_{B}^{2}(t)$. Between-class variance can be viewed as a measure of class separability or histogram bimodality. It can be efficiently calculated using:
-
-$\sigma_{B}^{2}(t)=\frac{\left[\mu_{T}p_{0}(t)-\mu(t)\right]^{2}}{p_{0}(t)p_{1}(t)}$
-
-It should be noted that the efficiency of Otsu’s method can be attributed to the fact that it operates on histogrammed pixel gray values, which are non-negative integers. Var-Part and PCA-Part, on the other hand, operate on the projections of the points on the partitioning axis, which are often fractional. This problem can be circumvented by linearly scaling the projection values to the limits of the histogram, i.e., $0$ and $L-1$. Let $y_{i}$ be the projection of a point $\mathbf{x}_{i}$ on the partitioning axis. $y_{i}$ can be mapped to histogram bin $b$ given by:
-
-$b=\left[\frac{L\left(y_{i}-\underset{j}{\min}y_{j}\right)}{\underset{j}{\max}y_{j}-\underset{j}{\min}y_{j}}\right]$
+When compared to the preclustering methods, there are two problems with using KM for color quantization. First, due to its iterative nature, the algorithm might require an excessive amount of time to obtain an acceptable output quality. Second, the output is quite sensitive to the initial choice of the cluster centers. In order to
 
 
 <!-- page 6 -->
 
-where  $\lfloor z\rfloor$  is the floor function which returns the largest integer less than or equal to  $z$ .
+address these problems, we propose several modifications to the conventional KM algorithm:
 
-The computational complexities of histogram construction and Otsu's method are  $\mathcal{O}(N_i)$  ( $N_i$ : number of points in the cluster) and  $\mathcal{O}(L)$ , respectively.  $L$  is constant in our experiments and therefore the proposed modification does not alter the linear time complexity of Var-Part and PCA-Part.
-
-Figure 2 shows a histogram where using the mean point as a threshold leads to poor results. This histogram is constructed during the first iteration of PCA-Part from the projections of the points in the Shuttle data set (see Table 1). As marked on the figure, the mean point of this histogram is 61, whereas Otsu's method gives a threshold of 105. The SSE of the initial cluster is 1,836. When the mean point of the histogram is used a threshold, the resulting two subclusters have SSE's of 408 and 809. This means that splitting the initial cluster with a hyperplane orthogonal to the principal eigenvector of the cluster covariance matrix at the mean point results in approximately  $34\%$  reduction in the SSE. On the other hand, when Otsu's threshold is used, the subclusters have SSE's of 943 and 101, which translates to about  $43\%$  reduction in the SSE. In the next section, we will demonstrate that using Otsu's threshold instead of the mean point often leads to significantly better initial clusterings on a variety of data sets.
-
-![img-4.jpeg](img-4.jpeg)
-Fig. 2. Comparison of mean point and Otsu's thresholds
+- Data sampling: A straightforward way to speed up KM is to reduce the amount of data, which can be achieved by sampling the original image. Although random sampling can be used for this purpose, there are two problems with this approach. First, random sampling will further destabilize the clustering procedure in the sense that the output will be less predictable. Second, sampling rate will be an additional parameter that will have a significant impact on the output. In order to avoid these drawbacks, we propose a deterministic sampling strategy in which only the pixels with unique colors are sampled. The unique colors in an image can be determined efficiently using a hash table that uses chaining for collision resolution and a universal hash function of the form: $h_{a}(\mathbf{x})=\left(\sum_{i=1}^{3}a_{i}x_{i}\right)\bmod m$, where $\mathbf{x}=(x_{1},x_{2},x_{3})$ denotes a pixel with red ($x_{1}$), green ($x_{2}$), and blue ($x_{3}$) components, $m$ is a prime number, and the elements of sequence $a=(a_{1},a_{2},a_{3})$ are chosen randomly from the set $\{0,1,\ldots,m-1\}$.
+- Sample weighting: An important disadvantage of the proposed sampling strategy is that it disregards the color distribution of the original image. In order to address this problem, each point is assigned a weight that is proportional to its frequency (note that the frequency information is collected during
 
 
 <!-- page 7 -->
 
-# 8 M. Emre Celebi and Hassan A. Kingravi
-
-# 3. Experimental Results
-
-The experiments were performed on 24 commonly used data sets from the UCI Machine Learning Repository  $^{53}$ . Table 1 gives the data set descriptions. For each data set, the number of clusters  $(K)$  was set equal to the number of classes  $(K')$ , as commonly seen in the related literature  $^{23,39,40,29,30,31,32,54}$ .
-
-In clustering applications, normalization is a common preprocessing step that is necessary to prevent attributes with large ranges from dominating the distance calculations and also to avoid numerical instabilities in the computations. Two commonly used normalization schemes are linear scaling to unit range (min-max normalization) and linear scaling to unit variance (z-score normalization). Several studies revealed that the former scheme is preferable to the latter since the latter is likely to eliminate valuable between-cluster variation  $^{55,40}$ . As a result, we used min-max normalization to map the attributes of each data set to the  $[0,1]$  interval.
-
-Table 1. Data Set Descriptions (N: # points, D: # attributes,  $K'$ : # classes)
-
-|  ID | Data Set | N | D | K'  |
-| --- | --- | --- | --- | --- |
-|  1 | Abalone | 4,177 | 7 | 28  |
-|  2 | Breast Cancer Wisconsin (Original) | 683 | 9 | 2  |
-|  3 | Breast Tissue | 106 | 9 | 6  |
-|  4 | Ecoli | 336 | 7 | 8  |
-|  5 | Glass Identification | 214 | 9 | 6  |
-|  6 | Heart Disease | 297 | 13 | 5  |
-|  7 | Ionosphere | 351 | 34 | 2  |
-|  8 | Iris (Bezdek) | 150 | 4 | 3  |
-|  9 | ISOLET | 7,797 | 617 | 26  |
-|  10 | Landsat Satellite (Statlog) | 6,435 | 36 | 6  |
-|  11 | Letter Recognition | 20,000 | 16 | 26  |
-|  12 | MAGIC Gamma Telescope | 19,020 | 10 | 2  |
-|  13 | Multiple Features (Fourier) | 2,000 | 76 | 10  |
-|  14 | Musk (Clean2) | 6,598 | 166 | 2  |
-|  15 | Optical Digits | 5,620 | 64 | 10  |
-|  16 | Page Blocks Classification | 5,473 | 10 | 5  |
-|  17 | Pima Indians Diabetes | 768 | 8 | 2  |
-|  18 | Shuttle (Statlog) | 58,000 | 9 | 7  |
-|  19 | Spambase | 4,601 | 57 | 2  |
-|  20 | SPECTF Heart | 267 | 44 | 2  |
-|  21 | Wall-Following Robot Navigation | 5,456 | 24 | 4  |
-|  22 | Wine Quality | 6,497 | 11 | 7  |
-|  23 | Wine | 178 | 13 | 3  |
-|  24 | Yeast | 1,484 | 8 | 10  |
+the data sampling stage). The weights are normalized by the number of pixels in the image to avoid numerical instabilities in the calculations. In addition, Algo. (1) is modified to incorporate the weights in the clustering procedure.
+- Sort-Means algorithm: The assignment phase of KM involves many redundant distance calculations. In particular, for each point, the distances to each of the $K$ cluster centers are calculated. Consider a point $\mathbf{x}_{i}$, two cluster centers $\mathbf{c}_{a}$ and $\mathbf{c}_{b}$ and a distance metric $d$, using the triangle inequality, we have $d(\mathbf{c}_{a},\mathbf{c}_{b})\leq d(\mathbf{x}_{i},\mathbf{c}_{a})+d(\mathbf{x}_{i},\mathbf{c}_{b})$. Therefore, if we know that $2d(\mathbf{x}_{i},\mathbf{c}_{a})\leq d(\mathbf{c}_{a},\mathbf{c}_{b})$, we can conclude that $d(\mathbf{x}_{i},\mathbf{c}_{a})\leq d(\mathbf{x}_{i},\mathbf{c}_{b})$ without having to calculate $d(\mathbf{x}_{i},\mathbf{c}_{b})$. The compare-means algorithm *[43]* precalculates the pairwise distances between cluster centers at the beginning of each iteration. When searching for the nearest cluster center for each point, the algorithm often avoids a large number of distance calculations with the help of the triangle inequality test. The sort-means (SM) algorithm *[43]* further reduces the number of distance calculations by sorting the distance values associated with each cluster center in ascending order. At each iteration, point $\mathbf{x}_{i}$ is compared against the cluster centers in increasing order of distance from the center $\mathbf{c}_{k}$ that $\mathbf{x}_{i}$ was assigned to in the previous iteration. If a center that is far enough from $\mathbf{c}_{k}$ is reached, all of the remaining centers can be skipped and the procedure continues with the next point. In this way, SM avoids the overhead of going through all the centers. It should
 
 
 <!-- page 8 -->
 
-The performance of the IMs was quantified using two effectiveness (quality) and two efficiency (speed) criteria:
+be noted that more elaborate approaches to accelerate KM have been proposed in the literature. These include algorithms based on kd-trees *[44]*, coresets *[45]*, and more sophisticated uses of the triangle inequality *[46]*. Some of these algorithms *[45, 46]* are not suitable for low dimensional data sets such as color image data since they incur significant overhead to create and update auxiliary data structures *[46]*. Others *[44]* provide computational gains comparable to SM at the expense of significant conceptual and implementation complexity. In contrast, SM is conceptually simple, easy to implement, and incurs very small overhead, which makes it an ideal candidate for color clustering.
 
-- Initial SSE: This is the SSE value calculated after the initialization phase, before the clustering phase. It gives us a measure of the effectiveness of an IM by itself.
-- Final SSE: This is the SSE value calculated after the clustering phase. It gives us a measure of the effectiveness of an IM when its output is refined by k-means. Note that this is the objective function of the k-means algorithm, i.e., (1).
-- Number of Iterations: This is the number of iterations that k-means requires until reaching convergence when initialized by a particular IM. It is an efficiency measure independent of programming language, implementation style, compiler, and CPU architecture.
-- CPU Time: This is the total CPU time in milliseconds taken by the initialization and clustering phases.
+We refer to the KM algorithm with the abovementioned modifications as the ’Weighted Sort-Means’ (WSM) algorithm. The pseudocode for WSM is given in Algo. (2).
 
-All of the methods were implemented in the C language, compiled with the gcc v4.4.3 compiler, and executed on an Intel Xeon E5520 2.26GHz machine. Time measurements were performed using the getrusage function, which is capable of measuring CPU time to an accuracy of a microsecond. The MT19937 variant of the Mersenne Twister algorithm was used to generate high quality pseudorandom numbers *[56]*.
+## 3 Experimental Results and Discussion
 
-The convergence of k-means was controlled by the disjunction of two criteria: the number of iterations reaches a maximum of 100 or the relative improvement in SSE between two consecutive iterations drops below a threshold, i.e., $(\text{SSE}_{i-1}-\text{SSE}_{i})/\text{SSE}_{i}\leq\varepsilon$, where $\text{SSE}_{i}$ denotes the SSE value at the end of the $i$-th ($i\in\{1,2,\ldots,100\}$) iteration. The convergence threshold was set to $\varepsilon=10^{-6}$.
+### 3.1 Image set and performance criteria
 
-In this study, we focus on IMs that have time complexity linear in $N$. This is because k-means itself has linear complexity, which is perhaps the most important reason for its popularity. Therefore, an IM for k-means should not diminish this advantage of the algorithm. The proposed methods, named Otsu Var-Part (OV) and Otsu PCA-Part (OP), were compared to six popular, linear, order-invariant IMs: Forgy’s method (F), MacQueen’s second method (M), maximin (X), k-means++ (K), Var-Part (V), and PCA-Part (P). It should be noted that among these methods F, M, and K are random, whereas X, V, P, OV, and OP are deterministic.
-
-We first examine the influence of $L$ (number of histogram bins) on the performance of OV and OP. Tables 2 and 3 show the initial and final SSE values obtained by respectively OV and OP for $L=64,128,256,512,1024$ on four of the largest data sets (the best values are underlined). It can be seen that the performances of both methods are relatively insensitive to the value of $L$. Therefore, in the subsequent
+The proposed method was tested on some of the most commonly used test images in the quantization literature. The natural images in the set included Airplane ($512\times 512$, 77,041 (29%) unique colors), Baboon ($512\times 512$, 153,171 (58%) unique colors), Boats ($787\times 576$, 140,971 (31%) unique colors), Lenna ($512\times 480$, 56,164 (23%) unique colors), Parrots ($1536\times 1024$, 200,611 (13%) unique colors), and Peppers ($512\times 512$, 111,344 (42%) unique colors). The synthetic images included Fish ($300\times 200$, 28,170
 
 
 <!-- page 9 -->
 
-# 10 M. Emre Celebi and Hassan A. Kingravi
+input:  $X = \{\mathbf{x}_1,\dots ,\mathbf{x}_{N'}\} \in \mathbb{R}^D$  ( $N^{\prime}\times D$  input data set)
 
-experiments we report the results for  $L = 256$ .
+$W = \{w_{1},\ldots ,w_{N^{\prime}}\} \in [0,1]$  ( $N^{\prime}$  point weights)
 
-Table 2. Influence of  $L$  on the effectiveness of Otsu Var-Part (L: # histogram bins)
+output:  $C = \{\mathbf{c}_1,\dots ,\mathbf{c}_K\} \in \mathbb{R}^D$  ( $K$  cluster centers)
 
-|  ID | Criterion | L=64 | L=128 | L=256 | L=512 | L=1024  |
-| --- | --- | --- | --- | --- | --- | --- |
-|  9 | Initial SSE | 143859 | 144651 | 144658 | 144637 | 144638  |
-|   |  Final SSE | 118267 | 119127 | 118033 | 118033 | 118034  |
-|  10 | Initial SSE | 1987 | 1920 | 1919 | 1920 | 1920  |
-|   |  Final SSE | 1742 | 1742 | 1742 | 1742 | 1742  |
-|  11 | Initial SSE | 3242 | 3192 | 3231 | 3202 | 3202  |
-|   |  Final SSE | 2742 | 2734 | 2734 | 2734 | 2734  |
-|  15 | Initial SSE | 17448 | 17504 | 17504 | 17504 | 17504  |
-|   |  Final SSE | 14581 | 14581 | 14581 | 14581 | 14581  |
+Select a random subset  $C$  of  $X$  as the initial set of cluster centers;
 
-Table 3. Influence of  $L$  on the effectiveness of Otsu PCA-Part (L: # histogram bins)
+while termination criterion is not met do
 
-|  ID | Criterion | L=64 | L=128 | L=256 | L=512 | L=1024  |
-| --- | --- | --- | --- | --- | --- | --- |
-|  9 | Initial SSE | 123527 | 123095 | 122528 | 123129 | 123342  |
-|   |  Final SSE | 118575 | 118577 | 119326 | 118298 | 118616  |
-|  10 | Initial SSE | 1855 | 1807 | 1835 | 1849 | 1848  |
-|   |  Final SSE | 1742 | 1742 | 1742 | 1742 | 1742  |
-|  11 | Initial SSE | 2994 | 2997 | 2995 | 2995 | 2991  |
-|   |  Final SSE | 2747 | 2747 | 2747 | 2747 | 2747  |
-|  15 | Initial SSE | 15136 | 15117 | 15118 | 15116 | 15117  |
-|   |  Final SSE | 14650 | 14650 | 14650 | 14650 | 14650  |
+```txt
+Calculate the pairwise distances between the cluster centers;
+for  $(i = 1;i\leq K;i = i + 1)$  do
+for  $(j = i + 1;j\leq K;j = j + 1)$  do
+$d[i][j] = d[j][i] = \| \mathbf{c}_i - \mathbf{c}_j\| ^2;$
+end
+end
+Construct a  $K\times K$  matrix  $M$  in which row  $i$  is a permutation of  $1,\ldots K$  that represents the clusters in increasing order of distance of their centers from  $\mathbf{c}_i$
+for  $(i = 1;i\leq N^{\prime};i = i + 1)$  do
+Let  $S_{p}$  be the cluster that  $\mathbf{x}_i$  was assigned to in the previous iteration;
+$p = m[i]$  min_dist  $=$  prev_dist  $= \| \mathbf{x}_i - \mathbf{c}_p\| ^2$  Update the nearest center if necessary;
+for  $(j = 2;j\leq K;j = j + 1)$  do
+$t = M[p][j]$  if  $d[p][t]\geq 4$  prev_dist then There can be no other closer center. Stop checking; break;
+end
+dist  $= \| \mathbf{x}_i - \mathbf{c}_t\| ^2$  if dist  $\leq$  min_dist then  $\mathbf{c}_t$  is closer to  $\mathbf{x}_i$  than  $\mathbf{c}_p$  min_dist  $=$  dist;  $m[i] = t$  end
+end
+end
+Recalculate the cluster centers;
+for  $(k = 1;k\leq K;k = k + 1)$  do Calculate the new center  $\mathbf{c}_k$  as the weighted mean of points that are nearest to it;
+$\mathbf{c}_k = \left(\sum_{m[i] = k}w_i\mathbf{x}_i\right)\bigg / \sum_{m[i] = k}w_i;$
+```
 
-In the remaining experiments, each random method was executed a 100 times and statistics such as minimum, mean, and standard deviation were collected for each performance criteria. The minimum and mean statistics represent the best and average case performance, respectively, while standard deviation quantifies the variability of performance across different runs. Note that for a deterministic method, the minimum and mean values are always identical and the standard deviation is always 0.
-
-Tables 4-7 give the performance measurements for each method with respect to initial SSE, final SSE, number of iterations, and CPU time, respectively. For each of the initial SSE, final SSE, and number of iterations criteria, we calculated the ratio of the minimum/mean/standard deviation value obtained by each method to the best (least) minimum/mean/standard deviation value on each data set. These ratios will be henceforth referred to as the 'normalized' performance criteria. For example, on the Abalone data set (1), the minimum initial SSE of F is 424.92
+Algorithm 2: Weighted Sort-Means Algorithm
 
 
 <!-- page 10 -->
 
-and the best *minimum* initial SSE is 21.57 and thus the normalized initial SSE is about 20. This simply means that on this data set F obtained approximately 20 times worse *minimum* initial SSE than the best method. We then averaged these normalized values over the 24 data sets to quantify the *overall* performance of each method with respect to each statistic (see Table 8). Note that we did not attempt to summarize the CPU time values in the same manner due to the sparsity of the data (see Table 7). For convenient visualization, Figure 3 shows box plots of the normalized performance criteria. Here, the bottom and top end of the whiskers of a box represent the *minimum* and *maximum*, respectively, whereas the bottom and top of the box itself are the 25th percentile (*Q1*) and 75th percentile (*Q3*), respectively. The line that passes through the box is the 50th percentile (*Q2*), i.e., the *median*, while the small square inside the box denotes the *mean*.
+(47%) unique colors) and Poolballs ($510\times 383$, 13,604 (7%) unique colors).
 
-## 4 Discussion
+The effectiveness of a quantization method was quantified by the Mean Squared Error (MSE) measure:
 
-### 4.1 Best Case Performance Analysis
+$\text{MSE}\left(\mathbf{X},\mathbf{\hat{X}}\right)=\frac{1}{HW}\sum\nolimits_{h=1}^{H}\sum\nolimits_{w=1}^{W}\parallel\mathbf{x}(h,w)-\mathbf{\hat{x}}(h,w)\parallel_{2}^{2}$ (2)
 
-With respect to the *minimum* statistic, the following observations can be made:
+where $\mathbf{X}$ and $\mathbf{\hat{X}}$ denote respectively the $H\times W$ original and quantized images in the RGB color space. MSE represents the average distortion with respect to the $L_{2}^{2}$ norm (1) and is the most commonly used evaluation measure in the quantization literature *[1, 7]*. Note that the Peak Signal-to-Noise Ratio (PSNR) measure can be easily calculated from the MSE value:
 
-- Initial SSE: OP is the best method, followed closely by P, OV, and V. On the other hand, F is the worst method, followed by X. These two methods give 2–3 times worse *minimum* initial SSE than the best method. It can be seen that multiple runs of random methods do not produce good initial clusterings. In contrast, only a single run of OP, P, OV, or V often gives very good results. This is because these methods are approximate clustering algorithms by themselves and thus they give reasonable results even without k-means refinement.
-- Final SSE: X is the worst method, while the remaining methods exhibit very similar performance. This homogeneity in performance is because k-means can take two disparate initial configurations to similar (or even identical) local minima. Given the abundance of local minima even in data sets of moderate size and/or dimensionality and the gradient descent nature of k-means, it is not surprising that the deterministic methods (except X) perform slightly worse than the random methods as the former methods were executed only once, whereas the latter ones were executed a 100 times.
-- Number of Iterations: K is the best method, followed by M and F. X is the worst method. As in the case of final SSE, random methods outperform deterministic methods due to their multiple-run advantage.
+$\text{PSNR}=20\log_{10}\left(\frac{255}{\sqrt{\text{MSE}}}\right).$ (3)
 
-### 4.2 Average Case Performance Analysis
+The efficiency of a quantization method was measured by CPU time in milliseconds. Note that only the palette generation phase was considered since this is the most time consuming part of the majority of quantization methods. All of the programs were implemented in the C language, compiled with the gcc v4.2.4 compiler, and executed on an Intel®Core™2 Quad Q6700 2.66GHz machine. The time figures were averaged over 100 runs.
 
-With respect to the *mean* statistic, the following observations can be made:
+### 3.2 Comparison of WSM against other quantization methods
+
+The WSM algorithm was compared to some of the well-known quantization methods in the literature:
 
 
 <!-- page 11 -->
 
-Initial SSE: OP is the best method, followed closely by P, OV, and V. The remaining methods give 1.7–3.2 times worse *mean* initial SSE than any of these hierarchical methods. Random methods exhibit significantly worse *average* performance than the deterministic ones because the former methods can produce highly variable results across different runs (see the standard deviation values in Table 4).
-Final SSE: This is similar to the case of *minimum* final SSE, with the difference that deterministic methods (except X) are now slightly better than the random ones. Once again, this is because random methods can produce highly variable results due to their stochastic nature.
-Number of Iterations: The ranking of the methods is similar to the case of *mean* final SSE.
-
-### 4.3 Consistency Analysis
-
-With respect to the *standard deviation* statistic, F is significantly better than both M and K. If, however, the application requires absolute consistency, i.e., exactly the same clustering in every run, a deterministic IM should be used.
-
-### 4.4 CPU Time Analysis
-
-It can be seen from Table 7 that, on about half of the data sets, each of the IMs require less than a few milliseconds of CPU time. On the other hand, on large and/or high-dimensional data sets efficiency differences become more prominent. It should be noted that each of the values reported in this table corresponds to a single k-means ‘run’. In practice, a random method is typically executed $R$ times, e.g., in this study $R=100$, and the output of the run that gives the least final SSE is taken as the result. Therefore, the total computational cost of a random method is often significantly higher than that of a deterministic method. For example, on the ISOLET data set, which has the greatest $N\times D\times K$ value among all the data sets, K took on the average $3,397$ milliseconds, whereas OP took $12,460$ milliseconds. The latter method, however, required about $27$ times less CPU time than the former one since the former was executed a total of $100$ times.
-
-### 4.5 Relative Performance Analysis
-
-We also determined the number of data sets (out of 24) on which OV and OP respectively performed {worse than/same as/better than} V and P. Tables 9 and 10 present the results for OV and OP, respectively. It can be seen that, with respect to initial SSE and number of iterations criteria, OV outperforms V more often than not. On the other hand, OP frequently outperforms P with respect to both criteria. As for final SSE, OP performs slightly better than P, whereas OV performs slightly worse than V. It appears that Otsu’s method benefits P more than it benefits V. This is most likely due to the fact that histograms of projections over the major axis nec
+- Median-cut (MC) *[9]*: This method starts by building a $32\times 32\times 32$ color histogram that contains the original pixel values reduced to 5 bits per channel by uniform quantization. This histogram volume is then recursively split into smaller boxes until $K$ boxes are obtained. At each step, the box that contains the largest number of pixels is split along the longest axis at the median point, so that the resulting subboxes each contain approximately the same number of pixels. The centroids of the final $K$ boxes are taken as the color palette.
+- Variance-based method (WAN) *[11]*: This method is similar to MC, with the exception that at each step the box with the largest weighted variance (squared error) is split along the major (principal) axis at the point that minimizes the marginal squared error.
+- Greedy orthogonal bipartitioning (WU) *[13]*: This method is similar to WAN, with the exception that at each step the box with the largest weighted variance is split along the axis that minimizes the sum of the variances on both sides.
+- Neu-quant (NEU) *[35]*: This method utilizes a one-dimensional self-organizing map (Kohonen neural network) with 256 neurons. A random subset of $N/f$ pixels is used in the training phase and the final weights of the neurons are taken as the color palette. In the experiments, the highest quality configuration, i.e. $f=1$, was used.
 
 
 <!-- page 12 -->
 
-essarily have a greater dynamic range and variability and thus are more amenable to thresholding compared to histograms of projections over any coordinate axis.
-
-### 4.6 Recommendations for Practitioners
-
-Based on the analyses presented above, the following recommendations can be made:
-
-- In general, X should not be used. As mentioned in Section 2, this method was not designed specifically as a k-means initializer *[43]*. It is easy to understand and implement, but is mostly ineffective and unreliable. Furthermore, despite its low overhead, this method does not offer significant time savings since it often results in slow k-means convergence.
-- In applications that involve small data sets, e.g., $N<1,000$, K should be used. It is computationally feasible to run this method hundreds of times on such data sets given that one such run takes only a few milliseconds.
-- In time-critical applications that involve large data sets or applications that demand determinism, the hierarchical methods should be used. These methods need to be executed only once and they lead to reasonably fast k-means convergence. The efficiency difference between V/OV and P/OP is noticeable only on high dimensional data sets such as ISOLET ($D=617$) and Musk ($D=166$). This is because V/OV calculates the direction of split by determining the coordinate axis with the greatest variance (in $\mathcal{O}(D)$ time), whereas P/OP achieves this by calculating the principal eigenvector of the cluster covariance matrix (in $\mathcal{O}(D^{2})$ time using the power method *[44]*). Note that despite its higher computational complexity, P/OP can, in some cases, be more efficient than V/OV (see Table 7). This is because the former converges significantly faster than the latter (see Table 8). The main disadvantage of these methods is that they are more complicated to implement due to their hierarchical formulation.
-- In applications where an approximate clustering of the data set is desired, the hierarchical methods should be used. These methods produce very good initial clusterings, which makes it possible to use them as standalone clustering algorithms.
-- Among the hierarchical methods, the ones based on PCA, i.e., P and OP, are preferable to those based on variance, i.e., V and OV. Furthermore, the proposed OP and OV methods generally outperform their respective counterparts, i.e., P and V, especially with respect to initial SSE and number of iterations.
-
-## 5 Conclusions
-
-In this paper, we presented a simple modification to Var-Part and PCA-Part, two hierarchical k-means initialization methods that are linear, deterministic, and order
+- Modified minmax (MMM) [28]: This method chooses the first center $\mathbf{c}_1$ arbitrarily from the data set and the $i$-th center $\mathbf{c}_i$ ($i = 2, \ldots, K$) is chosen to be the point that has the largest minimum weighted $L_2^2$ distance (the weights for the red, green, and blue channels are taken as 0.5, 1.0, and 0.25, respectively) to the previously selected centers, i.e. $\mathbf{c}_1, \mathbf{c}_2, \ldots, \mathbf{c}_{i-1}$. Each of these initial centers is then recalculated as the mean of the points assigned to it.
+- Split &amp; Merge (SAM) [23]: This two-phase method first divides the color space uniformly into $B$ partitions. This initial set of $B$ clusters is represented as an adjacency graph. In the second phase, $(B - K)$ merge operations are performed to obtain the final $K$ clusters. At each step of the second phase, the pair of clusters with the minimum joint quantization error are merged. In the experiments, the initial number of clusters was set to $B = 20K$.
+- Fuzzy c-means (FCM) [47]: FCM is a generalization of KM in which points can belong to more than one cluster. The algorithm involves the minimization of the functional $J_{q}(U,V) = \sum_{i=1}^{N} \sum_{k=1}^{K} u_{ik}^{q} \|\mathbf{x}_{i} - \mathbf{v}_{k}\|_{2}^{2}$ with respect to $U$ (a fuzzy $K$-partition of the data set) and $V$ (a set of prototypes - cluster centers). The parameter $q$ controls the fuzziness of the resulting clusters. At each iteration, the membership matrix $U$ is updated by $u_{ik} = \left( \sum_{j=1}^{K} \left( \|\mathbf{x}_{i} - \mathbf{v}_{k}\|_{2} / \|\mathbf{x}_{i} - \mathbf{v}_{j}\|_{2} \right)^{2/(q-1)} \right)^{-1}$, which is followed by the update of the prototype matrix $V$ by $\mathbf{v}_{k} = \left( \sum_{i=1}^{N} u_{ik}^{q} \mathbf{x}_{i} \right) / \left( \sum_{i=1}^{N} u_{ik}^{q} \right)$. A naïve
 
 
 <!-- page 13 -->
 
-invariant. We compared the original methods and their modified versions to some of the most popular linear initialization methods, namely Forgy’s method, Macqueen’s second method, maximin, and k-means++, on a large and diverse collection of data sets from the UCI Machine Learning Repository. The results demonstrated that, despite their deterministic nature, Var-Part and PCA-Part are highly competitive with one of the best random initialization methods to date, i.e., k-means++. In addition, the proposed modification significantly improves the performance of both hierarchical methods. The presented Var-Part and PCA-Part variants can be used to initialize k-means effectively, particularly in time-critical applications that involve large data sets. Alternatively, they can be used as approximate clustering algorithms without additional k-means refinement.
-
-## 6 Acknowledgments
-
-This publication was made possible by grants from the Louisiana Board of Regents (LEQSF2008-11-RD-A-12) and National Science Foundation (0959583, 1117457).
-
-## References
-
-- [1] A. K. Jain, M. N. Murty, and P. J. Flynn, “Data Clustering: A Review,” ACM Computing Surveys, vol. 31, no. 3, pp. 264–323, 1999.
-- [2] A. K. Jain, “Data Clustering: 50 Years Beyond K-Means,” Pattern Recognition Letters, vol. 31, no. 8, pp. 651–666, 2010.
-- [3] L. Kaufman and P. Rousseeuw, Finding Groups in Data: An Introduction to Cluster Analysis. Wiley-Interscience, 1990.
-- [4] D. Aloise, A. Deshpande, P. Hansen, and P. Popat, “NP-Hardness of Euclidean Sum-of-Squares Clustering,” Machine Learning, vol. 75, no. 2, pp. 245–248, 2009.
-- [5] M. Mahajan, P. Nimbhorkar, and K. Varadarajan, “The Planar k-Means Problem is NP-hard,” Theoretical Computer Science, vol. 442, pp. 13–21, 2012.
-- [6] A. Tarsitano, “A Computational Study of Several Relocation Methods for K-Means Algorithms,” Pattern Recognition, vol. 36, no. 12, pp. 2955–2966, 2003.
-- [7] S. Lloyd, “Least Squares Quantization in PCM,” IEEE Transactions on Information Theory, vol. 28, no. 2, pp. 129–136, 1982.
-- [8] P. S. Bradley and U. Fayyad, “Refining Initial Points for K-Means Clustering,” in Proc. of the 15th Int. Conf. on Machine Learning, pp. 91–99, 1998.
-- [9] M. Dash, H. Liu, and X. Xu, “’1 + 1 > 2’: Merging Distance and Density Based Clustering,” in Proc. of the 7th Int. Conf. on Database Systems for Advanced Applications, pp. 32–39, 2001.
-- [10] W. Y. Chen, Y. Song, H. Bai, C. J. Lin, and E. Y. Chang, “Parallel Spectral Clustering in Distributed Systems,” IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 33, no. 3, pp. 568–586, 2011.
-- [11] T. Kanungo, D. Mount, N. Netanyahu, C. Piatko, R. Silverman, and A. Wu, “An Efficient K-Means Clustering Algorithm: Analysis and Implementation,” IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 24, no. 7, pp. 881–892, 2002.
-- [12] G. Hamerly, “Making k-means Even Faster,” in Proc. of the 2010 SIAM Int. Conf. on Data Mining, pp. 130–140, 2010.
-- [13] T. W. Chen and S. Y. Chien, “Bandwidth Adaptive Hardware Architecture of K-
+implementation of the FCM algorithm has a complexity that is quadratic in $K$. In the experiments, a linear complexity formulation described in *[48]* was used and the fuzziness parameter was set to $q=2$ as commonly seen in the fuzzy clustering literature *[39]*.
+- Fuzzy c-means with partition index maximization (PIM) *[32]*: This method is an extension of FCM in which the functional to be minimized incorporates a cluster validity measure called the ’partition index’ (PI). This index measures how well a point $\mathbf{x}_{i}$ has been classified and is defined as $P_{i}=\sum_{k=1}^{K}u_{ik}^{q}$. The FCM functional can be modified to incorporate PI as follows: $J_{q}^{\alpha}(U,V)=\sum_{i=1}^{N}\sum_{k=1}^{K}u_{ik}^{q}\left\|\mathbf{x}_{i}-\mathbf{v}_{k}\right\|_{2}^{2}-\alpha\sum_{i=1}^{N}P_{i}$. The parameter $\alpha$ controls the weight of the second term. The procedure that minimizes $J_{q}^{\alpha}(U,V)$ is identical to the one used in FCM except for the membership matrix update equation: $u_{ik}=\left(\sum_{j=1}^{K}\left[(\left\|\mathbf{x}_{i}-\mathbf{v}_{k}\right\|_{2}-\alpha)\big{/}\left(\left\|\mathbf{x}_{i}-\mathbf{v}_{j}\right\|_{2}-\alpha\right)\right]^{2/(q-1)}\right)^{-1}$. An adaptive method to determine the value of $\alpha$ is to set it to a fraction $0\leq\delta&lt;0.5$ of the distance between the nearest two centers, i.e. $\alpha=\delta\min\limits_{i\neq j}\left\|\mathbf{v}_{i}-\mathbf{v}_{j}\right\|_{2}^{2}$. Following *[32]*, the fraction value was set to $\delta=0.4$.
+- Finite-state k-means (FKM) *[25]*: This method is a fast approximation for KM. The first iteration is the same as that of KM. In each of the subsequent iterations, the nearest center for a point $\mathbf{x}_{i}$ is determined from among the $K^{\prime}$ ($K^{\prime}\ll K$) nearest neighbors of the center that the point was assigned to in
 
 
 <!-- page 14 -->
 
-Means Clustering for Video Analysis,” IEEE Transactions on Very Large Scale Integration (VLSI) Systems, vol. 18, no. 6, pp. 957–966, 2010.
-- [14] C. Ordonez and E. Omiecinski, “Efficient Disk-Based K-Means Clustering for Relational Databases,” IEEE Transactions on Knowledge and Data Engineering, vol. 16, no. 8, pp. 909–921, 2004.
-- [15] S. Z. Selim and M. A. Ismail, “K-Means-Type Algorithms: A Generalized Convergence Theorem and Characterization of Local Optimality,” IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 6, no. 1, pp. 81–87, 1984.
-- [16] L. Bottou and Y. Bengio, “Convergence Properties of the K-Means Algorithms,” in Advances in Neural Information Processing Systems 7 (G. Tesauro, D. S. Touretzky, and T. K. Leen, eds.), pp. 585–592, MIT Press, 1995.
-- [17] L. Vendramin, R. J. G. B. Campello, and E. R. Hruschka, “Relative Clustering Validity Criteria: A Comparative Overview,” Statistical Analysis and Data Mining, vol. 3, no. 4, pp. 209–235, 2010.
-- [18] J. Mao and A. K. Jain, “A Self-Organizing Network for Hyperellipsoidal Clustering (HEC),” IEEE Transactions on Neural Networks, vol. 7, no. 1, pp. 16–29, 1996.
-- [19] J. S. Zhang and Y.-W. Leung, “Robust Clustering by Pruning Outliers,” IEEE Transactions on Systems, Man, and Cybernetics – Part B, vol. 33, no. 6, pp. 983–999, 2003.
-- [20] M. E. Celebi, H. Kingravi, and P. A. Vela, “A Comparative Study of Efficient Initialization Methods for the K-Means Clustering Algorithm,” Expert Systems with Applications, vol. 40, no. 1, pp. 200–210, 2013.
-- [21] M. E. Celebi, “Improving the Performance of K-Means for Color Quantization,” Image and Vision Computing, vol. 29, no. 4, pp. 260–271, 2011.
-- [22] J. M. Pena, J. A. Lozano, and P. Larranaga, “An Empirical Comparison of Four Initialization Methods for the K-Means Algorithm,” Pattern Recognition Letters, vol. 20, no. 10, pp. 1027–1040, 1999.
-- [23] J. He, M. Lan, C. L. Tan, S. Y. Sung, and H. B. Low, “Initialization of Cluster Refinement Algorithms: A Review and Comparative Study,” in Proc. of the 2004 IEEE Int. Joint Conf. on Neural Networks, pp. 297–302, 2004.
-- [24] G. N. Lance and W. T. Williams, “A General Theory of Classificatory Sorting Strategies - II. Clustering Systems,” The Computer Journal, vol. 10, no. 3, pp. 271–277, 1967.
-- [25] M. M. Astrahan, “Speech Analysis by Clustering, or the Hyperphoneme Method,” Tech. Rep. AIM-124, Stanford University, 1970.
-- [26] J. A. Hartigan and M. A. Wong, “Algorithm AS 136: A K-Means Clustering Algorithm,” Journal of the Royal Statistical Society C, vol. 28, no. 1, pp. 100–108, 1979.
-- [27] A. Likas, N. Vlassis, and J. Verbeek, “The Global K-Means Clustering Algorithm,” Pattern Recognition, vol. 36, no. 2, pp. 451–461, 2003.
-- [28] M. Al-Daoud, “A New Algorithm for Cluster Initialization,” in Proc. of the 2nd World Enformatika Conf., pp. 74–76, 2005.
-- [29] S. J. Redmond and C. Heneghan, “A Method for Initialising the K-Means Clustering Algorithm Using kd-trees,” Pattern Recognition Letters, vol. 28, no. 8, pp. 965–973, 2007.
-- [30] M. Al Hasan, V. Chaoji, S. Salem, and M. Zaki, “Robust Partitional Clustering by Outlier and Density Insensitive Seeding,” Pattern Recognition Letters, vol. 30, no. 11, pp. 994–1002, 2009.
-- [31] F. Cao, J. Liang, and G. Jiang, “An Initialization Method for the K-Means Algorithm Using Neighborhood Model,” Computers and Mathematics with Applications, vol. 58, no. 3, pp. 474–483, 2009.
-- [32] P. Kang and S. Cho, “K-Means Clustering Seeds Initialization Based on Centrality,
+the previous iteration. When compared to KM, this technique leads to considerable computational savings since the nearest center search is performed in a significantly smaller set of $K^{\prime}$ centers rather than the entire set of $K$ centers. Following *[25]*, the number of nearest neighbors was set to $K^{\prime}=8$.
+- Stable-flags k-means (SKM) *[26]*: This method is another fast approximation for KM. The first $I^{\prime}$ iterations are the same as those of KM. In the subsequent iterations, the clustering procedure is accelerated using the concepts of center stability and point activity. More specifically, if a cluster center $\mathbf{c}_{k}$ does not move by more than $\theta$ units (as measured by the $L_{2}^{2}$ distance) in two successive iterations, this center is classified as stable. Furthermore, points that were previously assigned to the stable centers are classified as inactive. At each iteration, only unstable centers and active points participate in the clustering procedure. Following *[26]*, the algorithm parameters were set to $I^{\prime}=10$ and $\theta=1.0$.
+
+For each KM-based quantization method (except for SKM), two variants were implemented. In the first one, the number of iterations was limited to 10, which makes this variant suitable for time-critical applications. These *fixed-iteration* variants are denoted by the plain acronyms KM, FKM, and WSM. In the second variant, to obtain higher quality results, the method was executed until it converged. Convergence was determined by the following commonly used criterion *[38]*: $(\mathrm{SSE}_{i-1}-\mathrm{SSE}_{i})/\mathrm{SSE}_{i}\leq\varepsilon$,
 
 
 <!-- page 15 -->
 
-16 M. Emre Celebi and Hassan A. Kingravi
+where $\mathrm{SSE}_i$ denotes the SSE (1) value at the end of the $i$-th iteration. Following [25; 26], the convergence threshold was set to $\varepsilon = 0.0001$. The convergent variants of KM, FKM, and WSM are denoted by KM-C, FKM-C, and WSM-C, respectively. Note that since SKM involves at least $I' = 10$ iterations, only the convergent variant was implemented for this method. As for the fuzzy quantization methods, i.e. FCM and PIM, due to their excessive computational requirements, the number of iterations for these methods was limited to 10.
 
-Sparsity, and Isotropy,” in Proc. of the 10th Int. Conf. on Intelligent Data Engineering and Automated Learning, pp. 109–117, 2009.
+Tables 1-2 compare the performance of the methods at quantization levels $K = \{32,64,128,256\}$ on the test images. Note that, for computational simplicity, random initialization was used in the implementations of FCM, PIM, KM, KM-C, FKM, FKM-C, SKM, WSM, and WSM-C. Therefore, in Table 1, the quantization errors for these methods are specified in the form of mean $(\mu)$ and standard deviation $(\sigma)$ over 100 runs. The best (lowest) error values are shown in **bold**. In addition, with respect to each performance criterion, the methods are ranked based on their mean values over the test images. Table 3 gives the mean ranks of the methods. The last column gives the overall mean ranks with the assumption that each criterion has equal importance. Note that the best possible rank is 1. The following observations are in order:
 
-33. E. Forgy, “Cluster Analysis of Multivariate Data: Efficiency vs. Interpretability of Classification,” Biometrics, vol. 21, p. 768, 1965.
-
-34. R. C. Jancey, “Multidimensional Group Analysis,” Australian Journal of Botany, vol. 14, no. 1, pp. 127–130, 1966.
-
-35. J. MacQueen, “Some Methods for Classification and Analysis of Multivariate Observations,” in Proc. of the 5th Berkeley Symposium on Mathematical Statistics and Probability, pp. 281–297, 1967.
-
-36. G. H. Ball and D. J. Hall, “A Clustering Technique for Summarizing Multivariate Data,” Behavioral Science, vol. 12, no. 2, pp. 153–155, 1967.
-
-37. J. T. Tou and R. C. Gonzales, Pattern Recognition Principles. Addison-Wesley, 1974.
-
-38. H. Späth, “Computational Experiences with the Exchange Method: Applied to Four Commonly Used Partitioning Cluster Analysis Criteria,” European Journal of Operational Research, vol. 1, no. 1, pp. 23–31, 1977.
-
-39. D. Arthur and S. Vassilvitskii, “k-means++: The Advantages of Careful Seeding,” in Proc. of the 18th Annual ACM-SIAM Symposium on Discrete Algorithms, pp. 1027–1035, 2007.
-
-40. T. Su and J. G. Dy, “In Search of Deterministic Methods for Initializing K-Means and Gaussian Mixture Clustering,” Intelligent Data Analysis, vol. 11, no. 4, pp. 319–338, 2007.
-
-41. M. R. Anderberg, Cluster Analysis for Applications. Academic Press, 1973.
-
-42. M. J. Norušis, IBM SPSS Statistics 19 Statistical Procedures Companion. Addison Wesley, 2011.
-
-43. T. Gonzalez, “Clustering to Minimize the Maximum Intercluster Distance,” Theoretical Computer Science, vol. 38, no. 2–3, pp. 293–306, 1985.
-
-44. H. Hotelling, “Simplified Calculation of Principal Components,” Psychometrika, vol. 1, no. 1, pp. 27–35, 1936.
-
-45. E. H. Ruspini, “Numerical Methods for Fuzzy Clustering,” Information Sciences, vol. 2, no. 3, pp. 319–350, 1970.
-
-46. M. Sezgin and B. Sankur, “Survey over Image Thresholding Techniques and Quantitative Performance Evaluation,” Journal of Electronic Imaging, vol. 13, no. 1, pp. 146–165, 2004.
-
-47. N. Otsu, “A Threshold Selection Method from Gray Level Histograms,” IEEE Transactions on Systems, Man and Cybernetics, vol. 9, no. 1, pp. 62–66, 1979.
-
-48. P. K. Sahoo, S. Soltani, and A. K. C. Wong, “A Survey of Thresholding Techniques,” Computer Vision, Graphics, and Image Processing, vol. 41, no. 2, pp. 233–260, 1988.
-
-49. S. U. Lee, S. Y. Chung, and R. H. Park, “A Comparative Performance Study of Several Global Thresholding Techniques,” Computer Vision, Graphics, and Image Processing, vol. 52, no. 2, pp. 171–190, 1990.
-
-50. O. D. Trier and T. Taxt, “Evaluation of Binarization Methods for Document Images,” IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 17, no. 3, pp. 312–315, 1995.
-
-51. R. Medina-Carnicer, F. J. Madrid-Cuevas, N. L. Fernandez-Garcia, and A. Carmona-Poyato, “Evaluation of Global Thresholding Techniques in Non-Contextual Edge Detection,” Pattern Recognition Letters, vol. 26, no. 10, pp. 1423–1434, 2005.
-
-52. M. E. Celebi, Q. Wen, S. Hwang, H. Iyatomi, and G. Schaefer, “Lesion Border Detection in Dermoscopy Images Using Ensembles of Thresholding Methods,” Skin Research and Technology, vol. 19, no. 1, pp. e252–e258, 2013.
-
-53. A. Frank and A. Asuncion, “UCI
+- In general, the postclustering methods are more effective but less efficient when compared to the preclustering methods.
 
 
 <!-- page 16 -->
 
-Machine Learning Repository.” http://archive.ics.uci.edu/ml, 2012. University of California, Irvine, School of Information and Computer Sciences.
-- [54] T. Onoda, M. Sakai, and S. Yamada, “Careful Seeding Method based on Independent Components Analysis for k-means Clustering,” *Journal of Emerging Technologies in Web Intelligence*, vol. 4, no. 1, pp. 51–59, 2012.
-- [55] G. Milligan and M. C. Cooper, “A Study of Standardization of Variables in Cluster Analysis,” *Journal of Classification*, vol. 5, no. 2, pp. 181–204, 1988.
-- [56] M. Matsumoto and T. Nishimura, “Mersenne Twister: A 623-Dimensionally Equidistributed Uniform Pseudo-Random Number Generator,” *ACM Transactions on Modeling and Computer Simulation*, vol. 8, no. 1, pp. 3–30, 1998.
+$\triangleright$ With respect to distortion minimization, WSM-C outperforms the other methods by a large margin. This method obtains an MSE rank of 1.06, which means that it almost always obtains the lowest distortion.
+$\triangleright$ WSM obtains a significantly better MSE rank than its fixed-iteration rivals.
+$\triangleright$ Overall, WSM and WSM-C are the best methods.
+$\triangleright$ In general, the fastest method is MC, which is followed by SAM, WAN, and WU. The slowest methods are KM-C, FCM, PIM, FKM-C, KM, and SKM.
+$\triangleright$ WSM-C is significantly faster than its convergent rivals. In particular, it provides up to 392 times speed up over KM-C with an average of 62.
+$\triangleright$ WSM is the fastest post-clustering method. It provides up to 46 times speed up over KM with an average of 14.
+$\triangleright$ KM-C, FKM-C, and WSM-C are significantly more stable (particularly when $K$ is small) than their fixed-iteration counterparts as evidenced by their low standard deviation values in Table 1. This was expected since these methods were allowed to run longer which helped them overcome potentially adverse initial conditions.
+
+Table 4 gives the mean stability ranks of the methods that involve random initialization. Given a test image and $K$ value combination, the stability of a method is calculated based on the coefficient of variation $(\sigma/\mu)$ as: $100(1-\sigma/\mu)$, where $\mu$ and
 
 
 <!-- page 17 -->
 
-# 18 M. Emre Celebi and Hassan A. Kingravi
+$\sigma$ denote the mean and standard deviation over 100 runs, respectively. Note that the $\mu$ and $\sigma$ values are given in Table 1. Clearly, the higher the stability of a method the better. For example, when $K=32$, WSM-C obtains a mean MSE of 57.461492 with a standard deviation of 0.861126 on the Airplane image. Therefore, the stability of WSM-C in this case is calculated as $100(1-0.861126/57.461492)=98.50\%$. It can be seen that WSM-C is the most stable method, whereas WSM is the most stable fixed-iteration method.
 
-Table 4. Initial SSE comparison of the initialization methods
+Figure 1 shows sample quantization results and the corresponding error images. The error image for a particular quantization method was obtained by taking the pixelwise absolute difference between the original and quantized images. In order to obtain a better visualization, pixel values of the error images were multiplied by 4 and then negated. It can be seen that WSM-C and WSM obtain visually pleasing results with less prominent contouring. Furthermore, they achieve the highest color fidelity which is evident by the clean error images that they produce.
 
-|   |  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  1 | nom. | 425 | 33 | 28 | 95 | 24 | 23 | 23 | 23 | 23  |
-|   |  mean | 483 ± 20 | 46 ± 10 | 34 ± 2 | 95 ± 0 | 24 ± 0 | 23 ± 0 | 23 ± 0 | 23 ± 0 | 23 ± 0  |
-|  2 | nom. | 534 | 318 | 304 | 498 | 247 | 240 | 258 | 239 | 239  |
-|   |  mean | 575 ± 15 | 706 ± 354 | 560 ± 340 | 498 ± 0 | 247 ± 0 | 240 ± 0 | 258 ± 0 | 239 ± 0 | 239 ± 0  |
-|  3 | nom. | 20 | 11 | 10 | 19 | 8 | 8 | 8 | 8 | 8  |
-|   |  mean | 27 ± 3 | 20 ± 8 | 13 ± 2 | 19 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0  |
-|  4 | nom. | 54 | 26 | 26 | 48 | 20 | 19 | 19 | 20 | 20  |
-|   |  mean | 61 ± 2 | 40 ± 7 | 33 ± 5 | 48 ± 0 | 20 ± 0 | 19 ± 0 | 19 ± 0 | 20 ± 0 | 20 ± 0  |
-|  5 | nom. | 42 | 24 | 25 | 45 | 21 | 20 | 21 | 20 | 20  |
-|   |  mean | 48 ± 2 | 40 ± 9 | 32 ± 5 | 45 ± 0 | 21 ± 0 | 20 ± 0 | 21 ± 0 | 18 ± 0 | 18 ± 0  |
-|  6 | nom. | 372 | 361 | 341 | 409 | 249 | 250 | 249 | 249 | 249  |
-|   |  mean | 396 ± 8 | 463 ± 58 | 450 ± 49 | 409 ± 0 | 249 ± 0 | 250 ± 0 | 249 ± 0 | 244 ± 0 | 244 ± 0  |
-|  7 | nom. | 771 | 749 | 726 | 827 | 632 | 629 | 636 | 629 | 629  |
-|   |  mean | 814 ± 12 | 1246 ± 463 | 1237 ± 468 | 827 ± 0 | 632 ± 0 | 629 ± 0 | 636 ± 0 | 629 ± 0 | 629 ± 0  |
-|  8 | nom. | 26 | 9 | 9 | 18 | 8 | 8 | 8 | 8 | 8  |
-|   |  mean | 34 ± 4 | 28 ± 23 | 16 ± 6 | 18 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0  |
-|  9 | nom. | 218965 | 212238 | 210387 | 221163 | 145444 | 124958 | 144658 | 124958 | 124958  |
-|   |  mean | 223007 ± 1406 | 224579 ± 5416 | 223177 ± 4953 | 221163 ± 0 | 145444 ± 0 | 124958 ± 0 | 144658 ± 0 | 124958 ± 0 | 124958  |
-|  10 | nom. | 7763 | 2637 | 2458 | 4816 | 2050 | 2116 | 1919 | 1836 | 1836  |
-|   |  mean | 8057 ± 98 | 4825 ± 1432 | 3561 ± 747 | 4816 ± 0 | 2050 ± 0 | 2116 ± 0 | 1919 ± 0 | 1836 ± 0 | 1836  |
-|  11 | nom. | 7100 | 4203 | 4158 | 5632 | 3456 | 3161 | 3231 | 2993 | 2993  |
-|   |  mean | 7225 ± 90 | 4532 ± 165 | 4501 ± 176 | 5632 ± 0 | 3456 ± 0 | 3101 ± 0 | 3231 ± 0 | 2993 ± 0 | 2993  |
-|  12 | nom. | 4343 | 5348 | 3296 | 4361 | 3056 | 2927 | 3060 | 2927 | 2927  |
-|   |  mean | 4392 ± 13 | 5525 ± 1816 | 5346 ± 1672 | 4361 ± 0 | 3056 ± 0 | 2927 ± 0 | 3060 ± 0 | 2927 ± 0 | 2927  |
-|  13 | nom. | 4416 | 5205 | 5247 | 4485 | 3354 | 3260 | 3315 | 3160 | 3160  |
-|   |  mean | 4475 ± 25 | 5693 ± 315 | 5758 ± 283 | 4485 ± 0 | 3354 ± 0 | 3266 ± 0 | 3315 ± 0 | 3160 ± 0 | 3160  |
-|  14 | nom. | 53508 | 56841 | 56822 | 54629 | 37334 | 37142 | 37282 | 36315 | 36315  |
-|   |  mean | 54312 ± 244 | 82411 ± 14943 | 75532 ± 12276 | 54629 ± 0 | 37334 ± 0 | 37142 ± 0 | 37282 ± 0 | 36315 ± 0 | 36315  |
-|  15 | nom. | 25466 | 25492 | 24404 | 25291 | 17476 | 15714 | 17504 | 15118 | 15118  |
-|   |  mean | 25811 ± 99 | 28596 ± 1550 | 27614 ± 1499 | 25291 ± 0 | 17476 ± 0 | 15714 ± 0 | 17504 ± 0 | 15118 ± 0 | 15118  |
-|  16 | nom. | 633 | 273 | 250 | 635 | 300 | 230 | 232 | 222 | 222  |
-|   |  mean | 648 ± 6 | 423 ± 74 | 372 ± 72 | 635 ± 0 | 300 ± 0 | 230 ± 0 | 232 ± 0 | 222 ± 0 | 222 ± 0  |
-|  17 | nom. | 152 | 144 | 141 | 156 | 124 | 122 | 123 | 121 | 121  |
-|   |  mean | 156 ± 1 | 216 ± 44 | 219 ± 61 | 156 ± 0 | 124 ± 0 | 122 ± 0 | 123 ± 0 | 121 ± 0 | 121 ± 0  |
-|  18 | nom. | 1788 | 438 | 428 | 1818 | 316 | 300 | 276 | 268 | 268  |
-|   |  mean | 1806 ± 6 | 946 ± 290 | 494 ± 115 | 1818 ± 0 | 316 ± 0 | 309 ± 0 | 276 ± 0 | 268 ± 0 | 268 ± 0  |
-|  19 | nom. | 834 | 873 | 881 | 772 | 782 | 783 | 782 | 765 | 765  |
-|   |  mean | 838 ± 1 | 1186 ± 386 | 1124 ± 244 | 772 ± 0 | 782 ± 0 | 783 ± 0 | 792 ± 0 | 765 ± 0 | 765 ± 0  |
-|  20 | nom. | 269 | 295 | 297 | 277 | 232 | 222 | 233 | 214 | 214  |
-|   |  mean | 281 ± 4 | 384 ± 88 | 413 ± 159 | 277 ± 0 | 232 ± 0 | 222 ± 0 | 225 ± 0 | 214 ± 0 | 214 ± 0  |
-|  21 | nom. | 10976 | 11834 | 11828 | 11004 | 8517 | 7805 | 8706 | 7803 | 7803  |
-|   |  mean | 11082 ± 34 | 14814 ± 1496 | 14435 ± 1276 | 11004 ± 0 | 8517 ± 0 | 7805 ± 0 | 8706 ± 0 | 7803 ± 0 | 7803 ± 0  |
-|  22 | nom. | 719 | 473 | 449 | 733 | 386 | 361 | 364 | 351 | 351  |
-|   |  mean | 729 ± 4 | 601 ± 59 | 567 ± 64 | 733 ± 0 | 386 ± 0 | 361 ± 0 | 364 ± 0 | 351 ± 0 | 351 ± 0  |
-|  23 | nom. | 78 | 76 | 76 | 87 | 51 | 53 | 56 | 51 | 51  |
-|   |  mean | 87 ± 3 | 113 ± 22 | 101 ± 26 | 87 ± 0 | 51 ± 0 | 53 ± 0 | 56 ± 0 | 51 ± 0 | 51 ± 0  |
-|  24 | nom. | 144 | 89 | 85 | 115 | 77 | 63 | 73 | 63 | 63  |
-|   |  mean | 149 ± 2 | 110 ± 8 | 101 ± 9 | 115 ± 0 | 77 ± 0 | 63 ± 0 | 73 ± 0 | 63 ± 0 | 63 ± 0  |
+Figure 2 illustrates the scaling behavior of WSM with respect to $K$. It can be seen that the complexity of WSM is sublinear in $K$, which is due to the intelligent use of the triangle inequality that avoids many distance computations once the cluster centers stabilize after a few iterations. For example, on the Parrots image, increasing $K$ from 2 to 256, results in only about 3.67 fold increase in the computational time (172 ms. vs. 630 ms.).
 
 
 <!-- page 18 -->
 
-Table 5. Final SSE comparison of the initialization methods
+![img-0.jpeg](img-0.jpeg)
 
-|   |  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  1 | nom | 21 | 22 | 21 | 25 | 21 | 21 | 21 | 21 | 21  |
-|   |  morph | 23 ± 1 | 22 ± 1 | 22 ± 0 | 25 ± 0 | 21 ± 0 | 21 ± 0 | 21 ± 0 | 21 ± 0 | 21 ± 0  |
-|  2 | nom | 220 | 220 | 220 | 220 | 220 | 220 | 220 | 220 | 220  |
-|   |  morph | 230 ± 0 | 230 ± 0 | 230 ± 0 | 230 ± 0 | 230 ± 0 | 230 ± 0 | 230 ± 0 | 230 ± 0 | 230 ± 0  |
-|  3 | nom | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2  |
-|   |  morph | 8 ± 1 | 9 ± 1 | 8 ± 1 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0  |
-|  4 | nom | 17 | 17 | 17 | 18 | 17 | 18 | 18 | 18 | 18  |
-|   |  morph | 19 ± 1 | 19 ± 2 | 19 ± 1 | 19 ± 0 | 17 ± 0 | 18 ± 0 | 18 ± 0 | 18 ± 0 | 18 ± 0  |
-|  5 | nom | 16 | 16 | 16 | 23 | 19 | 19 | 20 | 20 | 20  |
-|   |  morph | 20 ± 1 | 21 ± 1 | 20 ± 2 | 23 ± 0 | 19 ± 0 | 19 ± 0 | 20 ± 0 | 18 ± 0 | 18 ± 0  |
-|  6 | nom | 213 | 213 | 213 | 248 | 248 | 248 | 248 | 248 | 248  |
-|   |  morph | 252 ± 8 | 252 ± 8 | 252 ± 8 | 249 ± 0 | 248 ± 0 | 248 ± 0 | 248 ± 0 | 248 ± 0 | 243 ± 0  |
-|  7 | nom | 640 | 640 | 640 | 826 | 640 | 640 | 640 | 640 | 640  |
-|   |  morph | 620 ± 6 | 643 ± 60 | 641 ± 37 | 826 ± 0 | 629 ± 0 | 629 ± 0 | 629 ± 0 | 629 ± 0 | 629 ± 0  |
-|  8 | nom | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2  |
-|   |  morph | 8 ± 1 | 8 ± 2 | 8 ± 1 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0 | 8 ± 0  |
-|  9 | nom | 117872 | 117764 | 117710 | 135818 | 118495 | 118386 | 118033 | 119326 | 119326  |
-|   |  morph | 139650 ± 945 | 119625 ± 947 | 119539 ± 934 | 135818 ± 0 | 118495 ± 0 | 118386 ± 0 | 118033 ± 0 | 119326 ± 0 | 119326 ± 0  |
-|  10 | nom | 1138 | 1138 | 1138 | 1138 | 1138 | 1138 | 1138 | 1138 | 1138  |
-|   |  morph | 1148 ± 0 | 1148 ± 0 | 1148 ± 0 | 1148 ± 0 | 1148 ± 0 | 1148 ± 0 | 1148 ± 0 | 1148 ± 0 | 1148 ± 0  |
-|  11 | nom | 2723 | 2718 | 2718 | 2748 | 2735 | 2745 | 2734 | 2747 | 2747  |
-|   |  morph | 2772 ± 29 | 2757 ± 19 | 2751 ± 19 | 2749 ± 0 | 2735 ± 0 | 2745 ± 0 | 2734 ± 0 | 2747 ± 0 | 2747 ± 0  |
-|  12 | nom | 2943 | 2943 | 2943 | 2943 | 2943 | 2943 | 2943 | 2943 | 2943  |
-|   |  morph | 3016 ± 0 | 2922 ± 0 | 2922 ± 0 | 2922 ± 0 | 2916 ± 0 | 2922 ± 0 | 2922 ± 0 | 2922 ± 0 | 2922 ± 0  |
-|  13 | nom | 3145 | 3128 | 3128 | 3316 | 3137 | 3214 | 3143 | 3153 | 3153  |
-|   |  morph | 3166 ± 31 | 3172 ± 29 | 3172 ± 25 | 3310 ± 0 | 3137 ± 0 | 3214 ± 0 | 3143 ± 0 | 3153 ± 0 | 3153 ± 0  |
-|  14 | nom | 36313 | 36313 | 36313 | 36313 | 36313 | 36313 | 36313 | 36313 | 36313  |
-|   |  morph | 37296 ± 1003 | 37163 ± 1114 | 37058 ± 1020 | 36317 ± 0 | 36313 ± 0 | 36313 ± 0 | 36313 ± 0 | 36313 ± 0 | 36313 ± 0  |
-|  15 | nom | 14636 | 14650 | 14650 | 14679 | 14581 | 14607 | 14581 | 14650 | 14650  |
-|   |  morph | 14687 ± 316 | 14752 ± 236 | 14747 ± 216 | 14679 ± 0 | 14581 ± 0 | 14807 ± 0 | 14581 ± 0 | 14650 ± 0 | 14650 ± 0  |
-|  16 | nom | 215 | 215 | 215 | 230 | 227 | 215 | 220 | 216 | 216  |
-|   |  morph | 217 ± 3 | 216 ± 2 | 220 ± 7 | 230 ± 0 | 227 ± 0 | 215 ± 0 | 229 ± 0 | 216 ± 0 | 216 ± 0  |
-|  17 | nom | 121 | 121 | 121 | 121 | 121 | 121 | 121 | 121 | 121  |
-|   |  morph | 121 ± 0 | 122 ± 0 | 122 ± 0 | 121 ± 0 | 121 ± 0 | 121 ± 0 | 121 ± 0 | 121 ± 0 | 121 ± 0  |
-|  18 | nom | 235 | 235 | 235 | 726 | 235 | 274 | 274 | 235 | 235  |
-|   |  morph | 317 ± 46 | 272 ± 23 | 260 ± 21 | 726 ± 0 | 235 ± 0 | 274 ± 0 | 274 ± 0 | 235 ± 0 | 235 ± 0  |
-|  19 | nom | 760 | 760 | 760 | 760 | 778 | 778 | 778 | 760 | 760  |
-|   |  morph | 778 ± 2 | 779 ± 14 | 785 ± 10 | 765 ± 0 | 778 ± 0 | 778 ± 0 | 778 ± 0 | 765 ± 0 | 765 ± 0  |
-|  20 | nom | 213 | 213 | 213 | 213 | 213 | 213 | 213 | 213 | 213  |
-|   |  morph | 214 ± 0 | 215 ± 0 | 214 ± 0 | 214 ± 0 | 214 ± 0 | 214 ± 0 | 214 ± 0 | 214 ± 0 | 214 ± 0  |
-|  21 | nom | 7772 | 7772 | 7772 | 7772 | 7774 | 7774 | 7774 | 7774 | 7774  |
-|   |  morph | 7799 ± 93 | 7821 ± 123 | 7831 ± 140 | 7772 ± 0 | 7774 ± 0 | 7774 ± 0 | 7774 ± 0 | 7774 ± 0 | 7774 ± 0  |
-|  22 | nom | 333 | 333 | 333 | 399 | 335 | 334 | 335 | 335 | 335  |
-|   |  morph | 335 ± 1 | 336 ± 3 | 336 ± 3 | 399 ± 0 | 335 ± 0 | 334 ± 0 | 335 ± 0 | 335 ± 0 | 335 ± 0  |
-|  23 | nom | 49 | 49 | 49 | 63 | 49 | 49 | 49 | 49 | 49  |
-|   |  morph | 49 ± 0 | 49 ± 0 | 49 ± 0 | 63 ± 0 | 49 ± 0 | 49 ± 0 | 49 ± 0 | 49 ± 0 | 49 ± 0  |
-|  24 | nom | 58 | 58 | 58 | 61 | 69 | 59 | 69 | 59 | 59  |
-|   |  morph | 64 ± 6 | 69 ± 6 | 63 ± 5 | 61 ± 0 | 69 ± 0 | 59 ± 0 | 69 ± 0 | 59 ± 0 | 59 ± 0  |
+![img-1.jpeg](img-1.jpeg)
+
+![img-2.jpeg](img-2.jpeg)
+
+![img-3.jpeg](img-3.jpeg)
+
+![img-4.jpeg](img-4.jpeg)
+(a) MMM output
+
+![img-5.jpeg](img-5.jpeg)
+(b) MMM error
+
+![img-6.jpeg](img-6.jpeg)
+(c) NEU output
+Fig. 1. Sample quantization results for the Airplane image (K=32)
+
+![img-7.jpeg](img-7.jpeg)
+(d) NEU error
+(h) WSM-C error
+
+![img-8.jpeg](img-8.jpeg)
+Fig. 2. CPU time for WSM for  $K = \{2, \dots, 256\}$
 
 
 <!-- page 19 -->
 
-Table 6. Number of iterations comparison of the initialization methods
+We should also mention two other KM-based quantization methods *[24, 27]*. As in the case of FKM and SKM, these methods aim to accelerate KM without degrading its effectiveness. However, they do not address the stability problems of KM and thus provide almost the same results in terms of quality. In contrast, WSM (WSM-C) not only provides considerable speed up over KM (KM-C), but also gives significantly better results especially at lower quantization levels.
 
-|   |  | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  1 | min | 50 | 20 | 25 | 100 | 50 | 43 | 31 | 28  |
-|   |  second | 90 ± 11 | 68 ± 19 | 48 ± 17 | 100 ± 0 | 50 ± 0 | 43 ± 0 | 31 ± 0 | 38 ± 0  |
-|  2 | min | 4 | 4 | 4 | 8 | 4 | 4 | 5 | 5  |
-|   |  second | 5 ± 0 | 6 ± 1 | 6 ± 1 | 8 ± 0 | 4 ± 0 | 4 ± 0 | 5 ± 0 | 5 ± 0  |
-|  3 | min | 5 | 5 | 5 | 7 | 6 | 7 | 5 | 5  |
-|   |  second | 10 ± 2 | 9 ± 3 | 7 ± 2 | 7 ± 0 | 6 ± 0 | 7 ± 0 | 5 ± 0 | 5 ± 0  |
-|  4 | min | 6 | 6 | 7 | 14 | 17 | 9 | 12 | 6  |
-|   |  second | 15 ± 6 | 15 ± 5 | 14 ± 5 | 14 ± 0 | 17 ± 0 | 7 ± 0 | 12 ± 0 | 6 ± 0  |
-|  5 | min | 6 | 5 | 5 | 6 | 6 | 6 | 9 | 5  |
-|   |  second | 10 ± 3 | 11 ± 4 | 9 ± 3 | 6 ± 0 | 6 ± 0 | 5 ± 0 | 9 ± 0 | 4 ± 0  |
-|  6 | min | 5 | 5 | 5 | 12 | 5 | 4 | 5 | 4  |
-|   |  second | 11 ± 3 | 10 ± 3 | 9 ± 3 | 12 ± 0 | 4 ± 0 | 4 ± 0 | 5 ± 0 | 4 ± 0  |
-|  7 | min | 4 | 3 | 3 | 3 | 3 | 3 | 4 | 5  |
-|   |  second | 5 ± 1 | 7 ± 2 | 8 ± 2 | 3 ± 0 | 3 ± 0 | 3 ± 0 | 4 ± 0 | 5 ± 0  |
-|  8 | min | 4 | 4 | 5 | 6 | 4 | 4 | 6 | 5  |
-|   |  second | 9 ± 3 | 8 ± 2 | 7 ± 3 | 6 ± 0 | 4 ± 0 | 4 ± 0 | 6 ± 0 | 5 ± 0  |
-|  9 | min | 18 | 19 | 21 | 32 | 82 | 45 | 59 | 29  |
-|   |  second | 43 ± 15 | 40 ± 14 | 36 ± 13 | 32 ± 0 | 82 ± 0 | 45 ± 0 | 59 ± 0 | 39 ± 0  |
-|  10 | min | 12 | 12 | 11 | 53 | 28 | 27 | 29 | 23  |
-|   |  second | 28 ± 8 | 33 ± 10 | 29 ± 9 | 53 ± 0 | 28 ± 0 | 27 ± 0 | 10 ± 0 | 23 ± 0  |
-|  11 | min | 39 | 37 | 35 | 73 | 100 | 83 | 67 | 85  |
-|   |  second | 75 ± 19 | 72 ± 18 | 76 ± 16 | 73 ± 0 | 100 ± 0 | 83 ± 0 | 67 ± 0 | 85 ± 0  |
-|  12 | min | 9 | 10 | 10 | 35 | 25 | 16 | 26 | 9  |
-|   |  second | 18 ± 7 | 18 ± 7 | 20 ± 6 | 35 ± 0 | 25 ± 0 | 10 ± 0 | 26 ± 0 | 9 ± 0  |
-|  13 | min | 10 | 14 | 13 | 37 | 14 | 25 | 17 | 13  |
-|   |  second | 29 ± 10 | 30 ± 10 | 30 ± 11 | 37 ± 0 | 14 ± 0 | 25 ± 0 | 17 ± 0 | 13 ± 0  |
-|  14 | min | 4 | 4 | 4 | 8 | 5 | 5 | 5 | 4  |
-|   |  second | 6 ± 1 | 6 ± 1 | 6 ± 1 | 8 ± 0 | 5 ± 0 | 5 ± 0 | 5 ± 0 | 4 ± 0  |
-|  15 | min | 13 | 13 | 14 | 36 | 16 | 22 | 15 | 19  |
-|   |  second | 31 ± 12 | 33 ± 14 | 30 ± 10 | 36 ± 0 | 16 ± 0 | 22 ± 0 | 15 ± 0 | 59 ± 0  |
-|  16 | min | 11 | 12 | 9 | 37 | 25 | 15 | 19 | 16  |
-|   |  second | 27 ± 9 | 21 ± 14 | 24 ± 11 | 27 ± 0 | 25 ± 0 | 15 ± 0 | 19 ± 0 | 16 ± 0  |
-|  17 | min | 8 | 8 | 7 | 19 | 11 | 10 | 8 | 7  |
-|   |  second | 13 ± 2 | 12 ± 5 | 11 ± 4 | 19 ± 0 | 11 ± 0 | 10 ± 0 | 8 ± 0 | 5 ± 0  |
-|  18 | min | 10 | 8 | 9 | 22 | 30 | 16 | 9 | 27  |
-|   |  second | 25 ± 11 | 23 ± 9 | 22 ± 0 | 30 ± 0 | 16 ± 0 | 7 ± 0 | 27 ± 0 | 9 ± 0  |
-|  19 | min | 6 | 6 | 5 | 7 | 9 | 10 | 12 | 6  |
-|   |  second | 12 ± 5 | 14 ± 6 | 12 ± 5 | 5 ± 0 | 9 ± 0 | 10 ± 0 | 12 ± 0 | 4 ± 0  |
-|  20 | min | 6 | 5 | 4 | 7 | 7 | 7 | 6 | 4  |
-|   |  second | 8 ± 1 | 8 ± 2 | 7 ± 2 | 7 ± 0 | 7 ± 0 | 7 ± 0 | 6 ± 0 | 5 ± 0  |
-|  21 | min | 9 | 11 | 11 | 24 | 20 | 9 | 21 | 19  |
-|   |  second | 20 ± 8 | 22 ± 8 | 20 ± 6 | 24 ± 0 | 20 ± 0 | 8 ± 0 | 21 ± 0 | 19 ± 0  |
-|  22 | min | 10 | 17 | 18 | 20 | 62 | 50 | 33 | 29  |
-|   |  second | 41 ± 20 | 42 ± 18 | 40 ± 18 | 26 ± 0 | 62 ± 0 | 50 ± 0 | 33 ± 0 | 49 ± 0  |
-|  23 | min | 4 | 4 | 4 | 9 | 5 | 5 | 5 | 5  |
-|   |  second | 7 ± 2 | 8 ± 3 | 7 ± 3 | 9 ± 0 | 5 ± 0 | 7 ± 0 | 5 ± 0 | 5 ± 0  |
-|  24 | min | 13 | 13 | 15 | 73 | 33 | 21 | 28 | 32  |
-|   |  second | 29 ± 10 | 31 ± 11 | 29 ± 10 | 73 ± 0 | 33 ± 0 | 21 ± 0 | 28 ± 0 | 32 ± 0  |
+## 4 Conclusions
+
+In this paper, a fast and effective color quantization method called WSM (Weighted Sort-Means) was introduced. The method involves several modifications to the conventional k-means algorithm including data reduction, sample weighting, and the use of triangle inequality to speed up the nearest neighbor search. Two variants of WSM were implemented. Although both have very reasonable computational requirements, the fixed-iteration variant is more appropriate for time-critical applications, while the convergent variant should be preferred in applications where obtaining the highest output quality is of prime importance, or the number of quantization levels or the number of unique colors in the original image is small. Experiments on a diverse set of images demonstrated that the two variants of WSM outperform state-of-the-art quantization methods with respect to distortion minimization. Future work will be directed toward the development of a more effective initialization method for WSM.
+
+The implementation of WSM will be made publicly available as part of the Fourier
 
 
 <!-- page 20 -->
 
-Table 7. CPU time comparison of the initialization methods
+image processing and analysis library, which can be downloaded from http://sourceforge.net/projects/fourier-ipal.
 
-|   |  | 2 | 8 | 2 | 4 | 4 | 2 | 20 | 20  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  1 | min. | 20 | 10 | 10 | 40 | 20 | 20 | 20 | 10  |
-|   |  morph. | 43 ± 7 | 33 ± 10 | 24 ± 9 | 40 ± 0 | 20 ± 0 | 20 ± 0 | 20 ± 0 | 10 ± 0  |
-|  2 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 1 | 0 ± 1 | 0 ± 2 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  3 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 1 | 0 ± 1 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  4 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 2 | 0 ± 1 | 0 ± 2 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  5 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 1 | 0 ± 1 | 0 ± 1 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  6 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 1 | 0 ± 2 | 1 ± 2 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  7 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 2 | 0 ± 2 | 0 ± 2 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  8 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 0 | 0 ± 1 | 0 ± 1 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  9 | min. | 1880 | 1836 | 1580 | 2570 | 6920 | 12160 | 5040 | 12460  |
-|   |  morph. | 3691 ± 1229 | 3370 ± 1178 | 3397 ± 1055 | 2570 ± 0 | 6920 ± 0 | 12160 ± 0 | 5040 ± 0 | 12460 ± 0  |
-|  10 | min. | 0 | 10 | 10 | 50 | 30 | 30 | 10 | 50  |
-|   |  morph. | 30 ± 9 | 32 ± 11 | 32 ± 10 | 50 ± 0 | 30 ± 0 | 50 ± 0 | 10 ± 0 | 50 ± 0  |
-|  11 | min. | 380 | 350 | 320 | 670 | 960 | 790 | 620 | 810  |
-|   |  morph. | 710 ± 174 | 673 ± 168 | 724 ± 166 | 670 ± 0 | 960 ± 0 | 790 ± 0 | 620 ± 0 | 810 ± 0  |
-|  12 | min. | 10 | 10 | 10 | 40 | 20 | 10 | 30 | 20  |
-|   |  morph. | 19 ± 7 | 19 ± 7 | 21 ± 6 | 40 ± 0 | 20 ± 0 | 10 ± 0 | 30 ± 0 | 20 ± 0  |
-|  13 | min. | 20 | 20 | 20 | 60 | 20 | 80 | 30 | 80  |
-|   |  morph. | 52 ± 17 | 52 ± 17 | 57 ± 20 | 60 ± 0 | 20 ± 0 | 80 ± 0 | 30 ± 0 | 40 ± 0  |
-|  14 | min. | 10 | 10 | 10 | 30 | 30 | 240 | 20 | 200  |
-|   |  morph. | 22 ± 7 | 21 ± 7 | 25 ± 8 | 30 ± 0 | 30 ± 0 | 210 ± 0 | 20 ± 0 | 200 ± 0  |
-|  15 | min. | 100 | 50 | 50 | 140 | 80 | 140 | 70 | 280  |
-|   |  morph. | 122 ± 50 | 126 ± 53 | 123 ± 41 | 140 ± 0 | 60 ± 0 | 140 ± 0 | 70 ± 0 | 280 ± 0  |
-|  16 | min. | 0 | 0 | 0 | 10 | 10 | 10 | 10 | 10  |
-|   |  morph. | 9 ± 5 | 11 ± 6 | 8 ± 5 | 10 ± 0 | 10 ± 0 | 10 ± 0 | 10 ± 0 | 10 ± 0  |
-|  17 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 2 | 1 ± 2 | 1 ± 2 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  18 | min. | 10 | 30 | 30 | 50 | 100 | 50 | 30 | 100  |
-|   |  morph. | 87 ± 27 | 87 ± 37 | 79 ± 26 | 50 ± 0 | 100 ± 0 | 70 ± 0 | 30 ± 0 | 100 ± 0  |
-|  19 | min. | 0 | 0 | 0 | 10 | 10 | 20 | 10 | 20  |
-|   |  morph. | 11 ± 5 | 12 ± 6 | 11 ± 8 | 10 ± 0 | 10 ± 0 | 30 ± 0 | 10 ± 0 | 20 ± 0  |
-|  20 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 2 | 0 ± 2 | 0 ± 2 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  21 | min. | 10 | 10 | 10 | 20 | 20 | 20 | 20 | 30  |
-|   |  morph. | 21 ± 9 | 20 ± 8 | 20 ± 8 | 20 ± 0 | 20 ± 0 | 20 ± 0 | 20 ± 0 | 30 ± 0  |
-|  22 | min. | 10 | 20 | 20 | 10 | 60 | 30 | 40 | 40  |
-|   |  morph. | 40 ± 19 | 40 ± 18 | 38 ± 17 | 10 ± 0 | 60 ± 0 | 50 ± 0 | 40 ± 0 | 40 ± 0  |
-|  23 | min. | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  |
-|   |  morph. | 0 ± 1 | 0 ± 1 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0 | 0 ± 0  |
-|  24 | min. | 0 | 0 | 0 | 10 | 0 | 0 | 10 | 0  |
-|   |  morph. | 6 ± 5 | 6 ± 5 | 6 ± 5 | 10 ± 0 | 0 ± 0 | 0 ± 0 | 10 ± 0 | 0 ± 0  |
+This publication was made possible by a grant from The Louisiana Board of Regents (LEQSF2008-11-RD-A-12). The author is grateful to Luiz Velho for the Fish image and Anthony Dekker for the Poolballs image.
+
+## References
+
+- (1) L. Brun and A. Trémeau, Digital Color Imaging Handbook (CRC Press, 2002), chap. Color Quantization, pp. 589–638.
+- (2) C. -K. Yang and W. -H. Tsai, “Color Image Compression Using Quantization, Thresholding, and Edge Detection Techniques All Based on the Moment-Preserving Principle,” Pattern Recognition Letters 19, 205–215 (1998).
+- (3) Y. Deng and B. Manjunath, “Unsupervised Segmentation of Color-Texture Regions in Images and Video,” IEEE Trans. on Pattern Analysis and Machine Intelligence 23, 800–810 (2001).
+- (4) O. Sertel, J. Kong, G. Lozanski, A. Shanaah, U. Catalyurek, J. Saltz, and M. Gurcan, “Texture Classification Using Nonlinear Color Quantization: Application to Histopathological Image Analysis,” in “Proc. of the IEEE Int. Conf. on Acoustics, Speech and Signal Processing,” (2008), pp. 597–600.
 
 
 <!-- page 21 -->
 
-Table 8. Overall performance comparison of the initialization methods
-
-|  Statistic | Criterion | F | M | K | X | V | P | OV | OP  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  Min | Init. SSE | 2.968 | 1.418 | 1.348 | 2.184 | 1.107 | 1.043 | 1.067 | 1.002  |
-|   |  Final SSE | 1.001 | 1.003 | 1.000 | 1.163 | 1.019 | 1.018 | 1.031 | 1.005  |
-|   |  # Iters. | 1.488 | 1.284 | 1.183 | 2.978 | 2.469 | 2.013 | 2.034 | 1.793  |
-|  Mean | Init. SSE | 3.250 | 2.171 | 1.831 | 2.184 | 1.107 | 1.043 | 1.067 | 1.002  |
-|   |  Final SSE | 1.047 | 1.049 | 1.032 | 1.161 | 1.017 | 1.016 | 1.029 | 1.003  |
-|   |  # Iters. | 2.466 | 2.528 | 2.314 | 2.581 | 2.057 | 1.715 | 1.740 | 1.481  |
-|  Stdev | Init. SSE | 1.000 | 13.392 | 12.093 | - | - | - | - | -  |
-|   |  Final SSE | 1.013 | 1.239 | 1.172 | - | - | - | - | -  |
-|   |  # Iters. | 1.000 | 1.166 | 1.098 | - | - | - | - | -  |
-
-Table 9. Performance of Otsu Var-Part relative to Var-Part (V)
-
-|  Criterion | Worse than V | Same as V | Better than V  |
-| --- | --- | --- | --- |
-|  Init. SSE | 6 | 3 | 15  |
-|  Final SSE | 6 | 16 | 2  |
-|  # Iters. | 8 | 3 | 13  |
-
-Table 10. Performance of Otsu PCA-Part relative to PCA-Part (P)
-
-|  Criterion | Worse than P | Same as P | Better than P  |
-| --- | --- | --- | --- |
-|  Init. SSE | 1 | 2 | 21  |
-|  Final SSE | 4 | 14 | 6  |
-|  # Iters. | 6 | 1 | 17  |
+- (5) C. -T. Kuo and S. -C. Cheng, “Fusion of Color Edge Detection and Color Quantization for Color Image Watermarking Using Principal Axes Analysis,” Pattern Recognition 40, 3691–3704 (2007).
+- (6) Y. Deng, B. Manjunath, C. Kenney, M. Moore, and H. Shin, “An Efficient Color Representation for Image Retrieval,” IEEE Trans. on Image Processing 10, 140–147 (2001).
+- (7) Z. Xiang, Handbook of Approximation Algorithms and Metaheuristics (Chapman &amp; Hall/CRC, 2007), chap. Color Quantization, pp. 86–1–86–17.
+- (8) R. S. Gentile, J. P. Allebach, and E. Walowit, “Quantization of Color Images Based on Uniform Color Spaces,” Journal of Imaging Technology 16, 11–21 (1990).
+- (9) P. Heckbert, “Color Image Quantization for Frame Buffer Display,” ACM SIGGRAPH Computer Graphics 16, 297–307 (1982).
+- (10) M. Gervautz and W. Purgathofer, New Trends in Computer Graphics (Springer-Verlag, 1988), chap. A Simple Method for Color Quantization: Octree Quantization, pp. 219–231.
+- (11) S. Wan, P. Prusinkiewicz, and S. Wong, “Variance-Based Color Image Quantization for Frame Buffer Display,” Color Research and Application 15, 52–58 (1990).
+- (12) M. Orchard and C. Bouman, “Color Quantization of Images,” IEEE Trans. on
 
 
 <!-- page 22 -->
 
-![img-5.jpeg](img-5.jpeg)
-(a) Minimum Initial SSE
+- [13] X. Wu, *Graphics Gems Volume II* (Academic Press, 1991), chap. Efficient Statistical Computations for Optimal Color Quantization, pp. 126–133.
+- [14] G. Joy and Z. Xiang, “Center-Cut for Color Image Quantization,” The Visual Computer 10, 62–66 (1993).
+- [15] C. -Y. Yang and J. -C. Lin, “RWM-Cut for Color Image Quantization,” Computers and Graphics 20, 577–588 (1996).
+- [16] S. Cheng and C. Yang, “Fast and Novel Technique for Color Quantization Using Reduction of Color Space Dimensionality,” Pattern Recognition Letters 22, 845–856 (2001).
+- [17] Y. Sirisathitkul, S. Auwatanamongkol, and B. Uyyanonvara, “Color Image Quantization Using Distances between Adjacent Colors along the Color Axis with Highest Color Variance,” Pattern Recognition Letters 25, 1025–1043 (2004).
+- [18] K. Kanjanawanishkul and B. Uyyanonvara, “Novel Fast Color Reduction Algorithm for Time-Constrained Applications,” Journal of Visual Communication and Image Representation 16, 311–332 (2005).
+- [19] W. H. Equitz, “A New Vector Quantization Clustering Algorithm,” IEEE Trans. on Acoustics, Speech and Signal Processing 37, 1568–1575 (1989).
+- [20] R. Balasubramanian and J. Allebach, “A New Approach to Palette Selection for Color Images,” Journal of Imaging Technology 17, 284–290 (1991).
 
-![img-6.jpeg](img-6.jpeg)
-(b) Mean Initial SSE
 
-![img-7.jpeg](img-7.jpeg)
-(c) Minimum Final SSE
+<!-- page 23 -->
 
-![img-8.jpeg](img-8.jpeg)
-(d) Mean Final SSE
+21. Z. Xiang and G. Joy, “Color Image Quantization by Agglomerative Clustering,” IEEE Computer Graphics and Applications 14, 44–48 (1994).
 
-![img-9.jpeg](img-9.jpeg)
-(e) Minimum # Iterations
-Fig. 3. Box plots of the normalized performance criteria
+22. L. Velho, J. Gomez, and M. Sobreiro, “Color Image Quantization by Pairwise Clustering,” in “Proc. of the 10th Brazilian Symposium on Computer Graphics and Image Processing,” (1997), pp. 203–210.
 
-![img-10.jpeg](img-10.jpeg)
-(f) Mean # Iterations
+23. L. Brun and M. Mokhtari, “Two High Speed Color Quantization Algorithms,” in “Proc. of the 1st Int. Conf. on Color in Graphics and Image Processing,” (2000), pp. 116–121.
+
+24. H. Kasuga, H. Yamamoto, and M. Okamoto, “Color Quantization Using the Fast K-Means Algorithm,” Systems and Computers in Japan 31, 33–40 (2000).
+
+25. Y.-L. Huang and R.-F. Chang, “A Fast Finite-State Algorithm for Generating RGB Palettes of Color Quantized Images,” Journal of Information Science and Engineering 20, 771–782 (2004).
+
+26. Y.-C. Hu and M.-G. Lee, “K-means Based Color Palette Design Scheme with the Use of Stable Flags,” Journal of Electronic Imaging 16, 033003 (2007).
+
+27. Y.-C. Hu and B.-H. Su, “Accelerated K-means Clustering Algorithm for Colour Image Quantization,” Imaging Science Journal 56, 29–40 (2008).
+
+28. Z. Xiang, “Color Image Quantization by Minimizing the Maximum Intercluster Distance,” ACM Trans. on Graphics 16, 260–276 (1997).
+
+29. O. Verevka and J. Buchanan, “Local K-Means Algorithm for Colour Image Quan
+
+
+<!-- page 24 -->
+
+tization,” in “Proc. of the Graphics/Vision Interface Conf.”, (1995), pp. 128–135.
+
+30. P. Scheunders, “Comparison of Clustering Algorithms Applied to Color Image Quantization,” Pattern Recognition Letters 18, 1379–1384 (1997).
+
+31. M.E. Celebi, “An Effective Color Quantization Method Based on the Competitive Learning Paradigm,” in “Proc. of the Int. Conf. on Image Processing, Computer Vision, and Pattern Recognition”, (2009), pp. 876–880.
+
+32. D. Ozdemir and L. Akarun, “Fuzzy Algorithm for Color Quantization of Images,” Pattern Recognition 35, 1785–1791 (2002).
+
+33. G. Schaefer and H. Zhou, “Fuzzy Clustering for Colour Reduction in Images,” Telecommunication Systems 40, 17–25 (2009).
+
+34. Z. Bing, S. Junyi, and P. Qinke, “An Adjustable Algorithm for Color Quantization,” Pattern Recognition Letters 25, 1787–1797 (2004).
+
+35. A. Dekker, “Kohonen Neural Networks for Optimal Colour Quantization,” Network: Computation in Neural Systems 5, 351–367 (1994).
+
+36. N. Papamarkos, A. Atsalakis, and C. Strouthopoulos, “Adaptive Color Reduction,” IEEE Trans. on Systems, Man, and Cybernetics Part B 32, 44–56 (2002).
+
+37. C.-H. Chang, P. Xu, R. Xiao, and T. Srikanthan, “New Adaptive Color Quantization Method Based on Self-Organizing Maps,” IEEE Trans. on Neural Networks 16, 237–249 (2005).
+
+38. Y. Linde, A. Buzo, and R. Gray, “An Algorithm for Vector Quantizer Design,”
+
+
+<!-- page 25 -->
+
+IEEE Trans. on Communications 28, 84-95 (1980).
+- [39] G. Gan, C. Ma, and J. Wu, Data Clustering: Theory, Algorithms, and Applications (SIAM, 2007).
+- [40] P. Drineas, A. Frieze, R. Kannan, S. Vempala, and V. Vinay, “Clustering Large Graphs via the Singular Value Decomposition,” Machine Learning 56, 9–33 (2004).
+- [41] S. Lloyd, “Least Squares Quantization in PCM,” IEEE Trans. on Information Theory 28, 129–136 (1982).
+- [42] E. Forgy, “Cluster Analysis of Multivariate Data: Efficiency vs. Interpretability of Classification,” Biometrics 21, 768 (1965).
+- [43] S. Phillips, “Acceleration of K-Means and Related Clustering Algorithms,” in “Proc. of the 4th Int. Workshop on Algorithm Engineering and Experiments,” (2002), pp. 166–177.
+- [44] T. Kanungo, D. Mount, N. Netanyahu, C. Piatko, R. Silverman, and A. Wu, “An Efficient K-Means Clustering Algorithm: Analysis and Implementation,” IEEE Trans. on Pattern Analysis and Machine Intelligence 24, 881–892 (2002).
+- [45] S. Har-Peled and A. Kushal, “Smaller Coresets for K-Median and K-Means Clustering,” in “Proc. of the 21st Annual Symposium on Computational Geometry,” (2004), pp. 126–134.
+- [46] C. Elkan, “Using the Triangle Inequality to Accelerate K-Means,” in “Proc. of
+
+
+<!-- page 26 -->
+
+the 20th Int. Conf. on Machine Learning,” (2003), pp. 147–153.
+- [47] J. C. Bezdek, Pattern Recognition with Fuzzy Objective Function Algorithms (Springer-Verlag, 1981).
+- [48] J. F. Kolen and T. Hutcheson, “Reducing the Time Complexity of the Fuzzy C-Means Algorithm,” IEEE Trans. on Fuzzy Systems 10, 263–267 (2002).
+
+
+<!-- page 27 -->
+
+Table 1. MSE comparison of the quantization methods
+
+|  Method | K = 32 |   | K = 64 |   | K = 128 |   | K = 256 |   | K = 32 |   | K = 64 |   | K = 128 |   | K = 256  |   |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|   |  μ | σ | μ | σ | μ | σ | μ | σ | μ | σ | μ | σ | μ | σ | μ | σ  |
+|   | Airplane |   |   |   |   |   |   |   | Baboon  |   |   |   |   |   |   |   |
+|  MC | 124 | - | 81 | - | 54 | - | 41 | - | 546 | - | 371 | - | 248 | - | 166 | -  |
+|  WAN | 117 | - | 69 | - | 50 | - | 39 | - | 509 | - | 326 | - | 216 | - | 142 | -  |
+|  WU | 75 | - | 47 | - | 30 | - | 21 | - | 422 | - | 248 | - | 155 | - | 99 | -  |
+|  NEU | 101 | - | 47 | - | 24 | - | 15 | - | 363 | - | 216 | - | 128 | - | 84 | -  |
+|  MMM | 134 | - | 82 | - | 44 | - | 28 | - | 489 | - | 270 | - | 189 | - | 120 | -  |
+|  SAM | 120 | - | 65 | - | 43 | - | 31 | - | 396 | - | 245 | - | 153 | - | 99 | -  |
+|  FCM | 74 | 9 | 44 | 4 | 29 | 2 | 21 | 1 | 415 | 15 | 265 | 10 | 174 | 6 | 119 | 4  |
+|  PIM | 73 | 9 | 45 | 4 | 29 | 2 | 21 | 1 | 413 | 18 | 261 | 13 | 172 | 7 | 117 | 4  |
+|  KM | 112 | 25 | 65 | 12 | 36 | 4 | 22 | 2 | 345 | 9 | 206 | 5 | 129 | 2 | 83 | 1  |
+|  KM-C | 59 | 2 | 35 | 1 | 25 | 0 | 19 | 0 | 329 | 3 | 196 | 1 | 123 | 1 | 79 | 0  |
+|  FKM | 113 | 19 | 64 | 9 | 36 | 4 | 22 | 1 | 346 | 9 | 206 | 4 | 129 | 2 | 83 | 1  |
+|  FKM-C | 59 | 2 | 35 | 1 | 26 | 1 | 19 | 1 | 328 | 3 | 196 | 1 | 123 | 1 | 79 | 0  |
+|  SKM | 112 | 20 | 63 | 9 | 36 | 4 | 22 | 1 | 343 | 10 | 207 | 6 | 129 | 2 | 83 | 1  |
+|  WSM | 64 | 4 | 36 | 1 | 23 | 1 | 15 | 0 | 345 | 8 | 204 | 3 | 127 | 1 | 81 | 1  |
+|  WSM-C | 57 | 1 | 34 | 0 | 22 | 0 | 14 | 0 | 327 | 3 | 195 | 1 | 123 | 1 | 78 | 0  |
+|   | Boats |   |   |   |   |   |   |   | Lenna  |   |   |   |   |   |   |   |
+|  MC | 200 | - | 126 | - | 78 | - | 57 | - | 165 | - | 94 | - | 71 | - | 47 | -  |
+|  WAN | 198 | - | 117 | - | 71 | - | 45 | - | 159 | - | 93 | - | 61 | - | 43 | -  |
+|  WU | 154 | - | 87 | - | 50 | - | 32 | - | 130 | - | 76 | - | 46 | - | 29 | -  |
+|  NEU | 147 | - | 79 | - | 41 | - | 26 | - | 119 | - | 68 | - | 36 | - | 23 | -  |
+|  MMM | 203 | - | 114 | - | 69 | - | 41 | - | 139 | - | 86 | - | 50 | - | 34 | -  |
+|  SAM | 161 | - | 95 | - | 59 | - | 42 | - | 135 | - | 88 | - | 56 | - | 40 | -  |
+|  FCM | 160 | 13 | 99 | 8 | 64 | 5 | 42 | 3 | 132 | 10 | 83 | 7 | 53 | 4 | 38 | 2  |
+|  PIM | 161 | 14 | 99 | 11 | 63 | 5 | 43 | 3 | 136 | 12 | 81 | 6 | 53 | 4 | 38 | 2  |
+|  KM | 135 | 11 | 78 | 5 | 47 | 3 | 30 | 1 | 106 | 5 | 61 | 2 | 38 | 1 | 24 | 0  |
+|  KM-C | 115 | 1 | 64 | 1 | 39 | 0 | 25 | 0 | 97 | 1 | 57 | 1 | 35 | 0 | 22 | 0  |
+|  FKM | 134 | 10 | 77 | 5 | 47 | 3 | 29 | 1 | 107 | 8 | 61 | 2 | 38 | 1 | 24 | 0  |
+|  FKM-C | 116 | 1 | 65 | 1 | 39 | 0 | 25 | 0 | 97 | 1 | 57 | 1 | 35 | 0 | 22 | 0  |
+|  SKM | 137 | 13 | 77 | 4 | 47 | 2 | 30 | 1 | 107 | 6 | 62 | 2 | 38 | 1 | 24 | 1  |
+|  WSM | 125 | 7 | 68 | 2 | 40 | 1 | 24 | 0 | 103 | 5 | 60 | 2 | 36 | 1 | 23 | 0  |
+|  WSM-C | 115 | 1 | 63 | 0 | 37 | 0 | 23 | 0 | 97 | 2 | 56 | 1 | 34 | 0 | 22 | 0  |
+|   | Parrots |   |   |   |   |   |   |   | Pepyers  |   |   |   |   |   |   |   |
+|  MC | 401 | - | 258 | - | 144 | - | 99 | - | 333 | - | 213 | - | 147 | - | 98 | -  |
+|  WAN | 365 | - | 225 | - | 146 | - | 90 | - | 333 | - | 215 | - | 142 | - | 93 | -  |
+|  WU | 291 | - | 171 | - | 96 | - | 59 | - | 264 | - | 160 | - | 101 | - | 63 | -  |
+|  NEU | 306 | - | 153 | - | 84 | - | 47 | - | 249 | - | 151 | - | 83 | - | 55 | -  |
+|  MMM | 332 | - | 200 | - | 117 | - | 73 | - | 292 | - | 182 | - | 113 | - | 76 | -  |
+|  SAM | 276 | - | 160 | - | 94 | - | 60 | - | 268 | - | 161 | - | 100 | - | 64 | -  |
+|  FCM | 297 | 19 | 178 | 14 | 107 | 5 | 69 | 2 | 272 | 15 | 179 | 7 | 120 | 4 | 84 | 3  |
+|  PIM | 295 | 21 | 175 | 12 | 107 | 5 | 69 | 2 | 266 | 14 | 176 | 7 | 119 | 5 | 84 | 3  |
+|  KM | 262 | 20 | 149 | 9 | 85 | 4 | 51 | 2 | 232 | 7 | 141 | 4 | 87 | 2 | 54 | 1  |
+|  KM-C | 237 | 7 | 131 | 3 | 76 | 1 | 46 | 1 | 220 | 2 | 132 | 1 | 80 | 0 | 51 | 0  |
+|  FKM | 264 | 21 | 150 | 10 | 87 | 4 | 51 | 2 | 231 | 6 | 142 | 4 | 86 | 2 | 55 | 1  |
+|  FKM-C | 237 | 7 | 132 | 3 | 77 | 2 | 47 | 1 | 220 | 2 | 132 | 2 | 81 | 1 | 51 | 0  |
+|  SKM | 259 | 16 | 152 | 11 | 86 | 4 | 51 | 2 | 233 | 7 | 142 | 4 | 87 | 2 | 55 | 1  |
+|  WSM | 249 | 13 | 136 | 5 | 79 | 2 | 46 | 1 | 232 | 7 | 139 | 3 | 85 | 1 | 53 | 1  |
+|  WSM-C | 232 | 6 | 128 | 2 | 74 | 1 | 43 | 0 | 219 | 2 | 131 | 1 | 80 | 1 | 50 | 0  |
+|   | Fish |   |   |   |   |   |   |   | Poolballs  |   |   |   |   |   |   |   |
+|  MC | 276 | - | 169 | - | 107 | - | 68 | - | 136 | - | 64 | - | 38 | - | 27 | -  |
+|  WAN | 311 | - | 208 | - | 124 | - | 77 | - | 112 | - | 59 | - | 45 | - | 38 | -  |
+|  WU | 187 | - | 111 | - | 69 | - | 44 | - | 68 | - | 31 | - | 17 | - | 11 | -  |
+|  NEU | 173 | - | 107 | - | 57 | - | 42 | - | 104 | - | 44 | - | 18 | - | 9 | -  |
+|  MMM | 235 | - | 136 | - | 81 | - | 53 | - | 166 | - | 91 | - | 42 | - | 20 | -  |
+|  SAM | 198 | - | 120 | - | 74 | - | 49 | - | 91 | - | 54 | - | 37 | - | 20 | -  |
+|  FCM | 169 | 11 | 110 | 5 | 79 | 3 | 60 | 3 | 153 | 75 | 61 | 30 | 25 | 5 | 14 | 2  |
+|  PIM | 168 | 9 | 111 | 4 | 79 | 3 | 60 | 3 | 149 | 71 | 57 | 26 | 25 | 7 | 14 | 2  |
+|  KM | 174 | 24 | 105 | 9 | 64 | 4 | 40 | 2 | 226 | 75 | 129 | 31 | 75 | 17 | 39 | 8  |
+|  KM-C | 145 | 3 | 90 | 2 | 58 | 2 | 37 | 1 | 94 | 8 | 51 | 5 | 44 | 6 | 29 | 5  |
+|  FKM | 173 | 17 | 105 | 10 | 65 | 4 | 40 | 2 | 229 | 73 | 130 | 44 | 78 | 15 | 37 | 6  |
+|  FKM-C | 144 | 3 | 90 | 2 | 59 | 2 | 38 | 1 | 95 | 9 | 55 | 10 | 45 | 8 | 27 | 5  |
+|  SKM | 177 | 19 | 105 | 9 | 65 | 4 | 40 | 2 | 167 | 35 | 120 | 15 | 71 | 13 | 37 | 7  |
+|  WSM | 148 | 3 | 91 | 3 | 55 | 1 | 33 | 0 | 69 | 10 | 31 | 6 | 14 | 2 | 7 | 0  |
+|  WSM-C | 142 | 4 | 85 | 1 | 52 | 1 | 32 | 0 | 62 | 6 | 27 | 3 | 13 | 1 | 7 | 0  |
+
+
+<!-- page 28 -->
+
+Table 2. CPU time comparison of the quantization methods
+
+|  Method | K = 32 | K = 64 | K = 128 | K = 256 | K = 32 | K = 64 | K = 128 | K = 256  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|   | Airplane |   |   |   | Baboon  |   |   |   |
+|  MC | 10 | 10 | 11 | 12 | 10 | 10 | 11 | 13  |
+|  WAN | 13 | 14 | 15 | 18 | 14 | 15 | 16 | 20  |
+|  WU | 16 | 16 | 16 | 16 | 16 | 15 | 16 | 17  |
+|  NEU | 70 | 142 | 265 | 514 | 67 | 134 | 254 | 485  |
+|  MMM | 123 | 206 | 367 | 696 | 126 | 207 | 375 | 702  |
+|  SAM | 7 | 8 | 13 | 25 | 9 | 20 | 56 | 112  |
+|  FCM | 2739 | 5285 | 10612 | 21079 | 2737 | 5285 | 10612 | 21081  |
+|  PIM | 2410 | 5038 | 10402 | 20913 | 2488 | 5091 | 10407 | 20846  |
+|  KM | 584 | 1005 | 1791 | 3314 | 592 | 1012 | 1800 | 3317  |
+|  KM-C | 17688 | 43850 | 74814 | 71908 | 3136 | 7070 | 13164 | 25657  |
+|  FKM | 189 | 222 | 299 | 505 | 189 | 223 | 299 | 508  |
+|  FKM-C | 4111 | 6144 | 6057 | 5376 | 746 | 934 | 1171 | 1959  |
+|  SKM | 530 | 903 | 1593 | 2952 | 547 | 927 | 1610 | 2961  |
+|  WSM | 68 | 92 | 145 | 301 | 147 | 188 | 270 | 477  |
+|  WSM-C | 257 | 359 | 522 | 1180 | 401 | 565 | 814 | 1580  |
+|   | Boats |   |   |   | Luna  |   |   |   |
+|  MC | 19 | 18 | 19 | 21 | 9 | 8 | 10 | 10  |
+|  WAN | 24 | 24 | 26 | 29 | 12 | 15 | 15 | 17  |
+|  WU | 28 | 26 | 28 | 28 | 15 | 15 | 14 | 15  |
+|  NEU | 122 | 232 | 453 | 853 | 61 | 123 | 244 | 465  |
+|  MMM | 219 | 367 | 656 | 1237 | 116 | 193 | 346 | 654  |
+|  SAM | 17 | 19 | 21 | 32 | 8 | 7 | 9 | 13  |
+|  FCM | 4695 | 9141 | 18350 | 36471 | 2545 | 4954 | 9953 | 19770  |
+|  PIM | 4075 | 8555 | 17784 | 36071 | 2348 | 4820 | 9832 | 19681  |
+|  KM | 986 | 1727 | 3087 | 5729 | 536 | 939 | 1673 | 3101  |
+|  KM-C | 9853 | 22622 | 53858 | 111047 | 3457 | 6698 | 11927 | 23762  |
+|  FKM | 326 | 385 | 509 | 804 | 170 | 205 | 281 | 478  |
+|  FKM-C | 2393 | 3158 | 4007 | 6056 | 788 | 878 | 1167 | 1886  |
+|  SKM | 908 | 1551 | 2756 | 5105 | 485 | 837 | 1493 | 2778  |
+|  WSM | 136 | 174 | 255 | 464 | 52 | 68 | 110 | 244  |
+|  WSM-C | 486 | 614 | 853 | 1647 | 149 | 212 | 329 | 883  |
+|   | Parrots |   |   |   | Peppers  |   |   |   |
+|  MC | 57 | 58 | 59 | 61 | 10 | 10 | 11 | 12  |
+|  WAN | 81 | 82 | 83 | 86 | 13 | 14 | 16 | 18  |
+|  WU | 86 | 87 | 86 | 87 | 16 | 17 | 17 | 17  |
+|  NEU | 476 | 849 | 1571 | 2914 | 70 | 135 | 262 | 493  |
+|  MMM | 758 | 1265 | 2282 | 4286 | 125 | 206 | 371 | 700  |
+|  SAM | 74 | 77 | 103 | 150 | 8 | 11 | 29 | 53  |
+|  FCM | 16096 | 31734 | 63871 | 126554 | 2739 | 5288 | 10624 | 21107  |
+|  PIM | 14620 | 30159 | 61891 | 124794 | 2499 | 5107 | 10425 | 20883  |
+|  KM | 3309 | 5918 | 10657 | 19828 | 564 | 996 | 1785 | 3309  |
+|  KM-C | 23949 | 61168 | 119907 | 242439 | 3387 | 7761 | 14839 | 31893  |
+|  FKM | 1100 | 1302 | 1698 | 2519 | 181 | 219 | 295 | 500  |
+|  FKM-C | 5464 | 8557 | 9529 | 10482 | 869 | 1017 | 1262 | 2233  |
+|  SKM | 3072 | 5429 | 9506 | 17599 | 523 | 905 | 1605 | 2971  |
+|  WSM | 250 | 298 | 399 | 639 | 107 | 138 | 201 | 373  |
+|  WSM-C | 634 | 820 | 1261 | 2149 | 327 | 466 | 648 | 1387  |
+|   | Fish |   |   |   | Poolballs  |   |   |   |
+|  MC | 6 | 5 | 7 | 6 | 9 | 9 | 9 | 11  |
+|  WAN | 5 | 6 | 8 | 12 | 10 | 10 | 12 | 14  |
+|  WU | 8 | 9 | 8 | 9 | 12 | 13 | 12 | 13  |
+|  NEU | 12 | 27 | 58 | 110 | 51 | 103 | 192 | 353  |
+|  MMM | 23 | 34 | 59 | 112 | 87 | 145 | 263 | 498  |
+|  SAM | 4 | 6 | 9 | 17 | 9 | 10 | 16 | 23  |
+|  FCM | 610 | 1209 | 2428 | 4832 | 1999 | 3940 | 7913 | 15719  |
+|  PIM | 560 | 1171 | 2401 | 4806 | 1586 | 3406 | 6817 | 13257  |
+|  KM | 128 | 229 | 404 | 757 | 396 | 703 | 1281 | 2400  |
+|  KM-C | 1147 | 2777 | 4395 | 5233 | 3339 | 13294 | 14912 | 22637  |
+|  FKM | 39 | 49 | 78 | 187 | 133 | 158 | 213 | 369  |
+|  FKM-C | 267 | 346 | 420 | 893 | 913 | 1565 | 1285 | 2036  |
+|  SKM | 121 | 207 | 361 | 672 | 380 | 653 | 1173 | 2174  |
+|  WSM | 25 | 32 | 57 | 173 | 9 | 15 | 34 | 136  |
+|  WSM-C | 85 | 109 | 182 | 572 | 24 | 34 | 94 | 356  |
+
+
+<!-- page 29 -->
+
+Table 3. Performance rank comparison of the quantization methods
+
+|  Method | MSE rank | Time rank | Mean rank  |
+| --- | --- | --- | --- |
+|  MC | 13.97 | 1.38 | 7.67  |
+|  WAN | 13.66 | 2.84 | 8.25  |
+|  WU | 8.47 | 3.31 | 5.89  |
+|  NEU | 6.31 | 6.00 | 6.16  |
+|  MMM | 12.31 | 7.63 | 9.97  |
+|  SAM | 10.09 | 2.53 | 6.31  |
+|  FCM | 10.31 | 13.94 | 12.13  |
+|  PIM | 9.81 | 12.94 | 11.38  |
+|  KM | 7.56 | 11.34 | 9.45  |
+|  KM-C | 3.03 | 15.00 | 9.02  |
+|  FKM | 7.91 | 7.75 | 7.83  |
+|  FKM-C | 3.88 | 11.53 | 7.70  |
+|  SKM | 8.06 | 10.25 | 9.16  |
+|  WSM | 3.56 | 5.28 | 4.42  |
+|  WSM-C | 1.06 | 8.25 | 4.66  |
+
+Table 4. Stability rank comparison of the quantization methods
+
+|  Method | MSE rank  |
+| --- | --- |
+|  FCM | 9.36  |
+|  PIM | 9.56  |
+|  KM | 8.31  |
+|  KM-C | 2.84  |
+|  FKM | 8.10  |
+|  FKM-C | 3.41  |
+|  SKM | 7.11  |
+|  WSM | 3.92  |
+|  WSM-C | 2.02  |
