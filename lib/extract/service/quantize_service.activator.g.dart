@@ -1,8 +1,8 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.0 (Squadron 7.1.0)
+// Generator: WorkerGenerator 9.2.0 (Squadron 7.4.3)
 // **************************************************************************
 
 import 'quantize_service.stub.g.dart'

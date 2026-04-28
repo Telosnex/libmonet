@@ -1,0 +1,17 @@
+targets:
+  $default:
+    # Keep root codegen out of example/**. Flutter creates plugin symlinks there,
+    # and package builders can choke on generated Pigeon/mock annotations they
+    # do not own.
+    sources:
+      include:
+        - $package$
+        - lib/**
+        - pubspec.yaml
+    builders:
+      squadron_builder:worker_builder:
+        generate_for:
+          - lib/extract/service/quantize_service.dart
+      json_serializable:
+        generate_for:
+          - lib/**/*.dart

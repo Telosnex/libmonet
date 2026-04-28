@@ -1,30 +1,31 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of 'quantize_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.0 (Squadron 7.1.0)
+// Generator: WorkerGenerator 9.2.0 (Squadron 7.4.3)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$quantizeId = 1;
 
 /// WorkerService operations for QuantizeService
 extension on QuantizeService {
   OperationsMap _$getOperations() => OperationsMap({
-        _$quantizeId: ($req) async {
-          final QuantizerResult $res;
-          try {
-            final $dsr = _$Deser(contextAware: false);
-            $res = await quantize($dsr.$1($req.args[0]), $dsr.$0($req.args[1]));
-          } finally {}
-          try {
-            final $sr = _$Ser(contextAware: false);
-            return $sr.$0($res);
-          } finally {}
-        },
-      });
+    _$quantizeId: ($req) async {
+      final QuantizerResult $res;
+      try {
+        final $dsr = _$Deser(contextAware: false);
+        $res = await quantize($dsr.$1($req.args[0]), $dsr.$0($req.args[1]));
+      } finally {}
+      try {
+        final $sr = _$Ser(contextAware: false);
+        return $sr.$0($res);
+      } finally {}
+    },
+  });
 }
 
 /// Invoker for QuantizeService, implements the public interface to invoke the
@@ -44,6 +45,22 @@ mixin _$QuantizeService$Invoker on Invoker implements QuantizeService {
 /// invoking the remote service.
 mixin _$QuantizeService$Facade implements QuantizeService {}
 
+/// WorkerClient for QuantizeService
+final class $QuantizeService$Client extends WorkerClient
+    with _$QuantizeService$Invoker, _$QuantizeService$Facade
+    implements QuantizeService {
+  $QuantizeService$Client(PlatformChannel channelInfo)
+    : super(Channel.deserialize(channelInfo)!);
+}
+
+/// Local worker extension for QuantizeService
+extension $QuantizeServiceLocalWorkerExt on QuantizeService {
+  // Get a fresh local worker instance.
+  LocalWorker<QuantizeService> getLocalWorker([
+    ExceptionManager? exceptionManager,
+  ]) => LocalWorker.create(this, _$getOperations(), exceptionManager);
+}
+
 /// WorkerService class for QuantizeService
 class _$QuantizeService$WorkerService extends QuantizeService
     implements WorkerService {
@@ -61,25 +78,41 @@ WorkerService $QuantizeServiceInitializer(WorkerRequest $req) =>
 base class QuantizeServiceWorker extends Worker
     with _$QuantizeService$Invoker, _$QuantizeService$Facade
     implements QuantizeService {
-  QuantizeServiceWorker(
-      {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
-      : super($QuantizeServiceActivator(Squadron.platformType),
-            threadHook: threadHook, exceptionManager: exceptionManager);
+  QuantizeServiceWorker({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+  }) : super(
+         $QuantizeServiceActivator(Squadron.platformType),
+         threadHook: threadHook,
+         exceptionManager: exceptionManager,
+       );
 
-  QuantizeServiceWorker.vm(
-      {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
-      : super($QuantizeServiceActivator(SquadronPlatformType.vm),
-            threadHook: threadHook, exceptionManager: exceptionManager);
+  QuantizeServiceWorker.vm({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+  }) : super(
+         $QuantizeServiceActivator(SquadronPlatformType.vm),
+         threadHook: threadHook,
+         exceptionManager: exceptionManager,
+       );
 
-  QuantizeServiceWorker.js(
-      {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
-      : super($QuantizeServiceActivator(SquadronPlatformType.js),
-            threadHook: threadHook, exceptionManager: exceptionManager);
+  QuantizeServiceWorker.js({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+  }) : super(
+         $QuantizeServiceActivator(SquadronPlatformType.js),
+         threadHook: threadHook,
+         exceptionManager: exceptionManager,
+       );
 
-  QuantizeServiceWorker.wasm(
-      {PlatformThreadHook? threadHook, ExceptionManager? exceptionManager})
-      : super($QuantizeServiceActivator(SquadronPlatformType.wasm),
-            threadHook: threadHook, exceptionManager: exceptionManager);
+  QuantizeServiceWorker.wasm({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+  }) : super(
+         $QuantizeServiceActivator(SquadronPlatformType.wasm),
+         threadHook: threadHook,
+         exceptionManager: exceptionManager,
+       );
 
   @override
   List? getStartArgs() => null;
@@ -89,45 +122,57 @@ base class QuantizeServiceWorker extends Worker
 base class QuantizeServiceWorkerPool extends WorkerPool<QuantizeServiceWorker>
     with _$QuantizeService$Facade
     implements QuantizeService {
-  QuantizeServiceWorkerPool(
-      {PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager,
-      ConcurrencySettings? concurrencySettings})
-      : super(
-            (ExceptionManager exceptionManager) => QuantizeServiceWorker(
-                threadHook: threadHook, exceptionManager: exceptionManager),
-            concurrencySettings: concurrencySettings,
-            exceptionManager: exceptionManager);
+  QuantizeServiceWorkerPool({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+    ConcurrencySettings? concurrencySettings,
+  }) : super(
+         (ExceptionManager exceptionManager) => QuantizeServiceWorker(
+           threadHook: threadHook,
+           exceptionManager: exceptionManager,
+         ),
+         concurrencySettings: concurrencySettings,
+         exceptionManager: exceptionManager,
+       );
 
-  QuantizeServiceWorkerPool.vm(
-      {PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager,
-      ConcurrencySettings? concurrencySettings})
-      : super(
-            (ExceptionManager exceptionManager) => QuantizeServiceWorker.vm(
-                threadHook: threadHook, exceptionManager: exceptionManager),
-            concurrencySettings: concurrencySettings,
-            exceptionManager: exceptionManager);
+  QuantizeServiceWorkerPool.vm({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+    ConcurrencySettings? concurrencySettings,
+  }) : super(
+         (ExceptionManager exceptionManager) => QuantizeServiceWorker.vm(
+           threadHook: threadHook,
+           exceptionManager: exceptionManager,
+         ),
+         concurrencySettings: concurrencySettings,
+         exceptionManager: exceptionManager,
+       );
 
-  QuantizeServiceWorkerPool.js(
-      {PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager,
-      ConcurrencySettings? concurrencySettings})
-      : super(
-            (ExceptionManager exceptionManager) => QuantizeServiceWorker.js(
-                threadHook: threadHook, exceptionManager: exceptionManager),
-            concurrencySettings: concurrencySettings,
-            exceptionManager: exceptionManager);
+  QuantizeServiceWorkerPool.js({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+    ConcurrencySettings? concurrencySettings,
+  }) : super(
+         (ExceptionManager exceptionManager) => QuantizeServiceWorker.js(
+           threadHook: threadHook,
+           exceptionManager: exceptionManager,
+         ),
+         concurrencySettings: concurrencySettings,
+         exceptionManager: exceptionManager,
+       );
 
-  QuantizeServiceWorkerPool.wasm(
-      {PlatformThreadHook? threadHook,
-      ExceptionManager? exceptionManager,
-      ConcurrencySettings? concurrencySettings})
-      : super(
-            (ExceptionManager exceptionManager) => QuantizeServiceWorker.wasm(
-                threadHook: threadHook, exceptionManager: exceptionManager),
-            concurrencySettings: concurrencySettings,
-            exceptionManager: exceptionManager);
+  QuantizeServiceWorkerPool.wasm({
+    PlatformThreadHook? threadHook,
+    ExceptionManager? exceptionManager,
+    ConcurrencySettings? concurrencySettings,
+  }) : super(
+         (ExceptionManager exceptionManager) => QuantizeServiceWorker.wasm(
+           threadHook: threadHook,
+           exceptionManager: exceptionManager,
+         ),
+         concurrencySettings: concurrencySettings,
+         exceptionManager: exceptionManager,
+       );
 
   @override
   Future<QuantizerResult> quantize(List<int> argbs, int maxColors) =>
