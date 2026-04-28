@@ -120,7 +120,7 @@ const _fixtures = [
     name: 'curated-lifestyle-7lQlYxH0Ljs-unsplash.jpg',
     maxColors: 256,
     quantizerFingerprint:
-        'colors=248 total=6144 top=#CCCDC7:555,#CBCCC6:456,#CECFC9:434,#12130E:291,#D0D1CB:255,#0F110B:213,#C9CAC4:179,#C8C9C3:126',
+        'colors=236 total=6144 top=#CCCDC7:555,#CBCCC6:456,#CECFC9:434,#12130E:291,#D0D1CB:255,#0F110B:213,#C9CAC4:179,#C7C8C2:170',
     triadHexes: ['#CCCDC7', '#CECDC5', '#CBCDCB'],
   ),
   _WallpaperFixture(
