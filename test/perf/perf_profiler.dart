@@ -1,7 +1,9 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, sdk_version_since
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
 import 'dart:isolate' as isolate;
 
 import 'package:vm_service/vm_service.dart';
@@ -77,7 +79,11 @@ class PerfProfiler {
   }
 
   /// Collect CPU samples and print the top-N hottest functions.
-  Future<void> collectAndPrint({int topN = 20, String? label}) async {
+  Future<void> collectAndPrint({
+    int topN = 20,
+    String? label,
+    String? dumpPath,
+  }) async {
     if (_service == null || _isolateId == null) return;
 
     final cpuSamples = await _service!.getCpuSamples(_isolateId!, 0, ~0);
@@ -87,6 +93,14 @@ class PerfProfiler {
     if (samples.isEmpty) {
       print('\n[PerfProfiler] No CPU samples collected.');
       return;
+    }
+
+    if (dumpPath != null) {
+      final file = File(dumpPath);
+      await file.parent.create(recursive: true);
+      const encoder = JsonEncoder.withIndent('  ');
+      await file.writeAsString(encoder.convert(cpuSamples.toJson()));
+      print('[PerfProfiler] Wrote raw CPU samples to ${file.path}');
     }
 
     // Sort by exclusive ticks (self time) descending.

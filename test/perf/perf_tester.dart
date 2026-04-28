@@ -173,6 +173,7 @@ class PerfTester<Input, Output> {
     bool profile = false,
     int profileTopN = 50,
     int profileRuns = 100,
+    String? profileDumpDirectory,
 
     /// Pass `tester.runAsync` when running inside a Flutter widget test.
     /// Real I/O (VM service connection) needs to escape the fake async zone.
@@ -259,7 +260,13 @@ class PerfTester<Input, Output> {
                 }
               }
             }
-            await profiler.collectAndPrint(topN: profileTopN, label: name);
+            await profiler.collectAndPrint(
+              topN: profileTopN,
+              label: name,
+              dumpPath: profileDumpDirectory == null
+                  ? null
+                  : '$profileDumpDirectory/${_sanitizeFileName(testName)}__${_sanitizeFileName(name)}.json',
+            );
           }
           await profiler.dispose();
         } else {
@@ -735,6 +742,10 @@ class PerfTester<Input, Output> {
       ),
     );
   }
+}
+
+String _sanitizeFileName(String input) {
+  return input.replaceAll(RegExp(r'[^A-Za-z0-9_.-]+'), '_');
 }
 
 /// Encodes a value for comparison, falling back to `toString()` if JSON

@@ -62,8 +62,11 @@ class QuantizerWsmeans {
     final pixels = <int>[];
     var pointCount = 0;
     for (var inputPixel in inputPixels) {
-      final pixelCount = pixelToCount.update(inputPixel, (value) => value + 1,
-          ifAbsent: () => 1);
+      final pixelCount = pixelToCount.update(
+        inputPixel,
+        (value) => value + 1,
+        ifAbsent: () => 1,
+      );
       if (pixelCount == 1) {
         pointCount++;
         points.add(pointProvider.fromInt(inputPixel));
@@ -80,8 +83,9 @@ class QuantizerWsmeans {
 
     var clusterCount = math.min(maxColors, pointCount);
 
-    final clusters =
-        startingClusters.map((e) => pointProvider.fromInt(e)).toList();
+    final clusters = startingClusters
+        .map((e) => pointProvider.fromInt(e))
+        .toList();
     final additionalClustersNeeded = clusterCount - clusters.length;
     if (additionalClustersNeeded > 0) {
       final random = math.Random(0x42688);
@@ -121,13 +125,18 @@ class QuantizerWsmeans {
     debugLog(
       'have ${clusters.length} starting clusters, ${points.length} points',
     );
-    final clusterIndices =
-        List<int>.generate(pointCount, (index) => index % clusterCount);
+    final clusterIndices = List<int>.generate(
+      pointCount,
+      (index) => index % clusterCount,
+    );
 
     final distanceToIndexMatrix = List<List<DistanceAndIndex>>.generate(
+      clusterCount,
+      (index) => List<DistanceAndIndex>.generate(
         clusterCount,
-        (index) => List<DistanceAndIndex>.generate(
-            clusterCount, (index) => DistanceAndIndex(0, index)));
+        (index) => DistanceAndIndex(0, index),
+      ),
+    );
 
     final pixelCountSums = List<int>.filled(clusterCount, 0);
     for (var iteration = 0; iteration < maxIterations; iteration++) {
@@ -171,14 +180,22 @@ class QuantizerWsmeans {
         var minimumDistance = previousDistance;
         var newClusterIndex = -1;
         for (var j = 0; j < clusterCount; j++) {
-          if (distanceToIndexMatrix[previousClusterIndex][j].distance >=
-              4 * previousDistance) {
+          final distanceAndIndex =
+              distanceToIndexMatrix[previousClusterIndex][j];
+          if (distanceAndIndex.distance >= 4 * previousDistance) {
+            break;
+          }
+          final candidateClusterIndex = distanceAndIndex.index;
+          if (candidateClusterIndex == previousClusterIndex) {
             continue;
           }
-          final distance = pointProvider.distance(point, clusters[j]);
-          if (distance < minimumDistance) {
+          final distance = pointProvider.distance(
+            point,
+            clusters[candidateClusterIndex],
+          );
+          if (distance <= minimumDistance) {
             minimumDistance = distance;
-            newClusterIndex = j;
+            newClusterIndex = candidateClusterIndex;
           }
         }
         if (newClusterIndex != -1) {
