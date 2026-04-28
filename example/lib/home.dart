@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/contrast/contrast.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/effects/opacity.dart';
 import 'package:libmonet/effects/shadows.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/chessboard_painter.dart';
@@ -15,10 +15,12 @@ import 'package:monet_studio/components_widget.dart';
 import 'package:monet_studio/contrast_expansion_tile.dart';
 import 'package:monet_studio/extracted_widget.dart';
 import 'package:monet_studio/padding.dart';
+import 'package:monet_studio/palette_viewer.dart';
 import 'package:monet_studio/quantizer_provider.dart';
 import 'package:monet_studio/safe_colors_preview.dart';
 import 'package:monet_studio/scaling_expansion_tile.dart';
 import 'package:monet_studio/scrim_expansion_tile.dart';
+import 'package:monet_studio/theme_data_provider.dart';
 import 'package:monet_studio/custom_bg_expansion_tile.dart';
 import 'package:monet_studio/tokens_expansion_tile.dart';
 import 'package:flutter/foundation.dart';
@@ -45,12 +47,40 @@ enum BrightnessSetting {
   }
 }
 
+class _QuantizerColorCountToggle extends StatelessWidget {
+  const _QuantizerColorCountToggle({
+    required this.value,
+    required this.onChanged,
+  });
+
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<int>(
+      segments: const [
+        ButtonSegment(value: 32, label: Text('32')),
+        ButtonSegment(value: 64, label: Text('64')),
+        ButtonSegment(value: 128, label: Text('128')),
+        ButtonSegment(value: 256, label: Text('256')),
+      ],
+      selected: {value},
+      onSelectionChanged: (selection) {
+        onChanged(selection.single);
+      },
+    );
+  }
+}
+
 class Home extends HookConsumerWidget {
-  const Home({super.key});
+  const Home({super.key, this.initialColor = const Color(0xff335147)});
+
+  final Color initialColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final color = useState(const Color(0xff335147));
+    final color = useState(initialColor);
     final backgroundImage = useState<ImageProvider?>(null);
     final images = useState(<ImageProvider>[]);
     final contrast = useState(0.5);
@@ -58,12 +88,41 @@ class Home extends HookConsumerWidget {
     final darkSurfaceLstar = useState(10.0);
     final lightSurfaceLstar = useState(93.0);
     final scale = useState(1.0);
+    final quantizerColorCount = useState(32);
     final brightnessSetting = useState(BrightnessSetting.auto);
     final brightness = brightnessSetting.value.brightness(context);
+    final surfaceLstar = brightness == Brightness.light
+        ? lightSurfaceLstar.value
+        : darkSurfaceLstar.value;
     final font = GoogleFonts.alice();
     final font2 = GoogleFonts.lusitana();
+    final pendingFonts = useMemoized(GoogleFonts.pendingFonts);
+    final imageQuantizerResult = backgroundImage.value == null
+        ? null
+        : ref
+            .watch(quantizerResultProvider(QuantizerRequest(
+              imageProvider: backgroundImage.value!,
+              colorCount: quantizerColorCount.value,
+            )))
+            .valueOrNull;
+    final themeRequest = MonetThemeDataRequest(
+      brightness: brightness,
+      backgroundTone: surfaceLstar,
+      seedColor: color.value,
+      quantizerResult: imageQuantizerResult,
+      contrast: contrast.value,
+      algo: algo.value,
+      scale: scale.value,
+    );
+    final themeDataByModel = {
+      for (final model in ColorModel.values)
+        model: ref.watch(
+          monetThemeDataProvider(themeRequest.copyWith(colorModel: model)),
+        ),
+    };
+    final activeThemeData = themeDataByModel[ColorModel.kDefault]!;
     final ui = FutureBuilder<Object>(
-        future: GoogleFonts.pendingFonts(),
+        future: pendingFonts,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -110,6 +169,17 @@ class Home extends HookConsumerWidget {
                                 for (final image in images.value)
                                   ExtractedWidget(
                                     image: image,
+                                    quantizerColorCount:
+                                        quantizerColorCount.value,
+                                    onRemove: () {
+                                      images.value = images.value
+                                          .where(
+                                              (candidate) => candidate != image)
+                                          .toList();
+                                      if (backgroundImage.value == image) {
+                                        backgroundImage.value = null;
+                                      }
+                                    },
                                     onTapped: () {
                                       backgroundImage.value = image;
                                     },
@@ -127,10 +197,23 @@ class Home extends HookConsumerWidget {
                                   },
                                 ),
                                 const VerticalPadding(),
+                                _QuantizerColorCountToggle(
+                                  value: quantizerColorCount.value,
+                                  onChanged: (value) {
+                                    quantizerColorCount.value = value;
+                                  },
+                                ),
+                                const VerticalPadding(),
+                                PaletteViewer(
+                                    themeDataByModel: themeDataByModel),
+                                const VerticalPadding(),
                                 ContrastExpansionTile(
                                     contrast: contrast, algo: algo),
                                 _buildComponentPreview(
-                                    context, contrast, images),
+                                  context,
+                                  themeDataByModel,
+                                  images,
+                                ),
                                 const TokensExpansionTile(),
                                 const VerticalPadding(),
                                 ScrimExpansionTile(
@@ -180,46 +263,19 @@ class Home extends HookConsumerWidget {
           });
         });
 
-    final imageQuantizerResult = backgroundImage.value == null
-        ? null
-        : ref
-            .watch(quantizerResultProvider(backgroundImage.value!))
-            .valueOrNull;
-    final surfaceLstar = brightness == Brightness.light
-        ? lightSurfaceLstar.value
-        : darkSurfaceLstar.value;
-    final answer = switch (imageQuantizerResult) {
-      (QuantizerResult e) => MonetTheme(
-          monetThemeData: MonetThemeData.fromQuantizerResult(
-          brightness: brightness,
-            backgroundTone: surfaceLstar,
-          quantizerResult: e,
-          contrast: contrast.value,
-          algo: algo.value,
-            scale: scale.value,
-          ),
-          child: ui),
-      _ => MonetTheme(
-          monetThemeData: MonetThemeData.fromColor(
-          brightness: brightness,
-          algo: algo.value,
-          contrast: contrast.value,
-          color: color.value,
-            backgroundTone: surfaceLstar,
-            scale: scale.value,
-          ),
-          child: ui,
-        )
-    };
-    return answer;
+    return MonetTheme(
+      monetThemeData: activeThemeData,
+      child: ui,
+    );
   }
 
   Stack _buildComponentPreview(
     BuildContext context,
-    ValueNotifier<double> contrast,
+    Map<ColorModel, MonetThemeData> themeDataByModel,
     ValueNotifier<List<ImageProvider>> images,
   ) {
     final monetTheme = MonetTheme.of(context);
+    final themeData = themeDataByModel[ColorModel.kDefault]!;
     final primaryColors = monetTheme.primary;
     final fgArgb = primaryColors.backgroundText.argb;
     final scrimOpacity = getOpacityForArgbs(
@@ -227,14 +283,14 @@ class Home extends HookConsumerWidget {
       minBackgroundArgb: 0xFF000000,
       maxBackgroundArgb: 0xFFFFFFFF,
       algo: monetTheme.algo,
-      contrast: contrast.value,
+      contrast: themeData.contrast,
     );
     final shadows = getShadowOpacitiesForArgbs(
       foregroundArgb: fgArgb,
       minBackgroundArgb: 0xFF000000,
       maxBackgroundArgb: 0xFFFFFFFF,
       algo: monetTheme.algo,
-      contrast: contrast.value,
+      contrast: themeData.contrast,
       blurRadius: 5,
       contentRadius: 3,
     );
@@ -249,25 +305,16 @@ class Home extends HookConsumerWidget {
           children: [
             Column(
               children: [
-                PalettePreviewRow(
-                  palette: MonetTheme.of(context).primary,
-                  scrim: previewRowScrim,
-                  shadows: previewRowShadows,
-                ),
-                PalettePreviewRow(
-                  palette: MonetTheme.of(context).secondary,
-                  scrim: previewRowScrim,
-                  shadows: previewRowShadows,
-                ),
-                PalettePreviewRow(
-                  palette: MonetTheme.of(context).tertiary,
+                SafeColorsPreview(
+                  themeDataByModel: themeDataByModel,
                   scrim: previewRowScrim,
                   shadows: previewRowShadows,
                 ),
               ],
             ),
             const HorizontalPadding(),
-            buildScrimShadows(context, contrast.value, scrimOpacity, shadows),
+            buildScrimShadows(
+                context, themeData.contrast, scrimOpacity, shadows),
           ],
         ),
       ],
@@ -356,24 +403,26 @@ class Home extends HookConsumerWidget {
       ValueNotifier<List<ImageProvider<Object>>> images,
       ValueNotifier<ImageProvider?> backgroundImage,
       ValueNotifier<Color> color) async {
-    final imageProvider = await _pickImage();
-    if (imageProvider == null) {
+    final imageProviders = await _pickImages();
+    if (imageProviders.isEmpty) {
       return;
     }
-    images.value = List.from(images.value)..add(imageProvider);
-    backgroundImage.value = imageProvider;
+    images.value = List.from(images.value)..addAll(imageProviders);
+    backgroundImage.value = imageProviders.first;
   }
 
-  Future<ImageProvider<Object>?> _pickImage() async {
+  Future<List<ImageProvider<Object>>> _pickImages() async {
     final picker = ImagePicker();
-    final imageFile = await picker.pickImage(source: ImageSource.gallery);
-    if (imageFile == null) {
-      return null;
+    final imageFiles = await picker.pickMultiImage();
+    if (imageFiles.isEmpty) {
+      return const [];
     }
-    if (kIsWeb) {
-      return NetworkImage(imageFile.path);
-    } else {
-      return FileImage(File(imageFile.path));
-    }
+    return [
+      for (final imageFile in imageFiles)
+        if (kIsWeb)
+          NetworkImage(imageFile.path)
+        else
+          FileImage(File(imageFile.path)),
+    ];
   }
 }

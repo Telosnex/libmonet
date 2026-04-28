@@ -1,7 +1,8 @@
-
-import 'package:monet_studio/home.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:monet_studio/home.dart';
+
+const _initialColor = Color(0xff335147);
 
 void main() {
   runApp(const MyApp());
@@ -17,12 +18,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Monet Studio',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: _initialColor),
           useMaterial3: true,
         ),
-        home: const Home(),
+        home: const Home(initialColor: _initialColor),
       ),
     );
   }
 }
-
