@@ -115,19 +115,20 @@ Future<ByteData> imageProviderToScaledRgba(
         paintHeight =
             (height > width) ? maxDimension : (maxDimension / width) * height;
       }
-      final pictureRecorder = ui.PictureRecorder();
-      final canvas = Canvas(pictureRecorder);
-      paintImage(
-          canvas: canvas,
-          rect: Rect.fromLTRB(0, 0, paintWidth, paintHeight),
-          image: image,
-          filterQuality: FilterQuality.none);
-      final picture = pictureRecorder.endRecording();
-      final scaledImage =
-          await picture.toImage(paintWidth.toInt(), paintHeight.toInt());
-      final byteData = await scaledImage.toByteData(
-          format: ui.ImageByteFormat.rawStraightRgba);
-      completer.complete(byteData);
+      final byteData =
+          await image.toByteData(format: ui.ImageByteFormat.rawStraightRgba);
+      if (byteData == null) {
+        completer.complete(ByteData(0));
+        return;
+      }
+      final scaledByteData = _scaleRgbaNearest(
+        byteData,
+        sourceWidth: width,
+        sourceHeight: height,
+        targetWidth: paintWidth.toInt().clamp(1, width),
+        targetHeight: paintHeight.toInt().clamp(1, height),
+      );
+      completer.complete(scaledByteData);
     } catch (e, stack) {
       debugPrint('error scaling image: $e, $stack');
       completer.completeError('Failed to scale image. Error receieved: $e');
@@ -135,4 +136,41 @@ Future<ByteData> imageProviderToScaledRgba(
   });
   stream.addListener(listener);
   return completer.future;
+}
+
+ByteData _scaleRgbaNearest(
+  ByteData source, {
+  required int sourceWidth,
+  required int sourceHeight,
+  required int targetWidth,
+  required int targetHeight,
+}) {
+  // Keep extraction downscaling independent of Flutter's canvas/image sampler.
+  // The previous paintImage -> Picture.toImage path produced different sampled
+  // pixels between app runtime and widget tests for the same source bytes,
+  // which made quantized wallpaper colors non-deterministic.
+  if (sourceWidth == targetWidth && sourceHeight == targetHeight) {
+    return source;
+  }
+
+  final sourceBytes = source.buffer.asUint8List(
+    source.offsetInBytes,
+    source.lengthInBytes,
+  );
+  final targetBytes = Uint8List(targetWidth * targetHeight * 4);
+
+  for (var y = 0; y < targetHeight; y++) {
+    final sourceY = (y * sourceHeight) ~/ targetHeight;
+    for (var x = 0; x < targetWidth; x++) {
+      final sourceX = (x * sourceWidth) ~/ targetWidth;
+      final sourceOffset = (sourceY * sourceWidth + sourceX) * 4;
+      final targetOffset = (y * targetWidth + x) * 4;
+      targetBytes[targetOffset] = sourceBytes[sourceOffset];
+      targetBytes[targetOffset + 1] = sourceBytes[sourceOffset + 1];
+      targetBytes[targetOffset + 2] = sourceBytes[sourceOffset + 2];
+      targetBytes[targetOffset + 3] = sourceBytes[sourceOffset + 3];
+    }
+  }
+
+  return ByteData.view(targetBytes.buffer);
 }
