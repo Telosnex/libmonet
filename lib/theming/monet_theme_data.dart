@@ -29,8 +29,10 @@ class MonetThemeData {
   final double scale;
   final Typography Function(ColorScheme)? typography;
 
-  // Static cache using weak references - allows GC to reclaim unused ThemeData
-  static final _themeCache = <String, WeakReference<ThemeData>>{};
+  // Static cache using weak references - allows GC to reclaim unused ThemeData.
+  // Key by the semantic theme object itself instead of hashCode.toString();
+  // Map lookup handles hash collisions by falling back to ==.
+  static final _themeCache = <MonetThemeData, WeakReference<ThemeData>>{};
 
   static const double buttonElevation = 4.0;
 
@@ -75,17 +77,19 @@ class MonetThemeData {
           other.typography == typography;
 
   @override
-  int get hashCode =>
-      'p${primary.hashCode}'.hashCode ^
-      's${secondary.hashCode}'.hashCode ^
-      't${tertiary.hashCode}'.hashCode ^
-      'a${algo.hashCode}'.hashCode ^
-      'cm${colorModel.hashCode}'.hashCode ^
-      'b${backgroundTone.hashCode}'.hashCode ^
-      'br${brightness.hashCode}'.hashCode ^
-      'c${contrast.hashCode}'.hashCode ^
-      's${scale.hashCode}'.hashCode ^
-      't${typography.hashCode}'.hashCode;
+  int get hashCode => Object.hash(
+        runtimeType,
+        primary,
+        secondary,
+        tertiary,
+        algo,
+        colorModel,
+        backgroundTone,
+        brightness,
+        contrast,
+        scale,
+        typography,
+      );
 
   MonetThemeData copyWith({
     Palette? primary,
@@ -217,17 +221,8 @@ class MonetThemeData {
     );
   }
 
-  String _cacheKey() {
-    // Create a unique key based on theme parameters
-    // Avoid triggering expensive Palette lazy getters (like fill)
-    // in order to build the key. Use base colors + config instead.
-    // Skip typography function since it can't be reliably compared.
-    return hashCode.toString();
-  }
-
   ThemeData createThemeData(BuildContext context) {
-    final cacheKey = _cacheKey();
-    final cachedRef = _themeCache[cacheKey];
+    final cachedRef = _themeCache[this];
     final cached = cachedRef?.target;
     if (cached != null) {
       return cached;
@@ -356,7 +351,7 @@ class MonetThemeData {
     final finalThemeData = themeData.copyWith(
       cupertinoOverrideTheme: cupertinoOverrideTheme,
     );
-    _themeCache[cacheKey] = WeakReference(finalThemeData);
+    _themeCache[this] = WeakReference(finalThemeData);
     return finalThemeData;
   }
 

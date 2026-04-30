@@ -1,14 +1,13 @@
 import 'dart:ui' show lerpDouble;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:libmonet/theming/palette_lerped.dart';
-import 'package:libmonet/theming/palette_snapshot.dart';
 
-/// Interpolated theme data that lerps the three seed colors in HCT and
-/// constructs Palette for each frame, while keeping ThemeData stable by
-/// default to avoid Material transient states.
+/// Interpolated theme data that lerps the three palettes while keeping
+/// [ThemeData] stable by default to avoid Material transient states.
 class InterpolatedMonetThemeData extends MonetThemeData {
   final MonetThemeData begin;
   final MonetThemeData end;
@@ -21,161 +20,147 @@ class InterpolatedMonetThemeData extends MonetThemeData {
     required this.t,
     this.animateThemeData = false,
   }) : super(
-          backgroundTone: lerpDouble(
-                  begin.backgroundTone, end.backgroundTone, t) ??
-              end.backgroundTone,
-          brightness: begin.brightness,
-          primary: PaletteLerped(
-              a: begin.primary, b: end.primary, t: t),
-          secondary:
-              PaletteLerped(
-              a: begin.secondary, b: end.secondary, t: t),
-          tertiary: PaletteLerped(
-              a: begin.tertiary, b: end.tertiary, t: t),
-          algo: begin.algo,
-          colorModel: begin.colorModel,
-          contrast: begin.contrast,
-          scale: lerpDouble(begin.scale, end.scale, t) ?? end.scale,
-          typography: begin.typography,
-        );
+         backgroundTone:
+             lerpDouble(begin.backgroundTone, end.backgroundTone, t) ??
+             end.backgroundTone,
+         brightness: t < 1.0 ? begin.brightness : end.brightness,
+         primary: PaletteLerped(a: begin.primary, b: end.primary, t: t),
+         secondary: PaletteLerped(a: begin.secondary, b: end.secondary, t: t),
+         tertiary: PaletteLerped(a: begin.tertiary, b: end.tertiary, t: t),
+         algo: t < 1.0 ? begin.algo : end.algo,
+         colorModel: t < 1.0 ? begin.colorModel : end.colorModel,
+         contrast: lerpDouble(begin.contrast, end.contrast, t) ?? end.contrast,
+         scale: lerpDouble(begin.scale, end.scale, t) ?? end.scale,
+         typography: t < 1.0 ? begin.typography : end.typography,
+       );
 
   @override
   ThemeData createThemeData(BuildContext context) {
     if (animateThemeData) {
       return super.createThemeData(context);
     }
-    // Keep Material ThemeData stable during animation to avoid transient glitches.
-    if (t >= 1.0) {
-      return end.createThemeData(context);
-    } else {
-      return begin.createThemeData(context);
-    }
+    // Keep Material ThemeData stable during palette animation to avoid
+    // transient glitches in Material components.
+    return t >= 1.0
+        ? end.createThemeData(context)
+        : begin.createThemeData(context);
   }
 }
 
-/// Implicitly animated wrapper that smooths Palette transitions.
-/// By default, Material ThemeData is not animated.
-class AnimatedMonetTheme extends StatefulWidget {
-  final MonetThemeData begin;
-  final MonetThemeData end;
+/// Tween used by [AnimatedMonetTheme].
+class MonetThemeDataTween extends Tween<MonetThemeData> {
+  bool animateThemeData;
+
+  MonetThemeDataTween({super.begin, super.end, this.animateThemeData = false});
+
+  @override
+  MonetThemeData lerp(double t) {
+    final begin = this.begin;
+    final end = this.end;
+    if (begin == null && end == null) {
+      throw StateError('MonetThemeDataTween has neither begin nor end.');
+    }
+    if (begin == null) {
+      return end!;
+    }
+    if (end == null) {
+      return begin;
+    }
+    if (begin == end) {
+      return end;
+    }
+    if (t <= 0.0) {
+      return begin;
+    }
+    if (t >= 1.0) {
+      return end;
+    }
+    return InterpolatedMonetThemeData(
+      begin: begin,
+      end: end,
+      t: t,
+      animateThemeData: animateThemeData,
+    );
+  }
+}
+
+/// Animated version of [MonetTheme], modeled after Flutter's [AnimatedTheme].
+///
+/// [data] is the target theme. When [data] changes semantically, this widget
+/// implicitly animates from the currently displayed theme to the new target.
+/// New-but-equal [MonetThemeData] objects do not restart the animation because
+/// implicit animation tween updates use `==` to detect target changes.
+///
+/// This intentionally has no public `begin`/`end`: retargeting is continuous
+/// and automatic, matching Flutter implicit-animation semantics.
+///
+/// By default, Material [ThemeData] is not animated; only [MonetThemeData]
+/// palette tokens are interpolated. Set [animateThemeData] to also interpolate
+/// the generated Material [ThemeData].
+class AnimatedMonetTheme extends ImplicitlyAnimatedWidget {
+  final MonetThemeData data;
   final Widget child;
   final bool animateThemeData;
-  final Duration duration;
-  final Curve curve;
 
   const AnimatedMonetTheme({
     super.key,
-    required this.begin,
-    required this.end,
+    required this.data,
     required this.child,
     this.animateThemeData = false,
-    this.duration = kThemeAnimationDuration,
-    this.curve = Curves.easeInOut,
+    super.curve,
+    super.duration = kThemeAnimationDuration,
+    super.onEnd,
   });
 
   @override
-  State<AnimatedMonetTheme> createState() => _AnimatedMonetThemeState();
+  AnimatedWidgetBaseState<AnimatedMonetTheme> createState() =>
+      _AnimatedMonetThemeState();
 }
 
-class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late MonetThemeData _begin;
-  late MonetThemeData _end;
-
-  void _alignBeginTypographyWithEnd() {
-    if (identical(_begin.typography, _end.typography)) {
-      return;
-    }
-    _begin = MonetThemeData(
-      brightness: _begin.brightness,
-      backgroundTone: _begin.backgroundTone,
-      primary: _begin.primary,
-      secondary: _begin.secondary,
-      tertiary: _begin.tertiary,
-      algo: _begin.algo,
-      colorModel: _begin.colorModel,
-      contrast: _begin.contrast,
-      scale: _begin.scale,
-      typography: _end.typography,
-    );
-  }
+class _AnimatedMonetThemeState
+    extends AnimatedWidgetBaseState<AnimatedMonetTheme> {
+  MonetThemeDataTween? _data;
 
   @override
-  void initState() {
-    super.initState();
-    _begin = widget.begin;
-    _end = widget.end;
-    final shouldSkipAnimation = identical(_begin, _end);
-    _alignBeginTypographyWithEnd();
-    _controller = AnimationController(vsync: this, duration: widget.duration);
-    if (shouldSkipAnimation) {
-      _controller.value = 1.0;
-    } else {
-      _controller.value = 0.0;
-      _controller.animateTo(1.0, curve: widget.curve);
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant AnimatedMonetTheme oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final endChanged = !identical(widget.end, _end);
-    final durationChanged = widget.duration != _controller.duration;
-    if (durationChanged) {
-      _controller.duration = widget.duration;
-    }
-    if (endChanged) {
-      // Capture current displayed state as new begin to avoid snaps.
-      final snapshot = InterpolatedMonetThemeData(
-        begin: _begin,
-        end: _end,
-        t: _controller.value,
-        animateThemeData: widget.animateThemeData,
-      );
-      _begin = MonetThemeData(
-        brightness: snapshot.brightness,
-        backgroundTone: snapshot.backgroundTone,
-        primary: PaletteSnapshot.capture(snapshot.primary),
-        secondary: PaletteSnapshot.capture(snapshot.secondary),
-        tertiary: PaletteSnapshot.capture(snapshot.tertiary),
-        algo: snapshot.algo,
-        colorModel: snapshot.colorModel,
-        contrast: snapshot.contrast,
-        scale: snapshot.scale,
-        typography: widget.end.typography,
-      );
-      _end = widget.end;
-      _alignBeginTypographyWithEnd();
-      _controller
-        ..value = 0.0
-        ..animateTo(1.0, curve: widget.curve);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void forEachTween(TweenVisitor<dynamic> visitor) {
+    _data =
+        visitor(
+              _data,
+              widget.data,
+              (dynamic value) => MonetThemeDataTween(
+                begin: value as MonetThemeData,
+                animateThemeData: widget.animateThemeData,
+              ),
+            )!
+            as MonetThemeDataTween;
+    _data!.animateThemeData = widget.animateThemeData;
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final t = _controller.value;
-        final data = InterpolatedMonetThemeData(
-          begin: _begin,
-          end: _end,
-          t: t,
-          animateThemeData: widget.animateThemeData,
-        );
-        return MonetTheme(
-          monetThemeData: t >= 1.0 ? _end : data,
-          child: widget.child,
-        );
-      },
+    return MonetTheme(
+      monetThemeData: _data!.evaluate(animation),
+      child: widget.child,
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+      DiagnosticsProperty<MonetThemeDataTween>(
+        'data',
+        _data,
+        showName: false,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      FlagProperty(
+        'animateThemeData',
+        value: widget.animateThemeData,
+        ifTrue: 'animating Material ThemeData',
+      ),
     );
   }
 }

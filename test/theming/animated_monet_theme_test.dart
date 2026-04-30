@@ -6,7 +6,9 @@ import 'package:libmonet/theming/monet_theme_data.dart';
 
 class _Probe extends StatefulWidget {
   const _Probe({required this.onBuild});
+
   final void Function(BuildContext ctx) onBuild;
+
   @override
   State<_Probe> createState() => _ProbeState();
 }
@@ -22,7 +24,10 @@ class _ProbeState extends State<_Probe> {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MonetThemeData themeFrom(Color primary, {Brightness brightness = Brightness.dark}) {
+  MonetThemeData themeFrom(
+    Color primary, {
+    Brightness brightness = Brightness.dark,
+  }) {
     return MonetThemeData.fromColors(
       brightness: brightness,
       backgroundTone: brightness == Brightness.dark ? 12 : 94,
@@ -33,42 +38,66 @@ void main() {
     );
   }
 
+  testWidgets('initial mount publishes target data without animation', (
+    tester,
+  ) async {
+    final data = themeFrom(Colors.blue);
+    Color? sampled;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: data,
+          animateThemeData: false,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(sampled, equals(data.primary.background));
+  });
+
   testWidgets('AnimatedMonetTheme animates Palette.background', (tester) async {
     final begin = themeFrom(Colors.blue);
     final end = themeFrom(Colors.purple);
     Color? sampled;
 
-    // Mount at begin
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: begin,
+          data: begin,
           animateThemeData: false,
           duration: const Duration(milliseconds: 200),
-          child: _Probe(onBuild: (ctx) {
-            sampled = MonetTheme.of(ctx).primary.background;
-          }),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
         ),
       ),
     );
-    final initial = sampled!;
-    expect(initial, begin.primary.background);
+    expect(sampled, equals(begin.primary.background));
 
-    // Change to end (start animation)
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: end,
+          data: end,
           animateThemeData: false,
           duration: const Duration(milliseconds: 200),
-          child: _Probe(onBuild: (ctx) {
-            sampled = MonetTheme.of(ctx).primary.background;
-          }),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
         ),
       ),
     );
+    expect(sampled, equals(begin.primary.background));
 
     await tester.pump(const Duration(milliseconds: 100));
     final mid = sampled!;
@@ -76,36 +105,31 @@ void main() {
     expect(mid, isNot(equals(end.primary.background)));
 
     await tester.pump(const Duration(milliseconds: 120));
-    final finalBg = sampled!;
-    expect(finalBg, equals(end.primary.background));
+    expect(sampled, equals(end.primary.background));
   });
 
   testWidgets('ThemeData stable when animateThemeData=false', (tester) async {
     final begin = themeFrom(Colors.blue);
     final end = themeFrom(Colors.purple);
 
-    late Color initialThemePrimary;
-
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: begin,
+          data: begin,
           animateThemeData: false,
           duration: const Duration(milliseconds: 200),
-          child: _Probe(onBuild: (ctx) {
-            initialThemePrimary = Theme.of(ctx).colorScheme.primary;
-          }),
+          child: const SizedBox.shrink(),
         ),
       ),
     );
+    final initialThemePrimary = Theme.of(
+      tester.element(find.byType(SizedBox)),
+    ).colorScheme.primary;
 
-    // Change to end (should keep ThemeData until animation completes)
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: end,
+          data: end,
           animateThemeData: false,
           duration: const Duration(milliseconds: 200),
           child: const SizedBox.shrink(),
@@ -114,59 +138,151 @@ void main() {
     );
 
     await tester.pump(const Duration(milliseconds: 100));
-    final midThemePrimary = Theme.of(tester.element(find.byType(SizedBox))).colorScheme.primary;
+    final midThemePrimary = Theme.of(
+      tester.element(find.byType(SizedBox)),
+    ).colorScheme.primary;
     expect(midThemePrimary, equals(initialThemePrimary));
 
     await tester.pump(const Duration(milliseconds: 120));
-    final endThemePrimary = Theme.of(tester.element(find.byType(SizedBox))).colorScheme.primary;
-    expect(endThemePrimary, equals(end.createThemeData(tester.element(find.byType(SizedBox))).colorScheme.primary));
+    final endThemePrimary = Theme.of(
+      tester.element(find.byType(SizedBox)),
+    ).colorScheme.primary;
+    expect(
+      endThemePrimary,
+      equals(
+        end
+            .createThemeData(tester.element(find.byType(SizedBox)))
+            .colorScheme
+            .primary,
+      ),
+    );
   });
 
-  testWidgets('Retarget mid-animation is continuous (no snap)', (tester) async {
+  testWidgets('retargets mid-animation continuously', (tester) async {
     final begin = themeFrom(Colors.blue);
-    final midEnd = themeFrom(Colors.purple);
-    final newEnd = themeFrom(Colors.green);
-
+    final firstEnd = themeFrom(Colors.purple);
+    final secondEnd = themeFrom(Colors.green);
     Color? sampled;
 
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: midEnd,
+          data: begin,
           animateThemeData: false,
           duration: const Duration(milliseconds: 200),
-          child: _Probe(onBuild: (ctx) {
-            sampled = MonetTheme.of(ctx).primary.background;
-          }),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
         ),
       ),
     );
 
-    await tester.pump(const Duration(milliseconds: 100));
-    final beforeRetarget = sampled!;
-
-    // Update end (retarget). The immediate frame should equal beforeRetarget.
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: newEnd,
+          data: firstEnd,
           animateThemeData: false,
           duration: const Duration(milliseconds: 200),
-          child: _Probe(onBuild: (ctx) {
-            sampled = MonetTheme.of(ctx).primary.background;
-          }),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    final beforeRetarget = sampled!;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: secondEnd,
+          animateThemeData: false,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
         ),
       ),
     );
 
-    final immediatelyAfter = sampled!;
-    expect(immediatelyAfter, equals(beforeRetarget));
+    expect(sampled, equals(beforeRetarget));
 
-    await tester.pump(const Duration(milliseconds: 50));
+    await tester.pump(const Duration(milliseconds: 100));
     final afterSome = sampled!;
     expect(afterSome, isNot(equals(beforeRetarget)));
+    expect(afterSome, isNot(equals(secondEnd.primary.background)));
+
+    await tester.pump(const Duration(milliseconds: 120));
+    expect(sampled, equals(secondEnd.primary.background));
+  });
+
+  testWidgets('semantically equal data objects do not restart animation', (
+    tester,
+  ) async {
+    final begin = themeFrom(Colors.blue);
+    final end = themeFrom(Colors.purple);
+    Color? sampled;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: begin,
+          animateThemeData: false,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: end,
+          animateThemeData: false,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(sampled, equals(end.primary.background));
+
+    // New object, same semantic theme values. This should not restart.
+    final equalEnd = themeFrom(Colors.purple);
+    expect(equalEnd, equals(end));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: equalEnd,
+          animateThemeData: false,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.background;
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(sampled, equals(end.primary.background));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(sampled, equals(end.primary.background));
   });
 
   testWidgets('ThemeData animates when animateThemeData=true', (tester) async {
@@ -176,20 +292,22 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: begin,
+          data: begin,
           animateThemeData: true,
           duration: const Duration(milliseconds: 200),
           child: const SizedBox.shrink(),
         ),
       ),
     );
+
+    final initial = Theme.of(
+      tester.element(find.byType(SizedBox)),
+    ).colorScheme.primary;
 
     await tester.pumpWidget(
       MaterialApp(
         home: AnimatedMonetTheme(
-          begin: begin,
-          end: end,
+          data: end,
           animateThemeData: true,
           duration: const Duration(milliseconds: 200),
           child: const SizedBox.shrink(),
@@ -197,12 +315,16 @@ void main() {
       ),
     );
 
-    final initial = Theme.of(tester.element(find.byType(SizedBox))).colorScheme.primary;
     await tester.pump(const Duration(milliseconds: 100));
-    final mid = Theme.of(tester.element(find.byType(SizedBox))).colorScheme.primary;
+    final mid = Theme.of(
+      tester.element(find.byType(SizedBox)),
+    ).colorScheme.primary;
     expect(mid, isNot(equals(initial)));
+
     await tester.pump(const Duration(milliseconds: 120));
-    final endColor = Theme.of(tester.element(find.byType(SizedBox))).colorScheme.primary;
+    final endColor = Theme.of(
+      tester.element(find.byType(SizedBox)),
+    ).colorScheme.primary;
     expect(endColor, isNot(equals(initial)));
   });
 }
