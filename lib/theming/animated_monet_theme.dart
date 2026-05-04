@@ -2,6 +2,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:libmonet/theming/interpolation_style.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:libmonet/theming/palette_lerped.dart';
@@ -13,20 +14,37 @@ class InterpolatedMonetThemeData extends MonetThemeData {
   final MonetThemeData end;
   final double t;
   final bool animateThemeData;
+  final InterpolationStyle interpolationStyle;
 
   InterpolatedMonetThemeData({
     required this.begin,
     required this.end,
     required this.t,
     this.animateThemeData = false,
+    this.interpolationStyle = InterpolationStyle.cartesian,
   }) : super(
          backgroundTone:
              lerpDouble(begin.backgroundTone, end.backgroundTone, t) ??
              end.backgroundTone,
          brightness: t < 1.0 ? begin.brightness : end.brightness,
-         primary: PaletteLerped(a: begin.primary, b: end.primary, t: t),
-         secondary: PaletteLerped(a: begin.secondary, b: end.secondary, t: t),
-         tertiary: PaletteLerped(a: begin.tertiary, b: end.tertiary, t: t),
+         primary: PaletteLerped(
+           a: begin.primary,
+           b: end.primary,
+           t: t,
+           interpolationStyle: interpolationStyle,
+         ),
+         secondary: PaletteLerped(
+           a: begin.secondary,
+           b: end.secondary,
+           t: t,
+           interpolationStyle: interpolationStyle,
+         ),
+         tertiary: PaletteLerped(
+           a: begin.tertiary,
+           b: end.tertiary,
+           t: t,
+           interpolationStyle: interpolationStyle,
+         ),
          algo: t < 1.0 ? begin.algo : end.algo,
          colorModel: t < 1.0 ? begin.colorModel : end.colorModel,
          contrast: lerpDouble(begin.contrast, end.contrast, t) ?? end.contrast,
@@ -50,8 +68,14 @@ class InterpolatedMonetThemeData extends MonetThemeData {
 /// Tween used by [AnimatedMonetTheme].
 class MonetThemeDataTween extends Tween<MonetThemeData> {
   bool animateThemeData;
+  InterpolationStyle interpolationStyle;
 
-  MonetThemeDataTween({super.begin, super.end, this.animateThemeData = false});
+  MonetThemeDataTween({
+    super.begin,
+    super.end,
+    this.animateThemeData = false,
+    this.interpolationStyle = InterpolationStyle.cartesian,
+  });
 
   @override
   MonetThemeData lerp(double t) {
@@ -80,6 +104,7 @@ class MonetThemeDataTween extends Tween<MonetThemeData> {
       end: end,
       t: t,
       animateThemeData: animateThemeData,
+      interpolationStyle: interpolationStyle,
     );
   }
 }
@@ -97,16 +122,21 @@ class MonetThemeDataTween extends Tween<MonetThemeData> {
 /// By default, Material [ThemeData] is not animated; only [MonetThemeData]
 /// palette tokens are interpolated. Set [animateThemeData] to also interpolate
 /// the generated Material [ThemeData].
+///
+/// [interpolationStyle] controls how palette colors move through color space.
+/// The default is [InterpolationStyle.cartesian].
 class AnimatedMonetTheme extends ImplicitlyAnimatedWidget {
   final MonetThemeData data;
   final Widget child;
   final bool animateThemeData;
+  final InterpolationStyle interpolationStyle;
 
   const AnimatedMonetTheme({
     super.key,
     required this.data,
     required this.child,
     this.animateThemeData = false,
+    this.interpolationStyle = InterpolationStyle.cartesian,
     super.curve,
     super.duration = kThemeAnimationDuration,
     super.onEnd,
@@ -130,10 +160,12 @@ class _AnimatedMonetThemeState
               (dynamic value) => MonetThemeDataTween(
                 begin: value as MonetThemeData,
                 animateThemeData: widget.animateThemeData,
+                interpolationStyle: widget.interpolationStyle,
               ),
             )!
             as MonetThemeDataTween;
     _data!.animateThemeData = widget.animateThemeData;
+    _data!.interpolationStyle = widget.interpolationStyle;
   }
 
   @override
@@ -160,6 +192,13 @@ class _AnimatedMonetThemeState
         'animateThemeData',
         value: widget.animateThemeData,
         ifTrue: 'animating Material ThemeData',
+      ),
+    );
+    properties.add(
+      EnumProperty<InterpolationStyle>(
+        'interpolationStyle',
+        widget.interpolationStyle,
+        defaultValue: InterpolationStyle.cartesian,
       ),
     );
   }

@@ -1,15 +1,29 @@
 import 'dart:ui';
 
-import 'package:libmonet/libmonet.dart';
+import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/contrast/contrast.dart';
+import 'package:libmonet/theming/interpolation_style.dart';
+import 'package:libmonet/theming/palette.dart';
 
 /// Interpolates between two [Palette] instances using perceptual HCT lerp.
+///
+/// [InterpolationStyle.cartesian] interpolates in the cartesian UCS coordinates
+/// of the active color model. [InterpolationStyle.polar] interpolates HCT's
+/// polar hue/chroma/tone coordinates using shortest-path hue rotation.
 ///
 /// **Performance note:** Each token access recomputes the HCT lerp.
 /// For repeated access (e.g., in a build method), wrap with
 /// [PaletteSnapshot.capture] to evaluate all tokens once:
 ///
 /// ```dart
-/// final snapshot = PaletteSnapshot.capture(PaletteLerped(a: a, b: b, t: t));
+/// final snapshot = PaletteSnapshot.capture(
+///   PaletteLerped(
+///     a: a,
+///     b: b,
+///     t: t,
+///     interpolationStyle: InterpolationStyle.cartesian,
+///   ),
+/// );
 /// ```
 ///
 /// Lives in this library to access the private constructor.
@@ -17,29 +31,35 @@ class PaletteLerped extends Palette {
   final Palette a;
   final Palette b;
   final double t;
+  final InterpolationStyle interpolationStyle;
 
-  PaletteLerped({required this.a, required this.b, required this.t})
-      // ignore: invalid_use_of_visible_for_testing_member
-      : super.base(
-          baseColor: a.color,
-          baseBackground: a.background,
-          contrast: 0.5,
-          algo: Algo.apca,
-          colorModel: a.colorModel,
-        );
+  PaletteLerped({
+    required this.a,
+    required this.b,
+    required this.t,
+    this.interpolationStyle = InterpolationStyle.cartesian,
+  })
+    // ignore: invalid_use_of_visible_for_testing_member
+    : super.base(
+         baseColor: a.color,
+         baseBackground: a.background,
+         contrast: 0.5,
+         algo: Algo.apca,
+         colorModel: a.colorModel,
+       );
 
   Color _lerp(Color x, Color y) {
     if (t <= 0.0) return x;
     if (t >= 1.0) return y;
-    final ha = Hct.fromColor(x, model: a.colorModel);
-    final hb = Hct.fromColor(y, model: a.colorModel);
-    double dh = hb.hue - ha.hue;
-    if (dh > 180) dh -= 360;
-    if (dh < -180) dh += 360;
-    final hue = (ha.hue + dh * t) % 360.0;
-    final chroma = ha.chroma + (hb.chroma - ha.chroma) * t;
-    final tone = ha.tone + (hb.tone - ha.tone) * t;
-    return Hct.from(hue, chroma, tone, model: a.colorModel).color;
+    return switch (interpolationStyle) {
+      InterpolationStyle.polar => Hct.lerpKeepHue(x, y, t, model: a.colorModel),
+      InterpolationStyle.cartesian => Hct.lerpLoseHueAndChroma(
+        x,
+        y,
+        t,
+        model: a.colorModel,
+      ),
+    };
   }
 
   // Background family
@@ -52,21 +72,29 @@ class PaletteLerped extends Palette {
   @override
   Color get backgroundBorder => _lerp(a.backgroundBorder, b.backgroundBorder);
   @override
-  Color get backgroundHovered => _lerp(a.backgroundHovered, b.backgroundHovered);
+  Color get backgroundHovered =>
+      _lerp(a.backgroundHovered, b.backgroundHovered);
   @override
-  Color get backgroundSplashed => _lerp(a.backgroundSplashed, b.backgroundSplashed);
+  Color get backgroundSplashed =>
+      _lerp(a.backgroundSplashed, b.backgroundSplashed);
   @override
-  Color get backgroundHoveredFill => _lerp(a.backgroundHoveredFill, b.backgroundHoveredFill);
+  Color get backgroundHoveredFill =>
+      _lerp(a.backgroundHoveredFill, b.backgroundHoveredFill);
   @override
-  Color get backgroundSplashedFill => _lerp(a.backgroundSplashedFill, b.backgroundSplashedFill);
+  Color get backgroundSplashedFill =>
+      _lerp(a.backgroundSplashedFill, b.backgroundSplashedFill);
   @override
-  Color get backgroundHoveredText => _lerp(a.backgroundHoveredText, b.backgroundHoveredText);
+  Color get backgroundHoveredText =>
+      _lerp(a.backgroundHoveredText, b.backgroundHoveredText);
   @override
-  Color get backgroundSplashedText => _lerp(a.backgroundSplashedText, b.backgroundSplashedText);
+  Color get backgroundSplashedText =>
+      _lerp(a.backgroundSplashedText, b.backgroundSplashedText);
   @override
-  Color get backgroundHoveredBorder => _lerp(a.backgroundHoveredBorder, b.backgroundHoveredBorder);
+  Color get backgroundHoveredBorder =>
+      _lerp(a.backgroundHoveredBorder, b.backgroundHoveredBorder);
   @override
-  Color get backgroundSplashedBorder => _lerp(a.backgroundSplashedBorder, b.backgroundSplashedBorder);
+  Color get backgroundSplashedBorder =>
+      _lerp(a.backgroundSplashedBorder, b.backgroundSplashedBorder);
 
   // Fill family
   @override
@@ -86,9 +114,11 @@ class PaletteLerped extends Palette {
   @override
   Color get fillIcon => _lerp(a.fillIcon, b.fillIcon);
   @override
-  Color get fillHoveredBorder => _lerp(a.fillHoveredBorder, b.fillHoveredBorder);
+  Color get fillHoveredBorder =>
+      _lerp(a.fillHoveredBorder, b.fillHoveredBorder);
   @override
-  Color get fillSplashedBorder => _lerp(a.fillSplashedBorder, b.fillSplashedBorder);
+  Color get fillSplashedBorder =>
+      _lerp(a.fillSplashedBorder, b.fillSplashedBorder);
 
   // Color (ink) family
   @override
@@ -104,13 +134,16 @@ class PaletteLerped extends Palette {
   @override
   Color get colorHoveredText => _lerp(a.colorHoveredText, b.colorHoveredText);
   @override
-  Color get colorHoveredBorder => _lerp(a.colorHoveredBorder, b.colorHoveredBorder);
+  Color get colorHoveredBorder =>
+      _lerp(a.colorHoveredBorder, b.colorHoveredBorder);
   @override
   Color get colorSplashed => _lerp(a.colorSplashed, b.colorSplashed);
   @override
-  Color get colorSplashedText => _lerp(a.colorSplashedText, b.colorSplashedText);
+  Color get colorSplashedText =>
+      _lerp(a.colorSplashedText, b.colorSplashedText);
   @override
-  Color get colorSplashedBorder => _lerp(a.colorSplashedBorder, b.colorSplashedBorder);
+  Color get colorSplashedBorder =>
+      _lerp(a.colorSplashedBorder, b.colorSplashedBorder);
 
   // Text standalone family
   @override
@@ -132,8 +165,9 @@ class PaletteLerped extends Palette {
           a == other.a &&
           b == other.b &&
           t == other.t &&
+          interpolationStyle == other.interpolationStyle &&
           a.colorModel == other.a.colorModel;
 
   @override
-  int get hashCode => Object.hash(runtimeType, a, b, t);
+  int get hashCode => Object.hash(runtimeType, a, b, t, interpolationStyle);
 }

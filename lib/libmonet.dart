@@ -41,6 +41,7 @@ export 'effects/temperature.dart';
 export 'theming/animated_monet_theme.dart';
 export 'theming/button_style.dart';
 export 'theming/full_color_scheme.dart';
+export 'theming/interpolation_style.dart';
 export 'theming/monet_theme.dart';
 export 'theming/monet_theme_data.dart';
 export 'theming/palette.dart';
