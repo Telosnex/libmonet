@@ -44,8 +44,8 @@ class MonetThemeData {
   static const double touchSize = 36.0;
   static final InteractiveInkFeatureFactory splashFactory =
       defaultTargetPlatform == TargetPlatform.android && !kIsWeb
-          ? InkSparkle.splashFactory
-          : InkRipple.splashFactory;
+      ? InkSparkle.splashFactory
+      : InkRipple.splashFactory;
 
   MonetThemeData({
     required this.backgroundTone,
@@ -78,18 +78,18 @@ class MonetThemeData {
 
   @override
   int get hashCode => Object.hash(
-        runtimeType,
-        primary,
-        secondary,
-        tertiary,
-        algo,
-        colorModel,
-        backgroundTone,
-        brightness,
-        contrast,
-        scale,
-        typography,
-      );
+    runtimeType,
+    primary,
+    secondary,
+    tertiary,
+    algo,
+    colorModel,
+    backgroundTone,
+    brightness,
+    contrast,
+    scale,
+    typography,
+  );
 
   MonetThemeData copyWith({
     Palette? primary,
@@ -229,11 +229,12 @@ class MonetThemeData {
     }
     final primaryColorLight =
         Hct.fromColor(primary.fill, model: colorModel).tone >
-                Hct.fromColor(primary.color, model: colorModel).tone
-            ? primary.fill
-            : primary.color;
-    final primaryColorDark =
-        primaryColorLight == primary.fill ? primary.color : primary.fill;
+            Hct.fromColor(primary.color, model: colorModel).tone
+        ? primary.fill
+        : primary.color;
+    final primaryColorDark = primaryColorLight == primary.fill
+        ? primary.color
+        : primary.fill;
     final colorScheme = _createColorScheme(
       brightness,
       primary,
@@ -248,8 +249,12 @@ class MonetThemeData {
     final typographyData =
         typography?.call(colorScheme) ?? _typography(colorScheme);
     final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
-    final textTheme = createTextTheme(typographyData,
-        MediaQuery.textScalerOf(context), scale, devicePixelRatio);
+    final textTheme = createTextTheme(
+      typographyData,
+      MediaQuery.textScalerOf(context),
+      scale,
+      devicePixelRatio,
+    );
 
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
@@ -303,8 +308,11 @@ class MonetThemeData {
       badgeTheme: badgeThemeData(context, primary, textTheme),
       bannerTheme: bannerThemeData(primary, textTheme),
       bottomAppBarTheme: bottomAppBarTheme(primary),
-      bottomNavigationBarTheme:
-          bottomNavigationBarThemeData(primary, scale, textTheme),
+      bottomNavigationBarTheme: bottomNavigationBarThemeData(
+        primary,
+        scale,
+        textTheme,
+      ),
       bottomSheetTheme: bottomSheetThemeData(primary),
       buttonTheme: buttonThemeData(),
       cardTheme: cardTheme(primary),
@@ -346,8 +354,9 @@ class MonetThemeData {
       toggleButtonsTheme: toggleButtonsThemeData(primary, textTheme),
       tooltipTheme: tooltipThemeData(primary, textTheme),
     );
-    final cupertinoOverrideTheme =
-        MaterialBasedCupertinoThemeData(materialTheme: themeData);
+    final cupertinoOverrideTheme = MaterialBasedCupertinoThemeData(
+      materialTheme: themeData,
+    );
     final finalThemeData = themeData.copyWith(
       cupertinoOverrideTheme: cupertinoOverrideTheme,
     );
@@ -371,7 +380,10 @@ class MonetThemeData {
   }
 
   static BadgeThemeData badgeThemeData(
-      BuildContext context, Palette colors, TextTheme textTheme) {
+    BuildContext context,
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return BadgeThemeData(
       backgroundColor: colors.fill,
       textColor: colors.fillText,
@@ -388,7 +400,9 @@ class MonetThemeData {
   }
 
   static MaterialBannerThemeData bannerThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return MaterialBannerThemeData(
       backgroundColor: colors.fill,
       surfaceTintColor: colors.fill,
@@ -408,12 +422,15 @@ class MonetThemeData {
       color: colors.background,
       elevation: 0,
       shape: const AutomaticNotchedShape(
-          RoundedRectangleBorder()), // bottom_app_bar.dart _BottomAppBarDefaultsM3
+        RoundedRectangleBorder(),
+      ), // bottom_app_bar.dart _BottomAppBarDefaultsM3
       height: 80.0, // bottom_app_bar.dart _BottomAppBarDefaultsM3
       surfaceTintColor: Colors.transparent,
       shadowColor: Colors.transparent,
       padding: const EdgeInsets.symmetric(
-          vertical: 12.0, horizontal: 16.0), // bottom_app_bar.dart
+        vertical: 12.0,
+        horizontal: 16.0,
+      ), // bottom_app_bar.dart
     );
   }
 
@@ -451,7 +468,8 @@ class MonetThemeData {
   static CheckboxThemeData checkboxThemeData(Palette colors) {
     return CheckboxThemeData(
       mouseCursor: const WidgetStatePropertyAll(
-          null), // allows widget to default to clickable
+        null,
+      ), // allows widget to default to clickable
       fillColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return colors.fill;
@@ -492,10 +510,7 @@ class MonetThemeData {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(2.0)),
       ), // match default
-      side: BorderSide(
-        width: 2.0,
-        color: colors.fill,
-      ), // match default
+      side: BorderSide(width: 2.0, color: colors.fill), // match default
     );
   }
 
@@ -507,9 +522,7 @@ class MonetThemeData {
     return ChipThemeData.fromDefaults(
       brightness: brightness,
       secondaryColor: colors.color,
-      labelStyle: textTheme.bodyMedium!.copyWith(
-        color: colors.colorText,
-      ),
+      labelStyle: textTheme.bodyMedium!.copyWith(color: colors.colorText),
     ).copyWith(
       checkmarkColor: WidgetStateColor.resolveWith((states) {
         return colors.fill;
@@ -520,30 +533,32 @@ class MonetThemeData {
       selectedColor: Colors
           .transparent, // messes everything up because FG can't be set based on state
       secondarySelectedColor: colors.textHovered,
-      secondaryLabelStyle:
-          textTheme.labelLarge!.copyWith(color: colors.textHoveredText),
+      secondaryLabelStyle: textTheme.labelLarge!.copyWith(
+        color: colors.textHoveredText,
+      ),
       side: BorderSide(width: 2, color: colors.fill),
       backgroundColor: colors.background,
-      labelStyle: textTheme.labelLarge!.copyWith(
-        color: colors.text,
-      ),
+      labelStyle: textTheme.labelLarge!.copyWith(color: colors.text),
     );
   }
 
   static DataTableThemeData dataTableThemeData(TextTheme textTheme) {
     return DataTableThemeData(
       columnSpacing: 16, // Material default is __56__
-      dataTextStyle: textTheme.bodyLarge!.copyWith(fontFeatures: [
-        const FontFeature.tabularFigures(),
-        const FontFeature.slashedZero()
-      ]),
+      dataTextStyle: textTheme.bodyLarge!.copyWith(
+        fontFeatures: [
+          const FontFeature.tabularFigures(),
+          const FontFeature.slashedZero(),
+        ],
+      ),
       horizontalMargin: 8,
       dividerThickness: 2.0,
       headingTextStyle: textTheme.headlineMedium,
       headingRowColor: WidgetStateProperty.all(Colors.transparent),
       dataRowMinHeight: touchSize,
       dataRowMaxHeight: double.infinity,
-      headingRowHeight: (textTheme.headlineMedium!.fontSize! *
+      headingRowHeight:
+          (textTheme.headlineMedium!.fontSize! *
               (textTheme.headlineMedium!.height ?? 1.0)) +
           8 /* 4 dp vertical adding */,
     );
@@ -554,50 +569,42 @@ class MonetThemeData {
     Palette colors,
     TextTheme textTheme,
   ) {
-    final background = WidgetStateProperty.resolveWith(
-      (states) {
-        if (states.contains(WidgetState.hovered)) {
-          return colors.textHovered;
-        } else if (states.contains(WidgetState.pressed)) {
-          return colors.textSplashed;
-        } else if (states.contains(WidgetState.selected)) {
-          return colors.color;
-        } else {
-          return Colors.transparent;
-        }
-      },
-    );
-    final foreground = WidgetStateProperty.resolveWith(
-      (states) {
-        if (states.contains(WidgetState.selected)) {
-          return colors.colorText;
-        } else {
-          return colors.backgroundText;
-        }
-      },
-    );
-    final fillText = WidgetStateProperty.resolveWith(
-      (states) {
-        if (states.contains(WidgetState.hovered)) {
-          return colors.fillHoveredText;
-        } else if (states.contains(WidgetState.pressed)) {
-          return colors.fillSplashedText;
-        } else if (states.contains(WidgetState.selected)) {
-          return colors.fillSplashedText;
-        } else {
-          return colors.fillText;
-        }
-      },
-    );
+    final background = WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.hovered)) {
+        return colors.textHovered;
+      } else if (states.contains(WidgetState.pressed)) {
+        return colors.textSplashed;
+      } else if (states.contains(WidgetState.selected)) {
+        return colors.color;
+      } else {
+        return Colors.transparent;
+      }
+    });
+    final foreground = WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        return colors.colorText;
+      } else {
+        return colors.backgroundText;
+      }
+    });
+    final fillText = WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.hovered)) {
+        return colors.fillHoveredText;
+      } else if (states.contains(WidgetState.pressed)) {
+        return colors.fillSplashedText;
+      } else if (states.contains(WidgetState.selected)) {
+        return colors.fillSplashedText;
+      } else {
+        return colors.fillText;
+      }
+    });
     final shadowColor = _singleShadowColorFor(colors.background);
     return DatePickerThemeData(
       backgroundColor: colors.background,
       elevation: null /* will match Dialog.elevation */,
       shadowColor: shadowColor,
       surfaceTintColor: colors.background,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       headerBackgroundColor: colors.color,
       headerForegroundColor: colors.colorText,
       headerHeadlineStyle: textTheme.headlineMedium,
@@ -609,10 +616,7 @@ class MonetThemeData {
       dayOverlayColor: background,
       todayForegroundColor: foreground,
       todayBackgroundColor: background,
-      todayBorder: BorderSide(
-        width: 2.0,
-        color: colors.fill,
-      ),
+      todayBorder: BorderSide(width: 2.0, color: colors.fill),
       yearStyle: textTheme.headlineMedium,
       yearBackgroundColor: background,
       yearForegroundColor: foreground,
@@ -636,15 +640,15 @@ class MonetThemeData {
   }
 
   static DialogThemeData createDialogTheme(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return DialogThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
       shadowColor: _singleShadowColorFor(colors.background),
       surfaceTintColor: colors.background,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       alignment: null,
       iconColor: colors.fill,
       titleTextStyle: textTheme.headlineMedium,
@@ -669,9 +673,7 @@ class MonetThemeData {
   }
 
   static ElevatedButtonThemeData elevatedButtonTheme(Palette colors) {
-    return ElevatedButtonThemeData(
-      style: fillButtonStyle(colors),
-    );
+    return ElevatedButtonThemeData(style: fillButtonStyle(colors));
   }
 
   static ExpansionTileThemeData expansionTileThemeData(Palette colors) {
@@ -689,18 +691,12 @@ class MonetThemeData {
       collapsedTextColor: colors.text,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.backgroundText,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.backgroundText, width: 2),
       ),
 
       collapsedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.fill,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.fill, width: 2),
       ),
     );
   }
@@ -710,7 +706,9 @@ class MonetThemeData {
   }
 
   static FloatingActionButtonThemeData fabThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return FloatingActionButtonThemeData(
       foregroundColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.pressed)) {
@@ -739,29 +737,25 @@ class MonetThemeData {
       highlightElevation: buttonElevation,
       disabledElevation: buttonElevation,
       shape: CircleBorder(
-        side: BorderSide(
-          color: colors.colorBorder,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.colorBorder, width: 2),
       ),
       enableFeedback: true,
       iconSize: 24,
-      extendedTextStyle:
-          textTheme.bodyMedium!.copyWith(color: colors.colorText),
+      extendedTextStyle: textTheme.bodyMedium!.copyWith(
+        color: colors.colorText,
+      ),
       /* size constraints not included */
     );
   }
 
   static IconButtonThemeData iconButtonThemeData(Palette colors) {
-    return IconButtonThemeData(
-      style: iconButtonStyle(
-        colors,
-      ),
-    );
+    return IconButtonThemeData(style: iconButtonStyle(colors));
   }
 
   static ListTileThemeData listTileThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return ListTileThemeData(
       dense: true,
       shape: null,
@@ -771,8 +765,9 @@ class MonetThemeData {
       textColor: colors.text,
       titleTextStyle: textTheme.titleSmall!.copyWith(color: colors.text),
       subtitleTextStyle: textTheme.bodyLarge!.copyWith(color: colors.text),
-      leadingAndTrailingTextStyle:
-          textTheme.bodyMedium!.copyWith(color: colors.text),
+      leadingAndTrailingTextStyle: textTheme.bodyMedium!.copyWith(
+        color: colors.text,
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
       tileColor: colors.background,
       selectedTileColor: colors.fillHovered,
@@ -785,9 +780,7 @@ class MonetThemeData {
   }
 
   static MenuBarThemeData menuBarThemeData(Palette colors) {
-    return MenuBarThemeData(
-      style: createMenuStyleForMenuBar(colors),
-    );
+    return MenuBarThemeData(style: createMenuStyleForMenuBar(colors));
   }
 
   static MenuStyle createMenuStyleForDropdown(Palette colors) {
@@ -797,20 +790,15 @@ class MonetThemeData {
       surfaceTintColor: WidgetStatePropertyAll(colors.background),
       elevation: const WidgetStatePropertyAll(modalElevation),
       side: WidgetStatePropertyAll(
-        BorderSide(
-          color: colors.colorBorder,
-          width: 2,
-        ),
+        BorderSide(color: colors.colorBorder, width: 2),
       ),
       padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+        EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      ),
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: BorderSide(
-            color: colors.colorBorder,
-            width: 2,
-          ),
+          side: BorderSide(color: colors.colorBorder, width: 2),
         ),
       ),
     );
@@ -832,22 +820,20 @@ class MonetThemeData {
       style: textButtonStyle(colors).copyWith(
         padding: WidgetStateProperty.all(const EdgeInsets.all(4)),
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
     );
   }
 
   static MenuThemeData menuThemeData(Palette colors) {
-    return MenuThemeData(
-      style: createMenuStyleForDropdown(colors),
-    );
+    return MenuThemeData(style: createMenuStyleForDropdown(colors));
   }
 
   static NavigationBarThemeData navigationBarThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return NavigationBarThemeData(
       height: 80, // match default
       backgroundColor: colors.background,
@@ -856,8 +842,9 @@ class MonetThemeData {
       surfaceTintColor: colors.background,
       indicatorColor: colors.fill,
       indicatorShape: const StadiumBorder(), // match default
-      labelTextStyle:
-          WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      labelTextStyle: WidgetStateProperty.resolveWith((
+        Set<WidgetState> states,
+      ) {
         final TextStyle style = textTheme.labelSmall!;
         return style.apply(
           color: states.contains(WidgetState.selected)
@@ -880,7 +867,10 @@ class MonetThemeData {
   }
 
   static BottomNavigationBarThemeData bottomNavigationBarThemeData(
-      Palette colors, double scale, TextTheme textTheme) {
+    Palette colors,
+    double scale,
+    TextTheme textTheme,
+  ) {
     return BottomNavigationBarThemeData(
       backgroundColor: colors.background,
       elevation: 0,
@@ -890,17 +880,18 @@ class MonetThemeData {
       unselectedItemColor: colors.backgroundText,
       selectedIconTheme: iconThemeData(colors, scale),
       unselectedIconTheme: iconThemeData(colors, scale),
-      selectedLabelStyle:
-          textTheme.labelSmall!.copyWith(color: colors.fillText),
-      unselectedLabelStyle:
-          textTheme.labelSmall!.copyWith(color: colors.backgroundText),
+      selectedLabelStyle: textTheme.labelSmall!.copyWith(
+        color: colors.fillText,
+      ),
+      unselectedLabelStyle: textTheme.labelSmall!.copyWith(
+        color: colors.backgroundText,
+      ),
       showSelectedLabels: true,
       showUnselectedLabels: true,
 
       // Don't specify: this allows the widget to switch between fixed and
       // shifting based on the number of items.
       // type: BottomNavigationBarType.fixed,
-
       enableFeedback: true,
       // Don't specify, allows widget to default to spread
       // landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
@@ -911,7 +902,9 @@ class MonetThemeData {
   }
 
   static NavigationDrawerThemeData navigationDrawerThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return NavigationDrawerThemeData(
       tileHeight: 56,
       /* match _NavigationDrawerDefaultsM3 */
@@ -921,8 +914,9 @@ class MonetThemeData {
       surfaceTintColor: colors.background,
       indicatorColor: colors.fill,
       indicatorShape: const StadiumBorder(), // match default
-      labelTextStyle:
-          WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      labelTextStyle: WidgetStateProperty.resolveWith((
+        Set<WidgetState> states,
+      ) {
         final TextStyle style = textTheme.labelLarge!;
         return style.apply(
           color: states.contains(WidgetState.selected)
@@ -934,18 +928,27 @@ class MonetThemeData {
   }
 
   static NavigationRailThemeData navigationRailThemeData(
-      Palette colors, double scale, TextTheme textTheme) {
+    Palette colors,
+    double scale,
+    TextTheme textTheme,
+  ) {
     return NavigationRailThemeData(
       backgroundColor: colors.background,
       elevation: 0,
-      unselectedLabelTextStyle:
-          textTheme.labelLarge!.copyWith(color: colors.backgroundText),
-      selectedLabelTextStyle:
-          textTheme.labelLarge!.copyWith(color: colors.text),
-      unselectedIconTheme:
-          iconThemeData(colors, scale).copyWith(color: colors.backgroundText),
-      selectedIconTheme:
-          iconThemeData(colors, scale).copyWith(color: colors.fillIcon),
+      unselectedLabelTextStyle: textTheme.labelLarge!.copyWith(
+        color: colors.backgroundText,
+      ),
+      selectedLabelTextStyle: textTheme.labelLarge!.copyWith(
+        color: colors.text,
+      ),
+      unselectedIconTheme: iconThemeData(
+        colors,
+        scale,
+      ).copyWith(color: colors.backgroundText),
+      selectedIconTheme: iconThemeData(
+        colors,
+        scale,
+      ).copyWith(color: colors.fillIcon),
       groupAlignment: -1.0, // match default, top
       labelType: NavigationRailLabelType.all,
       useIndicator: true,
@@ -957,23 +960,21 @@ class MonetThemeData {
   }
 
   static OutlinedButtonThemeData outlinedButtonTheme(Palette colors) {
-    return OutlinedButtonThemeData(
-      style: outlineButtonStyle(colors),
-    );
+    return OutlinedButtonThemeData(style: outlineButtonStyle(colors));
   }
 
   static PopupMenuThemeData popupMenuThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return PopupMenuThemeData(
-      mouseCursor:
-          WidgetStateProperty.all(SystemMouseCursors.click), // match default
+      mouseCursor: WidgetStateProperty.all(
+        SystemMouseCursors.click,
+      ), // match default
       color: colors.background, // Popup background
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.fill,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.fill, width: 2),
       ),
       elevation: modalElevation, // Popup outline elevation
       shadowColor: _singleShadowColorFor(colors.background),
@@ -990,8 +991,7 @@ class MonetThemeData {
     );
   }
 
-  static ProgressIndicatorThemeData progressIndicatorThemeData(
-      Palette colors) {
+  static ProgressIndicatorThemeData progressIndicatorThemeData(Palette colors) {
     return ProgressIndicatorThemeData(
       color: colors.fill,
       linearTrackColor: colors.background,
@@ -1007,22 +1007,18 @@ class MonetThemeData {
     // a fill with a circle surrounding it for hover state. These were
     // picked thoughtfully.
     return RadioThemeData(
-      fillColor: WidgetStateProperty.resolveWith(
-        (Set<WidgetState> states) {
-          if (states.contains(WidgetState.hovered)) {
-            return colors.textHoveredText;
-          }
-          if (states.contains(WidgetState.selected)) {
-            return colors.text;
-          }
+      fillColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.hovered)) {
+          return colors.textHoveredText;
+        }
+        if (states.contains(WidgetState.selected)) {
           return colors.text;
-        },
-      ),
-      overlayColor: WidgetStateProperty.resolveWith(
-        (Set<WidgetState> states) {
-          return colors.textHovered;
-        },
-      ),
+        }
+        return colors.text;
+      }),
+      overlayColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        return colors.textHovered;
+      }),
       splashRadius: 20.0, // match checkbox default,
       materialTapTargetSize: null, // let Theme manage it
       visualDensity: null, // let Theme manage it
@@ -1030,55 +1026,52 @@ class MonetThemeData {
   }
 
   static SearchBarThemeData searchBarThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return SearchBarThemeData(
       elevation: const WidgetStatePropertyAll(2),
       backgroundColor: WidgetStatePropertyAll(colors.background),
       shadowColor: WidgetStatePropertyAll(colors.background),
       surfaceTintColor: WidgetStatePropertyAll(colors.background),
       overlayColor: WidgetStatePropertyAll(colors.background),
-      side: WidgetStatePropertyAll(
-        BorderSide(
-          color: colors.fill,
-          width: 2,
-        ),
-      ),
+      side: WidgetStatePropertyAll(BorderSide(color: colors.fill, width: 2)),
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: BorderSide(
-            color: colors.fill,
-            width: 2,
-          ),
+          side: BorderSide(color: colors.fill, width: 2),
         ),
       ),
       padding: const WidgetStatePropertyAll(
-        EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
+        EdgeInsets.symmetric(horizontal: 16),
       ),
       textStyle: WidgetStatePropertyAll(textTheme.bodyMedium),
       hintStyle: WidgetStatePropertyAll(textTheme.labelLarge),
       constraints: const BoxConstraints(
-          minWidth: 360.0, maxWidth: 800.0, minHeight: 56.0), // match default
+        minWidth: 360.0,
+        maxWidth: 800.0,
+        minHeight: 56.0,
+      ), // match default
     );
   }
 
   static SearchViewThemeData searchViewThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return SearchViewThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
       surfaceTintColor: colors.background,
       constraints: const BoxConstraints(
-          minWidth: 360.0, maxWidth: 800.0, minHeight: 56.0),
+        minWidth: 360.0,
+        maxWidth: 800.0,
+        minHeight: 56.0,
+      ),
       side: BorderSide(color: colors.fill, width: 2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.fill,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.fill, width: 2),
       ),
       headerTextStyle: textTheme.headlineMedium,
       headerHintStyle: textTheme.headlineSmall,
@@ -1124,20 +1117,20 @@ class MonetThemeData {
       }
     });
     return SegmentedButtonThemeData(
-        style: ButtonStyle(
-      visualDensity: VisualDensity.compact,
-      backgroundColor: background,
-      surfaceTintColor: background,
-      overlayColor: background,
-      foregroundColor: foreground,
-      side: WidgetStateProperty.all(
-        BorderSide(color: colors.colorBorder, width: 2),
+      style: ButtonStyle(
+        visualDensity: VisualDensity.compact,
+        backgroundColor: background,
+        surfaceTintColor: background,
+        overlayColor: background,
+        foregroundColor: foreground,
+        side: WidgetStateProperty.all(
+          BorderSide(color: colors.colorBorder, width: 2),
+        ),
       ),
-    ));
+    );
   }
 
-  static SliderThemeData sliderThemeData(
-      Palette colors, TextTheme textTheme) {
+  static SliderThemeData sliderThemeData(Palette colors, TextTheme textTheme) {
     return SliderThemeData(
       overlayShape: const RoundSliderOverlayShape(),
       tickMarkShape: SliderTickMarkShape.noTickMark,
@@ -1180,7 +1173,9 @@ class MonetThemeData {
   }
 
   static SnackBarThemeData snackBarThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return SnackBarThemeData(
       backgroundColor: colors.color,
       actionTextColor: colors.colorText,
@@ -1189,10 +1184,7 @@ class MonetThemeData {
       elevation: modalElevation,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.colorBorder,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.colorBorder, width: 2),
       ),
 
       behavior: SnackBarBehavior.floating,
@@ -1215,37 +1207,32 @@ class MonetThemeData {
       trackOutlineWidth: const WidgetStatePropertyAll(2.0),
       materialTapTargetSize: null, // let Theme manage it
       mouseCursor: null, // let Theme manage it
-      overlayColor: WidgetStateProperty.resolveWith(
-        (Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return colors.fill;
-          } else if (states.contains(WidgetState.hovered)) {
-            return colors.fillHovered;
-          } else if (states.contains(WidgetState.pressed)) {
-            return colors.fillSplashed;
-          } else {
-            return colors.fill;
-          }
-        },
-      ),
+      overlayColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return colors.fill;
+        } else if (states.contains(WidgetState.hovered)) {
+          return colors.fillHovered;
+        } else if (states.contains(WidgetState.pressed)) {
+          return colors.fillSplashed;
+        } else {
+          return colors.fill;
+        }
+      }),
       splashRadius: 20.0, // match checkbox default,
-      thumbIcon: WidgetStateProperty.resolveWith(
-        (Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return Icon(
-              Icons.check_outlined,
-              color: colors.fillText,
-            );
-          } else {
-            return null;
-          }
-        },
-      ),
+      thumbIcon: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return Icon(Icons.check_outlined, color: colors.fillText);
+        } else {
+          return null;
+        }
+      }),
     );
   }
 
   static TabBarThemeData createTabBarTheme(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     final labelColor = WidgetStateColor.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return colors.text;
@@ -1260,7 +1247,8 @@ class MonetThemeData {
     return TabBarThemeData(
       // Oddly, this still is required even if indicatorColor is set.
       indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(color: colors.fill, width: 2)),
+        borderSide: BorderSide(color: colors.fill, width: 2),
+      ),
       indicatorColor: colors.fill,
       indicatorSize: TabBarIndicatorSize.label,
       dividerColor: Colors.transparent,
@@ -1268,19 +1256,17 @@ class MonetThemeData {
       labelStyle: textTheme.labelLarge,
       unselectedLabelColor: labelColor,
       unselectedLabelStyle: textTheme.labelLarge,
-      overlayColor: WidgetStateProperty.resolveWith(
-        (Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return colors.textSplashed;
-          } else if (states.contains(WidgetState.hovered)) {
-            return colors.textHovered;
-          } else if (states.contains(WidgetState.pressed)) {
-            return colors.textSplashed;
-          } else {
-            return colors.background;
-          }
-        },
-      ),
+      overlayColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return colors.textSplashed;
+        } else if (states.contains(WidgetState.hovered)) {
+          return colors.textHovered;
+        } else if (states.contains(WidgetState.pressed)) {
+          return colors.textSplashed;
+        } else {
+          return colors.background;
+        }
+      }),
       splashFactory: splashFactory,
       mouseCursor: null, // use default view
       tabAlignment: TabAlignment.fill,
@@ -1288,9 +1274,7 @@ class MonetThemeData {
   }
 
   TextButtonThemeData textButtonTheme(Palette colors) {
-    return TextButtonThemeData(
-      style: textButtonStyle(colors),
-    );
+    return TextButtonThemeData(style: textButtonStyle(colors));
   }
 
   static TextSelectionThemeData textSelectionThemeData(Palette colors) {
@@ -1305,22 +1289,18 @@ class MonetThemeData {
   }
 
   static TimePickerThemeData timePickerThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return TimePickerThemeData(
       backgroundColor: colors.background,
       cancelButtonStyle: outlineButtonStyle(colors),
       confirmButtonStyle: outlineButtonStyle(colors),
-      dayPeriodBorderSide: BorderSide(
-        color: colors.fill,
-        width: 2,
-      ),
+      dayPeriodBorderSide: BorderSide(color: colors.fill, width: 2),
 
       dayPeriodShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.fill,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.fill, width: 2),
       ),
       dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -1357,10 +1337,7 @@ class MonetThemeData {
       }),
       hourMinuteShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.fill,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.fill, width: 2),
       ),
       hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
         if (states.contains(WidgetState.hovered)) {
@@ -1377,16 +1354,15 @@ class MonetThemeData {
       padding: const EdgeInsets.all(24), // match default in time_picker.dart
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colors.fill,
-          width: 2,
-        ),
+        side: BorderSide(color: colors.fill, width: 2),
       ),
     );
   }
 
   static ToggleButtonsThemeData toggleButtonsThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return ToggleButtonsThemeData(
       textStyle: textTheme.labelLarge,
       constraints: const BoxConstraints(
@@ -1417,18 +1393,24 @@ class MonetThemeData {
   }
 
   static TooltipThemeData tooltipThemeData(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     return TooltipThemeData(
       constraints: BoxConstraints(minHeight: 32),
       padding: switch (defaultTargetPlatform) {
         TargetPlatform.macOS ||
         TargetPlatform.linux ||
-        TargetPlatform.windows =>
-          const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        TargetPlatform.windows => const EdgeInsets.symmetric(
+          horizontal: 8.0,
+          vertical: 4.0,
+        ),
         TargetPlatform.android ||
         TargetPlatform.fuchsia ||
-        TargetPlatform.iOS =>
-          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+        TargetPlatform.iOS => const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 4.0,
+        ),
       },
       margin: EdgeInsets.zero,
       verticalOffset: 24,
@@ -1437,10 +1419,7 @@ class MonetThemeData {
       decoration: ShapeDecoration(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: BorderSide(
-            color: colors.colorBorder,
-            width: 2,
-          ),
+          side: BorderSide(color: colors.colorBorder, width: 2),
         ),
         color: colors.color,
       ),
@@ -1454,7 +1433,9 @@ class MonetThemeData {
   }
 
   static InputDecorationTheme inputDecorationTheme(
-      Palette colors, TextTheme textTheme) {
+    Palette colors,
+    TextTheme textTheme,
+  ) {
     final border = OutlineInputBorder(
       borderSide: BorderSide(width: 2, color: colors.fill),
       borderRadius: BorderRadius.circular(8),
@@ -1554,7 +1535,7 @@ class MonetThemeData {
     // The loop to adjust the font size.
     for (int i = 0; i < maxIterations; i++) {
       // Define the text style using the current font size.
-      var textStyle = TextStyle(
+      final textStyle = TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSize,
         // Fixing the height provides a more consistent experience across
@@ -1569,19 +1550,25 @@ class MonetThemeData {
         text: TextSpan(text: '|&"qjQJAEIOUYaeiouy', style: textStyle),
         maxLines: 1,
         textDirection: TextDirection.ltr,
-      )..layout();
+      );
 
-      final heightDiff = layout.size.height - targetHeightDp;
-      // Compare the rendered text height with the target height.
-      if (heightDiff.abs() <= threshold) {
-        // We've found a font size close enough to the expected height.
-        break;
-      } else if (layout.size.height < targetHeightDp) {
-        // If the rendered height is less than the target, adjust font size up.
-        minFontSize = fontSize;
-      } else {
-        // If the rendered height is greater than the target, adjust font size down.
-        maxFontSize = fontSize;
+      try {
+        layout.layout();
+        final layoutHeight = layout.size.height;
+        final heightDiff = layoutHeight - targetHeightDp;
+        // Compare the rendered text height with the target height.
+        if (heightDiff.abs() <= threshold) {
+          // We've found a font size close enough to the expected height.
+          break;
+        } else if (layoutHeight < targetHeightDp) {
+          // If the rendered height is less than the target, adjust font size up.
+          minFontSize = fontSize;
+        } else {
+          // If the rendered height is greater than the target, adjust font size down.
+          maxFontSize = fontSize;
+        }
+      } finally {
+        layout.dispose();
       }
 
       // Calculate the new font size.
@@ -1591,8 +1578,12 @@ class MonetThemeData {
     return fontSize;
   }
 
-  TextTheme createTextTheme(Typography typography, TextScaler textScaler,
-      double scale, double devicePixelRatio) {
+  TextTheme createTextTheme(
+    Typography typography,
+    TextScaler textScaler,
+    double scale,
+    double devicePixelRatio,
+  ) {
     final tt = switch (brightness) {
       (Brightness.dark) => typography.white,
       (Brightness.light) => typography.black,
@@ -1607,110 +1598,125 @@ class MonetThemeData {
     // The bodyMedium font size is used as a reference point for scaling the
     final displayScale =
         searchForFontSizeReachingPts(26, tt.displayMedium!.fontFamily!) /
-            (26 * ptsToLp);
+        (26 * ptsToLp);
     final headlineScale =
         searchForFontSizeReachingPts(20, tt.headlineMedium!.fontFamily!) /
-            (20 * ptsToLp);
+        (20 * ptsToLp);
     final titleScale = headlineScale;
     final bodyScale =
         searchForFontSizeReachingPts(12, tt.bodyMedium!.fontFamily!) /
-            (12 * ptsToLp);
+        (12 * ptsToLp);
     final labelScale =
         searchForFontSizeReachingPts(12, tt.labelMedium!.fontFamily!) /
-            (12 * ptsToLp);
+        (12 * ptsToLp);
 
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
-          fontSize: 24 * ptsToLp * scale * displayScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: [
-            // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-            'sans-serif',
-            'NotoColorEmoji',
-          ],
-          height: h),
+        fontSize: 24 * ptsToLp * scale * displayScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: [
+          // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
+          'sans-serif',
+          'NotoColorEmoji',
+        ],
+        height: h,
+      ),
       displayMedium: tt.displayMedium!.copyWith(
-          fontSize: 22 * ptsToLp * scale * displayScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 22 * ptsToLp * scale * displayScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       displaySmall: tt.displaySmall!.copyWith(
-          fontSize: 20 * ptsToLp * scale * displayScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 20 * ptsToLp * scale * displayScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       titleLarge: tt.headlineLarge!.copyWith(
-          fontSize: 22 * ptsToLp * scale * titleScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 22 * ptsToLp * scale * titleScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       titleMedium: tt.headlineMedium!.copyWith(
-          fontSize: 20 * ptsToLp * scale * titleScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 20 * ptsToLp * scale * titleScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       titleSmall: tt.headlineSmall!.copyWith(
-          fontSize: 18 * ptsToLp * scale * titleScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 18 * ptsToLp * scale * titleScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       headlineLarge: tt.headlineLarge!.copyWith(
-          fontSize: 22 * ptsToLp * scale * headlineScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 22 * ptsToLp * scale * headlineScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       headlineMedium: tt.headlineMedium!.copyWith(
-          fontSize: 20 * ptsToLp * scale * headlineScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 20 * ptsToLp * scale * headlineScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       headlineSmall: tt.headlineSmall!.copyWith(
-          fontSize: 18 * ptsToLp * scale * headlineScale,
-          color: txtC,
-          fontWeight: med,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 18 * ptsToLp * scale * headlineScale,
+        color: txtC,
+        fontWeight: med,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       bodyLarge: tt.bodyLarge!.copyWith(
-          fontSize: 14 * ptsToLp * scale * bodyScale,
-          color: txtC,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 14 * ptsToLp * scale * bodyScale,
+        color: txtC,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       bodyMedium: tt.bodyMedium!.copyWith(
-          fontSize: 13 * ptsToLp * scale * bodyScale,
-          color: txtC,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 13 * ptsToLp * scale * bodyScale,
+        color: txtC,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       bodySmall: tt.bodySmall!.copyWith(
-          fontSize: 11 * ptsToLp * scale * bodyScale,
-          color: txtC,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 11 * ptsToLp * scale * bodyScale,
+        color: txtC,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       labelLarge: tt.labelLarge!.copyWith(
-          fontSize: 14 * ptsToLp * scale * labelScale,
-          color: txtC,
-          fontWeight: FontWeight.w500,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 14 * ptsToLp * scale * labelScale,
+        color: txtC,
+        fontWeight: FontWeight.w500,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       labelMedium: tt.labelMedium!.copyWith(
-          fontSize: 12 * ptsToLp * scale * labelScale,
-          fontWeight: FontWeight.w500,
-          color: txtC,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 12 * ptsToLp * scale * labelScale,
+        fontWeight: FontWeight.w500,
+        color: txtC,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
       labelSmall: tt.labelSmall!.copyWith(
-          fontSize: 11 * ptsToLp * scale * labelScale,
-          fontWeight: FontWeight.w500,
-          color: txtC,
-          fontFamilyFallback: _kFontFamilyFallback,
-          height: h),
+        fontSize: 11 * ptsToLp * scale * labelScale,
+        fontWeight: FontWeight.w500,
+        color: txtC,
+        fontFamilyFallback: _kFontFamilyFallback,
+        height: h,
+      ),
     );
     return textTheme;
   }
