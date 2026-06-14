@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/theming/animated_monet_theme.dart';
+import 'package:libmonet/theming/interpolation_style.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:libmonet/theming/palette_lerped.dart';
 
 class _Probe extends StatefulWidget {
   const _Probe({required this.onBuild});
@@ -106,6 +108,111 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 120));
     expect(sampled, equals(end.primary.background));
+  });
+
+  testWidgets(
+    'AnimatedMonetTheme defaults to cartesian palette interpolation',
+    (tester) async {
+      final begin = themeFrom(Colors.red);
+      final end = themeFrom(Colors.blue);
+      Color? sampled;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AnimatedMonetTheme(
+            data: begin,
+            animateThemeData: false,
+            duration: const Duration(milliseconds: 200),
+            child: _Probe(
+              onBuild: (ctx) {
+                sampled = MonetTheme.of(ctx).primary.color;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AnimatedMonetTheme(
+            data: end,
+            animateThemeData: false,
+            duration: const Duration(milliseconds: 200),
+            child: _Probe(
+              onBuild: (ctx) {
+                sampled = MonetTheme.of(ctx).primary.color;
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final expected = PaletteLerped(
+        a: begin.primary,
+        b: end.primary,
+        t: 0.5,
+        interpolationStyle: InterpolationStyle.cartesian,
+      ).color;
+      expect(sampled, expected);
+    },
+  );
+
+  testWidgets('AnimatedMonetTheme can use polar palette interpolation', (
+    tester,
+  ) async {
+    final begin = themeFrom(Colors.red);
+    final end = themeFrom(Colors.blue);
+    Color? sampled;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: begin,
+          animateThemeData: false,
+          interpolationStyle: InterpolationStyle.polar,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.color;
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: end,
+          animateThemeData: false,
+          interpolationStyle: InterpolationStyle.polar,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.color;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final expected = PaletteLerped(
+      a: begin.primary,
+      b: end.primary,
+      t: 0.5,
+      interpolationStyle: InterpolationStyle.polar,
+    ).color;
+    final cartesianMid = PaletteLerped(
+      a: begin.primary,
+      b: end.primary,
+      t: 0.5,
+      interpolationStyle: InterpolationStyle.cartesian,
+    ).color;
+
+    expect(sampled, expected);
+    expect(sampled, isNot(cartesianMid));
   });
 
   testWidgets('ThemeData stable when animateThemeData=false', (tester) async {
