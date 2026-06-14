@@ -1,0 +1,30 @@
+{
+  "name": "@telosnex/libmonet",
+  "version": "0.1.0",
+  "description": "TypeScript/browser port of libmonet dynamic theming primitives.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:parity:generate": "cd .. && python3 -c \"import subprocess,sys; cmd=['flutter','test','test/js/parity_fixture_test.dart','--plain-name','generate JS parity fixtures'];\ntry:\n p=subprocess.run(cmd,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=30); print(p.stdout,end=''); sys.exit(p.returncode)\nexcept subprocess.TimeoutExpired as e:\n print(e.stdout or '',end=''); print('TIMED OUT after 30s'); sys.exit(124)\"",
+    "check": "npm run build && npm test",
+    "check:parity": "npm run test:parity:generate && git -C .. diff --exit-code -- js/fixtures/libmonet_parity.json && npm run check"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
+  }
+}
