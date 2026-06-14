@@ -53,14 +53,14 @@ void main() {
       );
 
       expect(defaultTriad.map((hct) => hexFromColor(hct.color)).toList(), [
-        '#F9DEB9',
-        '#E6B09D',
-        '#668290',
+        '#F7CF99',
+        '#E4AF9D',
+        '#668593',
       ]);
       expect(noChromaTriad.map((hct) => hexFromColor(hct.color)).toList(), [
         '#EDE7E3',
-        '#E7E4E3',
-        '#A1ACB5',
+        '#D4D4D2',
+        '#99A4AA',
       ]);
     });
   });

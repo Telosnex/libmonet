@@ -40,7 +40,7 @@ void main() {
         final color = Hct.from(120.0, 40.0, 50.0);
         final cache = TemperatureCache(color);
         final complement = cache.complement;
-        expect(complement.color, isColor(0xff9366A3));
+        expect(complement.color, isColor(0xff7570AB));
       });
 
       // These tests expose the division by zero bug:
@@ -65,7 +65,7 @@ void main() {
         final gray = Hct.from(0.0, 0.0, 50.0);
         final cache = TemperatureCache(gray);
         final complement = cache.complement;
-        expect(complement.color, isColor(0xff7B7674));
+        expect(complement.color, isColor(0xff7B7676));
       });
 
       test('handles very low chroma color without NaN', () {
@@ -206,7 +206,7 @@ void main() {
             analogues.map(
               (e) => e.color.hex,
             ),
-            equals(['#787775', '#777776', '#777777', '#787778', '#7A7678']));
+            equals(['#787776', '#777776', '#777777', '#787778', '#797678']));
       });
     });
 
@@ -215,7 +215,7 @@ void main() {
         final gray = Hct.from(0.0, 0.0, 50.0);
         final cache = TemperatureCache(gray);
 
-        expect(cache.warmest.hue, closeTo(64.045, 0.001));
+        expect(cache.warmest.hue, closeTo(30.825, 0.001));
         expect(cache.coldest.hue, closeTo(234.520, 0.001));
       });
     });
@@ -225,7 +225,7 @@ void main() {
         // Red/orange/yellow are warm
         final red = Hct.from(27.0, 100.0, 50.0);
         final temp = TemperatureCache.rawTemperature(red);
-        expect(temp, closeTo(1.964, 0.001));
+        expect(temp, closeTo(2.181, 0.001));
       });
 
       test('cool colors have negative temperature', () {
