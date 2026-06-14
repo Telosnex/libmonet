@@ -77,8 +77,16 @@ double contrastingToneApca({
     if (seed != null) {
       final sLo = seed - kSeedMargin;
       final sHi = seed + kSeedMargin;
-      lo = sLo < refTone ? refTone : sLo > 100.0 ? 100.0 : sLo;
-      hi = sHi < refTone ? refTone : sHi > 100.0 ? 100.0 : sHi;
+      lo = sLo < refTone
+          ? refTone
+          : sLo > 100.0
+          ? 100.0
+          : sLo;
+      hi = sHi < refTone
+          ? refTone
+          : sHi > 100.0
+          ? 100.0
+          : sHi;
     } else {
       lo = refTone;
       hi = 100.0;
@@ -98,7 +106,11 @@ double contrastingToneApca({
         lo = mid;
       }
     }
-    if (hi < 0.0) hi = 0.0; else if (hi > 100.0) hi = 100.0;
+    if (hi < 0.0) {
+      hi = 0.0;
+    } else if (hi > 100.0) {
+      hi = 100.0;
+    }
     return hi;
   } else {
     final minLc = lcAt(0);
@@ -114,8 +126,16 @@ double contrastingToneApca({
     if (seed != null) {
       final sLo = seed - kSeedMargin;
       final sHi = seed + kSeedMargin;
-      lo = sLo < 0.0 ? 0.0 : sLo > refTone ? refTone : sLo;
-      hi = sHi < 0.0 ? 0.0 : sHi > refTone ? refTone : sHi;
+      lo = sLo < 0.0
+          ? 0.0
+          : sLo > refTone
+          ? refTone
+          : sLo;
+      hi = sHi < 0.0
+          ? 0.0
+          : sHi > refTone
+          ? refTone
+          : sHi;
     } else {
       lo = 0.0;
       hi = refTone;
@@ -133,7 +153,11 @@ double contrastingToneApca({
         hi = mid;
       }
     }
-    if (lo < 0.0) lo = 0.0; else if (lo > 100.0) lo = 100.0;
+    if (lo < 0.0) {
+      lo = 0.0;
+    } else if (lo > 100.0) {
+      lo = 100.0;
+    }
     return lo;
   }
 }

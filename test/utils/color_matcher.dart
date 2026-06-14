@@ -32,7 +32,7 @@ class _ColorMatcher extends Matcher {
     if (object is Color && _argb is int) {
       return object.argb == _argb;
     } else if (object is int && _argb is Color) {
-      return object == _argb.value;
+      return object == _argb.argb;
     }
     return object == _argb;
   }

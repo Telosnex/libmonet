@@ -2,6 +2,7 @@
 ///
 /// Extracted from lib/contrast/contrast.dart — contrastingTone() APCA branch.
 /// Only the APCA path is relevant; WCAG delegates to the old L*-based solver.
+library;
 
 import 'package:libmonet/colorspaces/hct_solver.dart';
 import 'package:libmonet/contrast/apca.dart';
