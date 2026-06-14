@@ -1505,79 +1505,6 @@ class MonetThemeData {
     );
   }
 
-  static const ptsToLp = 96.0 / 72.0;
-  static const lpToDp = 160.0 / 96.0;
-  static const ptsToDp = 160 / 72.0;
-  // Cache for font size calculations
-  static final _fontSizeCache = LruCache<String, double>(capacity: 16);
-
-  double searchForFontSizeReachingPts(double pts, String fontFamily) {
-    final key = '$fontFamily-${pts.toStringAsFixed(3)}';
-    final cached = _fontSizeCache[key];
-    if (cached != null) {
-      return cached;
-    }
-
-    // needing the old heights and new ones in memory simultaneously.
-    final targetHeightDp = pts * ptsToLp * lpToDp;
-
-    double minFontSize =
-        pts * ptsToLp * 1.0 / 3.0; // assuming 1/3 is a reasonable min size.
-    var fontSize = pts * ptsToLp;
-    double maxFontSize =
-        3 * pts * ptsToLp; // assuming 3x is a reasonable max size.
-
-    // The threshold within which we consider the height "close enough".
-    const double threshold = 0.5;
-
-    // The maximum number of iterations to prevent infinite loops.
-    const int maxIterations = 10;
-    // The loop to adjust the font size.
-    for (int i = 0; i < maxIterations; i++) {
-      // Define the text style using the current font size.
-      final textStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-        // Fixing the height provides a more consistent experience across
-        // fonts with extreme padding.
-        height: 1.5,
-      );
-
-      // Layout the text.
-      final layout = TextPainter(
-        // String is designed to be short and do a good job of capturing an accurate picture
-        // of the extremes of the font's letter heights.
-        text: TextSpan(text: '|&"qjQJAEIOUYaeiouy', style: textStyle),
-        maxLines: 1,
-        textDirection: TextDirection.ltr,
-      );
-
-      try {
-        layout.layout();
-        final layoutHeight = layout.size.height;
-        final heightDiff = layoutHeight - targetHeightDp;
-        // Compare the rendered text height with the target height.
-        if (heightDiff.abs() <= threshold) {
-          // We've found a font size close enough to the expected height.
-          break;
-        } else if (layoutHeight < targetHeightDp) {
-          // If the rendered height is less than the target, adjust font size up.
-          minFontSize = fontSize;
-        } else {
-          // If the rendered height is greater than the target, adjust font size down.
-          maxFontSize = fontSize;
-        }
-      } finally {
-        layout.dispose();
-      }
-
-      // Calculate the new font size.
-      fontSize = (minFontSize + maxFontSize) / 2;
-    }
-    _fontSizeCache[key] = fontSize;
-    return fontSize;
-  }
-
   TextTheme createTextTheme(
     Typography typography,
     TextScaler textScaler,
@@ -1593,28 +1520,28 @@ class MonetThemeData {
     const h = null; // Respect font's settings. This is much better than setting
     // it, it feels like playing whack-a-mole even with one font to tune it for
     // all the components.
-    const med = FontWeight.w500;
 
-    // The bodyMedium font size is used as a reference point for scaling the
-    final displayScale =
-        searchForFontSizeReachingPts(26, tt.displayMedium!.fontFamily!) /
-        (26 * ptsToLp);
-    final headlineScale =
-        searchForFontSizeReachingPts(20, tt.headlineMedium!.fontFamily!) /
-        (20 * ptsToLp);
+    // Normalize apparent text size across fonts. The table is generated
+    // offline by rasterizing a small body/UI phrase corpus for each Google
+    // Font, then using a trimmed mean of actual rendered phrase heights as the
+    // visual-height metric. Theme construction stays synchronous and does not
+    // depend on TextPainter line boxes or runtime pixel readback.
+    final displayScale = visualHeightScaleForFontFamily(
+      tt.displayMedium!.fontFamily,
+    );
+    final headlineScale = visualHeightScaleForFontFamily(
+      tt.headlineMedium!.fontFamily,
+    );
     final titleScale = headlineScale;
-    final bodyScale =
-        searchForFontSizeReachingPts(12, tt.bodyMedium!.fontFamily!) /
-        (12 * ptsToLp);
-    final labelScale =
-        searchForFontSizeReachingPts(12, tt.labelMedium!.fontFamily!) /
-        (12 * ptsToLp);
+    final bodyScale = visualHeightScaleForFontFamily(tt.bodyMedium!.fontFamily);
+    final labelScale = visualHeightScaleForFontFamily(
+      tt.labelMedium!.fontFamily,
+    );
 
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
-        fontSize: 24 * ptsToLp * scale * displayScale,
+        fontSize: 32 * scale * displayScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: [
           // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
           'sans-serif',
@@ -1623,96 +1550,85 @@ class MonetThemeData {
         height: h,
       ),
       displayMedium: tt.displayMedium!.copyWith(
-        fontSize: 22 * ptsToLp * scale * displayScale,
+        fontSize: 29 * scale * displayScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       displaySmall: tt.displaySmall!.copyWith(
-        fontSize: 20 * ptsToLp * scale * displayScale,
+        fontSize: 27 * scale * displayScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       titleLarge: tt.headlineLarge!.copyWith(
-        fontSize: 22 * ptsToLp * scale * titleScale,
+        fontSize: 29 * scale * titleScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       titleMedium: tt.headlineMedium!.copyWith(
-        fontSize: 20 * ptsToLp * scale * titleScale,
+        fontSize: 27 * scale * titleScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       titleSmall: tt.headlineSmall!.copyWith(
-        fontSize: 18 * ptsToLp * scale * titleScale,
+        fontSize: 24 * scale * titleScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       headlineLarge: tt.headlineLarge!.copyWith(
-        fontSize: 22 * ptsToLp * scale * headlineScale,
+        fontSize: 29 * scale * headlineScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       headlineMedium: tt.headlineMedium!.copyWith(
-        fontSize: 20 * ptsToLp * scale * headlineScale,
+        fontSize: 27 * scale * headlineScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       headlineSmall: tt.headlineSmall!.copyWith(
-        fontSize: 18 * ptsToLp * scale * headlineScale,
+        fontSize: 24 * scale * headlineScale,
         color: txtC,
-        fontWeight: med,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       bodyLarge: tt.bodyLarge!.copyWith(
-        fontSize: 14 * ptsToLp * scale * bodyScale,
+        fontSize: 18 * scale * bodyScale,
         color: txtC,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       bodyMedium: tt.bodyMedium!.copyWith(
-        fontSize: 13 * ptsToLp * scale * bodyScale,
+        fontSize: 17 * scale * bodyScale,
         color: txtC,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       bodySmall: tt.bodySmall!.copyWith(
-        fontSize: 11 * ptsToLp * scale * bodyScale,
+        fontSize: 14 * scale * bodyScale,
         color: txtC,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       labelLarge: tt.labelLarge!.copyWith(
-        fontSize: 14 * ptsToLp * scale * labelScale,
+        fontSize: 18 * scale * labelScale,
         color: txtC,
-        fontWeight: FontWeight.w500,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       labelMedium: tt.labelMedium!.copyWith(
-        fontSize: 12 * ptsToLp * scale * labelScale,
-        fontWeight: FontWeight.w500,
+        fontSize: 16 * scale * labelScale,
         color: txtC,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
       ),
       labelSmall: tt.labelSmall!.copyWith(
-        fontSize: 11 * ptsToLp * scale * labelScale,
-        fontWeight: FontWeight.w500,
+        fontSize: 14 * scale * labelScale,
         color: txtC,
         fontFamilyFallback: _kFontFamilyFallback,
         height: h,
