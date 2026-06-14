@@ -37,6 +37,10 @@ export 'effects/opacity.dart';
 export 'effects/shadows.dart';
 export 'effects/temperature.dart';
 
+// Fonts
+export 'fonts/font_height_equalizer.g.dart';
+export 'fonts/google_fonts_catalog.g.dart';
+
 // Theming
 export 'theming/animated_monet_theme.dart';
 export 'theming/button_style.dart';
