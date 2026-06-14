@@ -991,9 +991,11 @@ class Palette {
     final candidates = candidateSet.toList();
     final valid = candidates.where(hasValid).toList();
     if (valid.isEmpty) {
-      final blackDelta = delta(0);
-      final whiteDelta = delta(100);
-      return blackDelta < whiteDelta ? 0 : 100;
+      // No tone can meet the required contrast against either reference.
+      // Fall back to the core aesthetic rule (mid/dark surfaces pair with
+      // lighter companions) instead of comparing tone distances, which is
+      // decided by floating-point dust when refA/refB straddle neutral.
+      return lstarPrefersLighterPair(refA) ? 100 : 0;
     }
 
     final preferLighter = lstarPrefersLighterPair(refA);

@@ -114,6 +114,10 @@ class PaletteLerped extends Palette {
   @override
   Color get fillIcon => _lerp(a.fillIcon, b.fillIcon);
   @override
+  Color get fillHoveredIcon => _lerp(a.fillHoveredIcon, b.fillHoveredIcon);
+  @override
+  Color get fillSplashedIcon => _lerp(a.fillSplashedIcon, b.fillSplashedIcon);
+  @override
   Color get fillHoveredBorder =>
       _lerp(a.fillHoveredBorder, b.fillHoveredBorder);
   @override
@@ -127,6 +131,11 @@ class PaletteLerped extends Palette {
   Color get colorText => _lerp(a.colorText, b.colorText);
   @override
   Color get colorIcon => _lerp(a.colorIcon, b.colorIcon);
+  @override
+  Color get colorHoveredIcon => _lerp(a.colorHoveredIcon, b.colorHoveredIcon);
+  @override
+  Color get colorSplashedIcon =>
+      _lerp(a.colorSplashedIcon, b.colorSplashedIcon);
   @override
   Color get colorBorder => _lerp(a.colorBorder, b.colorBorder);
   @override
