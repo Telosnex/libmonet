@@ -15,10 +15,12 @@ Goal: make the same text role feel similarly tall across fonts without runtime r
 fontSize = roleBasePx * userScale * visualHeightScale(font)
 ```
 
-Current metric:
+Current metric (`x50+w15`):
 
 ```text
-visualHeight(font) = trimmed mean(rendered phrase ink heights)
+phraseHeight(font) = trimmed mean(rendered phrase ink heights)
+averageAdvance(font) = mean(phrase advance / phrase character count)
+visualHeight(font) = phraseHeight(font)^0.50 * xHeight(font)^0.50 * averageAdvance(font)^0.15
 visualHeightScale(font) = visualHeight(Roboto) / visualHeight(font)
 ```
 
@@ -46,7 +48,7 @@ lowercase/uppercase glyph percentiles
 derived phrase heights from per-letter bounds
 ```
 
-Actual rendered UI phrases were the best predictor.
+Actual rendered UI phrases were the best starting point, but phrase height alone made fonts with similar outer ink bounds but very different body zones look mismatched. The current metric blends rendered phrase height with x-height and a weak width/advance term.
 
 ## Useful test fonts
 
@@ -69,7 +71,7 @@ Roboto                 reference font
 - No runtime rasterization.
 - No `Picture.toImage` / `toByteData` in UI paths.
 - No perfect perceptual model for every decorative font.
-- No width/ink-area compensation in the main role scale yet.
+- No full ink-area/density compensation in the main role scale yet.
 - Monospace fonts are supported, but code/prose size matching should use x-height rather than normal role visual-height scaling.
 
 ## Maintenance

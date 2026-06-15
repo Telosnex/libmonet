@@ -2,8 +2,8 @@
 """Generate a Dart table of raster-measured Google Fonts visual heights.
 
 This intentionally uses rasterization offline so runtime theme construction can
-use a plain synchronous lookup. The runtime scale uses a trimmed mean of actual
-rendered phrase heights from a small body/UI corpus.
+use a plain synchronous lookup. The runtime scale uses a composite of actual
+rendered phrase heights, x-height, and average phrase character advance.
 """
 
 from __future__ import annotations
@@ -30,8 +30,10 @@ _VISUAL_HEIGHT_PHRASES = [
     "Sign in",
     "Start",
 ]
+_VISUAL_HEIGHT_X_WEIGHT = 0.50
+_VISUAL_HEIGHT_ADVANCE_WEIGHT = 0.15
 
-FontMetricRow = tuple[str, str, int, float, float, float, float, float, float]
+FontMetricRow = tuple[str, str, int, float, float, float, float, float, float, float]
 
 
 @dataclass(frozen=True)
@@ -242,6 +244,12 @@ class RasterMeasurer:
         top, bottom = bounds
         return bottom - top
 
+    def text_advance_em(self, text: str) -> float:
+        return self.probe.textlength(text, font=self.font) / self.font_size
+
+    def average_character_advance_em(self, text: str) -> float:
+        return self.text_advance_em(text) / max(1, len(text))
+
 
 def raster_text_height_em(path: Path, text: str, font_size: int) -> float | None:
     return RasterMeasurer(path, font_size).text_height_em(text)
@@ -270,6 +278,18 @@ def trimmed_mean(values: list[float], trim_fraction: float = 0.15) -> float:
     trim = int(len(ordered) * trim_fraction)
     trimmed = ordered[trim : len(ordered) - trim]
     return sum(trimmed or ordered) / len(trimmed or ordered)
+
+
+def visual_height_metric(
+    phrase_height: float,
+    x_height: float,
+    average_character_advance: float,
+) -> float:
+    return (
+        phrase_height ** (1.0 - _VISUAL_HEIGHT_X_WEIGHT)
+        * x_height**_VISUAL_HEIGHT_X_WEIGHT
+        * average_character_advance**_VISUAL_HEIGHT_ADVANCE_WEIGHT
+    )
 
 
 def normalize_family(family: str) -> str:
@@ -319,6 +339,10 @@ def measure_variant(
             for height in (measurer.text_height_em(phrase) for phrase in _VISUAL_HEIGHT_PHRASES)
             if height is not None
         ]
+        phrase_average_character_advances = [
+            measurer.average_character_advance_em(phrase)
+            for phrase in _VISUAL_HEIGHT_PHRASES
+        ]
         if (
             x_height is None
             or cap_height is None
@@ -337,7 +361,14 @@ def measure_variant(
         lowercase_p60_height = percentile(lowercase_heights, 0.60)
         uppercase_median_height = statistics.median(uppercase_heights)
         phrase_trimmed_mean_height = trimmed_mean(phrase_heights)
-        visual_height = phrase_trimmed_mean_height
+        phrase_average_character_advance = statistics.mean(
+            phrase_average_character_advances
+        )
+        visual_height = visual_height_metric(
+            phrase_trimmed_mean_height,
+            x_height,
+            phrase_average_character_advance,
+        )
         row: FontMetricRow = (
             normalize_family(variant.family),
             variant.family,
@@ -347,6 +378,7 @@ def measure_variant(
             lowercase_p60_height,
             uppercase_median_height,
             phrase_trimmed_mean_height,
+            phrase_average_character_advance,
             visual_height,
         )
         return MeasurementResult(variant.family, row, False, None, time.monotonic() - started)
@@ -363,6 +395,7 @@ def write_dart(
     reference_lowercase_p60_height: float,
     reference_uppercase_median_height: float,
     reference_phrase_height: float,
+    reference_phrase_average_character_advance: float,
     reference_visual_height: float,
     rows: list[FontMetricRow],
 ) -> None:
@@ -377,27 +410,38 @@ def write_dart(
         f"const kReferenceRasterCapHeightEm = {reference_cap_height:.6f};",
         f"const kReferenceRasterLowercaseP60HeightEm = {reference_lowercase_p60_height:.6f};",
         f"const kReferenceRasterUppercaseMedianHeightEm = {reference_uppercase_median_height:.6f};",
+        f"const kVisualHeightXWeight = {_VISUAL_HEIGHT_X_WEIGHT:.2f};",
+        f"const kVisualHeightAdvanceWeight = {_VISUAL_HEIGHT_ADVANCE_WEIGHT:.2f};",
         f"const kReferenceRasterPhraseHeightEm = {reference_phrase_height:.6f};",
+        "const kReferenceRasterAveragePhraseCharacterAdvanceEm = "
+        f"{reference_phrase_average_character_advance:.6f};",
         f"const kReferenceRasterVisualHeightEm = {reference_visual_height:.6f};",
         "",
         "const kRasterXHeightEmByFontFamily = <String, double>{",
     ]
-    for normalized, family, weight, x_height, _, _, _, _, _ in rows:
+    for normalized, family, weight, x_height, _, _, _, _, _, _ in rows:
         lines.append(f"  {dart_string(normalized)}: {x_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterCapHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, cap_height, _, _, _, _ in rows:
+    for normalized, family, weight, _, cap_height, _, _, _, _, _ in rows:
         lines.append(f"  {dart_string(normalized)}: {cap_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterLowercaseP60HeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, lowercase_p60_height, _, _, _ in rows:
+    for normalized, family, weight, _, _, lowercase_p60_height, _, _, _, _ in rows:
         lines.append(f"  {dart_string(normalized)}: {lowercase_p60_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterUppercaseMedianHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, _, uppercase_median_height, _, _ in rows:
+    for normalized, family, weight, _, _, _, uppercase_median_height, _, _, _ in rows:
         lines.append(f"  {dart_string(normalized)}: {uppercase_median_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterPhraseHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, _, _, phrase_height, _ in rows:
+    for normalized, family, weight, _, _, _, _, phrase_height, _, _ in rows:
         lines.append(f"  {dart_string(normalized)}: {phrase_height:.6f}, // {family} w{weight}")
+    lines.extend([
+        "};",
+        "",
+        "const kRasterAveragePhraseCharacterAdvanceEmByFontFamily = <String, double>{",
+    ])
+    for normalized, family, weight, _, _, _, _, _, average_advance, _ in rows:
+        lines.append(f"  {dart_string(normalized)}: {average_advance:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterVisualHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, _, _, _, visual_height in rows:
+    for normalized, family, weight, _, _, _, _, _, _, visual_height in rows:
         lines.append(f"  {dart_string(normalized)}: {visual_height:.6f}, // {family} w{weight}")
     lines.extend(
         [
@@ -431,6 +475,13 @@ def write_dart(
             "  return kRasterCapHeightEmByFontFamily[normalizeFontFamilyForFontMetrics(fontFamily)];",
             "}",
             "",
+            "double? rasterAveragePhraseCharacterAdvanceEmForFontFamily(String? fontFamily) {",
+            "  if (fontFamily == null) return null;",
+            "  return kRasterAveragePhraseCharacterAdvanceEmByFontFamily[",
+            "    normalizeFontFamilyForFontMetrics(fontFamily)",
+            "  ];",
+            "}",
+            "",
             "double? rasterVisualHeightEmForFontFamily(String? fontFamily) {",
             "  if (fontFamily == null) return null;",
             "  return kRasterVisualHeightEmByFontFamily[normalizeFontFamilyForFontMetrics(fontFamily)];",
@@ -438,8 +489,10 @@ def write_dart(
             "",
             "/// Scale for normal text-theme roles relative to the reference font.",
             "///",
-            "/// This is phrase-height based and intended for display/headline/body/label",
-            "/// role sizing, not for matching monospace code to prose.",
+            "/// Uses a composite font-height metric based on rendered phrase height,",
+            "/// x-height, and average phrase character advance. Intended for",
+            "/// display/headline/body/label role sizing, not for matching monospace",
+            "/// code to prose.",
             "double visualHeightScaleForFontFamily(String? fontFamily) {",
             "  final visualHeightEm = rasterVisualHeightEmForFontFamily(fontFamily);",
             "  if (visualHeightEm == null || visualHeightEm <= 0) return 1.0;",
@@ -542,6 +595,7 @@ def main() -> None:
         reference[6],
         reference[7],
         reference[8],
+        reference[9],
         rows,
     )
     print(f"wrote {args.output} with {len(rows)} visual-height entries", flush=True)
@@ -550,7 +604,12 @@ def main() -> None:
     print(f"{args.reference_family} lowercase-p60-height: {reference[5]:.6f}em", flush=True)
     print(f"{args.reference_family} uppercase-median-height: {reference[6]:.6f}em", flush=True)
     print(f"{args.reference_family} phrase-height: {reference[7]:.6f}em", flush=True)
-    print(f"{args.reference_family} visual-height: {reference[8]:.6f}em", flush=True)
+    print(
+        f"{args.reference_family} average-phrase-character-advance: "
+        f"{reference[8]:.6f}em",
+        flush=True,
+    )
+    print(f"{args.reference_family} visual-height: {reference[9]:.6f}em", flush=True)
 
 
 if __name__ == "__main__":

@@ -1523,9 +1523,10 @@ class MonetThemeData {
 
     // Normalize apparent text size across fonts. The table is generated
     // offline by rasterizing a small body/UI phrase corpus for each Google
-    // Font, then using a trimmed mean of actual rendered phrase heights as the
-    // visual-height metric. Theme construction stays synchronous and does not
-    // depend on TextPainter line boxes or runtime pixel readback.
+    // Font, then using a composite of rendered phrase height, x-height, and a
+    // weak average-advance term as the visual-height metric. Theme construction
+    // stays synchronous and does not depend on TextPainter line boxes or runtime
+    // pixel readback.
     final displayScale = visualHeightScaleForFontFamily(
       tt.displayMedium!.fontFamily,
     );
