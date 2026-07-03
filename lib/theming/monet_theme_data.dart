@@ -324,20 +324,20 @@ class MonetThemeData {
       dividerTheme: dividerThemeData(primary),
       drawerTheme: drawerThemeData(primary),
       dropdownMenuTheme: dropdownMenuThemeData(primary, textTheme),
-      elevatedButtonTheme: elevatedButtonTheme(primary),
+      elevatedButtonTheme: elevatedButtonTheme(colors: primary, scale: scale),
       expansionTileTheme: expansionTileThemeData(primary),
-      filledButtonTheme: filledButtonTheme(primary),
+      filledButtonTheme: filledButtonTheme(colors: primary, scale: scale),
       floatingActionButtonTheme: fabThemeData(primary, textTheme),
       iconButtonTheme: iconButtonThemeData(primary),
       inputDecorationTheme: inputDecorationTheme(primary, textTheme),
       listTileTheme: listTileThemeData(primary, textTheme),
       menuBarTheme: menuBarThemeData(primary),
-      menuButtonTheme: menuButtonThemeData(primary),
+      menuButtonTheme: menuButtonThemeData(colors: primary, scale: scale),
       menuTheme: menuThemeData(primary),
       navigationBarTheme: navigationBarThemeData(primary, textTheme),
       navigationDrawerTheme: navigationDrawerThemeData(primary, textTheme),
       navigationRailTheme: navigationRailThemeData(primary, scale, textTheme),
-      outlinedButtonTheme: outlinedButtonTheme(primary),
+      outlinedButtonTheme: outlinedButtonTheme(colors: primary, scale: scale),
       popupMenuTheme: popupMenuThemeData(primary, textTheme),
       progressIndicatorTheme: progressIndicatorThemeData(primary),
       radioTheme: radioThemeData(primary),
@@ -350,7 +350,7 @@ class MonetThemeData {
       tabBarTheme: createTabBarTheme(primary, textTheme),
       textButtonTheme: textButtonTheme(primary),
       textSelectionTheme: textSelectionThemeData(primary),
-      timePickerTheme: timePickerThemeData(primary, textTheme),
+      timePickerTheme: timePickerThemeData(primary, textTheme, scale),
       toggleButtonsTheme: toggleButtonsThemeData(primary, textTheme),
       tooltipTheme: tooltipThemeData(primary, textTheme),
     );
@@ -672,8 +672,13 @@ class MonetThemeData {
     );
   }
 
-  static ElevatedButtonThemeData elevatedButtonTheme(Palette colors) {
-    return ElevatedButtonThemeData(style: fillButtonStyle(colors));
+  static ElevatedButtonThemeData elevatedButtonTheme({
+    required Palette colors,
+    required double scale,
+  }) {
+    return ElevatedButtonThemeData(
+      style: fillButtonStyle(colors, scale: scale),
+    );
   }
 
   static ExpansionTileThemeData expansionTileThemeData(Palette colors) {
@@ -701,8 +706,11 @@ class MonetThemeData {
     );
   }
 
-  static FilledButtonThemeData filledButtonTheme(Palette colors) {
-    return FilledButtonThemeData(style: fillButtonStyle(colors));
+  static FilledButtonThemeData filledButtonTheme({
+    required Palette colors,
+    required double scale,
+  }) {
+    return FilledButtonThemeData(style: fillButtonStyle(colors, scale: scale));
   }
 
   static FloatingActionButtonThemeData fabThemeData(
@@ -815,9 +823,9 @@ class MonetThemeData {
     );
   }
 
-  static MenuButtonThemeData menuButtonThemeData(Palette colors) {
+  static MenuButtonThemeData menuButtonThemeData({required Palette colors, required double scale}) {
     return MenuButtonThemeData(
-      style: textButtonStyle(colors).copyWith(
+      style: textButtonStyle(colors, scale: scale).copyWith(
         padding: WidgetStateProperty.all(const EdgeInsets.all(4)),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -959,8 +967,13 @@ class MonetThemeData {
     );
   }
 
-  static OutlinedButtonThemeData outlinedButtonTheme(Palette colors) {
-    return OutlinedButtonThemeData(style: outlineButtonStyle(colors));
+  static OutlinedButtonThemeData outlinedButtonTheme({
+    required Palette colors,
+    required double scale,
+  }) {
+    return OutlinedButtonThemeData(
+      style: outlineButtonStyle(colors, scale: scale),
+    );
   }
 
   static PopupMenuThemeData popupMenuThemeData(
@@ -1274,7 +1287,7 @@ class MonetThemeData {
   }
 
   TextButtonThemeData textButtonTheme(Palette colors) {
-    return TextButtonThemeData(style: textButtonStyle(colors));
+    return TextButtonThemeData(style: textButtonStyle(colors, scale: scale));
   }
 
   static TextSelectionThemeData textSelectionThemeData(Palette colors) {
@@ -1290,12 +1303,13 @@ class MonetThemeData {
 
   static TimePickerThemeData timePickerThemeData(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    double scale = 1.0,
+  ]) {
     return TimePickerThemeData(
       backgroundColor: colors.background,
-      cancelButtonStyle: outlineButtonStyle(colors),
-      confirmButtonStyle: outlineButtonStyle(colors),
+      cancelButtonStyle: outlineButtonStyle(colors, scale: scale),
+      confirmButtonStyle: outlineButtonStyle(colors, scale: scale),
       dayPeriodBorderSide: BorderSide(color: colors.fill, width: 2),
 
       dayPeriodShape: RoundedRectangleBorder(

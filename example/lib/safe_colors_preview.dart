@@ -172,7 +172,8 @@ class PalettePreviewRow extends StatelessWidget {
   }
 
   Widget _paletteRow(BuildContext context, Palette colors) {
-    final textButtonStyleBase = fillButtonStyle(palette);
+    final textButtonStyleBase =
+        fillButtonStyle(palette, scale: MonetTheme.of(context).scale);
     final textButtonStyle = textButtonStyleBase.copyWith(
         textStyle: WidgetStateProperty.resolveWith((states) {
       final base = textButtonStyleBase.textStyle?.resolve(states);
@@ -194,12 +195,14 @@ class PalettePreviewRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FilledButton(
-                    style: colorButtonStyle(colors),
+                    style: colorButtonStyle(colors,
+                        scale: MonetTheme.of(context).scale),
                     onPressed: () {},
                     child: const Text('Color')),
                 const HorizontalPadding(),
                 FilledButton(
-                  style: fillButtonStyle(colors),
+                  style: fillButtonStyle(colors,
+                      scale: MonetTheme.of(context).scale),
                   onPressed: () {},
                   child: const Text('Fill'),
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:libmonet/util/size_scale.dart';
 
 // Resolve Material states to our 3-state model and return a value per state.
 // All parameters are lazy to avoid computing expensive color values until needed.
@@ -24,8 +25,17 @@ WidgetStateProperty<T> widgetPropertyByState<T>({
   });
 }
 
-Size get minimumSize =>
-    const Size(MonetThemeData.touchSize, MonetThemeData.touchSize);
+/// Minimum touch-target size for buttons built from the helpers in this
+/// file, scaled by the user's UI-size ("scale") preference.
+///
+/// [scale] should come from `MonetTheme.of(context).scale`. It defaults to
+/// 1.0 (today's fixed [MonetThemeData.touchSize] square) so existing call
+/// sites that don't pass a scale keep behaving exactly as before.
+Size minimumSizeForScale(double scale) {
+  final side = MonetThemeData.touchSize * scale.sizeScale;
+  return Size(side, side);
+}
+
 Size get maximumSize => const Size(double.infinity, double.infinity);
 EdgeInsetsGeometry get padding {
   final isDesktop = !kIsWeb &&
@@ -42,6 +52,7 @@ ButtonStyle backgroundButtonStyle(
   bool showBorder = false,
   TextStyle? textStyle,
   double borderWidth = 2,
+  required double scale,
 }) {
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
@@ -63,7 +74,7 @@ ButtonStyle backgroundButtonStyle(
         hover: () => sc.backgroundHoveredFill,
         splash: () => sc.backgroundSplashedFill),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
-    minimumSize: WidgetStatePropertyAll(minimumSize),
+    minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
     side: showBorder
@@ -91,6 +102,7 @@ ButtonStyle fillButtonStyle(
   bool showBorder = true,
   TextStyle? textStyle,
   double borderWidth = 2,
+  required double scale,
 }) {
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
@@ -108,7 +120,7 @@ ButtonStyle fillButtonStyle(
         hover: () => sc.fillHoveredIcon,
         splash: () => sc.fillSplashedIcon),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
-    minimumSize: WidgetStatePropertyAll(minimumSize),
+    minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
     side: showBorder
@@ -136,6 +148,7 @@ ButtonStyle colorButtonStyle(
   bool showBorder = true,
   TextStyle? textStyle,
   double borderWidth = 2,
+  required double scale,
 }) {
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
@@ -154,7 +167,7 @@ ButtonStyle colorButtonStyle(
         hover: () => sc.colorHoveredIcon,
         splash: () => sc.colorSplashedIcon),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
-    minimumSize: WidgetStatePropertyAll(minimumSize),
+    minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
     side: showBorder
@@ -182,6 +195,7 @@ ButtonStyle colorButtonStyle(
 ButtonStyle textButtonStyle(
   Palette sc, {
   TextStyle? textStyle,
+  required double scale,
 }) {
   return ButtonStyle(
     visualDensity: VisualDensity.compact,
@@ -199,7 +213,7 @@ ButtonStyle textButtonStyle(
       splash: () => sc.textSplashed,
     ),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
-    minimumSize: WidgetStatePropertyAll(minimumSize),
+    minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
   );
@@ -247,9 +261,13 @@ ButtonStyle outlineButtonStyle(
   Palette sc, {
   TextStyle? textStyle,
   double borderWidth = 2,
+  required double scale,
 }) {
   final base = backgroundButtonStyle(sc,
-      showBorder: true, textStyle: textStyle, borderWidth: borderWidth);
+      showBorder: true,
+      textStyle: textStyle,
+      borderWidth: borderWidth,
+      scale: scale);
   return base.copyWith(
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
   );
