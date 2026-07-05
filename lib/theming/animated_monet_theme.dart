@@ -1227,6 +1227,19 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
   late MonetThemeData _published;
   late final MonetPaintColors _paintColors;
   late SimAnimationController<_ThemeMotionState> _channel;
+
+  /// Timestamp of the last inherited-theme publish, used by [_shouldPublish]
+  /// to rate-limit publishes.
+  ///
+  /// Deliberately sourced from [SchedulerBinding.currentSystemFrameTimeStamp]
+  /// (the raw stamp of the most recent frame), *not*
+  /// [SchedulerBinding.currentFrameTimeStamp]: the latter is only valid while
+  /// a frame is being produced, and [_handleStatus] can run in a post-frame
+  /// microtask (the ticker's `TickerFuture.whenCompleteOrCancel` delivers the
+  /// completed status asynchronously), where reading it throws a null-check
+  /// error in release builds. Only durations *between* stamps matter here, so
+  /// the raw, always-readable stamp is sufficient — but every read site must
+  /// use the same clock.
   Duration? _lastPublishedAt;
   MonetThemeData? _lastTickValue;
 
@@ -1301,7 +1314,7 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
         _lastTickValue = widget.data;
         _paintColors.value = widget.data;
         _publish(widget.data, force: true);
-        _lastPublishedAt = SchedulerBinding.instance.currentFrameTimeStamp;
+        _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
         return;
       }
 
@@ -1368,7 +1381,7 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
             _published = _end;
           });
         }
-        _lastPublishedAt = SchedulerBinding.instance.currentFrameTimeStamp;
+        _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
         widget.onEnd?.call();
         return;
       }
@@ -1383,7 +1396,7 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
         // graph. The paint bus carries the visible intermediate color.
         _paintColors.value = current;
       }
-      _lastPublishedAt = SchedulerBinding.instance.currentFrameTimeStamp;
+      _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
     } else if (interpolationChanged) {
       final value = _currentThemeData();
       if (_publishesIntermediateInheritedThemes) {
@@ -1423,14 +1436,14 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     _lastTickValue = value;
     _paintColors.value = value;
     if (_shouldPublish() || _channel.isCompleted) {
-      _lastPublishedAt = SchedulerBinding.instance.currentFrameTimeStamp;
+      _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
       _publish(value);
     }
   }
 
   void _handleStatus(AnimationStatus status) {
     if (status != AnimationStatus.completed) return;
-    _lastPublishedAt = SchedulerBinding.instance.currentFrameTimeStamp;
+    _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
     _lastTickValue = _end;
     _publish(_end, force: true);
     widget.onEnd?.call();
@@ -1445,7 +1458,7 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     final maxUpdates = widget.maxUpdatesPerSecond;
     if (maxUpdates == null) return true;
     if (maxUpdates <= 0) return false;
-    final now = SchedulerBinding.instance.currentFrameTimeStamp;
+    final now = SchedulerBinding.instance.currentSystemFrameTimeStamp;
     final last = _lastPublishedAt;
     if (last == null) return true;
     final minInterval = Duration(
