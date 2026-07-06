@@ -25,9 +25,15 @@ class HarmonyExpansionTile extends HookWidget {
   Widget build(BuildContext context) {
     final companions = useState(1);
     final balanced = useState(false);
+    final tonePolicy = useState(HarmonyTonePolicy.preserveTone);
 
     final seed = Hct.fromColor(color);
-    final set = harmony(seed, companions.value + 1, balanced: balanced.value);
+    final set = harmony(
+      seed,
+      companions.value + 1,
+      balanced: balanced.value,
+      tonePolicy: tonePolicy.value,
+    );
     final argbs = [for (final c in set) c.toInt()];
     final fractions = _mixFractions(argbs);
     final mixArgb = _additiveMix(argbs, fractions);
@@ -87,6 +93,41 @@ class HarmonyExpansionTile extends HookWidget {
                 onChanged: (value) {
                   balanced.value = value;
                 },
+              ),
+              const SizedBox(height: 4),
+              Text('Tone policy', style: captionStyle),
+              const SizedBox(height: 4),
+              SizedBox(
+                width: double.infinity,
+                child: SegmentedButton<HarmonyTonePolicy>(
+                  segments: const [
+                    ButtonSegment(
+                      value: HarmonyTonePolicy.preserveTone,
+                      label: Text('Preserve'),
+                    ),
+                    ButtonSegment(
+                      value: HarmonyTonePolicy.fitUvChroma,
+                      label: Text('Fit u\u2032v\u2032'),
+                    ),
+                    ButtonSegment(
+                      value: HarmonyTonePolicy.fitHctChroma,
+                      label: Text('Fit HCT'),
+                    ),
+                    ButtonSegment(
+                      value: HarmonyTonePolicy.reflectTone,
+                      label: Text('Reflect'),
+                    ),
+                  ],
+                  selected: {tonePolicy.value},
+                  onSelectionChanged: (selection) {
+                    tonePolicy.value = selection.first;
+                  },
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                _tonePolicyDescription(tonePolicy.value),
+                style: captionStyle,
               ),
               const VerticalPadding(),
               SizedBox(
@@ -159,6 +200,17 @@ class HarmonyExpansionTile extends HookWidget {
     );
   }
 }
+
+String _tonePolicyDescription(HarmonyTonePolicy policy) => switch (policy) {
+      HarmonyTonePolicy.preserveTone =>
+        'Keep L* fixed; companions may lose chroma to stay at this tone.',
+      HarmonyTonePolicy.fitUvChroma =>
+        'Move L* only as far as needed to keep the same u\u2032v\u2032 strength.',
+      HarmonyTonePolicy.fitHctChroma =>
+        'Move L* to the closest tone that can keep the same HCT chroma.',
+      HarmonyTonePolicy.reflectTone =>
+        'Use opposite L* for companions: bright colors get dark complements.',
+    };
 
 /// Mixing fractions (area weights) so the set's additive mixture is neutral:
 /// the u'v' mixture weight of color i is f_i * Y_i / v'_i, and evenly spaced

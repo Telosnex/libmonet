@@ -48,8 +48,10 @@ double _hullMiss(List<Hct> colors) {
       var t = len2 < 1e-12 ? 0.0 : ((wu - pu) * du + (wv - pv) * dv) / len2;
       t = t.clamp(0.0, 1.0);
       final xu = pu + t * du, xv = pv + t * dv;
-      best = math.min(best,
-          math.sqrt((wu - xu) * (wu - xu) + (wv - xv) * (wv - xv)));
+      best = math.min(
+        best,
+        math.sqrt((wu - xu) * (wu - xu) + (wv - xv) * (wv - xv)),
+      );
     }
   }
   return best;
@@ -57,18 +59,19 @@ double _hullMiss(List<Hct> colors) {
 
 void main() {
   group('uv coordinates', () {
-    test('roundtrip: hctFromUv(tone, uvHue, uvChroma) recovers the color',
-        () {
+    test('roundtrip: hctFromUv(tone, uvHue, uvChroma) recovers the color', () {
       for (var h = 0; h < 360; h += 20) {
         for (final (chroma, tone) in [(60.0, 50.0), (24.0, 75.0)]) {
           final x = Hct.from(h.toDouble(), chroma, tone);
           final back = hctFromUv(x.tone, x.uvHue, x.uvChroma);
           final (xu, xv) = uvOfArgb(x.toInt())!;
           final (bu, bv) = uvOfArgb(back.toInt())!;
-          final d = math.sqrt(
-              (xu - bu) * (xu - bu) + (xv - bv) * (xv - bv));
-          expect(d, lessThan(0.004),
-              reason: 'H$h C$chroma T$tone roundtrip drifted $d');
+          final d = math.sqrt((xu - bu) * (xu - bu) + (xv - bv) * (xv - bv));
+          expect(
+            d,
+            lessThan(0.004),
+            reason: 'H$h C$chroma T$tone roundtrip drifted $d',
+          );
           expect(back.tone, closeTo(x.tone, 0.5));
         }
       }
@@ -89,8 +92,10 @@ void main() {
     test('harmony(x, 2)[1] is the afterimage complement, bit-identical', () {
       for (var h = 0; h < 360; h += 15) {
         final x = Hct.from(h.toDouble(), 60.0, 50.0);
-        expect(harmony(x, 2)[1].toInt(),
-            equals(afterimageComplement(x).toInt()));
+        expect(
+          harmony(x, 2)[1].toInt(),
+          equals(afterimageComplement(x).toInt()),
+        );
       }
     });
 
@@ -103,11 +108,28 @@ void main() {
       for (final n in [3, 4, 6]) {
         for (var h = 0; h < 360; h += 30) {
           final x = Hct.from(h.toDouble(), 70.0, 55.0);
-          expect(_hullMiss(harmony(x, n)), lessThan(1e-6),
-              reason: 'raw n=$n H$h');
-          expect(_hullMiss(harmony(x, n, balanced: true)), lessThan(1e-6),
-              reason: 'balanced n=$n H$h');
+          expect(
+            _hullMiss(harmony(x, n)),
+            lessThan(1e-6),
+            reason: 'raw n=$n H$h',
+          );
+          expect(
+            _hullMiss(harmony(x, n, balanced: true)),
+            lessThan(1e-6),
+            reason: 'balanced n=$n H$h',
+          );
         }
+      }
+    });
+
+    test('fitUvChroma can still mix to neutral', () {
+      for (final n in [3, 4]) {
+        final set = harmony(
+          Hct.from(100.0, 70.0, 55.0),
+          n,
+          tonePolicy: HarmonyTonePolicy.fitUvChroma,
+        );
+        expect(_hullMiss(set), lessThan(0.006), reason: 'n=$n');
       }
     });
 
@@ -119,10 +141,53 @@ void main() {
       }
     });
 
-    test('members preserve tone', () {
+    test('members preserve tone by default', () {
       for (final c in harmony(Hct.from(27.0, 80.0, 40.0), 3)) {
         expect(c.tone, closeTo(40.0, 0.5));
       }
+    });
+
+    test('reflectTone renders companions at inverse tone', () {
+      final seed = Hct.from(100.0, 80.0, 90.0);
+      final complement = harmony(
+        seed,
+        2,
+        tonePolicy: HarmonyTonePolicy.reflectTone,
+      )[1];
+      expect(complement.tone, closeTo(100.0 - seed.tone, 0.5));
+    });
+
+    test('fitUvChroma moves tone to preserve uv strength', () {
+      final seed = Hct.from(100.0, 80.0, 90.0);
+      final preserve = harmony(seed, 2)[1];
+      final fit = harmony(
+        seed,
+        2,
+        tonePolicy: HarmonyTonePolicy.fitUvChroma,
+      )[1];
+      expect(fit.tone, lessThan(seed.tone - 5.0));
+      expect((fit.uvChroma - seed.uvChroma).abs(), lessThan(0.004));
+      expect(
+        (fit.uvChroma - seed.uvChroma).abs(),
+        lessThan((preserve.uvChroma - seed.uvChroma).abs()),
+      );
+    });
+
+    test('fitHctChroma chooses uv-derived HCT hue, then fits C in tone', () {
+      final seed = Hct.fromInt(0xffffc72c);
+      final preserve = harmony(seed, 2)[1];
+      final fit = harmony(
+        seed,
+        2,
+        tonePolicy: HarmonyTonePolicy.fitHctChroma,
+      )[1];
+      expect(fit.tone, lessThan(seed.tone - 5.0));
+      expect(fit.hue, closeTo(preserve.hue, 1.0));
+      expect((fit.chroma - seed.chroma).abs(), lessThan(0.5));
+      expect(
+        (fit.chroma - seed.chroma).abs(),
+        lessThan((preserve.chroma - seed.chroma).abs()),
+      );
     });
 
     test('achromatic input returns copies', () {
@@ -159,12 +224,14 @@ void main() {
       // Unwrap angles relative to the seed's direction.
       final base = x.uvHue;
       final rel = [
-        for (final c in set)
-          ((c.uvHue - base + 540.0) % 360.0) - 180.0,
+        for (final c in set) ((c.uvHue - base + 540.0) % 360.0) - 180.0,
       ];
       for (var i = 1; i < rel.length; i++) {
-        expect(rel[i], greaterThan(rel[i - 1] - 1.0),
-            reason: 'angles should not regress');
+        expect(
+          rel[i],
+          greaterThan(rel[i - 1] - 1.0),
+          reason: 'angles should not regress',
+        );
       }
     });
 
