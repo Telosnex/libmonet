@@ -47,7 +47,7 @@ const _fixtures = [
     name: 'curated-lifestyle-7lQlYxH0Ljs-unsplash.jpg',
     quantizerFingerprint:
         'colors=32 total=6144 top=#CDCEC8:1110,#CACBC5:720,#12130D:462,#0E0F0A:444,#D1D2CC:421,#C7C8C2:357,#151610:323,#161811:272',
-    triadHexes: ['#CDCEC8', '#CFCEC6', '#CCCECC'],
+    triadHexes: ['#CDCEC8', '#CECEC7', '#D2CDC4'],
   ),
   _WallpaperFixture(
     name: 'hanna-lazar-CXT0TZcpyyE-unsplash.jpg',
@@ -121,7 +121,7 @@ const _fixtures = [
     maxColors: 256,
     quantizerFingerprint:
         'colors=236 total=6144 top=#CCCDC7:555,#CBCCC6:456,#CECFC9:434,#12130E:291,#D0D1CB:255,#0F110B:213,#C9CAC4:179,#C7C8C2:170',
-    triadHexes: ['#CCCDC7', '#CECDC5', '#CBCDCB'],
+    triadHexes: ['#CCCDC7', '#CCCDC7', '#D4CBC5'],
   ),
   _WallpaperFixture(
     name: 'lorin-both-2ScC2nkYYDk-unsplash.jpg',

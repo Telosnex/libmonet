@@ -33,9 +33,11 @@ export 'extract/scorer_triad.dart';
 export 'extract/service/quantize_service.dart';
 
 // Visual effects
+export 'effects/afterimage.dart';
 export 'effects/opacity.dart';
 export 'effects/shadows.dart';
 export 'effects/temperature.dart';
+export 'effects/uv_harmony.dart';
 
 // Fonts
 export 'fonts/font_height_equalizer.g.dart';
