@@ -11,6 +11,7 @@ import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/color_picker.dart';
 import 'package:monet_studio/gamut_chart.dart';
+import 'package:monet_studio/harmony_expansion_tile.dart';
 import 'package:monet_studio/components_widget.dart';
 import 'package:monet_studio/contrast_expansion_tile.dart';
 import 'package:monet_studio/extracted_widget.dart';
@@ -246,6 +247,14 @@ class Home extends HookConsumerWidget {
                                 const VerticalPadding(),
                                 ScalingExpansionTile(
                                   scaleValueNotifier: scale,
+                                ),
+                                const VerticalPadding(),
+                                HarmonyExpansionTile(
+                                  color: color.value,
+                                  onColorChanged: (newColor) {
+                                    color.value = newColor;
+                                    backgroundImage.value = null;
+                                  },
                                 ),
                                 const VerticalPadding(),
                                 const GamutChart(initialHue: 27.0),
