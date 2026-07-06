@@ -146,11 +146,7 @@ class Cam16 {
     // hue
     final atan2 = math.atan2(b, a);
     final atanDegrees = atan2 * 180.0 / math.pi;
-    final hue = atanDegrees < 0
-        ? atanDegrees + 360.0
-        : atanDegrees >= 360
-            ? atanDegrees - 360
-            : atanDegrees;
+    final hue = sanitizeDegreesDouble(atanDegrees);
     final hueRadians = hue * math.pi / 180.0;
     assert(hue >= 0 && hue < 360, 'hue was really $hue');
 
@@ -233,10 +229,7 @@ class Cam16 {
     final m = math.sqrt(a * a + b * b);
     final M = (math.exp(m * 0.0228) - 1.0) / 0.0228;
     final c = M / viewingConditions.fLRoot;
-    var h = math.atan2(b, a) * (180.0 / math.pi);
-    if (h < 0.0) {
-      h += 360.0;
-    }
+    final h = sanitizeDegreesDouble(math.atan2(b, a) * (180.0 / math.pi));
     final j = jstar / (1 - (jstar - 100) * 0.007);
 
     return Cam16.fromJchInViewingConditions(j, c, h, viewingConditions);

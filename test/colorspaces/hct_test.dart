@@ -52,6 +52,13 @@ void main() {
     expect(100.0, closeTo(yFromLstar(100.0), 0.001));
   });
 
+  test('sanitizeDegreesDouble keeps hues in the half-open interval', () {
+    expect(sanitizeDegreesDouble(360.0), equals(0.0));
+    expect(sanitizeDegreesDouble(-1e-14), equals(0.0));
+    expect(sanitizeDegreesDouble(-360.0), equals(0.0));
+    expect(sanitizeDegreesDouble(720.0), equals(0.0));
+  });
+
   test('cam_red', () {
     final cam = Cam16.fromInt(red);
     expect(46.445, closeTo(cam.j, 0.001));

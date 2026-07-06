@@ -274,6 +274,11 @@ double sanitizeDegreesDouble(double degrees) {
   if (degrees < 0) {
     degrees = degrees + 360.0;
   }
+  // Tiny negative inputs can round to exactly 360.0 after the addition above;
+  // hue constructors require the half-open interval [0, 360).
+  if (degrees >= 360.0) {
+    return 0.0;
+  }
   return degrees;
 }
 

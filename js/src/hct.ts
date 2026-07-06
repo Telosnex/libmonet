@@ -15,7 +15,13 @@ export type ColorModel = 'cam16' | 'cam16v11' | 'oklch';
 export const defaultColorModel: ColorModel = 'cam16v11';
 
 function signum(x: number): number { return x < 0 ? -1 : x === 0 ? 0 : 1; }
-export function sanitizeDegreesDouble(degrees: number): number { degrees %= 360; return degrees < 0 ? degrees + 360 : degrees; }
+export function sanitizeDegreesDouble(degrees: number): number {
+  degrees %= 360;
+  if (degrees < 0) degrees += 360;
+  // Tiny negative inputs can round to exactly 360 after the addition above;
+  // hue constructors require the half-open interval [0, 360).
+  return degrees >= 360 ? 0 : degrees;
+}
 export function differenceDegrees(a: number, b: number): number { return 180.0 - Math.abs(Math.abs(a - b) - 180.0); }
 
 export function linearized(srgbNorm: number): number {
@@ -311,7 +317,7 @@ export class Hct {
     const rA = signum(rD) * 400 * rAF / (rAF + 27.13), gA = signum(gD) * 400 * gAF / (gAF + 27.13), bA = signum(bD) * 400 * bAF / (bAF + 27.13);
     const a = (11 * rA - 12 * gA + bA) / 11; const bb = (rA + gA - 2 * bA) / 9;
     const atan = Math.atan2(bb, a); const deg = atan * 180 / Math.PI;
-    this.hue = deg < 0 ? deg + 360 : deg >= 360 ? deg - 360 : deg;
+    this.hue = sanitizeDegreesDouble(deg);
     if (colorModel === 'cam16') {
       const u = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0;
       const p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0;
