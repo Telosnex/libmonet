@@ -62,25 +62,29 @@ class _CellData {
 // =============================================================================
 
 _CellData _computeCell(double hue, double chroma, double tone) {
+  final sanitizedHue = sanitizeDegreesDouble(hue);
+
   // Solve in sRGB
   final sLinear =
-      HctSolver.solveToLinrgb(hue, chroma, tone, gamut: Gamut.srgb);
+      HctSolver.solveToLinrgb(sanitizedHue, chroma, tone, gamut: Gamut.srgb);
   final sRound = _roundtrip(sLinear.$1, sLinear.$2, sLinear.$3, Gamut.srgb);
   final inSrgb = chroma < 0.5 || (sRound.chroma >= chroma - 1.5);
-  final (sDr, sDg, sDb) =
-      HctSolver.solveToDisplayRgb(hue, chroma, tone, gamut: Gamut.srgb);
+  final (sDr, sDg, sDb) = HctSolver.solveToDisplayRgb(
+      sanitizedHue, chroma, tone,
+      gamut: Gamut.srgb);
   final srgbColor =
       inSrgb ? Color.from(alpha: 1.0, red: sDr, green: sDg, blue: sDb) : null;
 
   // Solve in Display P3
-  final pLinear =
-      HctSolver.solveToLinrgb(hue, chroma, tone, gamut: Gamut.displayP3);
+  final pLinear = HctSolver.solveToLinrgb(sanitizedHue, chroma, tone,
+      gamut: Gamut.displayP3);
   final pRound =
       _roundtrip(pLinear.$1, pLinear.$2, pLinear.$3, Gamut.displayP3);
   final inP3 = chroma < 0.5 || (pRound.chroma >= chroma - 1.5);
   Color? p3Color;
   if (inP3) {
-    final (pDr, pDg, pDb) = HctSolver.solveToDisplayRgb(hue, chroma, tone,
+    final (pDr, pDg, pDb) = HctSolver.solveToDisplayRgb(
+        sanitizedHue, chroma, tone,
         gamut: Gamut.displayP3);
     p3Color = Color.from(
       alpha: 1.0,
@@ -92,7 +96,7 @@ _CellData _computeCell(double hue, double chroma, double tone) {
   }
 
   return _CellData(
-    requestedHue: hue,
+    requestedHue: sanitizedHue,
     requestedChroma: chroma,
     requestedTone: tone,
     srgbColor: srgbColor,
@@ -119,7 +123,11 @@ _CellData _computeCell(double hue, double chroma, double tone) {
   final z = linR * m[2][0] + linG * m[2][1] + linB * m[2][2];
   final cam =
       Cam16.fromXyzInViewingConditions(x, y, z, Cam16ViewingConditions.sRgb);
-  return (hue: cam.hue, chroma: cam.chroma, tone: lstarFromY(y));
+  return (
+    hue: sanitizeDegreesDouble(cam.hue),
+    chroma: cam.chroma,
+    tone: lstarFromY(y),
+  );
 }
 
 // =============================================================================
@@ -180,7 +188,8 @@ class GamutChart extends HookConsumerWidget {
                           value: hue.value,
                           min: 0,
                           max: 360,
-                          onChanged: (v) => hue.value = v,
+                          onChanged: (v) =>
+                              hue.value = v >= 360.0 ? 0.0 : v,
                         ),
                       ),
                     ),
@@ -191,7 +200,7 @@ class GamutChart extends HookConsumerWidget {
               // The chart
               LayoutBuilder(builder: (context, constraints) {
                 return _GamutChartBody(
-                  hue: hue.value,
+                  hue: sanitizeDegreesDouble(hue.value),
                   maxChroma: 150.0,
                   width: constraints.maxWidth,
                 );
