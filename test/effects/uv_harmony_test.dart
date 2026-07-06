@@ -173,6 +173,30 @@ void main() {
       );
     });
 
+    test('fitUvChroma projects impossible chromaticities to nearest sRGB', () {
+      // Pure red's complement chromaticity is outside the sRGB triangle at
+      // every tone; fitUvChroma should get strictly closer to it than the
+      // preserve-tone ray clamp does.
+      final seed = Hct.fromInt(0xffff0000);
+      final (wu, wv) = whiteUvPoint;
+      final s = uvOfArgb(seed.toInt())!;
+      final target = (2 * wu - s.$1, 2 * wv - s.$2);
+      double distSquared(Hct c) {
+        final p = uvOfArgb(c.toInt())!;
+        final du = p.$1 - target.$1, dv = p.$2 - target.$2;
+        return du * du + dv * dv;
+      }
+
+      final preserve = harmony(seed, 2)[1];
+      final fit = harmony(
+        seed,
+        2,
+        tonePolicy: HarmonyTonePolicy.fitUvChroma,
+      )[1];
+      expect(distSquared(fit), lessThan(distSquared(preserve)));
+      expect(fit.uvChroma, greaterThan(preserve.uvChroma));
+    });
+
     test('fitHctChroma chooses uv-derived HCT hue, then fits C in tone', () {
       final seed = Hct.fromInt(0xffffc72c);
       final preserve = harmony(seed, 2)[1];

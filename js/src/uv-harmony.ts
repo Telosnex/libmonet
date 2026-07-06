@@ -94,6 +94,51 @@ function fitToneForUv(u: number, v: number, preferredTone: number): number | nul
   return Math.min(Math.min(100, Math.max(0, preferredTone)), maxTone);
 }
 
+// Chromaticities of the sRGB primaries: corners of the triangle of
+// chromaticities that sRGB colors can have.
+const uvRed = uvOfArgb(0xffff0000)!;
+const uvGreen = uvOfArgb(0xff00ff00)!;
+const uvBlue = uvOfArgb(0xff0000ff)!;
+
+function nearestOnSegment(
+  p: [number, number], a: [number, number], b: [number, number],
+): [number, number] {
+  const abu = b[0] - a[0], abv = b[1] - a[1];
+  const len2 = abu * abu + abv * abv;
+  let t = len2 < 1e-12 ? 0 : ((p[0] - a[0]) * abu + (p[1] - a[1]) * abv) / len2;
+  t = Math.min(1, Math.max(0, t));
+  return [a[0] + t * abu, a[1] + t * abv];
+}
+
+function distanceSquared(a: [number, number], b: [number, number]): number {
+  const du = a[0] - b[0], dv = a[1] - b[1];
+  return du * du + dv * dv;
+}
+
+/** Nearest chromaticity to (u, v) that some sRGB color can have. */
+function closestUvInSrgbTriangle(u: number, v: number): [number, number] {
+  const cross = (a: [number, number], b: [number, number]): number =>
+    (b[0] - a[0]) * (v - a[1]) - (b[1] - a[1]) * (u - a[0]);
+  const d1 = cross(uvRed, uvGreen);
+  const d2 = cross(uvGreen, uvBlue);
+  const d3 = cross(uvBlue, uvRed);
+  const hasNegative = d1 < 0 || d2 < 0 || d3 < 0;
+  const hasPositive = d1 > 0 || d2 > 0 || d3 > 0;
+  if (!(hasNegative && hasPositive)) return [u, v];
+
+  const p: [number, number] = [u, v];
+  let best = nearestOnSegment(p, uvRed, uvGreen);
+  for (const candidate of [
+    nearestOnSegment(p, uvGreen, uvBlue),
+    nearestOnSegment(p, uvBlue, uvRed),
+  ]) {
+    if (distanceSquared(candidate, p) < distanceSquared(best, p)) best = candidate;
+  }
+  const [wu, wv] = whiteUvPoint;
+  const nudge = 1e-4;
+  return [best[0] + (wu - best[0]) * nudge, best[1] + (wv - best[1]) * nudge];
+}
+
 function exactUvAtTone(u: number, v: number, tone: number, model?: ColorModel): Hct {
   const xyz = xyzFromUvTone(u, v, tone);
   if (xyz === null) return Hct.from(0, 0, tone, model);
@@ -156,7 +201,12 @@ function rotated(
   const [wu, wv] = whiteUvPoint;
   const [rdu, rdv] = rotateOffset(offset, degrees);
   const du = rdu * sharedStrength, dv = rdv * sharedStrength;
-  const targetU = wu + du, targetV = wv + dv;
+  let targetU = wu + du, targetV = wv + dv;
+  if (tonePolicy === 'fitUvChroma') {
+    // If the exact chromaticity is impossible in sRGB at every tone, aim for
+    // the closest possible chromaticity instead of the seed-tone ray clamp.
+    [targetU, targetV] = closestUvInSrgbTriangle(targetU, targetV);
+  }
   const tone = targetTone(input, degrees, tonePolicy, targetU, targetV);
 
   if (tonePolicy === 'fitUvChroma' && uvToneInSrgb(targetU, targetV, tone)) {

@@ -54,7 +54,10 @@ enum HarmonyTonePolicy {
   /// Preserve the requested u'v' chroma when possible by moving tone to the
   /// closest L* where that chromaticity fits in sRGB. If no tone can hold
   /// that chromaticity (the point is outside the RGB chromaticity triangle),
-  /// fall back to [preserveTone]'s chroma clamp.
+  /// render the nearest chromaticity on the triangle's boundary instead,
+  /// again moving tone only as far as necessary. The boundary projection may
+  /// bend the u'v' hue slightly; it minimizes chromaticity error rather than
+  /// preserving the exact direction.
   fitUvChroma,
 
   /// Use the rotated u'v' target to choose an HCT hue, then preserve the
@@ -178,6 +181,61 @@ double? _fitToneForUv(double u, double v, double preferredTone) {
   return math.min(preferredTone.clamp(0.0, 100.0), maxTone);
 }
 
+// Chromaticities of the sRGB primaries: corners of the triangle of
+// chromaticities that sRGB colors can have (derived from the same pipeline
+// as uvOfArgb so the geometry is self-consistent).
+final (double, double) _uvRed = uvOfArgb(0xffff0000)!;
+final (double, double) _uvGreen = uvOfArgb(0xff00ff00)!;
+final (double, double) _uvBlue = uvOfArgb(0xff0000ff)!;
+
+(double, double) _nearestOnSegment(
+  (double, double) p,
+  (double, double) a,
+  (double, double) b,
+) {
+  final abu = b.$1 - a.$1, abv = b.$2 - a.$2;
+  final len2 = abu * abu + abv * abv;
+  var t = len2 < 1e-12
+      ? 0.0
+      : ((p.$1 - a.$1) * abu + (p.$2 - a.$2) * abv) / len2;
+  t = t.clamp(0.0, 1.0);
+  return (a.$1 + t * abu, a.$2 + t * abv);
+}
+
+double _distanceSquared((double, double) a, (double, double) b) {
+  final du = a.$1 - b.$1, dv = a.$2 - b.$2;
+  return du * du + dv * dv;
+}
+
+/// Nearest chromaticity to (u, v) that some sRGB color can have: (u, v)
+/// itself when inside the sRGB chromaticity triangle, otherwise the closest
+/// point on the triangle's boundary, nudged toward white so linear RGB stays
+/// non-negative under floating point.
+(double, double) _closestUvInSrgbTriangle(double u, double v) {
+  double cross((double, double) a, (double, double) b) =>
+      (b.$1 - a.$1) * (v - a.$2) - (b.$2 - a.$2) * (u - a.$1);
+  final d1 = cross(_uvRed, _uvGreen);
+  final d2 = cross(_uvGreen, _uvBlue);
+  final d3 = cross(_uvBlue, _uvRed);
+  final hasNegative = d1 < 0 || d2 < 0 || d3 < 0;
+  final hasPositive = d1 > 0 || d2 > 0 || d3 > 0;
+  if (!(hasNegative && hasPositive)) return (u, v);
+
+  final p = (u, v);
+  var best = _nearestOnSegment(p, _uvRed, _uvGreen);
+  for (final candidate in [
+    _nearestOnSegment(p, _uvGreen, _uvBlue),
+    _nearestOnSegment(p, _uvBlue, _uvRed),
+  ]) {
+    if (_distanceSquared(candidate, p) < _distanceSquared(best, p)) {
+      best = candidate;
+    }
+  }
+  final (wu, wv) = whiteUvPoint;
+  const nudge = 1e-4;
+  return (best.$1 + (wu - best.$1) * nudge, best.$2 + (wv - best.$2) * nudge);
+}
+
 Hct _exactUvAtTone(double u, double v, double tone, ColorModel model) {
   final xyz = _xyzFromUvTone(u, v, tone);
   if (xyz == null) return Hct.from(0.0, 0.0, tone, model: model);
@@ -280,7 +338,12 @@ Hct _rotated(
   final rotated = _rotateOffset(offset, degrees);
   final du = rotated.$1 * sharedStrength;
   final dv = rotated.$2 * sharedStrength;
-  final targetU = wu + du, targetV = wv + dv;
+  var targetU = wu + du, targetV = wv + dv;
+  if (tonePolicy == HarmonyTonePolicy.fitUvChroma) {
+    // If the exact chromaticity is impossible in sRGB at every tone, aim for
+    // the closest possible chromaticity instead of the seed-tone ray clamp.
+    (targetU, targetV) = _closestUvInSrgbTriangle(targetU, targetV);
+  }
   final targetTone = _targetTone(input, degrees, tonePolicy, targetU, targetV);
 
   if (tonePolicy == HarmonyTonePolicy.fitUvChroma &&
