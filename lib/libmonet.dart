@@ -3,6 +3,9 @@ export 'core/argb_srgb_xyz_lab.dart';
 export 'core/hex_codes.dart';
 export 'core/math.dart';
 
+// Chart colors
+export 'charts/chart_colors.dart';
+
 // Color spaces
 export 'colorspaces/cam16/cam16.dart';
 export 'colorspaces/cam16/cam16_viewing_conditions.dart';

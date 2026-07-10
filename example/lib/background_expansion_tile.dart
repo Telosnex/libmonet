@@ -1,5 +1,4 @@
 import 'package:libmonet/theming/slider_flat_thumb.dart';
-import 'package:monet_studio/home.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -9,13 +8,10 @@ import 'package:libmonet/theming/slider_flat.dart';
 class BackgroundExpansionTile extends ConsumerWidget {
   final ValueNotifier<double> darkModeLstarNotifier;
   final ValueNotifier<double> lightModeLstarNotifier;
-  final ValueNotifier<BrightnessSetting> brightnessSettingNotifier;
-
   const BackgroundExpansionTile({
     super.key,
     required this.darkModeLstarNotifier,
     required this.lightModeLstarNotifier,
-    required this.brightnessSettingNotifier,
   });
 
   @override
@@ -25,18 +21,11 @@ class BackgroundExpansionTile extends ConsumerWidget {
     return ExpansionTile(
       childrenPadding: const EdgeInsets.symmetric(horizontal: 8),
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
-      title: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(
-            'Background',
-            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                  color: MonetTheme.of(context).primary.text,
-                ),
-          ),
-          const HorizontalPadding(),
-          FittedBox(child: _brightnessToggleButtons())
-        ],
+      title: Text(
+        'Background',
+        style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+              color: MonetTheme.of(context).primary.text,
+            ),
       ),
       children: [
         const Text('Dark'),
@@ -85,34 +74,6 @@ class BackgroundExpansionTile extends ConsumerWidget {
         ),
         const VerticalPadding()
       ],
-    );
-  }
-
-  Widget _brightnessToggleButtons() {
-    final brightnessSetting = brightnessSettingNotifier;
-    return ToggleButtons(
-      isSelected: [
-        brightnessSetting.value == BrightnessSetting.dark,
-        brightnessSetting.value == BrightnessSetting.light,
-        brightnessSetting.value == BrightnessSetting.auto,
-      ],
-      onPressed: (index) {
-        if (index == 0) {
-          brightnessSetting.value = BrightnessSetting.dark;
-        } else if (index == 1) {
-          brightnessSetting.value = BrightnessSetting.light;
-        } else if (index == 2) {
-          brightnessSetting.value = BrightnessSetting.auto;
-        }
-      },
-      children: const [Text('Dark'), Text('Light'), Text('Auto')]
-          .map(
-            (e) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: e,
-            ),
-          )
-          .toList(),
     );
   }
 }

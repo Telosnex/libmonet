@@ -8,6 +8,8 @@ import 'package:libmonet/effects/opacity.dart';
 import 'package:libmonet/effects/shadows.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
+import 'package:monet_studio/brightness_setting.dart';
+import 'package:monet_studio/chart_colors_expansion_tile.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/color_picker.dart';
 import 'package:monet_studio/gamut_chart.dart';
@@ -30,23 +32,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:libmonet/theming/monet_theme.dart';
-
-enum BrightnessSetting {
-  light,
-  dark,
-  auto;
-
-  Brightness brightness(BuildContext context) {
-    switch (this) {
-      case BrightnessSetting.light:
-        return Brightness.light;
-      case BrightnessSetting.dark:
-        return Brightness.dark;
-      case BrightnessSetting.auto:
-        return MediaQuery.platformBrightnessOf(context);
-    }
-  }
-}
 
 class _QuantizerColorCountToggle extends StatelessWidget {
   const _QuantizerColorCountToggle({
@@ -160,11 +145,12 @@ class Home extends HookConsumerWidget {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                const VerticalPadding(),
+                                // Leave room for the collapsed floating picker;
+                                // expanding it intentionally overlays this list.
+                                const SizedBox(height: 72),
                                 BackgroundExpansionTile(
                                   darkModeLstarNotifier: darkSurfaceLstar,
                                   lightModeLstarNotifier: lightSurfaceLstar,
-                                  brightnessSettingNotifier: brightnessSetting,
                                 ),
                                 const VerticalPadding(),
                                 for (final image in images.value)
@@ -185,18 +171,6 @@ class Home extends HookConsumerWidget {
                                       backgroundImage.value = image;
                                     },
                                   ),
-                                const VerticalPadding(),
-                                ColorPicker(
-                                  color: color.value,
-                                  onColorChanged: (newColor) {
-                                    color.value = newColor;
-                                    backgroundImage.value = null;
-                                  },
-                                  onPhotoLibraryTapped: () {
-                                    _uploadImagePressed(
-                                        ref, images, backgroundImage, color);
-                                  },
-                                ),
                                 const VerticalPadding(),
                                 _QuantizerColorCountToggle(
                                   value: quantizerColorCount.value,
@@ -257,10 +231,50 @@ class Home extends HookConsumerWidget {
                                   },
                                 ),
                                 const VerticalPadding(),
+                                ChartColorsExpansionTile(
+                                  seed: color.value,
+                                  onColorChanged: (newColor) {
+                                    color.value = newColor;
+                                    backgroundImage.value = null;
+                                  },
+                                ),
+                                const VerticalPadding(),
                                 const GamutChart(initialHue: 27.0),
                                 const VerticalPadding(),
                               ],
                             ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: SizedBox(
+                        width: (MediaQuery.sizeOf(context).width - 24)
+                            .clamp(0.0, 560.0),
+                        child: Material(
+                          elevation: 12,
+                          color: Theme.of(context).colorScheme.surface,
+                          surfaceTintColor:
+                              Theme.of(context).colorScheme.surfaceTint,
+                          clipBehavior: Clip.antiAlias,
+                          borderRadius: BorderRadius.circular(12),
+                          child: ColorPicker(
+                            color: color.value,
+                            onColorChanged: (newColor) {
+                              color.value = newColor;
+                              backgroundImage.value = null;
+                            },
+                            brightnessSettingNotifier: brightnessSetting,
+                            onPhotoLibraryTapped: () {
+                              _uploadImagePressed(
+                                ref,
+                                images,
+                                backgroundImage,
+                                color,
+                              );
+                            },
                           ),
                         ),
                       ),

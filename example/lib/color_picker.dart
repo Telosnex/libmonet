@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:monet_studio/brand_colors.dart';
+import 'package:monet_studio/brightness_setting.dart';
 import 'package:monet_studio/hue_tone_picker.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +20,50 @@ class ColorPicker extends StatefulHookConsumerWidget {
     required this.color,
     required this.onColorChanged,
     this.onPhotoLibraryTapped,
+    required this.brightnessSettingNotifier,
   });
 
   final Color color;
   final void Function(Color) onColorChanged;
   final void Function()? onPhotoLibraryTapped;
+  final ValueNotifier<BrightnessSetting> brightnessSettingNotifier;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ColorPickerState();
+}
+
+class _BrightnessSettingButton extends StatelessWidget {
+  const _BrightnessSettingButton({required this.notifier});
+
+  final ValueNotifier<BrightnessSetting> notifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final setting = notifier.value;
+    return PopupMenuButton<BrightnessSetting>(
+      tooltip: 'Theme: ${setting.label}',
+      initialValue: setting,
+      onSelected: (value) => notifier.value = value,
+      icon: Icon(setting.icon),
+      itemBuilder: (context) => [
+        for (final value in BrightnessSetting.values)
+          PopupMenuItem(
+            value: value,
+            child: Row(
+              children: [
+                Icon(value.icon),
+                const SizedBox(width: 8),
+                Text(value.label),
+                if (value == setting) ...[
+                  const Spacer(),
+                  const Icon(Icons.check),
+                ],
+              ],
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 class _ColorPickerState extends ConsumerState<ColorPicker> {
@@ -123,6 +160,9 @@ class _ColorPickerState extends ConsumerState<ColorPicker> {
               widget.onColorChanged(randomColor);
             },
             icon: const Icon(Icons.shuffle),
+          ),
+          _BrightnessSettingButton(
+            notifier: widget.brightnessSettingNotifier,
           ),
           BrandColorsPopupMenuButton(onChanged: (newColor) {
             final hct = Hct.fromColor(newColor);

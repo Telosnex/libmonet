@@ -59,29 +59,21 @@ class HarmonyExpansionTile extends HookWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: SegmentedButton<int>(
-                      segments: [
-                        for (var n = 1; n <= 5; n++)
-                          ButtonSegment(
-                            value: n,
-                            label: Text(switch (n) {
-                              1 => '+1 complement',
-                              2 => '+2 triad',
-                              3 => '+3 quad',
-                              _ => '+$n',
-                            }),
-                          ),
-                      ],
-                      selected: {companions.value},
-                      onSelectionChanged: (selection) {
-                        companions.value = selection.first;
-                      },
-                    ),
-                  ),
-                ],
+              Text(
+                'Paired colors: ${companions.value}',
+                style: captionStyle,
+              ),
+              Slider(
+                value: companions.value.toDouble(),
+                min: 1,
+                max: 32,
+                divisions: 31,
+                label: companions.value.toString(),
+                semanticFormatterCallback: (value) =>
+                    '${value.round()} paired colors',
+                onChanged: (value) {
+                  companions.value = value.round();
+                },
               ),
               SwitchListTile(
                 title: Text('Balanced', style: captionStyle),
