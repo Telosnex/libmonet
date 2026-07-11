@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/opacity.dart';
+import 'package:libmonet/effects/protection.dart';
 import 'package:libmonet/effects/shadows.dart';
 import 'package:libmonet/theming/button_style.dart';
 import 'package:libmonet/theming/monet_theme.dart';
@@ -18,7 +18,7 @@ class SafeColorsPreview extends StatelessWidget {
   });
 
   final Map<ColorModel, MonetThemeData> themeDataByModel;
-  final OpacityResult? scrim;
+  final ProtectionResult? scrim;
   final ShadowResult? shadows;
 
   @override
@@ -50,7 +50,7 @@ class _ColorModelPreview extends StatelessWidget {
 
   final MonetThemeData themeData;
   final ColorModel colorModel;
-  final OpacityResult? scrim;
+  final ProtectionResult? scrim;
   final ShadowResult? shadows;
 
   @override
@@ -111,7 +111,7 @@ class _RolePreview extends StatelessWidget {
   final String name;
   final Color sourceColor;
   final Palette palette;
-  final OpacityResult? scrim;
+  final ProtectionResult? scrim;
   final ShadowResult? shadows;
 
   @override
@@ -156,7 +156,7 @@ class _SourceColorSwatch extends StatelessWidget {
 
 class PalettePreviewRow extends StatelessWidget {
   final Palette palette;
-  final OpacityResult? scrim;
+  final ProtectionResult? scrim;
   final ShadowResult? shadows;
 
   const PalettePreviewRow({

@@ -263,52 +263,18 @@ Map<String, Object?> _apcaInverseCase({
   };
 }
 
-Map<String, Object?> _opacityCase({
-  required String name,
-  required int foreground,
-  required int minBackground,
-  required int maxBackground,
-  required double contrast,
-  required Algo algo,
-}) {
-  final result = getOpacityForArgbs(
-    foregroundArgb: foreground,
-    minBackgroundArgb: minBackground,
-    maxBackgroundArgb: maxBackground,
-    contrast: contrast,
-    algo: algo,
-  );
-  return {
-    'name': name,
-    'foreground': _hex(Color(foreground)),
-    'minBackground': _hex(Color(minBackground)),
-    'maxBackground': _hex(Color(maxBackground)),
-    'contrast': contrast,
-    'algo': algo.name,
-    'protectionArgb': _hex(Color(result.protectionArgb)),
-    'opacity': result.opacity,
-    'targetLstar': result.targetLstar,
-    'needsProtection': result.needsProtection,
-    'color': _hex(result.color),
-    'protectionLstar': result.protectionLstar,
-    'protectionLuma': result.protectionLuma,
-  };
-}
-
 Map<String, Object?> _shadowCase({
   required String name,
   required int foreground,
-  required int minBackground,
-  required int maxBackground,
+  required List<int> backgrounds,
   required double contrast,
   required Algo algo,
   required double blurRadius,
   double contentRadius = -1.0,
 }) {
-  final result = getShadowOpacitiesForArgbs(
-    foregroundArgb: foreground,
-    minBackgroundArgb: minBackground,
-    maxBackgroundArgb: maxBackground,
+  final result = getShadowOpacitiesForBackgrounds(
+    foreground: Color(foreground),
+    backgrounds: backgrounds.map(Color.new).toList(),
     contrast: contrast,
     algo: algo,
     blurRadius: blurRadius,
@@ -317,8 +283,7 @@ Map<String, Object?> _shadowCase({
   return {
     'name': name,
     'foreground': _hex(Color(foreground)),
-    'minBackground': _hex(Color(minBackground)),
-    'maxBackground': _hex(Color(maxBackground)),
+    'backgrounds': backgrounds.map((e) => _hex(Color(e))).toList(),
     'contrast': contrast,
     'algo': algo.name,
     'blurRadius': blurRadius,
@@ -326,6 +291,38 @@ Map<String, Object?> _shadowCase({
     'resultBlurRadius': result.blurRadius,
     'shadowArgb': _hex(Color(result.shadowArgb)),
     'opacities': result.opacities,
+    'meetsTarget': result.meetsTarget,
+  };
+}
+
+Map<String, Object?> _protectionCase({
+  required String name,
+  required int foreground,
+  required List<int> backgrounds,
+  required double contrast,
+  required Algo algo,
+  int? protectionArgb,
+}) {
+  final result = getProtectionOpacity(
+    foregroundArgb: foreground,
+    backgroundArgbs: backgrounds,
+    contrast: contrast,
+    algo: algo,
+    protectionArgb: protectionArgb,
+  );
+  return {
+    'name': name,
+    'foreground': _hex(Color(foreground)),
+    'backgrounds': backgrounds.map((e) => _hex(Color(e))).toList(),
+    'contrast': contrast,
+    'algo': algo.name,
+    if (protectionArgb != null) 'fixedScrim': _hex(Color(protectionArgb)),
+    'protectionArgb': _hex(Color(result.protectionArgb)),
+    'opacity': result.opacity,
+    'meetsTarget': result.meetsTarget,
+    'achievedContrast': result.achievedContrast,
+    'clearedSide': result.clearedSide.name,
+    'straddleCollapsed': result.straddleCollapsed,
   };
 }
 
@@ -673,7 +670,7 @@ Map<String, Object?> _triadCase() {
 void main() {
   test('generate JS parity fixtures', () async {
     final fixture = {
-      'schema': 11,
+      'schema': 12,
       'paletteRoles': _paletteRoles,
       'hctColorCases': [
         _hctColorCase(0xff1177aa),
@@ -757,37 +754,56 @@ void main() {
         _apcaInverseCase(name: 'near-black-lc110', lstar: 3, apca: 110),
         _apcaInverseCase(name: 'near-white-lc110', lstar: 97, apca: 110),
       ],
-      'opacityCases': [
-        _opacityCase(
-          name: 'white-on-dark-no-protection-apca',
+      'protectionCases': [
+        _protectionCase(
+          name: 'd1-white-on-black-apca',
           foreground: 0xffffffff,
-          minBackground: 0xff000000,
-          maxBackground: 0xff101010,
+          backgrounds: const [0xff000000],
           contrast: 0.5,
           algo: Algo.apca,
         ),
-        _opacityCase(
-          name: 'brand-on-wide-backgrounds-apca',
-          foreground: 0xff1177aa,
-          minBackground: 0xff202020,
-          maxBackground: 0xffeeeeee,
-          contrast: 0.5,
-          algo: Algo.apca,
-        ),
-        _opacityCase(
-          name: 'black-on-light-wcag',
-          foreground: 0xff000000,
-          minBackground: 0xffbbbbbb,
-          maxBackground: 0xffffffff,
-          contrast: 0.5,
+        _protectionCase(
+          name: 'd2-mid-luma-chromatic-wcag',
+          foreground: 0xffaa98f4,
+          backgrounds: const [0xff7f4f5e, 0xff1f9f39],
+          contrast: 0.2,
           algo: Algo.wcag21,
         ),
-        _opacityCase(
-          name: 'brand-on-wide-backgrounds-wcag',
+        _protectionCase(
+          name: 'straddle-777-over-poles-wcag',
+          foreground: 0xff777777,
+          backgrounds: const [0xff000000, 0xffffffff],
+          contrast: 0.2857,
+          algo: Algo.wcag21,
+        ),
+        _protectionCase(
+          name: 'brown-scrim-feasible-wcag',
+          foreground: 0xffffffff,
+          backgrounds: const [0xff123456, 0xff999999, 0xffe0e0b0],
+          contrast: 0.5,
+          algo: Algo.wcag21,
+          protectionArgb: 0xff8b4513,
+        ),
+        _protectionCase(
+          name: 'brown-scrim-infeasible-wcag',
+          foreground: 0xff777777,
+          backgrounds: const [0xff000000, 0xffffffff],
+          contrast: 0.5,
+          algo: Algo.wcag21,
+          protectionArgb: 0xff8b4513,
+        ),
+        _protectionCase(
+          name: 'multi-color-apca',
           foreground: 0xff1177aa,
-          minBackground: 0xff202020,
-          maxBackground: 0xffeeeeee,
-          contrast: 0.8,
+          backgrounds: const [0xff202020, 0xffeeeeee, 0xff7f4f5e, 0xff1f9f39],
+          contrast: 0.5,
+          algo: Algo.apca,
+        ),
+        _protectionCase(
+          name: 'multi-color-wcag-high-contrast',
+          foreground: 0xffe0e0e0,
+          backgrounds: const [0xff445566, 0xff99aa77, 0xffc0ffee],
+          contrast: 0.7,
           algo: Algo.wcag21,
         ),
       ],
@@ -795,8 +811,7 @@ void main() {
         _shadowCase(
           name: 'no-shadow-needed-apca',
           foreground: 0xffffffff,
-          minBackground: 0xff000000,
-          maxBackground: 0xff101010,
+          backgrounds: const [0xff000000, 0xff101010],
           contrast: 0.5,
           algo: Algo.apca,
           blurRadius: 4,
@@ -804,8 +819,7 @@ void main() {
         _shadowCase(
           name: 'brand-wide-apca-blur4',
           foreground: 0xff1177aa,
-          minBackground: 0xff202020,
-          maxBackground: 0xffeeeeee,
+          backgrounds: const [0xff202020, 0xffeeeeee],
           contrast: 0.5,
           algo: Algo.apca,
           blurRadius: 4,
@@ -813,12 +827,19 @@ void main() {
         _shadowCase(
           name: 'brand-wide-wcag-blur6-content3',
           foreground: 0xff1177aa,
-          minBackground: 0xff202020,
-          maxBackground: 0xffeeeeee,
+          backgrounds: const [0xff202020, 0xffeeeeee],
           contrast: 0.8,
           algo: Algo.wcag21,
           blurRadius: 6,
           contentRadius: 3,
+        ),
+        _shadowCase(
+          name: 'brand-three-backgrounds-wcag-blur10',
+          foreground: 0xff1177aa,
+          backgrounds: const [0xff202020, 0xff7f4f5e, 0xffeeeeee],
+          contrast: 0.5,
+          algo: Algo.wcag21,
+          blurRadius: 10,
         ),
       ],
       'quantizerCases': [

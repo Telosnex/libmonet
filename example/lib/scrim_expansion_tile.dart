@@ -1,7 +1,8 @@
 import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/opacity.dart';
+import 'package:libmonet/effects/protection.dart';
 import 'package:libmonet/effects/shadows.dart';
 import 'package:monet_studio/chessboard_painter.dart';
+import 'package:monet_studio/halo_text.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,21 +18,25 @@ class ScrimExpansionTile extends ConsumerWidget {
     final monetTheme = MonetTheme.of(context);
     final primaryColors = monetTheme.primary;
     final fgArgb = primaryColors.backgroundText.argb;
-    final scrimOpacity = getOpacityForArgbs(
+    final scrimOpacity = getProtectionOpacity(
       foregroundArgb: fgArgb,
-      minBackgroundArgb: 0xFF000000,
-      maxBackgroundArgb: 0xFFFFFFFF,
+      backgroundArgbs: const [0xFF000000, 0xFFFFFFFF],
       algo: monetTheme.algo,
       contrast: contrast,
     );
-    final shadows = getShadowOpacitiesForArgbs(
-      foregroundArgb: fgArgb,
-      minBackgroundArgb: 0xFF000000,
-      maxBackgroundArgb: 0xFFFFFFFF,
+    final shadows = getShadowOpacitiesForBackgrounds(
+      foreground: Color(fgArgb),
+      backgrounds: const [Color(0xFF000000), Color(0xFFFFFFFF)],
       algo: monetTheme.algo,
       contrast: contrast,
       blurRadius: 5,
       contentRadius: 3,
+    );
+    final halo = getHalo(
+      foregroundArgb: fgArgb,
+      backgroundArgbs: const [0xFF000000, 0xFFFFFFFF],
+      algo: monetTheme.algo,
+      contrast: contrast,
     );
     final shadowString = StringBuffer();
     if (shadows.opacities.isEmpty) {
@@ -57,14 +62,19 @@ class ScrimExpansionTile extends ConsumerWidget {
 
     final inputsText = 'Inputs\n'
         '  Text color: ${hexFromArgb(fgArgb)}\n'
-        '  Min background: ${hexFromArgb(0xFF000000)} (black)\n'
-        '  Max background: ${hexFromArgb(0xFFFFFFFF)} (white)\n'
+        '  Backgrounds: black, white (worst case for "any image")\n'
         '  Target contrast: $contrast\n'
         '  Algorithm: ${monetTheme.algo.name}\n'
         '\n'
         'Results\n'
         '  Scrim: $scrimString\n'
-        '  Shadows: $shadowString';
+        '  Meets target: ${scrimOpacity.meetsTarget ? 'yes' : 'NO — best effort'}\n'
+        '  Achieved contrast: ${scrimOpacity.achievedContrast.toStringAsFixed(2)}\n'
+        '  Cleared side: ${scrimOpacity.clearedSide.name}'
+        '${scrimOpacity.straddleCollapsed ? '\n  Straddle collapsed: background passed per-pixel on both sides; pushed to one side for legibility' : ''}\n'
+        '  Halo: ${(halo.opacity * 100).round()}% of ${hexFromArgb(halo.argb)}, '
+        '1 layer, spread ${halo.spread}, blur ${halo.blurRadius}\n'
+        '  Shadows (legacy, ${shadows.opacities.length} layers): $shadowString';
 
     return ExpansionTile(
       title: Text(
@@ -97,7 +107,8 @@ class ScrimExpansionTile extends ConsumerWidget {
             ),
             Positioned.fill(
                 child: Container(
-              color: scrimOpacity.color,
+              color: Color(scrimOpacity.protectionArgb)
+                  .withValues(alpha: scrimOpacity.opacity),
             )),
             _sampleText(context, primaryColors),
           ],
@@ -115,7 +126,29 @@ class ScrimExpansionTile extends ConsumerWidget {
           ],
         ),
         const VerticalPadding(),
-        _label(context, 'With shadows', primaryColors),
+        _label(context, 'With halo (1 layer, dilate + blur)', primaryColors),
+        Stack(
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: ChessBoardPainter(squareSize: 16),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: HaloText(
+                text: _sampleString,
+                halo: halo,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(color: primaryColors.backgroundText),
+              ),
+            ),
+          ],
+        ),
+        const VerticalPadding(),
+        _label(context, 'With shadows (legacy, stacked)', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -126,7 +159,7 @@ class ScrimExpansionTile extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "This is Major Tom to Ground Control. I'm stepping through the door And I'm floating in a most peculiar way And the stars look very different today",
+                _sampleString,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: primaryColors.backgroundText,
                     shadows: shadows.shadows),
@@ -137,6 +170,9 @@ class ScrimExpansionTile extends ConsumerWidget {
       ],
     );
   }
+
+  static const _sampleString =
+      "This is Major Tom to Ground Control. I'm stepping through the door And I'm floating in a most peculiar way And the stars look very different today";
 
   Widget _label(BuildContext context, String text, dynamic primaryColors) {
     return Padding(
@@ -154,7 +190,7 @@ class ScrimExpansionTile extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
-        "This is Major Tom to Ground Control. I'm stepping through the door And I'm floating in a most peculiar way And the stars look very different today",
+        _sampleString,
         style: Theme.of(context)
             .textTheme
             .bodyMedium!

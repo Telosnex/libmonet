@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/contrast/contrast.dart';
 import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/opacity.dart';
+import 'package:libmonet/effects/protection.dart';
 import 'package:libmonet/effects/shadows.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
@@ -301,17 +301,16 @@ class Home extends HookConsumerWidget {
     final themeData = themeDataByModel[ColorModel.kDefault]!;
     final primaryColors = monetTheme.primary;
     final fgArgb = primaryColors.backgroundText.argb;
-    final scrimOpacity = getOpacityForArgbs(
+    final protection = getProtectionOpacity(
       foregroundArgb: fgArgb,
-      minBackgroundArgb: 0xFF000000,
-      maxBackgroundArgb: 0xFFFFFFFF,
+      backgroundArgbs: const [0xFF000000, 0xFFFFFFFF],
       algo: monetTheme.algo,
       contrast: themeData.contrast,
     );
-    final shadows = getShadowOpacitiesForArgbs(
-      foregroundArgb: fgArgb,
-      minBackgroundArgb: 0xFF000000,
-      maxBackgroundArgb: 0xFFFFFFFF,
+    final scrimOpacity = protection;
+    final shadows = getShadowOpacitiesForBackgrounds(
+      foreground: Color(fgArgb),
+      backgrounds: const [Color(0xFF000000), Color(0xFFFFFFFF)],
       algo: monetTheme.algo,
       contrast: themeData.contrast,
       blurRadius: 5,
@@ -347,7 +346,7 @@ class Home extends HookConsumerWidget {
   Widget buildScrimShadows(
     BuildContext context,
     double contrast,
-    OpacityResult scrimOpacity,
+    ProtectionResult scrimOpacity,
     ShadowResult shadows,
   ) {
     final primaryColors = MonetTheme.of(context).primary;
@@ -390,7 +389,8 @@ class Home extends HookConsumerWidget {
                   children: [
                     Positioned.fill(
                         child: Container(
-                      color: scrimOpacity.color,
+                      color: Color(scrimOpacity.protectionArgb)
+                          .withValues(alpha: scrimOpacity.opacity),
                     )),
                     Padding(
                       padding: const EdgeInsets.all(8.0),

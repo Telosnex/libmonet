@@ -20,8 +20,8 @@ import {
   lumaFromArgb,
   lumaFromLstar,
   lumaToLstarRange,
-  getOpacityForArgbs,
-  getShadowOpacitiesForArgbs,
+  getProtectionOpacity,
+  getShadowOpacitiesForBackgrounds,
   lstarToApcaY,
   lighterBackgroundApcaY,
   darkerBackgroundApcaY,
@@ -186,27 +186,10 @@ interface ApcaInverseCaseFixture {
   boundaryArgbs: string[];
 }
 
-interface OpacityCaseFixture {
-  name: string;
-  foreground: string;
-  minBackground: string;
-  maxBackground: string;
-  contrast: number;
-  algo: 'apca' | 'wcag21';
-  protectionArgb: string;
-  opacity: number;
-  targetLstar: number;
-  needsProtection: boolean;
-  color: string;
-  protectionLstar: number;
-  protectionLuma: number;
-}
-
 interface ShadowCaseFixture {
   name: string;
   foreground: string;
-  minBackground: string;
-  maxBackground: string;
+  backgrounds: string[];
   contrast: number;
   algo: 'apca' | 'wcag21';
   blurRadius: number;
@@ -214,6 +197,7 @@ interface ShadowCaseFixture {
   resultBlurRadius: number;
   shadowArgb: string;
   opacities: number[];
+  meetsTarget: boolean;
 }
 
 interface WallpaperGoldenCaseFixture {
@@ -234,7 +218,7 @@ interface Fixture {
   temperatureCases: TemperatureCaseFixture[];
   lumaCases: LumaCaseFixture[];
   apcaInverseCases: ApcaInverseCaseFixture[];
-  opacityCases: OpacityCaseFixture[];
+  protectionCases: ProtectionCaseFixture[];
   shadowCases: ShadowCaseFixture[];
   quantizerCases: QuantizerCaseFixture[];
   paletteCases: PaletteCaseFixture[];
@@ -245,6 +229,21 @@ interface Fixture {
   scorerCases: ScorerCaseFixture[];
   triadCases: TriadCaseFixture[];
   wallpaperGoldenCases: WallpaperGoldenCaseFixture[];
+}
+
+interface ProtectionCaseFixture {
+  name: string;
+  foreground: string;
+  backgrounds: string[];
+  contrast: number;
+  algo: string;
+  fixedScrim?: string;
+  protectionArgb: string;
+  opacity: number;
+  meetsTarget: boolean;
+  achievedContrast: number;
+  clearedSide: string;
+  straddleCollapsed: boolean;
 }
 
 const fixture = JSON.parse(readFileSync('fixtures/libmonet_parity.json', 'utf8')) as Fixture;
@@ -282,7 +281,7 @@ function hexRecord(map: Map<number, number>): Record<string, number> {
 
 describe('Dart libmonet parity fixtures', () => {
   test('fixture has the expected schema', () => {
-    expect(fixture.schema).toBe(11);
+    expect(fixture.schema).toBe(12);
     expect(fixture.paletteRoles.length).toBeGreaterThan(40);
     expect(fixture.paletteCases.length).toBeGreaterThan(0);
     expect(fixture.hctRoundTripSweepCases.length).toBeGreaterThan(700);
@@ -387,31 +386,30 @@ describe('Dart libmonet parity fixtures', () => {
     });
   }
 
-  for (const c of fixture.opacityCases) {
-    test(`Opacity parity: ${c.name}`, () => {
-      const result = getOpacityForArgbs({
+  for (const c of fixture.protectionCases) {
+    test(`Protection parity: ${c.name}`, () => {
+      const result = getProtectionOpacity({
         foregroundArgb: argbFromHex(c.foreground),
-        minBackgroundArgb: argbFromHex(c.minBackground),
-        maxBackgroundArgb: argbFromHex(c.maxBackground),
+        backgroundArgbs: c.backgrounds.map(argbFromHex),
         contrast: c.contrast,
         algo: c.algo === 'wcag21' ? Algo.wcag21 : Algo.apca,
+        ...(c.fixedScrim === undefined ? {} : {protectionArgb: argbFromHex(c.fixedScrim)}),
       });
       expect(hexFromArgb(result.protectionArgb)).toBe(c.protectionArgb);
-      expect(result.opacity).toBeCloseTo(c.opacity, 12);
-      expect(result.targetLstar).toBeCloseTo(c.targetLstar, 9);
-      expect(result.needsProtection).toBe(c.needsProtection);
-      expect(hexFromArgb(result.color)).toBe(c.color);
-      expect(result.protectionLstar).toBeCloseTo(c.protectionLstar, 9);
-      expect(result.protectionLuma).toBeCloseTo(c.protectionLuma, 12);
+      // Opacity is quantized to 1/255 in both ports: exact, not close-to.
+      expect(result.opacity).toBe(c.opacity);
+      expect(result.meetsTarget).toBe(c.meetsTarget);
+      expect(result.achievedContrast).toBeCloseTo(c.achievedContrast, 12);
+      expect(result.clearedSide).toBe(c.clearedSide);
+      expect(result.straddleCollapsed).toBe(c.straddleCollapsed);
     });
   }
 
   for (const c of fixture.shadowCases) {
     test(`Shadow parity: ${c.name}`, () => {
-      const result = getShadowOpacitiesForArgbs({
-        foregroundArgb: argbFromHex(c.foreground),
-        minBackgroundArgb: argbFromHex(c.minBackground),
-        maxBackgroundArgb: argbFromHex(c.maxBackground),
+      const result = getShadowOpacitiesForBackgrounds({
+        foreground: argbFromHex(c.foreground),
+        backgrounds: c.backgrounds.map(argbFromHex),
         contrast: c.contrast,
         algo: c.algo === 'wcag21' ? Algo.wcag21 : Algo.apca,
         blurRadius: c.blurRadius,
@@ -419,8 +417,10 @@ describe('Dart libmonet parity fixtures', () => {
       });
       expect(result.blurRadius).toBeCloseTo(c.resultBlurRadius, 12);
       expect(hexFromArgb(result.shadowArgb)).toBe(c.shadowArgb);
+      expect(result.meetsTarget).toBe(c.meetsTarget);
       expect(result.opacities).toHaveLength(c.opacities.length);
-      for (let i = 0; i < c.opacities.length; i++) expect(result.opacities[i]).toBeCloseTo(c.opacities[i]!, 12);
+      // Per-layer alphas are 1/255-quantized in both ports: exact equality.
+      for (let i = 0; i < c.opacities.length; i++) expect(result.opacities[i]).toBe(c.opacities[i]!);
     });
   }
 

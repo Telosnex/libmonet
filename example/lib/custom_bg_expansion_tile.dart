@@ -1,6 +1,6 @@
 import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/opacity.dart';
+import 'package:libmonet/effects/protection.dart';
 import 'package:libmonet/effects/shadows.dart';
 import 'package:monet_studio/hue_tone_picker.dart';
 import 'package:monet_studio/padding.dart';
@@ -49,17 +49,15 @@ class CustomBgExpansionTile extends HookConsumerWidget {
       return null;
     }, [bgHue.value, bgChroma.value, bgTone.value]);
 
-    final scrimOpacity = getOpacityForArgbs(
+    final scrimOpacity = getProtectionOpacity(
       foregroundArgb: fgArgb,
-      minBackgroundArgb: bgArgb,
-      maxBackgroundArgb: bgArgb,
+      backgroundArgbs: [bgArgb],
       algo: monetTheme.algo,
       contrast: contrast,
     );
-    final shadows = getShadowOpacitiesForArgbs(
-      foregroundArgb: fgArgb,
-      minBackgroundArgb: bgArgb,
-      maxBackgroundArgb: bgArgb,
+    final shadows = getShadowOpacitiesForBackgrounds(
+      foreground: Color(fgArgb),
+      backgrounds: [Color(bgArgb)],
       algo: monetTheme.algo,
       contrast: contrast,
       blurRadius: 5,
@@ -95,6 +93,8 @@ class CustomBgExpansionTile extends HookConsumerWidget {
         '\n'
         'Results\n'
         '  Scrim: $scrimString\n'
+        '  Meets target: ${scrimOpacity.meetsTarget ? 'yes' : 'NO — best effort'}\n'
+        '  Achieved contrast: ${scrimOpacity.achievedContrast.toStringAsFixed(2)}\n'
         '  Shadows: $shadowString\n'
         '  Shadow layers: ${shadows.opacities.length}';
 
@@ -349,7 +349,10 @@ class CustomBgExpansionTile extends HookConsumerWidget {
         Stack(
           children: [
             Positioned.fill(child: Container(color: bgColor)),
-            Positioned.fill(child: Container(color: scrimOpacity.color)),
+            Positioned.fill(
+                child: Container(
+                    color: Color(scrimOpacity.protectionArgb).withValues(
+                        alpha: scrimOpacity.opacity))),
             _sampleText(context, primaryColors),
           ],
         ),

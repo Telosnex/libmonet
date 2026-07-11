@@ -8,7 +8,7 @@ export * from './temperature.js';
 export * from './uv-harmony.js';
 export * from './contrast.js';
 export * from './luma.js';
-export * from './opacity.js';
+export * from './protection.js';
 export * from './shadows.js';
 export * from './palette.js';
 export * from './palette-snapshot.js';

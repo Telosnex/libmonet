@@ -37,7 +37,7 @@ export 'extract/service/quantize_service.dart';
 
 // Visual effects
 export 'effects/afterimage.dart';
-export 'effects/opacity.dart';
+export 'effects/protection.dart';
 export 'effects/shadows.dart';
 export 'effects/temperature.dart';
 export 'effects/uv_harmony.dart';
