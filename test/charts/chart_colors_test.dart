@@ -62,7 +62,7 @@ void main() {
   ChartColors onDark() => ChartColors.fromColorAndBackground(seed, black);
 
   group('visible tone band', () {
-    test('near edge is visible against its background, both algos', () {
+    test('ramp near edge is visible against its background, both algos', () {
       for (final algo in Algo.values) {
         for (final bg in [white, black, tinted]) {
           final chart = ChartColors.fromColorAndBackground(
@@ -71,11 +71,32 @@ void main() {
             algo: algo,
           );
           final bgTone = Hct.fromColor(bg).tone;
-          // Border-usage separation at dial 0.5 is modest but nonzero.
           expect(
             (chart.nearTone - bgTone).abs(),
             greaterThan(2.0),
             reason: 'algo=$algo bg=${hexFromArgb(bg.argb)}',
+          );
+        }
+      }
+    });
+
+    test('categorical near edge is stronger than the ramp near edge', () {
+      for (final algo in Algo.values) {
+        for (final bg in [white, black, tinted]) {
+          final chart = ChartColors.fromColorAndBackground(
+            seed,
+            bg,
+            algo: algo,
+          );
+          final bgTone = Hct.fromColor(bg).tone;
+          expect(
+            (chart.categoricalNearTone - bgTone).abs(),
+            greaterThan(15.0),
+            reason: 'algo=$algo bg=${hexFromArgb(bg.argb)}',
+          );
+          expect(
+            (chart.categoricalNearTone - bgTone).abs(),
+            greaterThan((chart.nearTone - bgTone).abs()),
           );
         }
       }
@@ -132,7 +153,7 @@ void main() {
 
     test('stable mode: consecutive series differ in tone', () {
       for (final chart in [onLight(), onDark()]) {
-        final bandWidth = (chart.farTone - chart.nearTone).abs();
+        final bandWidth = (chart.farTone - chart.categoricalNearTone).abs();
         final tones = [
           for (final c in chart.categorical(32)) Hct.fromColor(c).tone,
         ];
@@ -155,7 +176,7 @@ void main() {
         onLight(),
         onDark(),
       ]) {
-        final bandWidth = (chart.farTone - chart.nearTone).abs();
+        final bandWidth = (chart.farTone - chart.categoricalNearTone).abs();
         // Verified bound: every pair keeps hue >= 25 degrees or tone >= 25%
         // of the band through n = 13 (probed across seeds and backgrounds;
         // the binding case is vivid seeds whose hue wheel partially
@@ -179,7 +200,7 @@ void main() {
 
     test('re-spread mode: adjacent series differ in tone, including wrap', () {
       for (final chart in [onLight(), onDark()]) {
-        final bandWidth = (chart.farTone - chart.nearTone).abs();
+        final bandWidth = (chart.farTone - chart.categoricalNearTone).abs();
         for (final n in [2, 3, 4, 5, 7, 8, 12, 16, 31, 32]) {
           final tones = [
             for (final c in chart.categorical(n, isColorAtIndexStable: false))
@@ -205,14 +226,13 @@ void main() {
           for (var i = 0; i < n; i++) {
             final next = (i + 1) % n;
             if (i == next) continue;
-            // Regression floor calibrated by probing seeds x backgrounds x
-            // n=2..32: observed minimum 5.3 (yellow-green pairs under
-            // deuteranopia). CAM16-UCS ~1 is a JND; 4.5+ is clearly
-            // distinguishable for chart-sized marks. The tone-gap test above
-            // is the structural guarantee; this catches regressions.
+            // CAM16-UCS ~1 is a JND. At high series counts the stronger
+            // background floor trades a little sibling distance for mark
+            // visibility; 3.5 remains clearly distinct for chart-sized marks.
+            // The tone-gap test above is the structural CVD guarantee.
             expect(
               _worstCaseDistance(colors[i], colors[next]),
-              greaterThan(4.5),
+              greaterThan(3.5),
               reason: 'n=$n adjacent pair $i,$next',
             );
           }

@@ -13,8 +13,11 @@ import 'package:libmonet/effects/uv_harmony.dart';
 /// All colors live in a *visible tone band* solved against the background
 /// with the library's [contrast] dial and [Algo] (APCA by default):
 ///
-///  - the band's **near** edge is the tone that is just visibly distinct
-///    from the background ([Usage.border]);
+///  - ramps begin at a border-visible **near** edge ([Usage.border]) so they
+///    retain enough tone span to encode magnitude;
+///  - categorical fills use a stronger near edge anchored near
+///    [Usage.large], because every series must remain distinct from the chart
+///    background while retaining enough tone span for sibling separation;
 ///  - the band's **far** edge is the tone of maximum separation that the
 ///    dial requests ([Usage.text]), forced to the same polarity.
 ///
@@ -98,7 +101,7 @@ class ChartColors {
     );
   }
 
-  /// Edge of the visible tone band closest to the background: just visibly
+  /// Edge of the ramp tone band closest to the background: just visibly
   /// distinct from it ([Usage.border]).
   ///
   /// Raising the [contrast] dial pushes both band edges away from the
@@ -124,8 +127,21 @@ class ChartColors {
   /// [contrast] dial ([Usage.text]), same polarity as [nearTone].
   late final double farTone = _solveTone(Usage.text);
 
-  double _bandTone(double fraction) =>
-      nearTone + (farTone - nearTone) * fraction;
+  /// Closest categorical-fill tone to the background. This is deliberately
+  /// stronger than [nearTone]: ramps need range, while a nominal series must
+  /// be visibly foreground even when it lands on the nearest tone tier.
+  ///
+  /// It sits 75% of the way from the border-visible edge to [Usage.large].
+  /// The remaining 25% preserves sufficient tone span between many series.
+  late final double categoricalNearTone = () {
+    final semantic = _solveTone(Usage.large);
+    // Preserve enough categorical tone span for CVD-safe sibling separation
+    // while staying materially farther from the background than nearTone.
+    return semantic * 0.75 + nearTone * 0.25;
+  }();
+
+  double _categoricalBandTone(double fraction) =>
+      categoricalNearTone + (farTone - categoricalNearTone) * fraction;
 
   /// Below this u'v' distance from the white point, hue is a numerical
   /// default rather than a direction; do not treat it as data.
@@ -185,7 +201,7 @@ class ChartColors {
               ? seedDirection + i * _goldenAngle
               : seedDirection + i * 360.0 / n,
         );
-        final tone = _bandTone(
+        final tone = _categoricalBandTone(
           isColorAtIndexStable
               ? _stableAssignment(i).fraction
               : _respreadTierFraction(i, n),
@@ -260,7 +276,7 @@ class ChartColors {
       final direction = sanitizeDegreesDouble(
         _seedHct.uvHue + next * _goldenAngle,
       );
-      final bandWidth = math.max((farTone - nearTone).abs(), 1e-6);
+      final bandWidth = math.max((farTone - categoricalNearTone).abs(), 1e-6);
       // The first series is the default for every single-series chart, where
       // there is no sibling color to distinguish it from. Put it at maximum
       // background separation. Previously the empty-comparison score stayed
@@ -280,7 +296,11 @@ class ChartColors {
         ));
         continue;
       }
-      var best = (fraction: 0.5, uvHue: direction, tone: _bandTone(0.5));
+      var best = (
+        fraction: 0.5,
+        uvHue: direction,
+        tone: _categoricalBandTone(0.5),
+      );
       var bestScore = double.negativeInfinity;
       for (var k = 0; k <= 20; k++) {
         final x = k / 20.0;
@@ -290,7 +310,7 @@ class ChartColors {
           continue;
         }
         final rendered = hctFromUv(
-          _bandTone(x),
+          _categoricalBandTone(x),
           direction,
           _uvStrength,
           model: colorModel,
