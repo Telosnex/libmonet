@@ -261,6 +261,25 @@ class ChartColors {
         _seedHct.uvHue + next * _goldenAngle,
       );
       final bandWidth = math.max((farTone - nearTone).abs(), 1e-6);
+      // The first series is the default for every single-series chart, where
+      // there is no sibling color to distinguish it from. Put it at maximum
+      // background separation. Previously the empty-comparison score stayed
+      // infinite and accidentally selected the first candidate (nearTone),
+      // making primary bars almost merge into light chart backgrounds.
+      if (next == 0) {
+        final rendered = hctFromUv(
+          farTone,
+          direction,
+          _uvStrength,
+          model: colorModel,
+        );
+        _stableAssignments.add((
+          fraction: 1.0,
+          uvHue: rendered.uvHue,
+          tone: rendered.tone,
+        ));
+        continue;
+      }
       var best = (fraction: 0.5, uvHue: direction, tone: _bandTone(0.5));
       var bestScore = double.negativeInfinity;
       for (var k = 0; k <= 20; k++) {

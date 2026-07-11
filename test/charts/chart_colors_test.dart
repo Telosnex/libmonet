@@ -106,6 +106,16 @@ void main() {
       expect(onLight(), onLight());
     });
 
+    test(
+      'first series uses the far edge for maximum background separation',
+      () {
+        for (final chart in [onLight(), onDark()]) {
+          final first = Hct.fromColor(chart.categorical(1).single).tone;
+          expect(first, closeTo(chart.farTone, 2.0));
+        }
+      },
+    );
+
     test('n colors, unique, for n = 1..32 on light and dark', () {
       for (final chart in [onLight(), onDark()]) {
         for (var n = 1; n <= 32; n++) {
