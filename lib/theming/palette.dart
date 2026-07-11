@@ -45,18 +45,13 @@ class Palette {
   /// Prefer [Palette.from] or [Palette.fromColorAndBackground].
   @visibleForTesting
   Palette.base({
-    required Color baseColor,
-    required Color baseBackground,
+    required this._baseColor,
+    required this._baseBackground,
     double? backgroundTone,
-    required double contrast,
-    required Algo algo,
-    ColorModel colorModel = ColorModel.kDefault,
-  })  : _baseColor = baseColor,
-        _baseBackground = baseBackground,
-        _backgroundToneOverride = backgroundTone,
-        _contrast = contrast,
-        _algo = algo,
-        _colorModel = colorModel;
+    required this._contrast,
+    required this._algo,
+    this._colorModel = ColorModel.kDefault,
+  })  : _backgroundToneOverride = backgroundTone;
 
   /// Creates a palette from a brand [color] with an explicit [backgroundTone].
   ///
