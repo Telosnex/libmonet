@@ -4,8 +4,13 @@ import 'dart:ui' show lerpDouble;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:libmonet/colorspaces/cam16/cam16.dart';
+import 'package:libmonet/colorspaces/cam16V11/cam16_v11.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/colorspaces/hct.dart';
+import 'package:libmonet/colorspaces/oklch.dart';
+import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/flux/flux_animation.dart';
 import 'package:libmonet/flux/rk4_spring.dart';
 import 'package:libmonet/flux/sim.dart';
@@ -13,8 +18,8 @@ import 'package:libmonet/theming/interpolation_style.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:libmonet/theming/monet_paint_colors.dart';
-import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/palette_lerped.dart';
+import 'package:libmonet/theming/palette_snapshot.dart';
 
 /// Interpolated theme data that lerps the three palettes while keeping
 /// [ThemeData] stable by default to avoid Material transient states.
@@ -208,11 +213,17 @@ class _ThemeMotionState {
   final double contrast;
   final double scale;
 
+  /// [model] overrides [data]'s own color model for channel extraction.
+  /// Used when the widget's color model changes mid-flight: the current
+  /// *visual* theme (whose own model is still the old one) must be
+  /// re-extracted in the incoming model's units, since that is the space the
+  /// new spring -- and its target extraction -- will live in.
   factory _ThemeMotionState.fromTheme(
     MonetThemeData data,
-    _ColorMotionBasis basis,
-  ) {
-    final model = data.colorModel;
+    _ColorMotionBasis basis, {
+    ColorModel? model,
+  }) {
+    model ??= data.colorModel;
     final primaryColor = basis.extract(data.primary.color, model);
     final primaryBackground = basis.extract(data.primary.background, model);
     final secondaryColor = basis.extract(data.secondary.color, model);
@@ -350,9 +361,6 @@ class _ThemeMotionState {
     scale: 0.0,
   );
 
-  double _quantize(double value, double quantum) =>
-      (value / quantum).round() * quantum;
-
   /// A copy of this state with all color-channel fields zeroed, keeping
   /// backgroundTone/contrast/scale as-is. Used when the active
   /// [_ColorMotionBasis] changes mid-flight: velocity computed under the old
@@ -384,79 +392,54 @@ class _ThemeMotionState {
     scale: scale,
   );
 
-  MonetThemeData toThemeData(MonetThemeData meta, _ColorMotionBasis basis) {
-    // Quantize scalars so two ticks that produce byte-identical,
-    // pixel-identical colors for every Palette getter are recognized as equal
-    // (see repro10.txt/repro11.txt) instead of differing by an imperceptible
-    // raw amount and causing duplicate paint notifications.
-    final tone = _quantize(backgroundTone, 0.5);
-    final quantizedContrast = _quantize(contrast, 0.001);
-    final quantizedScale = _quantize(scale, 0.001);
+  /// The 21 scalar channels in a fixed order, matching
+  /// [channelEpsilonsFor]. Used to locate the dominant channel of a motion
+  /// segment when converting the spring's state into a normalized progress
+  /// scalar (see `_AnimatedMonetThemeState._motionProgress`).
+  List<double> toChannelList() => [
+    primaryColorA,
+    primaryColorB,
+    primaryColorTone,
+    primaryBackgroundA,
+    primaryBackgroundB,
+    primaryBackgroundTone,
+    secondaryColorA,
+    secondaryColorB,
+    secondaryColorTone,
+    secondaryBackgroundA,
+    secondaryBackgroundB,
+    secondaryBackgroundTone,
+    tertiaryColorA,
+    tertiaryColorB,
+    tertiaryColorTone,
+    tertiaryBackgroundA,
+    tertiaryBackgroundB,
+    tertiaryBackgroundTone,
+    backgroundTone,
+    contrast,
+    scale,
+  ];
 
-    final primaryColor = basis.reconstruct([
-      primaryColorA,
-      primaryColorB,
-      primaryColorTone,
-    ], meta.colorModel);
-    final primaryBackground = basis.reconstruct([
-      primaryBackgroundA,
-      primaryBackgroundB,
-      primaryBackgroundTone,
-    ], meta.colorModel);
-    final secondaryColor = basis.reconstruct([
-      secondaryColorA,
-      secondaryColorB,
-      secondaryColorTone,
-    ], meta.colorModel);
-    final secondaryBackground = basis.reconstruct([
-      secondaryBackgroundA,
-      secondaryBackgroundB,
-      secondaryBackgroundTone,
-    ], meta.colorModel);
-    final tertiaryColor = basis.reconstruct([
-      tertiaryColorA,
-      tertiaryColorB,
-      tertiaryColorTone,
-    ], meta.colorModel);
-    final tertiaryBackground = basis.reconstruct([
-      tertiaryBackgroundA,
-      tertiaryBackgroundB,
-      tertiaryBackgroundTone,
-    ], meta.colorModel);
-
-    final primary = Palette.fromColorAndBackground(
-      primaryColor,
-      primaryBackground,
-      contrast: quantizedContrast,
-      algo: meta.algo,
-      colorModel: meta.colorModel,
-    );
-    final secondary = Palette.fromColorAndBackground(
-      secondaryColor,
-      secondaryBackground,
-      contrast: quantizedContrast,
-      algo: meta.algo,
-      colorModel: meta.colorModel,
-    );
-    final tertiary = Palette.fromColorAndBackground(
-      tertiaryColor,
-      tertiaryBackground,
-      contrast: quantizedContrast,
-      algo: meta.algo,
-      colorModel: meta.colorModel,
-    );
-    return MonetThemeData(
-      primary: primary,
-      secondary: secondary,
-      tertiary: tertiary,
-      backgroundTone: tone,
-      brightness: meta.brightness,
-      algo: meta.algo,
-      colorModel: meta.colorModel,
-      contrast: quantizedContrast,
-      scale: quantizedScale,
-      typography: meta.typography,
-    );
+  /// Per-channel perceptibility epsilons in [toChannelList] order, mirroring
+  /// `_ThemeMotionSim`'s per-channel epsilons. Used to compare channel
+  /// journey lengths across channels with different units (hue degrees vs
+  /// tone vs contrast).
+  static List<double> channelEpsilonsFor(
+    _ColorMotionBasis basis,
+    ColorModel model,
+  ) {
+    final e = basis.epsilonsFor(model);
+    return [
+      e[0], e[1], e[2], // primary color
+      e[0], e[1], e[2], // primary background
+      e[0], e[1], e[2], // secondary color
+      e[0], e[1], e[2], // secondary background
+      e[0], e[1], e[2], // tertiary color
+      e[0], e[1], e[2], // tertiary background
+      0.5, // backgroundTone
+      0.005, // contrast
+      0.005, // scale
+    ];
   }
 }
 
@@ -473,12 +456,33 @@ double _shortestHueDelta(double fromHueMod360, double toHueMod360) =>
     ((toHueMod360 - fromHueMod360 + 540.0) % 360.0) - 180.0;
 
 /// How a single base seed color's 3 raw spring channels (named `A`, `B`,
-/// `Tone` -- deliberately basis-neutral) map to and from an actual [Color].
+/// `Tone` -- deliberately basis-neutral) are derived from an actual [Color].
 ///
 /// Mirrors `palette_lerped.dart`'s [InterpolationStyle], but for a spring
 /// (continuous value + velocity) rather than a fixed-duration scalar `t`
 /// lerp. See `_PolarColorMotionBasis`/`_CartesianColorMotionBasis` for the
 /// tradeoff between the two.
+///
+/// Note the channels are never converted *back* into colors: displayed
+/// colors are lerped between the solved begin/end palettes
+/// (`_currentThemeData`), so the basis only shapes motion -- per-channel
+/// journey lengths and carried velocity across retargets, doneness, and the
+/// dominant-channel progress scalar.
+///
+/// "Motion-only" does NOT make the basis choice vestigial, and
+/// [_motionBasisFor] matching it to [InterpolationStyle] is deliberate:
+/// pacing and doneness should be measured in the same geometry the display
+/// path traverses. The styles cover different perceptual ground -- cartesian
+/// takes the UCS chord through low-chroma territory, polar sweeps the
+/// full-chroma hue arc. Measure a cartesian display with polar journeys and
+/// a 180-degree hue-only transition reads as a huge journey, so `t` dawdles
+/// precisely through the near-gray middle where hue is invisible and rushes
+/// the visible ends. Measure a polar display with cartesian journeys and the
+/// chord contracts mid-transition while the displayed arc is out at full
+/// chroma covering maximum perceptual ground -- pacing crawls exactly when
+/// the screen moves fastest. Same for doneness: "within epsilon" should
+/// mean *visually* settled, which only holds when epsilons live in the
+/// display's geometry. So: keep both bases, keyed to the display style.
 sealed class _ColorMotionBasis {
   const _ColorMotionBasis();
 
@@ -490,21 +494,21 @@ sealed class _ColorMotionBasis {
   /// only for bases with a wraparound dimension (polar's hue).
   List<double> retarget(List<double> current, Color target, ColorModel model);
 
-  /// Reconstructs a [Color] from raw channel values, correcting invalid or
-  /// out-of-range values (e.g. spring overshoot producing negative chroma).
-  Color reconstruct(List<double> raw, ColorModel model);
-
-  /// Per-channel "visually indistinguishable" epsilon, in this basis's own
-  /// units, in `[A, B, Tone]` order.
-  List<double> get epsilons;
+  /// Per-channel "visually indistinguishable" epsilon, in `[A, B, Tone]`
+  /// order, in the units [extract] produces *for [model]* -- native
+  /// coordinates differ wildly in scale (CAM16's `aStar` spans roughly +-50,
+  /// oklch's `a`/`b` roughly +-0.3), so a model-blind epsilon would make
+  /// doneness either never fire or always fire.
+  List<double> epsilonsFor(ColorModel model);
 }
 
 /// Springs hue, chroma, and tone directly and independently. `A`/`B`/`Tone`
 /// here mean hue/chroma/tone. Hue springs over an *unwrapped* range (see
-/// [_wrapDegrees]/[_shortestHueDelta]) so it can never become an unstable,
-/// emergent byproduct of two other channels passing near the neutral axis --
-/// which is exactly the bug this basis exists to avoid. See
-/// hue_instability_diagnostic_test.dart.
+/// [_wrapDegrees]/[_shortestHueDelta]) so a 350->10 degree retarget is a
+/// 20-degree journey, not 340 -- keeping hue-dominated journeys, doneness,
+/// and progress honest across the wrap boundary. See
+/// hue_instability_diagnostic_test.dart for the display-side instability
+/// that originally motivated springing hue as its own channel.
 class _PolarColorMotionBasis extends _ColorMotionBasis {
   const _PolarColorMotionBasis();
 
@@ -523,46 +527,51 @@ class _PolarColorMotionBasis extends _ColorMotionBasis {
   }
 
   @override
-  Color reconstruct(List<double> raw, ColorModel model) => Hct.from(
-    _wrapDegrees(raw[0]),
-    math.max(0.0, raw[1]),
-    raw[2].clamp(0.0, 100.0),
-    model: model,
-  ).color;
-
-  @override
-  List<double> get epsilons => const [1.0, 0.5, 0.5];
+  List<double> epsilonsFor(ColorModel model) => switch (model) {
+    // Hue is angular degrees in every model. Chroma is in the model's own
+    // units ([Hct] reports oklch's native small-scale chroma). Tone is
+    // L* (0-100) in every model.
+    ColorModel.cam16 || ColorModel.cam16v11 => const [1.0, 0.5, 0.5],
+    ColorModel.oklch => const [1.0, 0.005, 0.5],
+  };
 }
 
-/// Springs a Cartesian UCS-ish plane (`A = chroma*cos(hue)`,
-/// `B = chroma*sin(hue)`) plus tone, then recovers hue/chroma via
-/// `atan2`/`sqrt` on reconstruction -- mirroring
-/// `Hct.lerpLoseHueAndChroma`/`InterpolationStyle.cartesian`, but for a
-/// spring rather than a fixed-duration lerp.
+/// Springs each color model's *native* Cartesian UCS plane plus tone --
+/// mirroring `Hct.lerpLoseHueAndChroma`/`InterpolationStyle.cartesian`, but
+/// for a spring rather than a fixed-duration lerp: CAM16/CAM16V11 spring
+/// their own `aStar`/`bStar`, oklch springs its `a`/`b`
+/// (`chroma*cos/sin(hue)`), and `Tone` is the separately-tracked L* in all
+/// models.
 ///
-/// Deliberate simplification: `palette_lerped.dart`'s cartesian mode uses
-/// each color model's *native* UCS coordinates -- CAM16/CAM16V11's own
-/// `aStar`/`bStar`/`jStar` (4 components, tone tracked separately), oklch's
-/// `a`/`b` (3 components). Springing a variable number of channels per model
-/// would break the fixed 21-channel `_ThemeMotionState` shape, so this basis
-/// instead derives `A`/`B` from [Hct]'s own hue/chroma for every model. This
-/// is *not* a bit-exact match for `PaletteLerped`'s cartesian output at a
-/// given `t`, but it is a faithful reproduction of cartesian's defining,
-/// documented tradeoff: interpolating between sufficiently different hues
-/// passes through lower-chroma territory, and hue can swing meaningfully
-/// while it does -- deliberately, unlike the polar basis above.
+/// These are exactly the three coordinates whose lerp determines the
+/// displayed color on the cartesian display path: `lerpLoseHueAndChroma`
+/// also lerps CAM16's `jStar`, but only the merged `aStar`/`bStar` feed the
+/// resulting hue/chroma, and its lightness is then overridden by the
+/// separately lerped L*. So motion measured here -- journey lengths,
+/// carried velocity, doneness, progress -- is in the same geometry the
+/// screen traverses, per the note on [_ColorMotionBasis].
 class _CartesianColorMotionBasis extends _ColorMotionBasis {
   const _CartesianColorMotionBasis();
 
   @override
   List<double> extract(Color color, ColorModel model) {
-    final hct = Hct.fromColor(color, model: model);
-    final radians = hct.hue * math.pi / 180.0;
-    return [
-      hct.chroma * math.cos(radians),
-      hct.chroma * math.sin(radians),
-      hct.tone,
-    ];
+    final tone = lstarFromArgb(color.argb);
+    switch (model) {
+      case ColorModel.cam16:
+        final cam = Cam16.fromInt(color.argb);
+        return [cam.astar, cam.bstar, tone];
+      case ColorModel.cam16v11:
+        final cam = Cam16V11.fromInt(color.argb);
+        return [cam.astar, cam.bstar, tone];
+      case ColorModel.oklch:
+        final ok = Oklch.fromInt(color.argb);
+        final radians = ok.hue * math.pi / 180.0;
+        return [
+          ok.chroma * math.cos(radians),
+          ok.chroma * math.sin(radians),
+          tone,
+        ];
+    }
   }
 
   @override
@@ -572,15 +581,12 @@ class _CartesianColorMotionBasis extends _ColorMotionBasis {
       extract(target, model);
 
   @override
-  Color reconstruct(List<double> raw, ColorModel model) {
-    final chroma = math.sqrt(raw[0] * raw[0] + raw[1] * raw[1]);
-    var hue = math.atan2(raw[1], raw[0]) * 180.0 / math.pi;
-    if (hue < 0.0) hue += 360.0;
-    return Hct.from(hue, chroma, raw[2].clamp(0.0, 100.0), model: model).color;
-  }
-
-  @override
-  List<double> get epsilons => const [0.5, 0.5, 0.5];
+  List<double> epsilonsFor(ColorModel model) => switch (model) {
+    // CAM16-UCS is scaled so ~1.0 distance is roughly a JND; half that for
+    // "visually settled". Oklab distances are roughly 100x smaller-scaled.
+    ColorModel.cam16 || ColorModel.cam16v11 => const [0.5, 0.5, 0.5],
+    ColorModel.oklch => const [0.005, 0.005, 0.5],
+  };
 }
 
 _ColorMotionBasis _motionBasisFor(InterpolationStyle style) => switch (style) {
@@ -599,7 +605,7 @@ class _ThemeMotionSim extends Sim<_ThemeMotionState> {
     required _ThemeMotionState end,
     required _ThemeMotionState velocity,
     required RK4SpringDescription desc,
-    required _ColorMotionBasis basis,
+    required List<double> colorEpsilons,
   }) : _end = end,
        _primaryColorA = _spring(
          start.primaryColorA,
@@ -722,24 +728,24 @@ class _ThemeMotionSim extends Sim<_ThemeMotionState> {
          desc,
        ),
        _scale = _spring(start.scale, end.scale, velocity.scale, desc),
-       _primaryColorAEpsilon = basis.epsilons[0],
-       _primaryColorBEpsilon = basis.epsilons[1],
-       _primaryColorToneEpsilon = basis.epsilons[2],
-       _primaryBackgroundAEpsilon = basis.epsilons[0],
-       _primaryBackgroundBEpsilon = basis.epsilons[1],
-       _primaryBackgroundToneEpsilon = basis.epsilons[2],
-       _secondaryColorAEpsilon = basis.epsilons[0],
-       _secondaryColorBEpsilon = basis.epsilons[1],
-       _secondaryColorToneEpsilon = basis.epsilons[2],
-       _secondaryBackgroundAEpsilon = basis.epsilons[0],
-       _secondaryBackgroundBEpsilon = basis.epsilons[1],
-       _secondaryBackgroundToneEpsilon = basis.epsilons[2],
-       _tertiaryColorAEpsilon = basis.epsilons[0],
-       _tertiaryColorBEpsilon = basis.epsilons[1],
-       _tertiaryColorToneEpsilon = basis.epsilons[2],
-       _tertiaryBackgroundAEpsilon = basis.epsilons[0],
-       _tertiaryBackgroundBEpsilon = basis.epsilons[1],
-       _tertiaryBackgroundToneEpsilon = basis.epsilons[2],
+       _primaryColorAEpsilon = colorEpsilons[0],
+       _primaryColorBEpsilon = colorEpsilons[1],
+       _primaryColorToneEpsilon = colorEpsilons[2],
+       _primaryBackgroundAEpsilon = colorEpsilons[0],
+       _primaryBackgroundBEpsilon = colorEpsilons[1],
+       _primaryBackgroundToneEpsilon = colorEpsilons[2],
+       _secondaryColorAEpsilon = colorEpsilons[0],
+       _secondaryColorBEpsilon = colorEpsilons[1],
+       _secondaryColorToneEpsilon = colorEpsilons[2],
+       _secondaryBackgroundAEpsilon = colorEpsilons[0],
+       _secondaryBackgroundBEpsilon = colorEpsilons[1],
+       _secondaryBackgroundToneEpsilon = colorEpsilons[2],
+       _tertiaryColorAEpsilon = colorEpsilons[0],
+       _tertiaryColorBEpsilon = colorEpsilons[1],
+       _tertiaryColorToneEpsilon = colorEpsilons[2],
+       _tertiaryBackgroundAEpsilon = colorEpsilons[0],
+       _tertiaryBackgroundBEpsilon = colorEpsilons[1],
+       _tertiaryBackgroundToneEpsilon = colorEpsilons[2],
        _backgroundToneEpsilon = 0.5,
        _contrastEpsilon = 0.005,
        _scaleEpsilon = 0.005;
@@ -961,67 +967,17 @@ class _ThemeMotionSim extends Sim<_ThemeMotionState> {
     double epsilon,
   ) {
     if (spring.isDone(time)) return true;
-    // Perceptual short-circuit. The spring can be numerically alive after its
-    // rounded/reconstructed output is visually indistinguishable from the
-    // target. Stop once this channel is within its perceptibility epsilon and
-    // not moving fast enough to visibly cross back out of that band before
-    // the next frame.
+    // Perceptual short-circuit. The spring can be numerically alive after
+    // its remaining travel is visually indistinguishable from the target.
+    // Stop once this channel is within its perceptibility epsilon and not
+    // moving fast enough to visibly cross back out of that band before the
+    // next frame.
     const frameSeconds = 1.0 / 60.0;
     final residual = (spring.value(time) - end).abs();
     if (residual >= epsilon) return false;
     final velocity = spring.velocity(time).abs();
     return velocity * frameSeconds < epsilon;
   }
-}
-
-class _SpringThemeData extends MonetThemeData {
-  _SpringThemeData({
-    required MonetThemeData computed,
-    required this.frozenThemeData,
-    required this.animateThemeData,
-  }) : super(
-         primary: computed.primary,
-         secondary: computed.secondary,
-         tertiary: computed.tertiary,
-         backgroundTone: computed.backgroundTone,
-         brightness: computed.brightness,
-         algo: computed.algo,
-         colorModel: computed.colorModel,
-         contrast: computed.contrast,
-         scale: computed.scale,
-         typography: computed.typography,
-       );
-
-  /// The theme to use for Material [ThemeData] while unsettled. `null` means
-  /// settled -- use this instance's own computed [ThemeData].
-  final MonetThemeData? frozenThemeData;
-  final bool animateThemeData;
-
-  @override
-  ThemeData createThemeData(BuildContext context) {
-    final frozen = frozenThemeData;
-    if (animateThemeData || frozen == null) {
-      return super.createThemeData(context);
-    }
-    return frozen.createThemeData(context);
-  }
-
-  // `MonetThemeData.createThemeData` caches by `this` in a *static*, global
-  // map using `==`/`hashCode`. The base implementation only compares
-  // primary/secondary/tertiary/etc -- it knows nothing about
-  // `frozenThemeData`/`animateThemeData`. Include these fields so frozen and
-  // live ThemeData resolutions cannot collide in that cache.
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (super == other &&
-          other is _SpringThemeData &&
-          frozenThemeData == other.frozenThemeData &&
-          animateThemeData == other.animateThemeData);
-
-  @override
-  int get hashCode =>
-      Object.hash(super.hashCode, frozenThemeData, animateThemeData);
 }
 
 /// Approximates an [RK4SpringDescription] from a wall-clock [duration].
@@ -1131,7 +1087,7 @@ RK4SpringDescription _springDescriptionFor(Duration duration) {
 ///   across retargets.
 /// * [InterpolationStyle.cartesian] (default) springs a Cartesian UCS-ish plane
 ///   (`chroma*cos(hue)`, `chroma*sin(hue)`) plus tone. This prevents a tour
-///   of unrelated hues when animating between two colors with very different 
+///   of unrelated hues when animating between two colors with very different
 ///   hues, and will produce grays in between. This is desirable for animating
 ///   app-level color themes, but may be undesirable for animating, say, a UI
 ///   element that is supposed to represent active state.
@@ -1218,8 +1174,25 @@ class AnimatedMonetTheme extends StatefulWidget {
 
 class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     with TickerProviderStateMixin {
-  /// Meta template (brightness/algo/colorModel/typography) while unsettled.
+  /// Visual starting point of the current motion segment: brightness/
+  /// algo/colorModel/typography meta template while unsettled, *and* the `a`
+  /// side of the derived-palette lerp (see [_currentThemeData]). Rebased to
+  /// the in-flight visual value on every retarget.
   late MonetThemeData _begin;
+
+  /// How many consecutive retargets [_begin] has been rebased onto an
+  /// in-flight [InterpolatedMonetThemeData] without flattening. Each rebase
+  /// nests another [PaletteLerped] level; [_maxBeginLerpDepth] caps the chain
+  /// with an eager [PaletteSnapshot] so token reads stay O(1)-ish during long
+  /// gestures (wallpaper scroll retargets ~12x/sec for seconds at a time).
+  int _beginLerpDepth = 0;
+  static const _maxBeginLerpDepth = 4;
+
+  /// Raw channel values at the start/end of the current motion segment.
+  /// Together with `_channel.value` these convert the 21-channel spring into
+  /// one normalized progress scalar (see [_motionProgress]).
+  late _ThemeMotionState _motionStart;
+  late _ThemeMotionState _motionEnd;
 
   /// The latest logical target -- used for retarget equality checks and as
   /// the meta template once settled.
@@ -1255,13 +1228,15 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     _paintColors = MonetPaintColors(widget.data);
     _activeBasis = _motionBasisFor(widget.interpolationStyle);
     final state = _ThemeMotionState.fromTheme(widget.data, _activeBasis);
+    _motionStart = state;
+    _motionEnd = state;
     _attachChannel(
       _ThemeMotionSim(
         start: state,
         end: state,
         velocity: _ThemeMotionState.zero(),
         desc: _springDescriptionFor(widget.duration),
-        basis: _activeBasis,
+        colorEpsilons: _activeBasis.epsilonsFor(widget.data.colorModel),
       ),
     );
   }
@@ -1280,15 +1255,22 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     super.didUpdateWidget(oldWidget);
 
     final targetChanged = widget.data != _end;
+    // A color model change is a basis change in disguise: the in-flight
+    // channels are extracted in the model's native units (CAM16 aStar spans
+    // roughly +-50, oklch a/b roughly +-0.3), so a new model means the
+    // current values and velocities no longer mean anything in the space the
+    // new spring will live in. Route it through the same
+    // re-extract-and-restart-from-rest path.
     final basisChanged =
-        widget.interpolationStyle != oldWidget.interpolationStyle;
+        widget.interpolationStyle != oldWidget.interpolationStyle ||
+        widget.data.colorModel != _end.colorModel;
     final interpolationChanged =
         widget.animateThemeData != oldWidget.animateThemeData || basisChanged;
 
     if (targetChanged || basisChanged) {
       final current = _currentThemeData();
       final newBasis = _motionBasisFor(widget.interpolationStyle);
-      _begin = current;
+      _begin = _rebasedBegin(current);
       _end = widget.data;
 
       _channel
@@ -1302,33 +1284,44 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
         // continuity to preserve, so a plain stateless conversion is fine.
         final snapState = _ThemeMotionState.fromTheme(widget.data, newBasis);
         _activeBasis = newBasis;
+        _motionStart = snapState;
+        _motionEnd = snapState;
+        _beginLerpDepth = 0;
+        _begin = widget.data;
         _attachChannel(
           _ThemeMotionSim(
             start: snapState,
             end: snapState,
             velocity: _ThemeMotionState.zero(),
             desc: _springDescriptionFor(widget.duration),
-            basis: newBasis,
+            colorEpsilons: newBasis.epsilonsFor(widget.data.colorModel),
           ),
         );
         _lastTickValue = widget.data;
         _paintColors.value = widget.data;
         _publish(widget.data, force: true);
-        _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
+        _lastPublishedAt =
+            SchedulerBinding.instance.currentSystemFrameTimeStamp;
         return;
       }
 
       _ThemeMotionState currentState;
       _ThemeMotionState currentVelocity;
       if (basisChanged) {
-        // A basis change means the in-flight raw channel values (and their
-        // velocity) mean something different now -- e.g. "degrees per second
-        // of hue" doesn't translate to "units per second of a Cartesian
-        // coordinate". Re-extract the actual current *visual* color into the
-        // new basis and restart color motion from rest. The
-        // backgroundTone/contrast/scale scalars are basis-independent, so
-        // they keep their carried-over velocity.
-        currentState = _ThemeMotionState.fromTheme(current, newBasis);
+        // A basis (or color model) change means the in-flight raw channel
+        // values (and their velocity) mean something different now -- e.g.
+        // "degrees per second of hue" doesn't translate to "units per second
+        // of a Cartesian coordinate", nor CAM16 aStar units to oklch a
+        // units. Re-extract the actual current *visual* color into the new
+        // basis -- in the *incoming* model's units, since that is the space
+        // the new spring and its target extraction live in -- and restart
+        // color motion from rest. The backgroundTone/contrast/scale scalars
+        // are basis-independent, so they keep their carried-over velocity.
+        currentState = _ThemeMotionState.fromTheme(
+          current,
+          newBasis,
+          model: widget.data.colorModel,
+        );
         currentVelocity = _channel.velocity.zeroedColorVelocity;
       } else {
         currentState = _channel.value;
@@ -1346,13 +1339,15 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
         basis: newBasis,
       );
       _activeBasis = newBasis;
+      _motionStart = currentState;
+      _motionEnd = newTargetState;
       _attachChannel(
         _ThemeMotionSim(
           start: currentState,
           end: newTargetState,
           velocity: currentVelocity,
           desc: _springDescriptionFor(widget.duration),
-          basis: newBasis,
+          colorEpsilons: newBasis.epsilonsFor(widget.data.colorModel),
         ),
       );
       if (_channel.isCompleted) {
@@ -1381,7 +1376,8 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
             _published = _end;
           });
         }
-        _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
+        _lastPublishedAt =
+            SchedulerBinding.instance.currentSystemFrameTimeStamp;
         widget.onEnd?.call();
         return;
       }
@@ -1467,16 +1463,86 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     return now - last >= minInterval;
   }
 
+  /// Rebases [_begin] onto the current in-flight visual theme at retarget
+  /// time, flattening the nested [PaletteLerped] chain with an eager
+  /// [PaletteSnapshot] every [_maxBeginLerpDepth] rebases. Settled themes are
+  /// already flat ([_currentThemeData] returns [_end] itself once completed),
+  /// which also resets the depth counter between gestures.
+  MonetThemeData _rebasedBegin(MonetThemeData current) {
+    if (current is! InterpolatedMonetThemeData) {
+      _beginLerpDepth = 0;
+      return current;
+    }
+    _beginLerpDepth += 1;
+    if (_beginLerpDepth <= _maxBeginLerpDepth) {
+      return current;
+    }
+    _beginLerpDepth = 0;
+    return current.copyWith(
+      primary: PaletteSnapshot.capture(current.primary),
+      secondary: PaletteSnapshot.capture(current.secondary),
+      tertiary: PaletteSnapshot.capture(current.tertiary),
+    );
+  }
+
+  /// Normalized progress of the current motion segment, derived from the
+  /// spring channel with the longest journey (in units of that channel's
+  /// perceptibility epsilon, so hue degrees, tone, and contrast are
+  /// comparable). Because [_motionStart] is rebased to the in-flight value on
+  /// every retarget, this rebases to 0 with the spring's real carried
+  /// velocity -- preserving the moving-target continuity the seed springs
+  /// were built for.
+  ///
+  /// Quantized to 1/256 so ticks whose lerped output is perceptually
+  /// identical dedup in [_handleTick] (the derived-space analog of the old
+  /// per-channel color rounding).
+  double _motionProgress() {
+    final cur = _channel.value.toChannelList();
+    final start = _motionStart.toChannelList();
+    final end = _motionEnd.toChannelList();
+    final epsilons = _ThemeMotionState.channelEpsilonsFor(
+      _activeBasis,
+      _end.colorModel,
+    );
+    var bestScore = 0.0;
+    var progress = 1.0;
+    for (var i = 0; i < cur.length; i++) {
+      final delta = end[i] - start[i];
+      final score = delta.abs() / epsilons[i];
+      if (score > bestScore) {
+        bestScore = score;
+        progress = (cur[i] - start[i]) / delta;
+      }
+    }
+    // Sub-epsilon journey on every channel: nothing perceptible to animate.
+    if (bestScore < 1.0) return 1.0;
+    const quantum = 1.0 / 256.0;
+    return ((progress.clamp(0.0, 1.0)) / quantum).round() * quantum;
+  }
+
+  /// The theme to display right now.
+  ///
+  /// This interpolates in *derived-palette* space: the begin and end palettes
+  /// are each solved once (APCA text/border/fill tones etc.), and every role
+  /// is lerped between those two solved endpoints by [_motionProgress] via
+  /// [InterpolatedMonetThemeData]/[PaletteLerped].
+  ///
+  /// It deliberately does NOT re-run the palette solver against the animated
+  /// seed colors each tick (the previous design): contrast-solved roles are
+  /// step functions of background tone -- animating a background across the
+  /// mid-tones makes the solver flip polarity, snapping e.g. text from tone 0
+  /// to tone 100 in a single tick no matter how slow the spring is. Lerping
+  /// the solved endpoints keeps every role continuous (a 90->20 background
+  /// journey moves text ~45->76 smoothly) while the 21-channel spring still
+  /// supplies all timing, retarget continuity, and doneness.
   MonetThemeData _currentThemeData() {
-    final settled = _channel.isCompleted;
-    final meta = settled ? _end : _begin;
-    final computed = _channel.value.toThemeData(meta, _activeBasis);
-    // Keep Material ThemeData stable while unsettled, matching the old
-    // InterpolatedMonetThemeData behavior, unless animateThemeData is set.
-    return _SpringThemeData(
-      computed: computed,
-      frozenThemeData: settled ? null : _begin,
+    if (_channel.isCompleted) return _end;
+    return InterpolatedMonetThemeData(
+      begin: _begin,
+      end: _end,
+      t: _motionProgress(),
       animateThemeData: widget.animateThemeData,
+      interpolationStyle: widget.interpolationStyle,
     );
   }
 

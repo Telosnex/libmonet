@@ -6,6 +6,7 @@ import 'package:libmonet/theming/animated_monet_theme.dart';
 import 'package:libmonet/theming/interpolation_style.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/theming/monet_paint_colors.dart';
 
@@ -981,4 +982,175 @@ void main() {
       );
     },
   );
+
+  // Reusable harness for the polarity-crossing regression tests below.
+  // Feeds [targets] to an AnimatedMonetTheme one after another ([holdTicks]
+  // 8ms pumps between retargets), recording the contrast-solved
+  // `primary.text` tone at every paint-bus publish, and returns the per-tick
+  // tone deltas.
+  Future<List<double>> textToneDeltasThrough(
+    WidgetTester tester,
+    List<MonetThemeData> targets, {
+    int holdTicks = 10,
+  }) async {
+    final tones = <double>[];
+    Widget tree(MonetThemeData data) => MaterialApp(
+      home: AnimatedMonetTheme(
+        data: data,
+        duration: const Duration(milliseconds: 160),
+        maxUpdatesPerSecond: 0,
+        child: _PaintProbe(
+          onValue: (value) => tones.add(Hct.fromColor(value.primary.text).tone),
+        ),
+      ),
+    );
+    await tester.pumpWidget(tree(targets.first));
+    await tester.pumpAndSettle();
+    for (final target in targets.skip(1)) {
+      await tester.pumpWidget(tree(target));
+      for (var i = 0; i < holdTicks; i++) {
+        await tester.pump(const Duration(milliseconds: 8));
+      }
+    }
+    await tester.pumpAndSettle();
+    expect(
+      tones.last,
+      closeTo(Hct.fromColor(targets.last.primary.text).tone, 1.0),
+      reason: 'expected the animation to arrive at the final target',
+    );
+    final deltas = <double>[];
+    for (var i = 1; i < tones.length; i++) {
+      deltas.add((tones[i] - tones[i - 1]).abs());
+    }
+    return deltas;
+  }
+
+  testWidgets(
+    'derived text animates continuously through a light->dark background '
+    'polarity crossing (wallpaper scroll snap repro)',
+    (tester) async {
+      // `primary.text` is contrast-solved against the background, and the
+      // solver is a STEP function of background tone: it picks the lighter or
+      // darker candidate. When the animated portion of the theme was the raw
+      // seed channels re-solved per tick, animating a background across the
+      // mid-tones made every solved foreground flip polarity -- text jumped
+      // tone 0 -> 100 (black -> white) in a single 8ms tick regardless of
+      // spring speed or timeDilation, which read as "the mod snaps to dark"
+      // when a transparent surface scrolled across a light->dark wallpaper
+      // boundary. Derived-palette-space interpolation (lerping the two solved
+      // endpoint palettes) keeps every role continuous.
+      final deltas = await textToneDeltasThrough(tester, [
+        themeFrom(Colors.blue, brightness: Brightness.light), // bg tone 94
+        themeFrom(Colors.blue), // dark, bg tone 12
+      ], holdTicks: 40);
+      expect(deltas, isNotEmpty);
+      final maxDelta = deltas.reduce(math.max);
+      expect(
+        maxDelta,
+        lessThan(10),
+        reason:
+            'expected solved text to travel smoothly between the two solved '
+            'endpoints; a ~100-tone single-tick jump is the solver polarity '
+            'flip this guards against; got $maxDelta',
+      );
+    },
+  );
+
+  testWidgets('derived text stays continuous under rapid retargets that cross '
+      'polarity mid-flight (throttled wallpaper resampling)', (tester) async {
+    // The wallpaper pipeline retargets every ~80ms during a scroll, so the
+    // polarity crossing usually happens *mid-flight*, between retargets
+    // whose begin palette is itself an in-flight lerped value. Exercises
+    // the rebased-begin path (including nested-lerp flattening) across
+    // several segments spanning light->dark and back.
+    MonetThemeData at(double tone, Brightness brightness) =>
+        MonetThemeData.fromColors(
+          brightness: brightness,
+          backgroundTone: tone,
+          primary: Colors.blue,
+          secondary: Colors.teal,
+          tertiary: Colors.orange,
+          contrast: 0.5,
+        );
+    final deltas = await textToneDeltasThrough(tester, [
+      at(94, Brightness.light),
+      at(75, Brightness.light),
+      at(55, Brightness.light),
+      at(30, Brightness.dark),
+      at(12, Brightness.dark),
+      at(40, Brightness.dark),
+      at(80, Brightness.light),
+    ]);
+    expect(deltas, isNotEmpty);
+    final maxDelta = deltas.reduce(math.max);
+    // Threshold note: a chasing spring with carried velocity legitimately
+    // moves the solved text ~12 tones/tick here -- the foreground's journey
+    // within one 80ms segment can be several times longer than the
+    // background's, so the lerp traverses it faster. That is continuous
+    // motion, not the pathology. The polarity flip this guards against was
+    // a ~100-tone single-tick step.
+    expect(
+      maxDelta,
+      lessThan(25),
+      reason:
+          'expected continuity across retargets that cross solver polarity '
+          'mid-flight; got a $maxDelta tone single-tick jump',
+    );
+  });
+
+  for (final model in ColorModel.values) {
+    for (final style in InterpolationStyle.values) {
+      testWidgets(
+        'a large color transition actually animates under $model x $style '
+        '(motion epsilons must match the model\'s native coordinate scale)',
+        (tester) async {
+          // The motion channels spring in each color model's *native*
+          // coordinates, whose scales differ by ~100x (CAM16 aStar spans
+          // roughly +-50, oklch a/b roughly +-0.3). A model-blind epsilon
+          // sized for CAM16 would classify almost any oklch journey as
+          // sub-epsilon: born-done, one publish, instant snap. Assert every
+          // model/basis pairing produces a real multi-tick animation that
+          // settles at the target.
+          MonetThemeData themeOf(Color color) => MonetThemeData.fromColors(
+            brightness: Brightness.dark,
+            backgroundTone: 12,
+            primary: color,
+            secondary: Colors.teal,
+            tertiary: Colors.orange,
+            contrast: 0.5,
+            colorModel: model,
+          );
+          final begin = themeOf(Colors.blue);
+          final end = themeOf(Colors.red);
+          final publishes = <MonetThemeData>[];
+          Widget tree(MonetThemeData data) => MaterialApp(
+            home: AnimatedMonetTheme(
+              data: data,
+              duration: const Duration(milliseconds: 160),
+              maxUpdatesPerSecond: 0,
+              interpolationStyle: style,
+              child: _PaintProbe(onValue: publishes.add),
+            ),
+          );
+          await tester.pumpWidget(tree(begin));
+          await tester.pumpAndSettle();
+          publishes.clear();
+          await tester.pumpWidget(tree(end));
+          for (var i = 0; i < 100; i++) {
+            await tester.pump(const Duration(milliseconds: 8));
+          }
+          await tester.pumpAndSettle();
+          expect(
+            publishes.length,
+            greaterThan(4),
+            reason:
+                'expected a multi-tick animation, got '
+                '${publishes.length} paint publish(es) -- born-done epsilon '
+                'misclassification?',
+          );
+          expect(publishes.last.primary.color, end.primary.color);
+        },
+      );
+    }
+  }
 }
