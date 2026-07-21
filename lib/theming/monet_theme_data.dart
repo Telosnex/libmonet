@@ -16,6 +16,16 @@ const _kFontFamilyFallback = [
   'NotoEmoji', // 600 KB
 ];
 
+/// The incoming [Typography] may carry app-supplied fallback families (e.g.
+/// bundled Noto assets on embedded Linux, where no OS-level font fallback
+/// exists). Those must be preserved: overwriting them with
+/// [_kFontFamilyFallback] leaves only Android/web system family names, which
+/// resolve to nothing under flutter-pi and render tofu.
+List<String> _mergedFontFamilyFallback(TextStyle? style) => [
+  ...?style?.fontFamilyFallback,
+  ..._kFontFamilyFallback,
+];
+
 class MonetThemeData {
   final Palette primary;
   final Palette secondary;
@@ -1557,95 +1567,91 @@ class MonetThemeData {
       displayLarge: tt.displayLarge!.copyWith(
         fontSize: 32 * scale * displayScale,
         color: txtC,
-        fontFamilyFallback: [
-          // https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117
-          'sans-serif',
-          'NotoColorEmoji',
-        ],
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.displayLarge),
         height: h,
       ),
       displayMedium: tt.displayMedium!.copyWith(
         fontSize: 29 * scale * displayScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.displayMedium),
         height: h,
       ),
       displaySmall: tt.displaySmall!.copyWith(
         fontSize: 27 * scale * displayScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.displaySmall),
         height: h,
       ),
       titleLarge: tt.headlineLarge!.copyWith(
         fontSize: 29 * scale * titleScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineLarge),
         height: h,
       ),
       titleMedium: tt.headlineMedium!.copyWith(
         fontSize: 27 * scale * titleScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineMedium),
         height: h,
       ),
       titleSmall: tt.headlineSmall!.copyWith(
         fontSize: 24 * scale * titleScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineSmall),
         height: h,
       ),
       headlineLarge: tt.headlineLarge!.copyWith(
         fontSize: 29 * scale * headlineScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineLarge),
         height: h,
       ),
       headlineMedium: tt.headlineMedium!.copyWith(
         fontSize: 27 * scale * headlineScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineMedium),
         height: h,
       ),
       headlineSmall: tt.headlineSmall!.copyWith(
         fontSize: 24 * scale * headlineScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineSmall),
         height: h,
       ),
       bodyLarge: tt.bodyLarge!.copyWith(
         fontSize: 18 * scale * bodyScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.bodyLarge),
         height: h,
       ),
       bodyMedium: tt.bodyMedium!.copyWith(
         fontSize: 17 * scale * bodyScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.bodyMedium),
         height: h,
       ),
       bodySmall: tt.bodySmall!.copyWith(
         fontSize: 14 * scale * bodyScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.bodySmall),
         height: h,
       ),
       labelLarge: tt.labelLarge!.copyWith(
         fontSize: 18 * scale * labelScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.labelLarge),
         height: h,
       ),
       labelMedium: tt.labelMedium!.copyWith(
         fontSize: 16 * scale * labelScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.labelMedium),
         height: h,
       ),
       labelSmall: tt.labelSmall!.copyWith(
         fontSize: 14 * scale * labelScale,
         color: txtC,
-        fontFamilyFallback: _kFontFamilyFallback,
+        fontFamilyFallback: _mergedFontFamilyFallback(tt.labelSmall),
         height: h,
       ),
     );
