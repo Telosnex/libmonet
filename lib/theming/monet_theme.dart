@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/contrast/contrast.dart';
@@ -17,7 +18,7 @@ class MonetTheme extends StatelessWidget {
   double get contrast => monetThemeData.contrast;
   double get scale => monetThemeData.scale;
   double get backgroundTone => monetThemeData.backgroundTone;
-  
+
   const MonetTheme({
     super.key,
     required this.monetThemeData,
@@ -25,46 +26,48 @@ class MonetTheme extends StatelessWidget {
   });
 
   static MonetTheme of(BuildContext context) {
-    final _MonetInheritedTheme? inheritedTheme =
-        context.dependOnInheritedWidgetOfExactType<_MonetInheritedTheme>();
+    final _MonetInheritedTheme? inheritedTheme = context
+        .dependOnInheritedWidgetOfExactType<_MonetInheritedTheme>();
     return inheritedTheme!.theme;
   }
 
   static MonetTheme? maybeOf(BuildContext context) {
-    final _MonetInheritedTheme? inheritedTheme =
-        context.dependOnInheritedWidgetOfExactType<_MonetInheritedTheme>();
+    final _MonetInheritedTheme? inheritedTheme = context
+        .dependOnInheritedWidgetOfExactType<_MonetInheritedTheme>();
     return inheritedTheme?.theme;
   }
 
   @override
   Widget build(BuildContext context) {
+    final materialTheme = monetThemeData.createThemeData(context);
     return _MonetInheritedTheme(
       theme: this,
       // Animated theme is actually worse for design, ex. when switching theme
       // color, the InputDecoration of a text field only acquires the correct
       // background color and text color at the end of animating.
       child: Theme(
-        data: monetThemeData.createThemeData(context),
-        child: child,
+        data: materialTheme,
+        // A nested Material Theme preserves an existing ancestor
+        // CupertinoTheme instead of deriving one from its own ThemeData.
+        // Establish an explicit Cupertino boundary so adaptive Cupertino
+        // controls use this Monet theme rather than the app-level theme.
+        child: CupertinoTheme(
+          data: MaterialBasedCupertinoThemeData(materialTheme: materialTheme),
+          child: child,
+        ),
       ),
     );
   }
 }
 
 class _MonetInheritedTheme extends InheritedTheme {
-  const _MonetInheritedTheme({
-    required this.theme,
-    required super.child,
-  });
+  const _MonetInheritedTheme({required this.theme, required super.child});
 
   final MonetTheme theme;
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    return MonetTheme(
-      monetThemeData: theme.monetThemeData,
-      child: child,
-    );
+    return MonetTheme(monetThemeData: theme.monetThemeData, child: child);
   }
 
   @override
