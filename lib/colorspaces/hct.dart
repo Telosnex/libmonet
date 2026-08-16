@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:collection';
 import 'dart:ui';
 import 'dart:math' as math;
 
@@ -28,15 +29,33 @@ import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';
 
+const _fromIntCacheCapacity = 512;
+
 /// HCT, hue, chroma, and tone. A color system that provides a perceptually
 /// accurate color measurement system that can also accurately render what
 /// colors will appear as in different lighting environments.
 class Hct {
-  late double _hue;
-  late double _chroma;
-  late double _tone;
-  late int _argb;
-  late ColorModel _colorModel;
+  // Hct is an immutable value object, so instances are safe to share. Callers
+  // convert the same handful of ARGBs repeatedly (palette endpoints, theme
+  // lerps), and each miss costs a CAM16 conversion.
+  //
+  // One int-keyed map per ColorModel, indexed by `model.index`. A single map
+  // keyed by a (argb, model) record was measurably slower: it allocated and
+  // hashed a record on every lookup, which on interpolation-heavy paths cost
+  // more than the conversion it was meant to avoid.
+  //
+  // FIFO eviction relies on LinkedHashMap insertion order.
+  static final List<LinkedHashMap<int, Hct>> _fromIntCaches = List.generate(
+    ColorModel.values.length,
+    // ignore: prefer_collection_literals
+    (_) => LinkedHashMap<int, Hct>(),
+  );
+
+  final double _hue;
+  final double _chroma;
+  final double _tone;
+  final int _argb;
+  final ColorModel _colorModel;
 
   /// 0 <= [hue] < 360; invalid values are corrected.
   /// 0 <= [chroma] <= ?; Informally, colorfulness. The color returned may be
@@ -198,76 +217,73 @@ class Hct {
     return _hue;
   }
 
+  /// Returns a copy of this color with hue replaced by [newHue].
+  ///
   /// 0 <= [newHue] < 360; invalid values are corrected.
-  /// After setting hue, the color is mapped from HCT to the more
-  /// limited sRGB gamut for display. This will change its ARGB/integer
-  /// representation. If the HCT color is outside of the sRGB gamut, chroma
-  /// will decrease until it is inside the gamut.
-  set hue(double newHue) {
-    _argb = HctSolver.solveToIntForModel(
-      newHue,
-      chroma,
-      tone,
-      model: _colorModel,
-    );
-    final cam = _camFromInt(_argb, _colorModel);
-    _hue = cam.hue;
-    _chroma = cam.chroma;
-    _tone = lstarFromArgb(_argb);
-  }
+  /// The color is mapped from HCT to the more limited sRGB gamut for display,
+  /// so the result may have a different ARGB/integer representation. If the
+  /// HCT color is outside of the sRGB gamut, chroma will decrease until it is
+  /// inside the gamut.
+  Hct withHue(double newHue) =>
+      Hct.from(newHue, chroma, tone, model: _colorModel);
 
   double get chroma {
     return _chroma;
   }
 
+  /// Returns a copy of this color with chroma replaced by [newChroma].
+  ///
   /// 0 <= [newChroma] <= ?
-  /// After setting chroma, the color is mapped from HCT to the more
-  /// limited sRGB gamut for display. This will change its ARGB/integer
-  /// representation. If the HCT color is outside of the sRGB gamut, chroma
-  /// will decrease until it is inside the gamut.
-  set chroma(double newChroma) {
-    _argb = HctSolver.solveToIntForModel(
-      hue,
-      newChroma,
-      tone,
-      model: _colorModel,
-    );
-    final cam = _camFromInt(_argb, _colorModel);
-    _hue = cam.hue;
-    _chroma = cam.chroma;
-    _tone = lstarFromArgb(_argb);
-  }
+  /// The color is mapped from HCT to the more limited sRGB gamut for display,
+  /// so the result may have a different ARGB/integer representation. If the
+  /// HCT color is outside of the sRGB gamut, chroma will decrease until it is
+  /// inside the gamut.
+  Hct withChroma(double newChroma) =>
+      Hct.from(hue, newChroma, tone, model: _colorModel);
 
   /// Lightness. Ranges from 0 to 100.
   double get tone {
     return _tone;
   }
 
+  /// Returns a copy of this color with tone replaced by [newTone].
+  ///
   /// 0 <= [newTone] <= 100; invalid values are corrected.
-  /// After setting tone, the color is mapped from HCT to the more
-  /// limited sRGB gamut for display. This will change its ARGB/integer
-  /// representation. If the HCT color is outside of the sRGB gamut, chroma
-  /// will decrease until it is inside the gamut.
-  set tone(double newTone) {
-    _argb = HctSolver.solveToIntForModel(
-      hue,
-      chroma,
-      newTone,
-      model: _colorModel,
-    );
-    final cam = _camFromInt(_argb, _colorModel);
-    _hue = cam.hue;
-    _chroma = cam.chroma;
-    _tone = lstarFromArgb(_argb);
-  }
+  /// The color is mapped from HCT to the more limited sRGB gamut for display,
+  /// so the result may have a different ARGB/integer representation. If the
+  /// HCT color is outside of the sRGB gamut, chroma will decrease until it is
+  /// inside the gamut.
+  Hct withTone(double newTone) =>
+      Hct.from(hue, chroma, newTone, model: _colorModel);
 
-  Hct._(int argb, {ColorModel model = ColorModel.kDefault}) {
-    _argb = argb;
-    _colorModel = model;
+  const Hct._raw(
+    this._argb,
+    this._colorModel,
+    this._hue,
+    this._chroma,
+    this._tone,
+  );
+
+  factory Hct._(int argb, {ColorModel model = ColorModel.kDefault}) {
+    final cache = _fromIntCaches[model.index];
+    final cached = cache[argb];
+    if (cached != null) {
+      return cached;
+    }
+
     final cam = _camFromInt(argb, model);
-    _hue = cam.hue;
-    _chroma = cam.chroma;
-    _tone = lstarFromArgb(_argb);
+    final hct = Hct._raw(
+      argb,
+      model,
+      cam.hue,
+      cam.chroma,
+      lstarFromArgb(argb),
+    );
+    cache[argb] = hct;
+    if (cache.length > _fromIntCacheCapacity) {
+      cache.remove(cache.keys.first);
+    }
+    return hct;
   }
 
   static ({double hue, double chroma}) _camFromInt(

@@ -97,6 +97,18 @@ class _SolverConst {
 /// Can solve for any RGB gamut by passing a [Gamut] parameter. Defaults to
 /// sRGB for backward compatibility.
 class HctSolver {
+  // NOTE: do not add a memo keyed on (hue, chroma, tone) here. It was tried and
+  // reverted. The dominant caller is `PaletteLerped`, which interpolates in HCT
+  // space every animation frame, so the arguments are continuous doubles that
+  // essentially never repeat: measured hit rate was 3.8% on that path. Paying a
+  // key hash plus map insert and eviction on every call to avoid 3.8% of solves
+  // made the animation path 1.8x slower (42.7us -> 23.3us per frame when the
+  // cache was removed).
+  //
+  // Cache higher up instead, where arguments are discrete: `contrastingTone`
+  // memoizes whole answers (~90% hit rate, 2.8x on settled palettes), and
+  // `Hct`/`Cam16V11` memoize by ARGB int.
+
   /// Sanitizes a small enough angle in radians.
   ///
   /// [angle] An angle in radians; must not deviate too much from 0.

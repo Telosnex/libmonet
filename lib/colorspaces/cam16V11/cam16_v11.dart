@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:collection';
 import 'dart:core';
 import 'dart:math' as math;
 
@@ -26,6 +27,7 @@ import 'cam16_v11_viewing_conditions.dart';
 // Appendix A and inverse CAM16 v11 use 43. Equation 23 uses 47, likely before
 // the final eccentricity refit.
 const double _kColorfulnessScale = 43.0;
+const int _fromIntCacheCapacity = 512;
 
 /// Coordinates in a Euclidean CAM16-UCS-style space.
 class Cam16V11UcsCoordinates {
@@ -50,6 +52,10 @@ class Cam16V11UcsCoordinates {
 /// brightness, colorfulness, chroma, saturation, and UCS coordinates follow the
 /// revised equations.
 class Cam16V11 {
+  // FIFO eviction relies on LinkedHashMap insertion order.
+  // ignore: prefer_collection_literals
+  static final _fromIntCache = LinkedHashMap<int, Cam16V11>();
+
   /// Like red, orange, yellow, green, etc.
   final double hue;
 
@@ -123,7 +129,20 @@ class Cam16V11 {
 
   /// Convert [argb] to CAM16 v11, assuming default viewing conditions.
   static Cam16V11 fromInt(int argb) {
-    return fromIntInViewingConditions(argb, Cam16V11ViewingConditions.sRgb);
+    final cached = _fromIntCache[argb];
+    if (cached != null) {
+      return cached;
+    }
+
+    final cam = fromIntInViewingConditions(
+      argb,
+      Cam16V11ViewingConditions.sRgb,
+    );
+    _fromIntCache[argb] = cam;
+    if (_fromIntCache.length > _fromIntCacheCapacity) {
+      _fromIntCache.remove(_fromIntCache.keys.first);
+    }
+    return cam;
   }
 
   /// Given [viewingConditions], convert [argb] to CAM16 v11.
@@ -266,8 +285,16 @@ class Cam16V11 {
     return viewed(Cam16V11ViewingConditions.sRgb);
   }
 
-  // Avoid allocations during conversion by pre-allocating an array.
-  final _viewedArray = <double>[0, 0, 0];
+  // Avoid allocations during conversion by reusing a scratch array.
+  //
+  // Static, not per-instance: `viewed` is the only user, it is fully
+  // synchronous, and it never lets the array escape (the public
+  // `xyzInViewingConditions` allocates a fresh list when `array` is omitted).
+  // A per-instance buffer charged every `Cam16V11` an extra list allocation
+  // even though most instances never call `viewed`, and it made instances
+  // non-shareable. Keeping it static makes `Cam16V11` a true immutable value
+  // object, which is what lets `fromInt` hand out cached instances.
+  static final _viewedArray = <double>[0, 0, 0];
 
   /// ARGB representation of a color, given the color was viewed in
   /// [viewingConditions].

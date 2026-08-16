@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:libmonet/colorspaces/color_model.dart';
@@ -73,6 +74,83 @@ enum ContrastDirection { lighter, darker }
 ///
 /// For WCAG 2.1, delegates to [contrastingLstar] (L*-based is exact).
 double contrastingTone({
+  required int withArgb,
+  required double withTone,
+  required double targetHue,
+  required double targetChroma,
+  required Usage usage,
+  Algo by = Algo.apca,
+  required double contrast,
+  bool debug = false,
+  ContrastDirection? forceDirection,
+  ColorModel colorModel = ColorModel.kDefault,
+}) {
+  // The APCA path runs a fixed 15-iteration bisection, each iteration solving
+  // an HCT color, so one call costs ~17 solves. Themes ask for the same role
+  // contrasts over and over, so cache whole answers rather than relying on the
+  // solver-level cache to absorb every iteration.
+  //
+  // Skipped when debug is set so debug logging still runs.
+  if (debug) {
+    return _contrastingToneUncached(
+      withArgb: withArgb,
+      withTone: withTone,
+      targetHue: targetHue,
+      targetChroma: targetChroma,
+      usage: usage,
+      by: by,
+      contrast: contrast,
+      debug: debug,
+      forceDirection: forceDirection,
+      colorModel: colorModel,
+    );
+  }
+
+  final key = (
+    withArgb,
+    withTone,
+    targetHue,
+    targetChroma,
+    usage,
+    by,
+    contrast,
+    forceDirection,
+    colorModel,
+  );
+  final cached = _contrastingToneCache[key];
+  if (cached != null) {
+    return cached;
+  }
+  final result = _contrastingToneUncached(
+    withArgb: withArgb,
+    withTone: withTone,
+    targetHue: targetHue,
+    targetChroma: targetChroma,
+    usage: usage,
+    by: by,
+    contrast: contrast,
+    debug: debug,
+    forceDirection: forceDirection,
+    colorModel: colorModel,
+  );
+  _contrastingToneCache[key] = result;
+  if (_contrastingToneCache.length > _contrastingToneCacheCapacity) {
+    _contrastingToneCache.remove(_contrastingToneCache.keys.first);
+  }
+  return result;
+}
+
+const _contrastingToneCacheCapacity = 1024;
+
+// FIFO eviction relies on LinkedHashMap insertion order.
+// ignore: prefer_collection_literals
+final _contrastingToneCache = LinkedHashMap<
+  (int, double, double, double, Usage, Algo, double, ContrastDirection?,
+      ColorModel),
+  double
+>();
+
+double _contrastingToneUncached({
   required int withArgb,
   required double withTone,
   required double targetHue,
