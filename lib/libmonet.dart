@@ -21,6 +21,10 @@ export 'contrast/contrast.dart';
 export 'contrast/luma_contrast.dart';
 export 'contrast/wcag.dart';
 
+// Display metrics: derive px-per-logical-px scale from physical geometry
+// and viewing distance
+export 'display/display_metrics.dart';
+
 // Color extraction from images
 export 'extract/extract.dart';
 export 'extract/point_provider.dart';
