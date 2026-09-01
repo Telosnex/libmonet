@@ -179,7 +179,10 @@ class RK4SpringSim extends Sim<double> {
     required double end,
     double velocity = 0.0,
     RK4SpringDescription desc = const RK4SpringDescription(),
-  }) : _spring = RK4Spring(initValue: start, desc: desc) {
+  }) : _spring = RK4Spring(initValue: start, desc: desc),
+       _initialStart = start,
+       _initialTarget = end,
+       _initialVelocity = velocity {
     _spring.target = end;
     if (velocity != 0.0) {
       _spring._velocity = velocity;
@@ -188,35 +191,112 @@ class RK4SpringSim extends Sim<double> {
 
   final RK4Spring _spring;
 
+  /// Immutable initial conditions, so any non-monotonic query (a retarget
+  /// reading `value(t)` after `isDone(t2 > t)`, tests probing arbitrary
+  /// times) can rebuild the state deterministically.
+  final double _initialStart;
+  final double _initialTarget;
+  final double _initialVelocity;
+
+  // Keep integration on a canonical grid. Advancing directly by each frame's
+  // (possibly irregular) delta would be fast, but numerical integration would
+  // then produce a slightly different position and velocity for different
+  // frame schedules. That carried velocity is observable when retargeting.
+  static const double _stepSize = 1.0 / 60.0;
+
+  /// Number of canonical steps committed to [_spring].
+  int _committedStep = 0;
+
+  double? _sampleTime;
+  double _sampleValue = 0.0;
+  double _sampleVelocity = 0.0;
+  bool _sampleDone = false;
+
+  void _reset() {
+    _spring
+      .._startValue = _initialStart
+      .._target = _initialStart
+      .._value = _initialStart
+      .._velocity = 0.0
+      .._curT = 0.0
+      .._delta = 0.0
+      .._isDone = true
+      .._accelerationMultiplier = 0.0
+      ..target = _initialTarget;
+    if (_initialVelocity != 0.0) _spring._velocity = _initialVelocity;
+    _committedStep = 0;
+    _sampleTime = null;
+  }
+
+  static void _copyState(RK4Spring from, RK4Spring to) {
+    to
+      .._startValue = from._startValue
+      .._target = from._target
+      .._value = from._value
+      .._velocity = from._velocity
+      .._curT = from._curT
+      .._delta = from._delta
+      .._isDone = from._isDone
+      .._accelerationMultiplier = from._accelerationMultiplier;
+  }
+
+  /// Samples the deterministic state at [time].
+  ///
+  /// Full 1/60-second steps are retained in [_spring], making monotonic ticker
+  /// use O(dt) rather than replaying from zero on every value/velocity/isDone
+  /// query. A fractional final step is evaluated on a copy, so it cannot alter
+  /// subsequent integration or make retarget velocity depend on frame cadence.
+  void _sample(double time) {
+    final sampleTime = math.max(0.0, time);
+    if (_sampleTime == sampleTime) return;
+
+    // Map floating-point representations of exact frame boundaries back onto
+    // the canonical grid.
+    final targetStep = (sampleTime / _stepSize + 1e-10).floor();
+    if (targetStep < _committedStep) _reset();
+
+    if (!_spring.isDone) {
+      while (_committedStep < targetStep) {
+        _spring.elapseTime(_stepSize);
+        _committedStep++;
+        if (_spring.isDone) break;
+      }
+    }
+    // A settled spring has the same state at every later grid point.
+    if (_spring.isDone) _committedStep = targetStep;
+
+    final remainder = sampleTime - targetStep * _stepSize;
+    if (remainder > 1e-12 && !_spring.isDone) {
+      final sampled = RK4Spring(initValue: _spring.value, desc: _spring.desc);
+      _copyState(_spring, sampled);
+      sampled.elapseTime(remainder);
+      _sampleValue = sampled.value;
+      _sampleVelocity = sampled.velocity;
+      _sampleDone = sampled.isDone;
+    } else {
+      _sampleValue = _spring.value;
+      _sampleVelocity = _spring.velocity;
+      _sampleDone = _spring.isDone;
+    }
+    _sampleTime = sampleTime;
+  }
+
   @override
   double value(double time) {
-    // RK4 is stateful (steps forward), not random-access like analytical.
-    // For Sim<T> compatibility we reset and step forward to the requested time.
-    // This is fine because SimAnimationController calls with monotonically
-    // increasing time.
-    final fresh = RK4Spring(initValue: _spring._startValue, desc: _spring.desc);
-    fresh.target = _spring._target;
-    fresh._velocity = _spring._velocity;
-    fresh.elapseTime(time);
-    return fresh.value;
+    _sample(time);
+    return _sampleValue;
   }
 
   @override
   double velocity(double time) {
-    final fresh = RK4Spring(initValue: _spring._startValue, desc: _spring.desc);
-    fresh.target = _spring._target;
-    fresh._velocity = _spring._velocity;
-    fresh.elapseTime(time);
-    return fresh.velocity;
+    _sample(time);
+    return _sampleVelocity;
   }
 
   @override
   bool isDone(double time) {
-    final fresh = RK4Spring(initValue: _spring._startValue, desc: _spring.desc);
-    fresh.target = _spring._target;
-    fresh._velocity = _spring._velocity;
-    fresh.elapseTime(time);
-    return fresh.isDone;
+    _sample(time);
+    return _sampleDone;
   }
 }
 
