@@ -1100,6 +1100,12 @@ class AnimatedMonetTheme extends StatefulWidget {
   final Duration duration;
   final VoidCallback? onEnd;
 
+  /// Temporary diagnostic hook for scale-motion stalls seen on embedded
+  /// devices. When set, retargets, ticks, and status changes whose motion
+  /// includes the `scale` channel are reported through this callback. Color
+  /// only motion is not logged.
+  static void Function(String message)? debugScaleMotionLog;
+
   /// Maximum inherited-theme publishes per second while animating.
   ///
   /// This throttles only the inherited [MonetTheme] channel. The
@@ -1248,6 +1254,22 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     if (!_channel.isCompleted) {
       _channel.start();
     }
+    _debugScaleLog(
+      () =>
+          'attach scale ${_motionStart.scale}->${_motionEnd.scale} '
+          'completed=${_channel.isCompleted} '
+          'tickerActive=${_channel.isTickerActive} '
+          'tickerMuted=${_channel.isTickerMuted} '
+          'tickerMode=${TickerMode.valuesOf(context).enabled}',
+    );
+  }
+
+  bool get _scaleIsMoving => _motionStart.scale != _motionEnd.scale;
+
+  void _debugScaleLog(String Function() message) {
+    final log = AnimatedMonetTheme.debugScaleMotionLog;
+    if (log == null || !_scaleIsMoving) return;
+    log('[AnimatedMonetTheme#${identityHashCode(this)}] ${message()}');
   }
 
   @override
@@ -1255,6 +1277,18 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     super.didUpdateWidget(oldWidget);
 
     final targetChanged = widget.data != _end;
+    if (AnimatedMonetTheme.debugScaleMotionLog != null &&
+        widget.data.scale != _end.scale) {
+      final current = _currentThemeData();
+      AnimatedMonetTheme.debugScaleMotionLog!(
+        '[AnimatedMonetTheme#${identityHashCode(this)}] retarget scale '
+        '${_end.scale}->${widget.data.scale} currentScale=${current.scale} '
+        'channelScale=${_channel.value.scale} '
+        'channelCompleted=${_channel.isCompleted} '
+        'elapsed=${_channel.elapsed.inMilliseconds}ms '
+        'publishedScale=${_published.scale}',
+      );
+    }
     // A color model change is a basis change in disguise: the in-flight
     // channels are extracted in the model's native units (CAM16 aStar spans
     // roughly +-50, oklch a/b roughly +-0.3), so a new model means the
@@ -1415,6 +1449,13 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
 
   void _handleTick() {
     final value = _currentThemeData();
+    _debugScaleLog(
+      () =>
+          'tick elapsed=${_channel.elapsed.inMilliseconds}ms '
+          'channelScale=${_channel.value.scale} valueScale=${value.scale} '
+          'completed=${_channel.isCompleted} '
+          'frame=${SchedulerBinding.instance.currentSystemFrameTimeStamp.inMilliseconds}ms',
+    );
     // Rounded-value dedup. `_ThemeMotionState.toThemeData` rounds each color
     // channel to the nearest integer, but the underlying spring can keep
     // ticking (ringing within its strict analytic tolerance, see
@@ -1438,6 +1479,11 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
   }
 
   void _handleStatus(AnimationStatus status) {
+    _debugScaleLog(
+      () =>
+          'status $status endScale=${_end.scale} '
+          'elapsed=${_channel.elapsed.inMilliseconds}ms mounted=$mounted',
+    );
     if (status != AnimationStatus.completed) return;
     _lastPublishedAt = SchedulerBinding.instance.currentSystemFrameTimeStamp;
     _lastTickValue = _end;
