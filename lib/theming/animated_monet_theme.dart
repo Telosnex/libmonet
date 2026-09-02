@@ -1100,14 +1100,6 @@ class AnimatedMonetTheme extends StatefulWidget {
   final Duration duration;
   final VoidCallback? onEnd;
 
-  /// Opt-in diagnostic hook. When set, called with a hop name and fields at
-  /// the two points that matter for "inherited scale stopped updating":
-  /// `retarget` (didUpdateWidget saw a new scale) and `published` (the
-  /// inherited MonetTheme was rebuilt with a new scale). Only fires when the
-  /// scale channel is involved; color-only motion is silent.
-  static void Function(String hop, Map<String, Object?> fields)?
-  debugScaleTrace;
-
   /// Maximum inherited-theme publishes per second while animating.
   ///
   /// This throttles only the inherited [MonetTheme] channel. The
@@ -1263,18 +1255,6 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     super.didUpdateWidget(oldWidget);
 
     final targetChanged = widget.data != _end;
-    final trace = AnimatedMonetTheme.debugScaleTrace;
-    if (trace != null && widget.data.scale != _end.scale) {
-      trace('retarget', {
-        'id': identityHashCode(this),
-        'from': _end.scale,
-        'to': widget.data.scale,
-        'published': _published.scale,
-        'channelDone': _channel.isCompleted,
-        'targetChanged': targetChanged,
-        'tickerMode': TickerMode.valuesOf(context).enabled,
-      });
-    }
     // A color model change is a basis change in disguise: the in-flight
     // channels are extracted in the model's native units (CAM16 aStar spans
     // roughly +-50, oklch a/b roughly +-0.3), so a new model means the
@@ -1587,16 +1567,6 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
     }
     if (!force && _published == value) return;
     if (!mounted) return;
-    final trace = AnimatedMonetTheme.debugScaleTrace;
-    if (trace != null && _published.scale != value.scale) {
-      trace('published', {
-        'id': identityHashCode(this),
-        'from': _published.scale,
-        'to': value.scale,
-        'end': _end.scale,
-        'force': force,
-      });
-    }
     setState(() {
       _published = value;
     });
