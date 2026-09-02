@@ -91,12 +91,6 @@ class SimAnimationController<T> extends FluxAnimation<T>
   final Sim<T> sim;
   late final Ticker _ticker;
 
-  /// Diagnostics: whether the driving ticker is currently scheduled.
-  bool get isTickerActive => _ticker.isActive;
-
-  /// Diagnostics: whether the driving ticker is muted by [TickerMode].
-  bool get isTickerMuted => _ticker.muted;
-
   @override
   AnimationStatus get status => _ticker.isActive
       ? .forward
