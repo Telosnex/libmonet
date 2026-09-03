@@ -1382,7 +1382,13 @@ class _AnimatedMonetThemeState extends State<AnimatedMonetTheme>
         return;
       }
       if (_publishesIntermediateInheritedThemes) {
-        _publish(current, force: true);
+        // Publish the t=0 interpolation of the new segment rather than
+        // `current`. Visually identical (t=0 lerps to `begin`), but it names
+        // the new target: descendants that resolve *settled* endpoints (e.g.
+        // an opaque surface recast onto the enclosing theme's final tone)
+        // can pick the right endpoint in the retarget frame instead of one
+        // publish later, so they retarget once per change, not twice.
+        _publish(_currentThemeData(), force: true);
       } else {
         // Final-only mode means inherited-theme dependents see the old
         // semantic theme until completion. Do not publish even the current
