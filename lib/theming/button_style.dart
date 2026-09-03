@@ -36,6 +36,26 @@ Size minimumSizeForScale(double scale) {
   return Size(side, side);
 }
 
+/// [ButtonStyle.animationDuration] for every style built in this file.
+///
+/// Material's `ButtonStyleButton` wraps each button in an `AnimatedTheme`
+/// (icon color) and its `Material` in an `AnimatedDefaultTextStyle`
+/// (foreground), both driven by this duration. Any change to a resolved color
+/// restarts those tweens — hover and press, but also *every* inherited
+/// `MonetTheme` publish while the app theme animates. At Material's default
+/// (`kThemeChangeDuration`, 200 ms) that is a `ThemeData.lerp` over ~50
+/// sub-themes per frame per button for the whole transition plus 200 ms.
+///
+/// `MonetTheme` already animates colors, so the inner tween only adds cost.
+/// [Duration.zero] makes the `AnimationController` complete synchronously
+/// (no ticker; the `Tween` short-circuits to `end` at t=1, so no lerp):
+/// state changes snap, as libmonet button *backgrounds* always have —
+/// `Material` never tweens its color, only elevation, shadow and shape.
+///
+/// Mutable so a perf harness can A/B old and new in one run; production
+/// leaves the default.
+Duration buttonStyleAnimationDuration = Duration.zero;
+
 Size get maximumSize => const Size(double.infinity, double.infinity);
 EdgeInsetsGeometry get padding {
   final isDesktop = !kIsWeb &&
@@ -55,6 +75,7 @@ ButtonStyle backgroundButtonStyle(
   required double scale,
 }) {
   return ButtonStyle(
+    animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
         normal: () => sc.background,
@@ -105,6 +126,7 @@ ButtonStyle fillButtonStyle(
   required double scale,
 }) {
   return ButtonStyle(
+    animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
         normal: () => sc.fill, hover: () => sc.fillHovered, splash: () => sc.fillSplashed),
@@ -151,6 +173,7 @@ ButtonStyle colorButtonStyle(
   required double scale,
 }) {
   return ButtonStyle(
+    animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
         normal: () => sc.color, hover: () => sc.colorHovered, splash: () => sc.colorSplashed),
@@ -198,6 +221,7 @@ ButtonStyle textButtonStyle(
   required double scale,
 }) {
   return ButtonStyle(
+    animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
     surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
@@ -225,6 +249,7 @@ ButtonStyle iconButtonStyle(
   TextStyle? textStyle,
 }) {
   return ButtonStyle(
+    animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
       normal: () => Colors.transparent,
