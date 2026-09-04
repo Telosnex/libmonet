@@ -314,7 +314,7 @@ class MonetThemeData {
       typography: typographyData,
       // BEGIN ALL THE ACCOUTREMENTS
       actionIconTheme: actionIconTheme(),
-      appBarTheme: appBarTheme(primary, textTheme),
+      appBarTheme: appBarTheme(primary, textTheme, scale),
       badgeTheme: badgeThemeData(context, primary, textTheme),
       bannerTheme: bannerThemeData(primary, textTheme),
       bottomAppBarTheme: bottomAppBarTheme(primary),
@@ -379,8 +379,13 @@ class MonetThemeData {
     return const ActionIconThemeData();
   }
 
-  static AppBarTheme appBarTheme(Palette colors, TextTheme textTheme) {
+  static AppBarTheme appBarTheme(
+    Palette colors,
+    TextTheme textTheme,
+    double scale,
+  ) {
     return AppBarTheme(
+      toolbarHeight: kToolbarHeight * scale.sizeScale,
       titleTextStyle: textTheme.displayLarge,
       backgroundColor: colors.background,
       foregroundColor: colors.backgroundText,
@@ -833,7 +838,10 @@ class MonetThemeData {
     );
   }
 
-  static MenuButtonThemeData menuButtonThemeData({required Palette colors, required double scale}) {
+  static MenuButtonThemeData menuButtonThemeData({
+    required Palette colors,
+    required double scale,
+  }) {
     return MenuButtonThemeData(
       style: textButtonStyle(colors, scale: scale).copyWith(
         padding: WidgetStateProperty.all(const EdgeInsets.all(4)),

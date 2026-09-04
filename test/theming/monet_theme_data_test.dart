@@ -9,6 +9,7 @@ Typography _typography(ColorScheme colorScheme) {
 MonetThemeData _theme({
   Color primary = Colors.blue,
   Typography Function(ColorScheme)? typography,
+  double scale = 1,
 }) {
   return MonetThemeData.fromColors(
     brightness: Brightness.light,
@@ -17,7 +18,7 @@ MonetThemeData _theme({
     secondary: Colors.teal,
     tertiary: Colors.orange,
     contrast: 0.5,
-    scale: 1.0,
+    scale: scale,
     typography: typography,
   );
 }
@@ -75,5 +76,26 @@ void main() {
 
     expect(a, equals(b));
     expect(identical(first, second), isTrue);
+  });
+
+  testWidgets('app bar height follows the linear component scale', (
+    tester,
+  ) async {
+    late BuildContext capturedContext;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) {
+            capturedContext = context;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    final theme = _theme(scale: 4).createThemeData(capturedContext);
+
+    // Monet's component ruler is sqrt(scale), so 4x area scale is 2x length.
+    expect(theme.appBarTheme.toolbarHeight, kToolbarHeight * 2);
   });
 }
