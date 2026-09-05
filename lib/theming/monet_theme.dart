@@ -4,6 +4,7 @@ import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/contrast/contrast.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:libmonet/theming/monet_shape_theme.dart';
 
 class MonetTheme extends StatelessWidget {
   final MonetThemeData monetThemeData;
@@ -17,6 +18,7 @@ class MonetTheme extends StatelessWidget {
   Brightness get brightness => monetThemeData.brightness;
   double get contrast => monetThemeData.contrast;
   double get scale => monetThemeData.scale;
+  MonetShapes get shapes => monetThemeData.shapes;
   double get backgroundTone => monetThemeData.backgroundTone;
 
   const MonetTheme({
@@ -37,27 +39,57 @@ class MonetTheme extends StatelessWidget {
     return inheritedTheme?.theme;
   }
 
+  /// Returns geometry from the nearest Monet theme.
+  ///
+  /// This dependency is not notified by palette-only changes.
+  static MonetShapes shapesOf(BuildContext context) {
+    final inheritedShapes = context
+        .dependOnInheritedWidgetOfExactType<_MonetInheritedShapes>();
+    assert(inheritedShapes != null, 'No MonetTheme found in context.');
+    return inheritedShapes!.shapes;
+  }
+
+  static MonetShapes? maybeShapesOf(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<_MonetInheritedShapes>()
+      ?.shapes;
+
   @override
   Widget build(BuildContext context) {
     final materialTheme = monetThemeData.createThemeData(context);
-    return _MonetInheritedTheme(
-      theme: this,
-      // Animated theme is actually worse for design, ex. when switching theme
-      // color, the InputDecoration of a text field only acquires the correct
-      // background color and text color at the end of animating.
-      child: Theme(
-        data: materialTheme,
-        // A nested Material Theme preserves an existing ancestor
-        // CupertinoTheme instead of deriving one from its own ThemeData.
-        // Establish an explicit Cupertino boundary so adaptive Cupertino
-        // controls use this Monet theme rather than the app-level theme.
-        child: CupertinoTheme(
-          data: MaterialBasedCupertinoThemeData(materialTheme: materialTheme),
-          child: child,
+    return _MonetInheritedShapes(
+      shapes: shapes,
+      child: _MonetInheritedTheme(
+        theme: this,
+        // Animated theme is actually worse for design, ex. when switching theme
+        // color, the InputDecoration of a text field only acquires the correct
+        // background color and text color at the end of animating.
+        child: Theme(
+          data: materialTheme,
+          // A nested Material Theme preserves an existing ancestor
+          // CupertinoTheme instead of deriving one from its own ThemeData.
+          // Establish an explicit Cupertino boundary so adaptive Cupertino
+          // controls use this Monet theme rather than the app-level theme.
+          child: CupertinoTheme(
+            data: MaterialBasedCupertinoThemeData(materialTheme: materialTheme),
+            child: child,
+          ),
         ),
       ),
     );
   }
+}
+
+class _MonetInheritedShapes extends InheritedTheme {
+  const _MonetInheritedShapes({required this.shapes, required super.child});
+
+  final MonetShapes shapes;
+
+  @override
+  Widget wrap(BuildContext context, Widget child) =>
+      _MonetInheritedShapes(shapes: shapes, child: child);
+
+  @override
+  bool updateShouldNotify(_MonetInheritedShapes old) => shapes != old.shapes;
 }
 
 class _MonetInheritedTheme extends InheritedTheme {

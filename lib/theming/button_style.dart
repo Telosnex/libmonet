@@ -72,6 +72,7 @@ ButtonStyle backgroundButtonStyle(
   bool showBorder = false,
   TextStyle? textStyle,
   double borderWidth = 2,
+  OutlinedBorder? shape,
   required double scale,
 }) {
   return ButtonStyle(
@@ -98,6 +99,7 @@ ButtonStyle backgroundButtonStyle(
     minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
+    shape: shape == null ? null : WidgetStatePropertyAll(shape),
     side: showBorder
         ? WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.pressed) ||
@@ -123,6 +125,7 @@ ButtonStyle fillButtonStyle(
   bool showBorder = true,
   TextStyle? textStyle,
   double borderWidth = 2,
+  OutlinedBorder? shape,
   required double scale,
 }) {
   return ButtonStyle(
@@ -145,6 +148,7 @@ ButtonStyle fillButtonStyle(
     minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
+    shape: shape == null ? null : WidgetStatePropertyAll(shape),
     side: showBorder
         ? WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.pressed) ||
@@ -170,6 +174,7 @@ ButtonStyle colorButtonStyle(
   bool showBorder = true,
   TextStyle? textStyle,
   double borderWidth = 2,
+  OutlinedBorder? shape,
   required double scale,
 }) {
   return ButtonStyle(
@@ -193,6 +198,7 @@ ButtonStyle colorButtonStyle(
     minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
+    shape: shape == null ? null : WidgetStatePropertyAll(shape),
     side: showBorder
         ? WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.pressed) ||
@@ -218,6 +224,7 @@ ButtonStyle colorButtonStyle(
 ButtonStyle textButtonStyle(
   Palette sc, {
   TextStyle? textStyle,
+  OutlinedBorder? shape,
   required double scale,
 }) {
   return ButtonStyle(
@@ -240,6 +247,7 @@ ButtonStyle textButtonStyle(
     minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
     padding: WidgetStatePropertyAll(padding),
+    shape: shape == null ? null : WidgetStatePropertyAll(shape),
   );
 }
 
@@ -286,12 +294,14 @@ ButtonStyle outlineButtonStyle(
   Palette sc, {
   TextStyle? textStyle,
   double borderWidth = 2,
+  OutlinedBorder? shape,
   required double scale,
 }) {
   final base = backgroundButtonStyle(sc,
       showBorder: true,
       textStyle: textStyle,
       borderWidth: borderWidth,
+      shape: shape,
       scale: scale);
   return base.copyWith(
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),

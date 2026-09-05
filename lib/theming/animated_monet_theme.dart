@@ -69,6 +69,7 @@ class InterpolatedMonetThemeData extends MonetThemeData {
          colorModel: t < 1.0 ? begin.colorModel : end.colorModel,
          contrast: lerpDouble(begin.contrast, end.contrast, t) ?? end.contrast,
          scale: lerpDouble(begin.scale, end.scale, t) ?? end.scale,
+         shapeTheme: t < 1.0 ? begin.shapeTheme : end.shapeTheme,
          typography: t < 1.0 ? begin.typography : end.typography,
        );
 

@@ -4,6 +4,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
+MonetThemeData _theme(Color primary, {double scale = 1}) =>
+    MonetThemeData.fromColors(
+      brightness: Brightness.light,
+      backgroundTone: 94,
+      primary: primary,
+      secondary: Colors.teal,
+      tertiary: Colors.orange,
+      contrast: 0.5,
+      scale: scale,
+    );
+
+class _ShapeProbe extends StatelessWidget {
+  const _ShapeProbe(this.onBuild);
+
+  final VoidCallback onBuild;
+
+  @override
+  Widget build(BuildContext context) {
+    onBuild();
+    MonetTheme.shapesOf(context);
+    return const SizedBox.shrink();
+  }
+}
+
 void main() {
   testWidgets('propagates the Monet theme to Cupertino descendants', (
     tester,
@@ -55,5 +79,32 @@ void main() {
       inheritedCupertinoTheme!.selectionHandleColor,
       inheritedMaterialTheme!.textSelectionTheme.selectionHandleColor,
     );
+  });
+
+  testWidgets('shape lookup ignores palette-only changes', (tester) async {
+    var data = _theme(Colors.blue);
+    var builds = 0;
+    late StateSetter update;
+    final probe = _ShapeProbe(() => builds++);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            update = setState;
+            return MonetTheme(monetThemeData: data, child: probe);
+          },
+        ),
+      ),
+    );
+    expect(builds, 1);
+
+    update(() => data = _theme(Colors.red));
+    await tester.pump();
+    expect(builds, 1);
+
+    update(() => data = _theme(Colors.red, scale: 4));
+    await tester.pump();
+    expect(builds, 2);
   });
 }

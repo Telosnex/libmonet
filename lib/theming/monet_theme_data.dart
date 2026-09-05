@@ -16,6 +16,8 @@ const _kFontFamilyFallback = [
   'NotoEmoji', // 600 KB
 ];
 
+final _defaultShapes = const MonetShapeTheme().resolve(1);
+
 /// The incoming [Typography] may carry app-supplied fallback families (e.g.
 /// bundled Noto assets on embedded Linux, where no OS-level font fallback
 /// exists). Those must be preserved: overwriting them with
@@ -37,12 +39,16 @@ class MonetThemeData {
   final Brightness brightness;
   final double contrast;
   final double scale;
+  final MonetShapeTheme shapeTheme;
   final Typography Function(ColorScheme)? typography;
+
+  late final MonetShapes shapes = shapeTheme.resolve(scale);
 
   // Static cache using weak references - allows GC to reclaim unused ThemeData.
   // Key by the semantic theme object itself instead of hashCode.toString();
   // Map lookup handles hash collisions by falling back to ==.
-  static final _themeCache = <MonetThemeData, WeakReference<ThemeData>>{};
+  static final _themeCache =
+      <MonetThemeData, Map<TextDirection, WeakReference<ThemeData>>>{};
 
   static const double buttonElevation = 4.0;
 
@@ -67,6 +73,7 @@ class MonetThemeData {
     this.colorModel = ColorModel.kDefault,
     this.contrast = 0.5,
     this.scale = 1.0,
+    this.shapeTheme = const MonetShapeTheme(),
     this.typography,
   });
 
@@ -84,6 +91,7 @@ class MonetThemeData {
           brightness == other.brightness &&
           contrast == other.contrast &&
           scale == other.scale &&
+          shapeTheme == other.shapeTheme &&
           other.typography == typography;
 
   @override
@@ -98,6 +106,7 @@ class MonetThemeData {
     brightness,
     contrast,
     scale,
+    shapeTheme,
     typography,
   );
 
@@ -111,6 +120,7 @@ class MonetThemeData {
     Brightness? brightness,
     double? contrast,
     double? scale,
+    MonetShapeTheme? shapeTheme,
     Typography Function(ColorScheme)? typography,
   }) {
     return MonetThemeData(
@@ -123,6 +133,7 @@ class MonetThemeData {
       brightness: brightness ?? this.brightness,
       contrast: contrast ?? this.contrast,
       scale: scale ?? this.scale,
+      shapeTheme: shapeTheme ?? this.shapeTheme,
       typography: typography ?? this.typography,
     );
   }
@@ -135,6 +146,7 @@ class MonetThemeData {
     ColorModel colorModel = ColorModel.kDefault,
     double contrast = 0.5,
     double scale = 1.0,
+    MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
   }) {
     final temperatureCache = TemperatureCache(
@@ -152,6 +164,7 @@ class MonetThemeData {
       algo: algo,
       colorModel: colorModel,
       scale: scale,
+      shapeTheme: shapeTheme,
       typography: typography,
     );
   }
@@ -164,6 +177,7 @@ class MonetThemeData {
     ColorModel colorModel = ColorModel.kDefault,
     double contrast = 0.5,
     double scale = 1.0,
+    MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
   }) {
     final triad = ScorerTriad.threeColorsFromQuantizer(
@@ -180,6 +194,7 @@ class MonetThemeData {
       algo: algo,
       colorModel: colorModel,
       scale: scale,
+      shapeTheme: shapeTheme,
       typography: typography,
     );
   }
@@ -194,6 +209,7 @@ class MonetThemeData {
     double scale = 1.0,
     Algo algo = Algo.apca,
     ColorModel colorModel = ColorModel.kDefault,
+    MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
   }) {
     final primaryPalette = Palette.from(
@@ -227,12 +243,14 @@ class MonetThemeData {
       colorModel: colorModel,
       contrast: contrast,
       scale: scale,
+      shapeTheme: shapeTheme,
       typography: typography,
     );
   }
 
   ThemeData createThemeData(BuildContext context) {
-    final cachedRef = _themeCache[this];
+    final textDirection = Directionality.maybeOf(context) ?? TextDirection.ltr;
+    final cachedRef = _themeCache[this]?[textDirection];
     final cached = cachedRef?.target;
     if (cached != null) {
       return cached;
@@ -265,6 +283,7 @@ class MonetThemeData {
       scale,
       devicePixelRatio,
     );
+    final shapes = this.shapes;
 
     final themeData = ThemeData(
       // Hack-y, idea is, in dark mode, apply on surface (usually lighter)
@@ -325,44 +344,70 @@ class MonetThemeData {
       ),
       bottomSheetTheme: bottomSheetThemeData(primary),
       buttonTheme: buttonThemeData(),
-      cardTheme: cardTheme(primary),
+      cardTheme: cardTheme(primary, shapes),
       checkboxTheme: checkboxThemeData(primary),
       chipTheme: chipThemeData(brightness, primary, textTheme),
       dataTableTheme: dataTableThemeData(textTheme),
-      datePickerTheme: datePickerThemeData(brightness, primary, textTheme),
-      dialogTheme: createDialogTheme(primary, textTheme),
+      datePickerTheme: datePickerThemeData(
+        brightness,
+        primary,
+        textTheme,
+        shapes,
+      ),
+      dialogTheme: createDialogTheme(primary, textTheme, shapes),
       dividerTheme: dividerThemeData(primary),
       drawerTheme: drawerThemeData(primary),
-      dropdownMenuTheme: dropdownMenuThemeData(primary, textTheme),
-      elevatedButtonTheme: elevatedButtonTheme(colors: primary, scale: scale),
-      expansionTileTheme: expansionTileThemeData(primary),
-      filledButtonTheme: filledButtonTheme(colors: primary, scale: scale),
+      dropdownMenuTheme: dropdownMenuThemeData(primary, textTheme, shapes),
+      elevatedButtonTheme: elevatedButtonTheme(
+        colors: primary,
+        scale: scale,
+        shape: shapes.border(),
+      ),
+      expansionTileTheme: expansionTileThemeData(primary, shapes),
+      filledButtonTheme: filledButtonTheme(
+        colors: primary,
+        scale: scale,
+        shape: shapes.border(),
+      ),
       floatingActionButtonTheme: fabThemeData(primary, textTheme),
       iconButtonTheme: iconButtonThemeData(primary),
-      inputDecorationTheme: inputDecorationTheme(primary, textTheme),
+      inputDecorationTheme: inputDecorationTheme(
+        primary,
+        textTheme,
+        shapes,
+        textDirection,
+      ),
       listTileTheme: listTileThemeData(primary, textTheme),
       menuBarTheme: menuBarThemeData(primary),
-      menuButtonTheme: menuButtonThemeData(colors: primary, scale: scale),
-      menuTheme: menuThemeData(primary),
+      menuButtonTheme: menuButtonThemeData(
+        colors: primary,
+        scale: scale,
+        shape: shapes.border(),
+      ),
+      menuTheme: menuThemeData(primary, shapes),
       navigationBarTheme: navigationBarThemeData(primary, textTheme),
       navigationDrawerTheme: navigationDrawerThemeData(primary, textTheme),
       navigationRailTheme: navigationRailThemeData(primary, scale, textTheme),
-      outlinedButtonTheme: outlinedButtonTheme(colors: primary, scale: scale),
-      popupMenuTheme: popupMenuThemeData(primary, textTheme),
+      outlinedButtonTheme: outlinedButtonTheme(
+        colors: primary,
+        scale: scale,
+        shape: shapes.border(),
+      ),
+      popupMenuTheme: popupMenuThemeData(primary, textTheme, shapes),
       progressIndicatorTheme: progressIndicatorThemeData(primary),
       radioTheme: radioThemeData(primary),
-      searchBarTheme: searchBarThemeData(primary, textTheme),
-      searchViewTheme: searchViewThemeData(primary, textTheme),
+      searchBarTheme: searchBarThemeData(primary, textTheme, shapes),
+      searchViewTheme: searchViewThemeData(primary, textTheme, shapes),
       segmentedButtonTheme: segmentedButtonThemeData(primary),
       sliderTheme: sliderThemeData(primary, textTheme),
-      snackBarTheme: snackBarThemeData(primary, textTheme),
+      snackBarTheme: snackBarThemeData(primary, textTheme, shapes),
       switchTheme: switchThemeData(primary),
       tabBarTheme: createTabBarTheme(primary, textTheme),
-      textButtonTheme: textButtonTheme(primary),
+      textButtonTheme: textButtonTheme(primary, shapes.border()),
       textSelectionTheme: textSelectionThemeData(primary),
-      timePickerTheme: timePickerThemeData(primary, textTheme, scale),
+      timePickerTheme: timePickerThemeData(primary, textTheme, scale, shapes),
       toggleButtonsTheme: toggleButtonsThemeData(primary, textTheme),
-      tooltipTheme: tooltipThemeData(primary, textTheme),
+      tooltipTheme: tooltipThemeData(primary, textTheme, shapes),
     );
     final cupertinoOverrideTheme = MaterialBasedCupertinoThemeData(
       materialTheme: themeData,
@@ -370,7 +415,7 @@ class MonetThemeData {
     final finalThemeData = themeData.copyWith(
       cupertinoOverrideTheme: cupertinoOverrideTheme,
     );
-    _themeCache[this] = WeakReference(finalThemeData);
+    (_themeCache[this] ??= {})[textDirection] = WeakReference(finalThemeData);
     return finalThemeData;
   }
 
@@ -465,7 +510,8 @@ class MonetThemeData {
     return const ButtonThemeData();
   }
 
-  static CardThemeData cardTheme(Palette colors) {
+  static CardThemeData cardTheme(Palette colors, [MonetShapes? shapes]) {
+    shapes ??= _defaultShapes;
     return CardThemeData(
       clipBehavior: Clip.none, // match default
       color: colors.background,
@@ -473,10 +519,7 @@ class MonetThemeData {
       surfaceTintColor: colors.background,
       elevation: modalElevation,
       margin: const EdgeInsets.all(0), // match default
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-        side: BorderSide(color: colors.fill, width: 2),
-      ), // match default
+      shape: shapes.border(side: BorderSide(color: colors.fill, width: 2)),
     );
   }
 
@@ -582,8 +625,10 @@ class MonetThemeData {
   static DatePickerThemeData datePickerThemeData(
     Brightness brightness,
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     final background = WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.hovered)) {
         return colors.textHovered;
@@ -619,7 +664,7 @@ class MonetThemeData {
       elevation: null /* will match Dialog.elevation */,
       shadowColor: shadowColor,
       surfaceTintColor: colors.background,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: shapes.border(),
       headerBackgroundColor: colors.color,
       headerForegroundColor: colors.colorText,
       headerHeadlineStyle: textTheme.headlineMedium,
@@ -640,9 +685,7 @@ class MonetThemeData {
       rangePickerElevation: 0,
       rangePickerShadowColor: shadowColor,
       rangePickerSurfaceTintColor: colors.background,
-      rangePickerShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      rangePickerShape: shapes.border(),
       rangePickerHeaderBackgroundColor: colors.color,
       rangePickerHeaderForegroundColor: colors.colorText,
       rangePickerHeaderHeadlineStyle: textTheme.headlineMedium,
@@ -656,14 +699,16 @@ class MonetThemeData {
 
   static DialogThemeData createDialogTheme(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return DialogThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
       shadowColor: _singleShadowColorFor(colors.background),
       surfaceTintColor: colors.background,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: shapes.border(),
       alignment: null,
       iconColor: colors.fill,
       titleTextStyle: textTheme.headlineMedium,
@@ -675,28 +720,36 @@ class MonetThemeData {
 
   static DropdownMenuThemeData dropdownMenuThemeData(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return DropdownMenuThemeData(
       inputDecorationTheme: const InputDecorationTheme(
         fillColor: Colors.red,
         filled: true,
       ),
       textStyle: textTheme.bodyMedium!.copyWith(color: colors.text),
-      menuStyle: createMenuStyleForDropdown(colors),
+      menuStyle: createMenuStyleForDropdown(colors, shapes),
     );
   }
 
   static ElevatedButtonThemeData elevatedButtonTheme({
     required Palette colors,
     required double scale,
+    OutlinedBorder? shape,
   }) {
+    shape ??= const MonetShapeTheme().resolve(scale).border();
     return ElevatedButtonThemeData(
-      style: fillButtonStyle(colors, scale: scale),
+      style: fillButtonStyle(colors, scale: scale, shape: shape),
     );
   }
 
-  static ExpansionTileThemeData expansionTileThemeData(Palette colors) {
+  static ExpansionTileThemeData expansionTileThemeData(
+    Palette colors, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return ExpansionTileThemeData(
       backgroundColor: colors.background,
       collapsedBackgroundColor: colors.background,
@@ -709,13 +762,11 @@ class MonetThemeData {
       collapsedIconColor: colors.text,
       textColor: colors.text,
       collapsedTextColor: colors.text,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+      shape: shapes.border(
         side: BorderSide(color: colors.backgroundText, width: 2),
       ),
 
-      collapsedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+      collapsedShape: shapes.border(
         side: BorderSide(color: colors.fill, width: 2),
       ),
     );
@@ -724,8 +775,12 @@ class MonetThemeData {
   static FilledButtonThemeData filledButtonTheme({
     required Palette colors,
     required double scale,
+    OutlinedBorder? shape,
   }) {
-    return FilledButtonThemeData(style: fillButtonStyle(colors, scale: scale));
+    shape ??= const MonetShapeTheme().resolve(scale).border();
+    return FilledButtonThemeData(
+      style: fillButtonStyle(colors, scale: scale, shape: shape),
+    );
   }
 
   static FloatingActionButtonThemeData fabThemeData(
@@ -806,7 +861,11 @@ class MonetThemeData {
     return MenuBarThemeData(style: createMenuStyleForMenuBar(colors));
   }
 
-  static MenuStyle createMenuStyleForDropdown(Palette colors) {
+  static MenuStyle createMenuStyleForDropdown(
+    Palette colors, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return MenuStyle(
       backgroundColor: WidgetStatePropertyAll(colors.background),
       shadowColor: WidgetStateProperty.all(Colors.transparent),
@@ -819,10 +878,7 @@ class MonetThemeData {
         EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       ),
       shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: colors.colorBorder, width: 2),
-        ),
+        shapes.border(side: BorderSide(color: colors.colorBorder, width: 2)),
       ),
     );
   }
@@ -841,19 +897,19 @@ class MonetThemeData {
   static MenuButtonThemeData menuButtonThemeData({
     required Palette colors,
     required double scale,
+    OutlinedBorder? shape,
   }) {
+    shape ??= const MonetShapeTheme().resolve(scale).border();
     return MenuButtonThemeData(
       style: textButtonStyle(colors, scale: scale).copyWith(
         padding: WidgetStateProperty.all(const EdgeInsets.all(4)),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
+        shape: WidgetStatePropertyAll(shape),
       ),
     );
   }
 
-  static MenuThemeData menuThemeData(Palette colors) {
-    return MenuThemeData(style: createMenuStyleForDropdown(colors));
+  static MenuThemeData menuThemeData(Palette colors, [MonetShapes? shapes]) {
+    return MenuThemeData(style: createMenuStyleForDropdown(colors, shapes));
   }
 
   static NavigationBarThemeData navigationBarThemeData(
@@ -988,25 +1044,26 @@ class MonetThemeData {
   static OutlinedButtonThemeData outlinedButtonTheme({
     required Palette colors,
     required double scale,
+    OutlinedBorder? shape,
   }) {
+    shape ??= const MonetShapeTheme().resolve(scale).border();
     return OutlinedButtonThemeData(
-      style: outlineButtonStyle(colors, scale: scale),
+      style: outlineButtonStyle(colors, scale: scale, shape: shape),
     );
   }
 
   static PopupMenuThemeData popupMenuThemeData(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return PopupMenuThemeData(
       mouseCursor: WidgetStateProperty.all(
         SystemMouseCursors.click,
       ), // match default
       color: colors.background, // Popup background
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: colors.fill, width: 2),
-      ),
+      shape: shapes.border(side: BorderSide(color: colors.fill, width: 2)),
       elevation: modalElevation, // Popup outline elevation
       shadowColor: _singleShadowColorFor(colors.background),
       surfaceTintColor: colors.background,
@@ -1058,8 +1115,10 @@ class MonetThemeData {
 
   static SearchBarThemeData searchBarThemeData(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return SearchBarThemeData(
       elevation: const WidgetStatePropertyAll(2),
       backgroundColor: WidgetStatePropertyAll(colors.background),
@@ -1068,10 +1127,7 @@ class MonetThemeData {
       overlayColor: WidgetStatePropertyAll(colors.background),
       side: WidgetStatePropertyAll(BorderSide(color: colors.fill, width: 2)),
       shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: colors.fill, width: 2),
-        ),
+        shapes.border(side: BorderSide(color: colors.fill, width: 2)),
       ),
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 16),
@@ -1088,8 +1144,10 @@ class MonetThemeData {
 
   static SearchViewThemeData searchViewThemeData(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return SearchViewThemeData(
       backgroundColor: colors.background,
       elevation: modalElevation,
@@ -1100,10 +1158,7 @@ class MonetThemeData {
         minHeight: 56.0,
       ),
       side: BorderSide(color: colors.fill, width: 2),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: colors.fill, width: 2),
-      ),
+      shape: shapes.border(side: BorderSide(color: colors.fill, width: 2)),
       headerTextStyle: textTheme.headlineMedium,
       headerHintStyle: textTheme.headlineSmall,
       dividerColor: colors.backgroundText,
@@ -1206,16 +1261,17 @@ class MonetThemeData {
 
   static SnackBarThemeData snackBarThemeData(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return SnackBarThemeData(
       backgroundColor: colors.color,
       actionTextColor: colors.colorText,
       disabledActionTextColor: colors.colorText,
       contentTextStyle: textTheme.bodyMedium!.copyWith(color: colors.colorText),
       elevation: modalElevation,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+      shape: shapes.border(
         side: BorderSide(color: colors.colorBorder, width: 2),
       ),
 
@@ -1305,8 +1361,11 @@ class MonetThemeData {
     );
   }
 
-  TextButtonThemeData textButtonTheme(Palette colors) {
-    return TextButtonThemeData(style: textButtonStyle(colors, scale: scale));
+  TextButtonThemeData textButtonTheme(Palette colors, [OutlinedBorder? shape]) {
+    shape ??= shapes.border();
+    return TextButtonThemeData(
+      style: textButtonStyle(colors, scale: scale, shape: shape),
+    );
   }
 
   static TextSelectionThemeData textSelectionThemeData(Palette colors) {
@@ -1324,15 +1383,25 @@ class MonetThemeData {
     Palette colors,
     TextTheme textTheme, [
     double scale = 1.0,
+    MonetShapes? shapes,
   ]) {
+    shapes ??= const MonetShapeTheme().resolve(scale);
+    final buttonShape = shapes.border();
     return TimePickerThemeData(
       backgroundColor: colors.background,
-      cancelButtonStyle: outlineButtonStyle(colors, scale: scale),
-      confirmButtonStyle: outlineButtonStyle(colors, scale: scale),
+      cancelButtonStyle: outlineButtonStyle(
+        colors,
+        scale: scale,
+        shape: buttonShape,
+      ),
+      confirmButtonStyle: outlineButtonStyle(
+        colors,
+        scale: scale,
+        shape: buttonShape,
+      ),
       dayPeriodBorderSide: BorderSide(color: colors.fill, width: 2),
 
-      dayPeriodShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+      dayPeriodShape: shapes.border(
         side: BorderSide(color: colors.fill, width: 2),
       ),
       dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
@@ -1368,8 +1437,7 @@ class MonetThemeData {
           return colors.background;
         }
       }),
-      hourMinuteShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+      hourMinuteShape: shapes.border(
         side: BorderSide(color: colors.fill, width: 2),
       ),
       hourMinuteTextColor: WidgetStateColor.resolveWith((states) {
@@ -1385,10 +1453,7 @@ class MonetThemeData {
       }),
       inputDecorationTheme: null, // let picker use its defaults
       padding: const EdgeInsets.all(24), // match default in time_picker.dart
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: colors.fill, width: 2),
-      ),
+      shape: shapes.border(side: BorderSide(color: colors.fill, width: 2)),
     );
   }
 
@@ -1427,8 +1492,10 @@ class MonetThemeData {
 
   static TooltipThemeData tooltipThemeData(
     Palette colors,
-    TextTheme textTheme,
-  ) {
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+  ]) {
+    shapes ??= _defaultShapes;
     return TooltipThemeData(
       constraints: BoxConstraints(minHeight: 32),
       padding: switch (defaultTargetPlatform) {
@@ -1450,8 +1517,7 @@ class MonetThemeData {
       preferBelow: true,
       excludeFromSemantics: false,
       decoration: ShapeDecoration(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+        shape: shapes.border(
           side: BorderSide(color: colors.colorBorder, width: 2),
         ),
         color: colors.color,
@@ -1467,15 +1533,18 @@ class MonetThemeData {
 
   static InputDecorationTheme inputDecorationTheme(
     Palette colors,
-    TextTheme textTheme,
-  ) {
-    final border = OutlineInputBorder(
+    TextTheme textTheme, [
+    MonetShapes? shapes,
+    TextDirection textDirection = TextDirection.ltr,
+  ]) {
+    shapes ??= _defaultShapes;
+    final border = shapes.inputBorder(
       borderSide: BorderSide(width: 2, color: colors.fill),
-      borderRadius: BorderRadius.circular(8),
+      textDirection: textDirection,
     );
-    final focusedBorder = OutlineInputBorder(
+    final focusedBorder = shapes.inputBorder(
       borderSide: BorderSide(width: 3, color: colors.text),
-      borderRadius: BorderRadius.circular(8),
+      textDirection: textDirection,
     );
     return InputDecorationTheme(
       isCollapsed: false,
