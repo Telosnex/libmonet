@@ -143,9 +143,12 @@ class Hct {
     final chroma = lerpDouble(a.chroma, b.chroma, t)!;
     final hue = _lerpKeepHueAngle(a.hue, b.hue, t);
     final opacity = lerpDouble(colorA.opacityNeue, colorB.opacityNeue, t);
-    return Hct.from(hue, chroma, lstar, model: model)
-        .color
-        .withOpacityNeue(opacity!);
+    return Hct.colorFrom(
+      hue,
+      chroma,
+      lstar,
+      model: model,
+    ).withOpacityNeue(opacity!);
   }
 
   /// Linearly interpolates between two colors in HCT space, allowing both hue
@@ -172,9 +175,12 @@ class Hct {
         final bStar = lerpDouble(camA.bstar, camB.bstar, t)!;
         final jStar = lerpDouble(camA.jstar, camB.jstar, t)!;
         final camMerged = Cam16.fromUcs(jStar, aStar, bStar);
-        return Hct.from(camMerged.hue, camMerged.chroma, tone, model: model)
-            .color
-            .withOpacityNeue(opacity);
+        return Hct.colorFrom(
+          camMerged.hue,
+          camMerged.chroma,
+          tone,
+          model: model,
+        ).withOpacityNeue(opacity);
       case ColorModel.cam16v11:
         final camA = Cam16V11.fromInt(colorA.argb);
         final camB = Cam16V11.fromInt(colorB.argb);
@@ -182,9 +188,12 @@ class Hct {
         final bStar = lerpDouble(camA.bstar, camB.bstar, t)!;
         final jStar = lerpDouble(camA.jstar, camB.jstar, t)!;
         final camMerged = Cam16V11.fromUcs(jStar, aStar, bStar);
-        return Hct.from(camMerged.hue, camMerged.chroma, tone, model: model)
-            .color
-            .withOpacityNeue(opacity);
+        return Hct.colorFrom(
+          camMerged.hue,
+          camMerged.chroma,
+          tone,
+          model: model,
+        ).withOpacityNeue(opacity);
       case ColorModel.oklch:
         final okA = Oklch.fromInt(colorA.argb);
         final okB = Oklch.fromInt(colorB.argb);
@@ -197,9 +206,12 @@ class Hct {
         final chroma = math.sqrt(aMerged * aMerged + bMerged * bMerged);
         var hue = math.atan2(bMerged, aMerged) * 180.0 / math.pi;
         if (hue < 0.0) hue += 360.0;
-        return Hct.from(hue, chroma, tone, model: model)
-            .color
-            .withOpacityNeue(opacity);
+        return Hct.colorFrom(
+          hue,
+          chroma,
+          tone,
+          model: model,
+        ).withOpacityNeue(opacity);
     }
   }
 

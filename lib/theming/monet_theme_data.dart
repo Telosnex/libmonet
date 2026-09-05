@@ -252,7 +252,7 @@ class MonetThemeData {
       tertiary,
       contrast,
       algo,
-      Hct.from(0, 0, backgroundTone, model: colorModel).color,
+      Hct.colorFrom(0, 0, backgroundTone, model: colorModel),
       colorModel,
     );
 

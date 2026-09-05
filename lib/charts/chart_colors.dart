@@ -43,12 +43,12 @@ class ChartColors {
     ColorModel colorModel = ColorModel.kDefault,
   }) {
     final seedHct = Hct.fromColor(seed, model: colorModel);
-    final background = Hct.from(
+    final background = Hct.colorFrom(
       seedHct.hue,
       math.min(seedHct.chroma, 16.0),
       backgroundTone,
       model: colorModel,
-    ).color;
+    );
     return ChartColors.fromColorAndBackground(
       seed,
       background,
@@ -352,8 +352,8 @@ class ChartColors {
   /// inventing a hue the seed never expressed.
   late final ToneRamp sequential = () {
     if (!_seedIsChromatic) {
-      final low = Hct.from(0.0, 0.0, nearTone, model: colorModel).color;
-      final high = Hct.from(0.0, 0.0, farTone, model: colorModel).color;
+      final low = Hct.colorFrom(0.0, 0.0, nearTone, model: colorModel);
+      final high = Hct.colorFrom(0.0, 0.0, farTone, model: colorModel);
       return ToneRamp._(
         (t) => Hct.lerpKeepHue(low, high, t, model: colorModel),
       );
@@ -372,7 +372,7 @@ class ChartColors {
       _seedHct.chroma.clamp(8.0, 20.0),
       high.chroma * 0.6,
     );
-    final low = Hct.from(hue, lowChroma, nearTone, model: colorModel).color;
+    final low = Hct.colorFrom(hue, lowChroma, nearTone, model: colorModel);
     return ToneRamp._(
       (t) => Hct.lerpKeepHue(low, high.color, t, model: colorModel),
     );
@@ -401,8 +401,8 @@ class ChartColors {
     final lowIsChromatic = _seedIsChromatic;
     final highIsChromatic = high.uvChroma >= _achromaticUvChroma;
     if (!lowIsChromatic && !highIsChromatic) {
-      final lowEnd = Hct.from(0.0, 0.0, nearTone, model: colorModel).color;
-      final highEnd = Hct.from(0.0, 0.0, farTone, model: colorModel).color;
+      final lowEnd = Hct.colorFrom(0.0, 0.0, nearTone, model: colorModel);
+      final highEnd = Hct.colorFrom(0.0, 0.0, farTone, model: colorModel);
       return ToneRamp._(
         (t) => Hct.lerpKeepHue(lowEnd, highEnd, t, model: colorModel),
       );
@@ -412,13 +412,13 @@ class ChartColors {
         _uvHueDifference(low.uvHue, high.uvHue) < 90.0) {
       high = harmony(low, 2, tonePolicy: HarmonyTonePolicy.fitUvChroma)[1];
     }
-    final neutral = Hct.from(0.0, 0.0, nearTone, model: colorModel).color;
-    Color anchor(Hct side, {required bool isChromatic}) => Hct.from(
+    final neutral = Hct.colorFrom(0.0, 0.0, nearTone, model: colorModel);
+    Color anchor(Hct side, {required bool isChromatic}) => Hct.colorFrom(
       isChromatic ? side.hue : 0.0,
       isChromatic ? math.max(side.chroma, 48.0).clamp(48.0, 72.0) : 0.0,
       farTone,
       model: colorModel,
-    ).color;
+    );
     final lowAnchor = anchor(low, isChromatic: lowIsChromatic);
     final highAnchor = anchor(high, isChromatic: highIsChromatic);
     return ToneRamp._((t) {
