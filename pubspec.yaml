@@ -4,10 +4,16 @@ version: 1.0.0
 homepage:
 
 environment:
-  sdk: '>=3.12.0 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: ">=3.47.0"
 
 dependencies:
+  androidx_graphics_shapes:
+    git:
+      url: https://github.com/Telosnex/dart-flutter-packages.git
+      # Material catalog/safe-area data is certified against this geometry.
+      ref: 37da7df46ab5eb60dc42e440a9e71d5159059f16
+      path: packages/androidx_graphics_shapes
   flutter:
     sdk: flutter
   json_annotation: ^4.9.0

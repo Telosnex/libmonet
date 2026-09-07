@@ -50,6 +50,10 @@ export 'effects/uv_harmony.dart';
 export 'fonts/font_height_equalizer.g.dart';
 export 'fonts/google_fonts_catalog.g.dart';
 
+// Shapes
+export 'shapes/expressive_button.dart';
+export 'shapes/material_expressive_border.dart';
+
 // Theming
 export 'theming/animated_monet_theme.dart';
 export 'theming/button_style.dart';

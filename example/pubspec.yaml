@@ -26,6 +26,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  androidx_graphics_shapes:
+    git:
+      url: https://github.com/Telosnex/dart-flutter-packages.git
+      ref: 37da7df46ab5eb60dc42e440a9e71d5159059f16
+      path: packages/androidx_graphics_shapes
   libmonet:
     path: ../
   flutter:

@@ -17,6 +17,7 @@ import 'package:monet_studio/harmony_expansion_tile.dart';
 import 'package:monet_studio/components_widget.dart';
 import 'package:monet_studio/contrast_expansion_tile.dart';
 import 'package:monet_studio/extracted_widget.dart';
+import 'package:monet_studio/expressive_shapes_expansion_tile.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:monet_studio/palette_viewer.dart';
 import 'package:monet_studio/quantizer_provider.dart';
@@ -222,6 +223,8 @@ class Home extends HookConsumerWidget {
                                 ScalingExpansionTile(
                                   scaleValueNotifier: scale,
                                 ),
+                                const VerticalPadding(),
+                                const ExpressiveShapesExpansionTile(),
                                 const VerticalPadding(),
                                 HarmonyExpansionTile(
                                   color: color.value,
