@@ -102,42 +102,33 @@ class ExpressiveShapeGeometry {
   /// Intersecting endpoint rectangles is safe; interpolating/unioning is not.
   late final List<Rect> safeRects = List.unmodifiable({
     if (from == null)
-      ..._centeredRects(
+      ..._translatedRects(
         to,
         _morph?.toPath(progress: 1).getBounds().center ??
             to.polygon.toPath().getBounds().center,
       )
     else
-      for (final start in _centeredRects(
+      for (final start in _translatedRects(
         from!,
         _morph!.toPath(progress: 0).getBounds().center,
       ))
-        for (final end in _centeredRects(
+        for (final end in _translatedRects(
           to,
           _morph.toPath(progress: 1).getBounds().center,
         ))
           if (!start.intersect(end).isEmpty) start.intersect(end),
   });
 
-  Iterable<Rect> _centeredRects(
+  Iterable<Rect> _translatedRects(
     MaterialExpressiveShape shape,
     Offset center,
   ) sync* {
+    final translation = const Offset(0.5, 0.5) - center;
     for (final rect in materialShapeSafeAreaData[shape]!) {
-      // Morph splitting preserves the curve but can change control-point
-      // bounds. Keep a centered SUBSET of the certified raw rectangle around
-      // the actual endpoint path center, then translate into layout space.
-      final dx = (rect.center.dx - center.dx).abs();
-      final dy = (rect.center.dy - center.dy).abs();
-      final width = rect.width - 2 * dx;
-      final height = rect.height - 2 * dy;
-      if (width > 0 && height > 0) {
-        yield Rect.fromCenter(
-          center: const Offset(0.5, 0.5),
-          width: width,
-          height: height,
-        );
-      }
+      // BoundsCenteredBorder translates this endpoint's path center to the
+      // layout center. Apply exactly the same translation to the certified raw
+      // rectangle, preserving the generator's freely optimized placement.
+      yield rect.shift(translation);
     }
   }
 

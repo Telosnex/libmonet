@@ -70,24 +70,25 @@ equally well, it prefers the smaller surface.
 The ratios in the table are candidates, not limits on the aspect ratio of your
 label. A candidate stays safe when the content fits both of its dimensions.
 
-### Centering
+### Placement
 
 `geometry.border()` returns a `BoundsCenteredBorder` around the polygon border or
 the morph border. The border scales the path, then centers the bounds of the path
 in the surface. This is the same convention as `toShape` in Compose. The border
 does not stretch the path to fill its bounds.
 
-The safe rectangles are generated around the bounds center of each static path.
-The layout translates them into these centered coordinates. A morph splits
-curves at its endpoints, which can move the reported bounds a small distance. For
-this reason the layout takes a centered subset of each certified rectangle,
-around the actual center of the endpoint path, before it intersects the two sets.
+Each safe rectangle is the largest freely translated rectangle generated for its
+aspect ratio. This lets asymmetric shapes use interior space away from their
+bounds center. The layout applies the same bounds-centering translation to the
+rectangle as to the path, preserving that optimized offset. For a morph, it
+translates each endpoint's rectangles independently and intersects the two sets.
 One content position stays valid through the animation.
 
 This is bounds centering, not optical centering. See
 [Material 3 Expressive shapes](material_expressive_shapes.md) for the
-consequences. Asymmetric padding can move the content away from the bounds center
-on purpose.
+consequences. Content can intentionally sit away from the bounds center when
+that is where the largest certified interior lies. Asymmetric padding applies
+inside the selected rectangle.
 
 ### Clearance
 

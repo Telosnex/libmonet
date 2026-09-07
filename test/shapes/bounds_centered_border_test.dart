@@ -47,10 +47,6 @@ void main() {
             }
             if (t != 0 && t != 1) continue;
             for (final safe in geometry.safeRects) {
-              expect(
-                (safe.center - const Offset(.5, .5)).distance,
-                lessThan(1e-10),
-              );
               for (var y = 0; y <= 4; y++) {
                 for (var x = 0; x <= 4; x++) {
                   final point = Offset(
@@ -107,7 +103,7 @@ void main() {
     }
   });
 
-  testWidgets('Fan icon and text align to painted bounds at both endpoints', (
+  testWidgets('Fan icon and text remain contained at both endpoints', (
     tester,
   ) async {
     for (final from in [null, MaterialExpressiveShape.circle]) {
@@ -147,14 +143,18 @@ void main() {
               foreground.getTransformTo(surface),
               Offset.zero & foreground.size,
             );
-            final bounds = geometry
+            final path = geometry
                 .border(progress: progress, stretch: stretch)
-                .getOuterPath(Offset.zero & surface.size)
-                .getBounds();
-            expect(
-              (contentRect.center - bounds.center).distance,
-              lessThan(.001),
-            );
+                .getOuterPath(Offset.zero & surface.size);
+            for (final point in [
+              contentRect.topLeft,
+              contentRect.topRight,
+              contentRect.bottomLeft,
+              contentRect.bottomRight,
+              contentRect.center,
+            ]) {
+              expect(path.contains(point), isTrue);
+            }
             initial ??= surface.size;
             expect(surface.size, initial);
             expect(tester.takeException(), isNull);

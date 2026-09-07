@@ -110,10 +110,11 @@ corner features that the morph needs. These borders center the unit square. Only
 
 ## Content-safe rectangles
 
-`ExpressiveShapeGeometry.safeRects` gives centered rectangles that stay inside
-the outline. libmonet ships this table as const Dart data in
-`lib/shapes/src/material_shape_safe_area_data.dart`. Consumers load no assets and
-parse no JSON.
+`ExpressiveShapeGeometry.safeRects` gives freely placed rectangles that stay
+inside the outline. Each is within the generator tolerance of the largest
+axis-aligned rectangle for its aspect ratio. libmonet ships this table as const
+Dart data in `lib/shapes/src/material_shape_safe_area_data.dart`. Consumers load
+no assets and parse no JSON.
 
 Only the catalog endpoints are certified. During a morph, intermediate frames can
 clip the content.

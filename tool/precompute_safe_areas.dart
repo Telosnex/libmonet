@@ -9,12 +9,14 @@ Future<void> main(List<String> args) async {
   String? dartOutput;
   var ratios = <double>[0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8];
   var clearance = 0.01;
+  var tolerance = 1e-5;
   try {
     for (final arg in args) {
       if (arg == '--help') {
         stdout.writeln(
           'Usage: dart tool/precompute_safe_areas.dart '
-          '[--output=path.json] [--dart-output=path.dart] [--ratios=0.5,1,2,4,8] [--clearance=0.01]\n'
+          '[--output=path.json] [--dart-output=path.dart] [--ratios=0.5,1,2,4,8] '
+          '[--clearance=0.01] [--tolerance=0.00001]\n'
           'Output paths are relative to the invoking directory. Requires '
           'flutter on PATH and resolved pub dependencies. Static endpoints '
           'only; temporary overflow during morphing is allowed.',
@@ -42,6 +44,11 @@ Future<void> main(List<String> args) async {
         if (!clearance.isFinite || clearance < 0 || clearance >= 0.5) {
           throw const FormatException('Clearance must be in [0, 0.5)');
         }
+      } else if (arg.startsWith('--tolerance=')) {
+        tolerance = double.parse(arg.substring('--tolerance='.length));
+        if (!tolerance.isFinite || tolerance <= 0 || tolerance >= 0.1) {
+          throw const FormatException('Tolerance must be in (0, 0.1)');
+        }
       } else {
         throw FormatException('Unknown argument: $arg');
       }
@@ -65,6 +72,7 @@ Future<void> main(List<String> args) async {
             ? null
             : File(dartOutput).absolute.path,
         'clearance': clearance,
+        'tolerance': tolerance,
       }),
     },
     mode: ProcessStartMode.inheritStdio,

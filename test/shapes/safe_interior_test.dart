@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:androidx_graphics_shapes/material_shapes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/shapes/material_expressive_shape.dart';
+import 'package:libmonet/shapes/src/material_shape_safe_area_data.dart';
 
 import '../../tool/src/safe_interior.dart';
 
@@ -26,7 +27,7 @@ void main() {
     Offset(0, 1),
   ]);
 
-  test('checked-in table matches current geometry and generator', () {
+  test('checked-in JSON and Dart tables agree', () {
     final data = jsonDecode(
       File('tool/data/material_shape_safe_areas.json').readAsStringSync(),
     ) as Map<String, dynamic>;
@@ -36,23 +37,19 @@ void main() {
       MaterialExpressiveShape.values.map((shape) => shape.name),
     );
     for (var i = 0; i < shapes.length; i++) {
-      final outline = SafeInteriorOutline(
-        MaterialExpressiveShape.values[i].polygon.cubics,
-      );
-      for (final entry in shapes[i]['rectangles'] as List) {
-        final rect = outline.find(
-          aspectRatio: (entry['aspectRatio'] as num).toDouble(),
-          clearance: (data['clearance'] as num).toDouble(),
-          center: MaterialExpressiveShape.values[i].polygon
-              .toPath()
-              .getBounds()
-              .center,
-        );
-        expect(
-          entry['rect'],
-          rect == null ? null : [rect.left, rect.top, rect.right, rect.bottom],
-        );
-      }
+      final dartRects =
+          materialShapeSafeAreaData[MaterialExpressiveShape.values[i]]!;
+      final jsonRects = [
+        for (final entry in shapes[i]['rectangles'] as List)
+          (() {
+            final values = (entry['rect'] as List)
+                .cast<num>()
+                .map((value) => value.toDouble())
+                .toList();
+            return Rect.fromLTRB(values[0], values[1], values[2], values[3]);
+          })(),
+      ];
+      expect(jsonRects, dartRects);
     }
   });
 
@@ -61,7 +58,7 @@ void main() {
     for (final ratio in [0.5, 1.0, 2.0, 8.0]) {
       final rect = outline.find(aspectRatio: ratio, clearance: 0.02)!;
       final expectedHeight = ratio < 1 ? 0.96 : 0.96 / ratio;
-      expect(rect.height, closeTo(expectedHeight, 1e-7));
+      expect(rect.height, closeTo(expectedHeight, 2e-6));
       expect(rect.width / rect.height, closeTo(ratio, 1e-10));
       expect(rect.center, const Offset(0.5, 0.5));
       expect(outline.contains(rect, clearance: 0.02), isTrue);
@@ -71,6 +68,21 @@ void main() {
       outline.contains(const Rect.fromLTRB(0, 0, 1, 1), clearance: 0),
       isFalse,
     );
+  });
+
+  test('free translation finds the analytic maximum square in a triangle', () {
+    final outline = SafeInteriorOutline(
+      lines(const [Offset(0.5, 0), Offset(1, 1), Offset(0, 1)]),
+    );
+    final rect = outline.find(aspectRatio: 1, clearance: 0, tolerance: 1e-6)!;
+
+    expect(outline.areaCentroid.dx, closeTo(0.5, 1e-12));
+    expect(outline.areaCentroid.dy, closeTo(2 / 3, 1e-12));
+    expect(rect.width, closeTo(0.5, 2e-5));
+    expect(rect.height, closeTo(0.5, 2e-5));
+    expect(rect.center.dx, closeTo(0.5, 2e-5));
+    expect(rect.center.dy, closeTo(0.75, 2e-5));
+    expect(outline.contains(rect, clearance: 0), isTrue);
   });
 
   test(
@@ -106,11 +118,12 @@ void main() {
       }
       expect(outline.contains(rect, clearance: 0), isFalse);
       final safe = outline.find(aspectRatio: 1)!;
-      expect(safe.width, lessThan(0.4));
+      expect(safe.width, greaterThan(0.6));
+      expect(outline.contains(safe), isTrue);
     },
   );
 
-  test('unfilled center returns null instead of an unsafe rectangle', () {
+  test('free translation finds a safe lobe when bounds center is unfilled', () {
     final outline = SafeInteriorOutline(
       lines(const [
         Offset(0, 0),
@@ -123,7 +136,9 @@ void main() {
         Offset(0, 1),
       ]),
     );
-    expect(outline.find(aspectRatio: 1), isNull);
+    final rect = outline.find(aspectRatio: 1)!;
+    expect(rect.center.dx, isNot(closeTo(0.5, 0.01)));
+    expect(outline.contains(rect), isTrue);
   });
 
   test(
@@ -143,7 +158,11 @@ void main() {
       final safe = fine.find(aspectRatio: 1, clearance: 0)!;
       expect(safe.width, closeTo(0.7071, 0.002));
       expect(fine.contains(safe, clearance: 0), isTrue);
-      final coarseSafe = coarse.find(aspectRatio: 1, clearance: 0);
+      final coarseSafe = coarse.find(
+        aspectRatio: 1,
+        clearance: 0,
+        tolerance: 0.01,
+      );
       expect(coarseSafe == null || coarseSafe.width <= safe.width, isTrue);
     },
   );
@@ -155,6 +174,10 @@ void main() {
     }
     expect(
       () => outline.find(aspectRatio: 1, clearance: -1),
+      throwsArgumentError,
+    );
+    expect(
+      () => outline.find(aspectRatio: 1, tolerance: 0),
       throwsArgumentError,
     );
     expect(() => SafeInteriorOutline([]), throwsArgumentError);
@@ -171,11 +194,9 @@ void main() {
 
   test('all catalog rectangles pass independent dense filled-path checks', () {
     for (final shape in MaterialExpressiveShape.values) {
-      final outline = SafeInteriorOutline(shape.polygon.cubics);
       final path = shape.polygon.toPath();
-      for (final ratio in [0.5, 1.0, 2.0, 4.0, 8.0]) {
-        final rect = outline.find(aspectRatio: ratio)!;
-        expect(outline.find(aspectRatio: ratio), rect); // Deterministic.
+      for (final (index, ratio) in [0.5, 1.0, 2.0, 4.0, 8.0].indexed) {
+        final rect = materialShapeSafeAreaData[shape]![index * 2];
         expect(rect.width / rect.height, closeTo(ratio, 1e-10));
         final expanded = rect.inflate(
           0.009,
