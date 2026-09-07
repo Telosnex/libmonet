@@ -18,6 +18,47 @@ void main() {
     }
   });
 
+  testWidgets('equivalent fixed-size candidates prefer the area centroid', (
+    tester,
+  ) async {
+    for (final shape in [
+      MaterialExpressiveShape.bun,
+      MaterialExpressiveShape.pixelCircle,
+    ]) {
+      final geometry = ExpressiveShapeGeometry(to: shape);
+      final childKey = ValueKey(shape);
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: SizedBox.square(
+              dimension: 52,
+              child: ExpressiveShapeContent(
+                geometry: geometry,
+                padding: EdgeInsets.zero,
+                clearance: 1,
+                child: SizedBox.square(key: childKey, dimension: 36),
+              ),
+            ),
+          ),
+        ),
+      );
+      final content = tester.renderObject<RenderBox>(
+        find.byType(ExpressiveShapeContent),
+      );
+      final child = tester.renderObject<RenderBox>(find.byKey(childKey));
+      final paintedCenter = MatrixUtils.transformPoint(
+        child.getTransformTo(content),
+        child.size.center(Offset.zero),
+      );
+      expect(
+        paintedCenter,
+        offsetMoreOrLessEquals(const Offset(26, 26), epsilon: 0.001),
+        reason: shape.name,
+      );
+    }
+  });
+
   for (final stretch in [false, true]) {
     testWidgets(
       'endpoint fit, shared surface coordinates and stable morph layout stretch=$stretch',

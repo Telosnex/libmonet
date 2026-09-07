@@ -37,8 +37,13 @@ void main() {
       MaterialExpressiveShape.values.map((shape) => shape.name),
     );
     for (var i = 0; i < shapes.length; i++) {
-      final dartRects =
-          materialShapeSafeAreaData[MaterialExpressiveShape.values[i]]!;
+      final shape = MaterialExpressiveShape.values[i];
+      final centroid = (shapes[i]['areaCentroid'] as List).cast<num>();
+      expect(
+        materialShapeAreaCentroidData[shape],
+        Offset(centroid[0].toDouble(), centroid[1].toDouble()),
+      );
+      final dartRects = materialShapeSafeAreaData[shape]!;
       final jsonRects = [
         for (final entry in shapes[i]['rectangles'] as List)
           (() {
@@ -83,6 +88,22 @@ void main() {
     expect(rect.center.dx, closeTo(0.5, 2e-5));
     expect(rect.center.dy, closeTo(0.75, 2e-5));
     expect(outline.contains(rect, clearance: 0), isTrue);
+  });
+
+  test('flat catalog optima remain at their area centroids', () {
+    for (final (shape, ratio) in [
+      (MaterialExpressiveShape.bun, 0.75),
+      (MaterialExpressiveShape.bun, 1.0),
+      (MaterialExpressiveShape.pixelCircle, 1.0),
+    ]) {
+      final outline = SafeInteriorOutline(shape.polygon.cubics);
+      final rect = outline.find(aspectRatio: ratio)!;
+      expect(
+        (rect.center - outline.areaCentroid).distance,
+        lessThan(1e-10),
+        reason: '${shape.name} ratio=$ratio',
+      );
+    }
   });
 
   test(

@@ -29,10 +29,10 @@ renormalize the path. Some shapes leave unused space inside the unit square.
 - Each rectangle has the requested width/height ratio.
 - `clearance` is additional rectangular clearance from the outline, in source
   units (default 0.01). It is **not logical-pixel padding or a stroke allowance**.
-- `tolerance` is the maximum source-coordinate height by which an undiscovered
-  rectangle could improve the result (default `1e-5`).
+- `tolerance` is the maximum source-coordinate height sacrificed by the
+  returned rectangle relative to the global maximum (default `1e-5`).
 - `areaCentroid` is the exact filled-area centroid obtained by polynomial
-  integration of the cubic chain. It is used only to break numerical ties.
+  integration of the cubic chain. It defines the secondary placement objective.
 - `null` means no useful certified safe rectangle was found anywhere.
 - Output preserves full double precision. Do not round coordinates outward.
 - Generation is deterministic. Regenerate after upgrading the geometry fork;
@@ -55,9 +55,16 @@ is the maximum rectangle height at center `c`, then for centers `c` and `d`,
 This follows by translating a contained rectangle and reducing its half-extents
 by the translation on each axis. The inequality gives a certified upper bound
 for every unvisited center cell. Local coordinate searches supply good lower
-bounds but cannot decide termination; the branch-and-bound queue terminates only
-when no cell can improve the result by more than `tolerance`. Among numerically
-equal candidates, the center nearest the filled-area centroid wins.
+bounds but cannot decide termination.
+
+The optimization is explicitly two-stage. The first branch-and-bound search uses
+one quarter of `tolerance` to bound the unknown global maximum. A second search
+uses the remaining budget as an epsilon constraint and minimizes Euclidean
+center distance from the area centroid. Its cells are ordered by a lower bound
+on centroid distance and rejected when the Lipschitz bound proves they cannot
+contain the target rectangle. This avoids ordering truly equal optima by
+binary-search grid noise: symmetric plateaus stay centered, while asymmetric
+shapes move only when doing so buys more than the declared tolerance.
 
 A cubic lies inside the convex hull of its four control points, hence inside
 their axis-aligned bounding box. If that box is strictly separated from the

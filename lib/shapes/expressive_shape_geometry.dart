@@ -97,6 +97,25 @@ class ExpressiveShapeGeometry {
     }
   }
 
+  /// Filled-area centroid in the same centered unit coordinates as [safeRects].
+  /// Candidate selection uses this only after legibility and surface size are
+  /// tied, preventing table order from choosing an arbitrary equivalent lobe.
+  late final Offset preferredCenter = from == null
+      ? _translatedPoint(
+          to,
+          _morph?.toPath(progress: 1).getBounds().center ??
+              to.polygon.toPath().getBounds().center,
+        )
+      : (_translatedPoint(
+                  from!,
+                  _morph!.toPath(progress: 0).getBounds().center,
+                ) +
+                _translatedPoint(
+                  to,
+                  _morph.toPath(progress: 1).getBounds().center,
+                )) /
+            2;
+
   /// Rectangles safe at catalog endpoints, not necessarily during transitions.
   /// After mid-morph retargeting, only the destination is certified safe.
   /// Intersecting endpoint rectangles is safe; interpolating/unioning is not.
@@ -118,6 +137,9 @@ class ExpressiveShapeGeometry {
         ))
           if (!start.intersect(end).isEmpty) start.intersect(end),
   });
+
+  Offset _translatedPoint(MaterialExpressiveShape shape, Offset center) =>
+      materialShapeAreaCentroidData[shape]! + (const Offset(0.5, 0.5) - center);
 
   Iterable<Rect> _translatedRects(
     MaterialExpressiveShape shape,

@@ -82,7 +82,10 @@ aspect ratio. This lets asymmetric shapes use interior space away from their
 bounds center. The layout applies the same bounds-centering translation to the
 rectangle as to the path, preserving that optimized offset. For a morph, it
 translates each endpoint's rectangles independently and intersects the two sets.
-One content position stays valid through the animation.
+One content position stays valid through the animation. If several aspect-ratio
+entries produce the same legibility and surface size, runtime selection prefers
+the entry nearest the transformed area centroid rather than relying on table
+order.
 
 This is bounds centering, not optical centering. See
 [Material 3 Expressive shapes](material_expressive_shapes.md) for the

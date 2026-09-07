@@ -74,13 +74,13 @@ class SafeInteriorOutline {
   /// Largest certified freely translated rectangle with
   /// width/height = [aspectRatio].
   ///
-  /// This is a deterministic branch-and-bound search over the rectangle's
-  /// center. At each center, monotonic bisection finds a certified lower bound
-  /// and an unsafe upper bound on height. The objective is 2-Lipschitz in the
-  /// aspect-weighted L-infinity metric, which gives every center cell a valid
-  /// global upper bound. Search ends only when no cell can improve the returned
-  /// height by more than [tolerance]. Equal-height candidates prefer the
-  /// outline's filled-area centroid.
+  /// This is a deterministic two-stage branch-and-bound search. First it proves
+  /// the globally maximal height to part of [tolerance]. It then minimizes
+  /// distance from the filled-area centroid subject to losing no more than the
+  /// remainder of [tolerance]. At each center, monotonic bisection finds a
+  /// certified lower bound and an upper bound on height. The objective is
+  /// 2-Lipschitz in the aspect-weighted L-infinity metric, which gives every
+  /// center cell a valid global upper bound.
   ///
   /// [contains] remains the final certification boundary; floating-point and
   /// recursive cubic guards make this an epsilon-global numerical result, not
@@ -103,20 +103,31 @@ class SafeInteriorOutline {
     final domain = _bounds.deflate(clearance + numericGuard);
     if (domain.isEmpty) return null;
 
-    final tieTolerance = tolerance * 0.01;
-    final branchTolerance = tolerance - tieTolerance;
+    // Split the public error budget between proving the optimum and allowing a
+    // visually stable placement. Inner bisection is substantially tighter than
+    // either budget, so equal true optima cannot be ordered by its grid noise.
+    final fitTolerance = tolerance / 32;
+    final optimalityTolerance = tolerance / 4;
+    final placementTolerance = tolerance - optimalityTolerance;
     var maxLower = 0.0;
-    _CenterFit? best;
+    _CenterFit? maximumWitness;
+
     void consider(_CenterFit fit) {
       if (fit.rect == null) return;
+      final current = maximumWitness;
+      if (current == null) {
+        maxLower = fit.lower;
+        maximumWitness = fit;
+        return;
+      }
       maxLower = math.max(maxLower, fit.lower);
-      final current = best;
-      if (current == null ||
-          current.lower < maxLower - tieTolerance ||
-          (fit.lower >= maxLower - tieTolerance &&
+      final currentEligible = current.lower >= maxLower - fitTolerance;
+      final fitEligible = fit.lower >= maxLower - fitTolerance;
+      if (!currentEligible ||
+          (fitEligible &&
               (fit.center - areaCentroid).distanceSquared <
                   (current.center - areaCentroid).distanceSquared)) {
-        best = fit;
+        maximumWitness = fit;
       }
     }
 
@@ -124,7 +135,7 @@ class SafeInteriorOutline {
       center,
       aspectRatio: aspectRatio,
       clearance: clearance,
-      tolerance: tolerance,
+      tolerance: fitTolerance,
     );
 
     _CenterFit locallyMaximize(Offset seed) {
@@ -141,10 +152,10 @@ class SafeInteriorOutline {
               (current.center.dy + dy).clamp(domain.top, domain.bottom),
             );
             final candidate = fitAt(point);
-            if (candidate.lower > next.lower) next = candidate;
+            if (candidate.lower > next.lower + fitTolerance) next = candidate;
           }
         }
-        if (next.lower > current.lower + tolerance * 0.01) {
+        if (next.lower > current.lower + fitTolerance) {
           current = next;
         } else {
           stepX /= 2;
@@ -169,19 +180,14 @@ class SafeInteriorOutline {
 
     final queue = _MaxCellHeap();
     void enqueue(Rect cellBounds) {
-      final fit = _fitAtCenter(
-        cellBounds.center,
-        aspectRatio: aspectRatio,
-        clearance: clearance,
-        tolerance: tolerance,
-      );
+      final fit = fitAt(cellBounds.center);
       consider(fit);
       final centerRadius = math.max(
         cellBounds.width / (2 * aspectRatio),
         cellBounds.height / 2,
       );
       final upper = fit.upper + 2 * centerRadius;
-      if (upper > maxLower + branchTolerance) {
+      if (upper > maxLower + optimalityTolerance) {
         queue.add(_SearchCell(cellBounds, upper));
       }
     }
@@ -190,7 +196,7 @@ class SafeInteriorOutline {
     var visited = 0;
     while (queue.isNotEmpty) {
       final cell = queue.removeFirst();
-      if (cell.upper <= maxLower + branchTolerance) continue;
+      if (cell.upper <= maxLower + optimalityTolerance) continue;
       if (++visited > 2000000) {
         throw StateError(
           'Safe-area branch-and-bound exceeded 2000000 cells; '
@@ -212,9 +218,120 @@ class SafeInteriorOutline {
       }
     }
 
-    final result = best?.rect;
+    final witness = maximumWitness;
+    if (witness == null) return null;
+    // Since the unknown optimum is at most optimalityTolerance above maxLower,
+    // this target is guaranteed to be within the public tolerance of it.
+    final targetHeight = math.max(0.0, maxLower - placementTolerance);
+    final preferredCenter = _nearestFeasibleCenter(
+      domain,
+      targetHeight: targetHeight,
+      aspectRatio: aspectRatio,
+      clearance: clearance,
+      fitTolerance: fitTolerance,
+      witness: witness,
+    );
+    final target = Rect.fromCenter(
+      center: preferredCenter,
+      width: targetHeight * aspectRatio,
+      height: targetHeight,
+    );
+    final fitted = fitAt(preferredCenter);
+    final result = fitted.lower > targetHeight ? fitted.rect : target;
     if (result == null || result.shortestSide < 1e-8) return null;
     return contains(result, clearance: clearance) ? result : null;
+  }
+
+  Offset _nearestFeasibleCenter(
+    Rect domain, {
+    required double targetHeight,
+    required double aspectRatio,
+    required double clearance,
+    required double fitTolerance,
+    required _CenterFit witness,
+  }) {
+    Rect targetAt(Offset center) => Rect.fromCenter(
+      center: center,
+      width: targetHeight * aspectRatio,
+      height: targetHeight,
+    );
+
+    bool feasible(Offset center) =>
+        contains(targetAt(center), clearance: clearance);
+
+    if (feasible(areaCentroid)) return areaCentroid;
+
+    var nearest = witness.center;
+    var nearestDistance = (nearest - areaCentroid).distance;
+    final centerTolerance = fitTolerance;
+    final queue = _MinDistanceCellHeap();
+
+    double lowerDistance(Rect bounds) {
+      final dx = areaCentroid.dx < bounds.left
+          ? bounds.left - areaCentroid.dx
+          : areaCentroid.dx > bounds.right
+          ? areaCentroid.dx - bounds.right
+          : 0.0;
+      final dy = areaCentroid.dy < bounds.top
+          ? bounds.top - areaCentroid.dy
+          : areaCentroid.dy > bounds.bottom
+          ? areaCentroid.dy - bounds.bottom
+          : 0.0;
+      return math.sqrt(dx * dx + dy * dy);
+    }
+
+    void enqueue(Rect bounds) {
+      final distance = lowerDistance(bounds);
+      if (distance >= nearestDistance - centerTolerance) return;
+      final fit = _fitAtCenter(
+        bounds.center,
+        aspectRatio: aspectRatio,
+        clearance: clearance,
+        tolerance: fitTolerance,
+      );
+      final centerRadius = math.max(
+        bounds.width / (2 * aspectRatio),
+        bounds.height / 2,
+      );
+      if (fit.upper + 2 * centerRadius < targetHeight) return;
+      if (feasible(bounds.center)) {
+        final candidateDistance = (bounds.center - areaCentroid).distance;
+        if (candidateDistance < nearestDistance) {
+          nearest = bounds.center;
+          nearestDistance = candidateDistance;
+        }
+      }
+      if (bounds.longestSide > centerTolerance) {
+        queue.add(_NearestCell(bounds, distance));
+      }
+    }
+
+    enqueue(domain);
+    var visited = 0;
+    while (queue.isNotEmpty) {
+      final cell = queue.removeFirst();
+      if (cell.lowerDistance >= nearestDistance - centerTolerance) break;
+      if (++visited > 2000000) {
+        throw StateError(
+          'Safe-area centroid projection exceeded 2000000 cells; '
+          'target=$targetHeight, nearest=$nearestDistance, '
+          'cell=${cell.bounds}; increase tolerance or inspect the outline',
+        );
+      }
+      final bounds = cell.bounds;
+      if (bounds.width >= bounds.height) {
+        final middle = bounds.center.dx;
+        enqueue(Rect.fromLTRB(bounds.left, bounds.top, middle, bounds.bottom));
+        enqueue(Rect.fromLTRB(middle, bounds.top, bounds.right, bounds.bottom));
+      } else {
+        final middle = bounds.center.dy;
+        enqueue(Rect.fromLTRB(bounds.left, bounds.top, bounds.right, middle));
+        enqueue(
+          Rect.fromLTRB(bounds.left, middle, bounds.right, bounds.bottom),
+        );
+      }
+    }
+    return nearest;
   }
 
   _CenterFit _fitAtCenter(
@@ -278,6 +395,53 @@ class _SearchCell {
 
   final Rect bounds;
   final double upper;
+}
+
+class _NearestCell {
+  const _NearestCell(this.bounds, this.lowerDistance);
+
+  final Rect bounds;
+  final double lowerDistance;
+}
+
+class _MinDistanceCellHeap {
+  final List<_NearestCell> _items = [];
+
+  bool get isNotEmpty => _items.isNotEmpty;
+
+  void add(_NearestCell value) {
+    _items.add(value);
+    var child = _items.length - 1;
+    while (child > 0) {
+      final parent = (child - 1) ~/ 2;
+      if (_items[parent].lowerDistance <= value.lowerDistance) break;
+      _items[child] = _items[parent];
+      child = parent;
+    }
+    _items[child] = value;
+  }
+
+  _NearestCell removeFirst() {
+    final result = _items.first;
+    final last = _items.removeLast();
+    if (_items.isEmpty) return result;
+    var parent = 0;
+    while (true) {
+      final left = parent * 2 + 1;
+      if (left >= _items.length) break;
+      final right = left + 1;
+      final child =
+          right < _items.length &&
+              _items[right].lowerDistance < _items[left].lowerDistance
+          ? right
+          : left;
+      if (_items[child].lowerDistance >= last.lowerDistance) break;
+      _items[parent] = _items[child];
+      parent = child;
+    }
+    _items[parent] = last;
+    return result;
+  }
 }
 
 class _MaxCellHeap {

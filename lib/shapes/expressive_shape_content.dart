@@ -140,6 +140,20 @@ class _RenderExpressiveContent extends RenderShiftedBox {
     );
   }
 
+  Offset _mappedPoint(Offset point, Size size) {
+    final sx = stretch ? size.width : size.shortestSide;
+    final sy = stretch ? size.height : size.shortestSide;
+    return Offset(
+      (size.width - sx) / 2 + point.dx * sx,
+      (size.height - sy) / 2 + point.dy * sy,
+    );
+  }
+
+  double _preferredCenterDistanceSquared(_Plan plan) =>
+      (_mapped(plan.rect, plan.size).center -
+              _mappedPoint(geometry.preferredCenter, plan.size))
+          .distanceSquared;
+
   _Plan _fit(
     BoxConstraints constraints,
     Rect rect,
@@ -224,12 +238,26 @@ class _RenderExpressiveContent extends RenderShiftedBox {
         () => child?.getDryLayout(childConstraints) ?? Size.zero,
       );
       final candidate = _fit(constraints, rect, childConstraints, childSize);
-      // Prefer legibility first; among equally fitting entries minimize area.
-      if (best == null ||
-          candidate.scale > best.scale + 1e-9 ||
-          ((candidate.scale - best.scale).abs() < 1e-9 &&
-              candidate.size.width * candidate.size.height <
-                  best.size.width * best.size.height)) {
+      // Prefer legibility, then the smallest surface. If both are numerically
+      // tied, prefer the filled-area centroid instead of implicit table order.
+      final current = best;
+      if (current == null) {
+        best = candidate;
+        continue;
+      }
+      const comparisonTolerance = 1e-9;
+      final candidateArea = candidate.size.width * candidate.size.height;
+      final currentArea = current.size.width * current.size.height;
+      final areaTolerance =
+          math.max(1.0, math.max(candidateArea, currentArea)) *
+          comparisonTolerance;
+      if (candidate.scale > current.scale + comparisonTolerance ||
+          ((candidate.scale - current.scale).abs() <= comparisonTolerance &&
+              (candidateArea < currentArea - areaTolerance ||
+                  ((candidateArea - currentArea).abs() <= areaTolerance &&
+                      _preferredCenterDistanceSquared(candidate) <
+                          _preferredCenterDistanceSquared(current) -
+                              comparisonTolerance)))) {
         best = candidate;
       }
     }

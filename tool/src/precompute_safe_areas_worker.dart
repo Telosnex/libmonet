@@ -58,12 +58,12 @@ void main() {
         'source': 'androidx_graphics_shapes MaterialShapes via MaterialExpressiveShape',
         'coordinates': 'Original package unit coordinates; no bounds renormalization',
         'objective': 'Largest freely translated axis-aligned rectangle at each aspect ratio',
-        'tieBreak': 'Within numerical tolerance, nearest center to exact cubic area centroid',
+        'secondaryObjective': 'Nearest center to exact cubic area centroid within the size tolerance',
         'rectFormat': ['left', 'top', 'right', 'bottom'],
         'clearance': clearance,
         'tolerance': tolerance,
         'numericGuard': SafeInteriorOutline.numericGuard,
-        'method': 'Lipschitz branch-and-bound over center; monotonic size bisection; recursive cubic control bounds depth 24; inconclusive rejected',
+        'method': 'Two-stage Lipschitz branch-and-bound over size and centroid distance; monotonic size bisection; recursive cubic control bounds depth 24; inconclusive rejected',
         'scope': 'Static endpoints only; no intermediate morph containment required',
         'shapes': entries,
       })}\n',
@@ -76,7 +76,20 @@ void main() {
         'global tolerance $tolerance.\n'
         "import 'dart:ui';\n"
         "import '../material_expressive_shape.dart';\n\n"
-        'const materialShapeSafeAreaData = <MaterialExpressiveShape, List<Rect>>{\n',
+        'const materialShapeAreaCentroidData = '
+        '<MaterialExpressiveShape, Offset>{\n',
+      );
+      for (final shape in entries) {
+        final centroid = shape['areaCentroid']! as List<double>;
+        buffer.writeln(
+          '  MaterialExpressiveShape.${shape['shape']}: '
+          'Offset(${centroid.join(', ')}),',
+        );
+      }
+      buffer.writeln('};\n');
+      buffer.writeln(
+        'const materialShapeSafeAreaData = '
+        '<MaterialExpressiveShape, List<Rect>>{',
       );
       for (final shape in entries) {
         buffer.writeln('  MaterialExpressiveShape.${shape['shape']}: [');
