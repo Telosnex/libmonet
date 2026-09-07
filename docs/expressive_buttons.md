@@ -45,7 +45,6 @@ ExpressiveButton(
 | `stretch` | If true, the shape fills both axes. If false, it keeps its proportions. |
 | `padding` | Space between the content and the interior rectangle. |
 | `clearance` | Extra space in logical pixels for the stroke and anti-aliasing. |
-| `minimumScale` | Minimum acceptable content scale before an off-anchor placement may win. Defaults to 2/3. |
 | `constraints` | The size limits of the surface. The default minimum is 48 by 48. |
 | `overflow` | The policy for a parent that is too small. |
 | `style` | Colors, typography, elevation, overlays, and the side. |
@@ -65,10 +64,9 @@ curve, and no precompute in consumer code.
 
 For each candidate rectangle, the layout measures the content at the available
 wrapping width. Then it sizes the surface so that the content and padding fit.
-Candidates that render at or above `minimumScale` minimize displacement from the
-design anchor first, then surface area. If none reaches that threshold, the
-largest rendering wins. The default 2/3 maps a requested 36-pixel icon to
-Material's 24-pixel minimum legible icon size.
+Every candidate is centered on one precomputed optical center. Layout can scale
+content down when space is constrained, but it never translates content away
+from that center to gain size.
 
 The ratios in the table are candidates, not limits on the aspect ratio of your
 label. A candidate stays safe when the content fits both of its dimensions.
@@ -80,21 +78,20 @@ the morph border. The border scales the path, then centers the bounds of the pat
 in the surface. This is the same convention as `toShape` in Compose. The border
 does not stretch the path to fill its bounds.
 
-For each aspect ratio the generator retains two Pareto endpoints: the largest
-rectangle at the path-bounds design anchor and the globally largest translated
-rectangle. The first keeps ordinary content naturally centered. The second lets
-content use an asymmetric interior when centering would make it illegible. The
-layout applies the same bounds-centering translation to both rectangles as to
-the path.
+For each aspect ratio the generator retains the largest rectangle centered on
+the shape's optical center. That center is generated from the silhouette without
+shape-name exceptions:
 
-For a morph, endpoint rectangles are translated independently and intersected.
-One content position stays valid through the animation. The same legibility and
-anchor-distance policy selects among those intersections; table order is never a
-placement policy.
+- multiple reflection axes use their common intersection;
+- one reflection axis uses the point of maximum outline clearance on that axis;
+- no detected reflection axis uses the convex-hull centroid.
 
-This is bounds centering, not optical centering. See
-[Material 3 Expressive shapes](material_expressive_shapes.md). Asymmetric padding
-applies inside the selected rectangle.
+The layout applies the same bounds-centering translation to the optical center
+and rectangle as to the path.
+
+For a morph, endpoint rectangles are translated independently, intersected, and
+cropped symmetrically around the average of the endpoint optical centers. One
+fixed content center stays valid through the animation.
 
 ### Clearance
 

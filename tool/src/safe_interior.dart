@@ -344,8 +344,7 @@ class SafeInteriorOutline {
 
   /// Largest certified rectangle of [aspectRatio] at exactly [center].
   ///
-  /// Unlike [find], this preserves the caller's design anchor. It is useful as
-  /// one endpoint of the size-versus-alignment Pareto set.
+  /// Unlike [find], this preserves the caller's supplied center.
   Rect? findAtCenter({
     required double aspectRatio,
     required Offset center,

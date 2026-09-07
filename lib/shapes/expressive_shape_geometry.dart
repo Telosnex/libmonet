@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:androidx_graphics_shapes/material_shapes.dart';
 import 'package:flutter/painting.dart';
 
@@ -97,9 +99,8 @@ class ExpressiveShapeGeometry {
     }
   }
 
-  /// Design anchor in the same bounds-centered unit coordinates as [safeRects].
-  /// Candidate selection prefers proximity to this point once its minimum
-  /// legibility requirement is met.
+  /// Optical content center in the same bounds-centered unit coordinates as
+  /// [safeRects]. Content remains fixed here and scales down when needed.
   late final Offset preferredCenter = from == null
       ? _translatedPoint(
           to,
@@ -127,16 +128,37 @@ class ExpressiveShapeGeometry {
             to.polygon.toPath().getBounds().center,
       )
     else
-      for (final start in _translatedRects(
-        from!,
-        _morph!.toPath(progress: 0).getBounds().center,
-      ))
-        for (final end in _translatedRects(
-          to,
-          _morph.toPath(progress: 1).getBounds().center,
-        ))
-          if (!start.intersect(end).isEmpty) start.intersect(end),
+      ..._centeredIntersections(
+        _translatedRects(from!, _morph!.toPath(progress: 0).getBounds().center),
+        _translatedRects(to, _morph.toPath(progress: 1).getBounds().center),
+      ),
   });
+
+  Iterable<Rect> _centeredIntersections(
+    Iterable<Rect> starts,
+    Iterable<Rect> ends,
+  ) sync* {
+    for (final start in starts) {
+      for (final end in ends) {
+        final intersection = start.intersect(end);
+        final halfWidth = math.min(
+          preferredCenter.dx - intersection.left,
+          intersection.right - preferredCenter.dx,
+        );
+        final halfHeight = math.min(
+          preferredCenter.dy - intersection.top,
+          intersection.bottom - preferredCenter.dy,
+        );
+        if (halfWidth > 0 && halfHeight > 0) {
+          yield Rect.fromCenter(
+            center: preferredCenter,
+            width: halfWidth * 2,
+            height: halfHeight * 2,
+          );
+        }
+      }
+    }
+  }
 
   Offset _translatedPoint(MaterialExpressiveShape shape, Offset center) =>
       materialShapePreferredCenterData[shape]! +
@@ -150,7 +172,7 @@ class ExpressiveShapeGeometry {
     for (final rect in materialShapeSafeAreaData[shape]!) {
       // BoundsCenteredBorder translates this endpoint's path center to the
       // layout center. Apply exactly the same translation to the certified raw
-      // rectangle, preserving the generator's freely optimized placement.
+      // rectangle and optical center.
       yield rect.shift(translation);
     }
   }

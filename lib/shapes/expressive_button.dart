@@ -28,14 +28,13 @@ class ExpressiveButton extends StatelessWidget {
     this.stretch = false,
     this.padding = const EdgeInsets.all(8),
     this.clearance = 5,
-    this.minimumScale = 2 / 3,
     this.overflow = ExpressiveContentOverflow.scaleDown,
     this.style,
     this.constraints = const BoxConstraints(minWidth: 48, minHeight: 48),
     this.statesController,
     this.focusNode,
     this.autofocus = false,
-  }) : assert(minimumScale >= 0 && minimumScale <= 1);
+  });
 
   final ExpressiveShapeGeometry geometry;
   final VoidCallback? onPressed;
@@ -45,7 +44,6 @@ class ExpressiveButton extends StatelessWidget {
   final bool stretch;
   final EdgeInsetsGeometry padding;
   final double clearance;
-  final double minimumScale;
   final ExpressiveContentOverflow overflow;
   final ButtonStyle? style;
 
@@ -101,7 +99,6 @@ class ExpressiveButton extends StatelessWidget {
             stretch: stretch,
             padding: padding,
             clearance: clearance,
-            minimumScale: minimumScale,
             overflow: overflow,
             child: child,
           ),

@@ -46,10 +46,9 @@ bounds of the path. A non-square motif keeps its proportions.
 `stretch: true` scales each axis independently to fill the bounds. This is the
 same mapping as `RoundedPolygon.toShape` in Compose.
 
-The result is geometric centering, not optical centering. The border uses the
-bounds of the path. A shape with asymmetric visual weight, such as `fan`, can
-still look off-center. libmonet applies no shape-specific offset and no estimate
-of the visual centroid.
+The border path itself uses geometric bounds centering. Content placed through
+`ExpressiveShapeGeometry` separately uses a generated optical center based on
+reflection symmetry, outline clearance, and the convex hull.
 
 These are dimensionless motifs, not configurable rounded rectangles:
 
@@ -111,10 +110,8 @@ corner features that the morph needs. These borders center the unit square. Only
 ## Content-safe rectangles
 
 `ExpressiveShapeGeometry.safeRects` gives certified rectangles that stay inside
-the outline. For each aspect ratio it includes the largest design-anchor-centered
-rectangle and a translated rectangle within generator tolerance of the global
-maximum. libmonet ships this table as const
-Dart data in `lib/shapes/src/material_shape_safe_area_data.dart`. Consumers load
+the outline. For each aspect ratio it includes the largest rectangle centered on the
+shape's generated optical center. libmonet ships this table as const Dart data in `lib/shapes/src/material_shape_safe_area_data.dart`. Consumers load
 no assets and parse no JSON.
 
 Only the catalog endpoints are certified. During a morph, intermediate frames can

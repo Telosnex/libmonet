@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/shapes/material_expressive_shape.dart';
 import 'package:libmonet/shapes/src/material_shape_safe_area_data.dart';
 
+import '../../tool/src/optical_center.dart';
 import '../../tool/src/safe_interior.dart';
 
 List<Cubic> lines(List<Offset> points) => [
@@ -31,6 +32,7 @@ void main() {
     final data = jsonDecode(
       File('tool/data/material_shape_safe_areas.json').readAsStringSync(),
     ) as Map<String, dynamic>;
+    expect(data['schemaVersion'], 5);
     final shapes = (data['shapes'] as List).cast<Map<String, dynamic>>();
     expect(
       shapes.map((entry) => entry['shape']),
@@ -43,24 +45,44 @@ void main() {
         return Offset(values[0].toDouble(), values[1].toDouble());
       }
 
-      expect(materialShapeAreaCentroidData[shape], decodePoint('areaCentroid'));
+      final areaCentroid = decodePoint('areaCentroid');
+      expect(materialShapeAreaCentroidData[shape], areaCentroid);
+      final optical = findOpticalCenter(
+        cubics: shape.polygon.cubics,
+        path: shape.polygon.toPath(),
+        areaCentroid: areaCentroid,
+      );
+      final preferredCenter = decodePoint('preferredCenter');
+      expect(materialShapePreferredCenterData[shape], preferredCenter);
       expect(
-        materialShapePreferredCenterData[shape],
-        decodePoint('preferredCenter'),
+        preferredCenter,
+        offsetMoreOrLessEquals(optical.center, epsilon: 1e-12),
+      );
+      expect(shapes[i]['centerMethod'], optical.method.name);
+      expect(shapes[i]['reflectionAxisCount'], optical.axisCount);
+      expect(
+        decodePoint('convexHullCentroid'),
+        offsetMoreOrLessEquals(optical.hullCentroid, epsilon: 1e-12),
       );
       final dartRects = materialShapeSafeAreaData[shape]!;
       final jsonRects = [
         for (final entry in shapes[i]['rectangles'] as List)
-          for (final key in ['anchoredRect', 'maximumRect'])
-            (() {
-              final values = (entry[key] as List)
-                  .cast<num>()
-                  .map((value) => value.toDouble())
-                  .toList();
-              return Rect.fromLTRB(values[0], values[1], values[2], values[3]);
-            })(),
+          (() {
+            final values = (entry['rect'] as List)
+                .cast<num>()
+                .map((value) => value.toDouble())
+                .toList();
+            return Rect.fromLTRB(values[0], values[1], values[2], values[3]);
+          })(),
       ];
       expect(jsonRects, dartRects);
+      for (final rect in dartRects) {
+        expect(
+          rect.center,
+          offsetMoreOrLessEquals(preferredCenter, epsilon: 1e-12),
+          reason: shape.name,
+        );
+      }
     }
   });
 
@@ -237,26 +259,22 @@ void main() {
     for (final shape in MaterialExpressiveShape.values) {
       final path = shape.polygon.toPath();
       for (final (index, ratio) in [0.5, 1.0, 2.0, 4.0, 8.0].indexed) {
-        for (var alternative = 0; alternative < 2; alternative++) {
-          final rect =
-              materialShapeSafeAreaData[shape]![index * 4 + alternative];
-          expect(rect.width / rect.height, closeTo(ratio, 1e-10));
-          final expanded = rect.inflate(
-            0.009,
-          ); // Within the reserved 0.01 margin.
-          for (var y = 0; y <= 20; y++) {
-            for (var x = 0; x <= 20; x++) {
-              final point = Offset(
-                expanded.left + expanded.width * x / 20,
-                expanded.top + expanded.height * y / 20,
-              );
-              expect(
-                path.contains(point),
-                isTrue,
-                reason:
-                    '${shape.name} ratio=$ratio alternative=$alternative point=$point',
-              );
-            }
+        final rect = materialShapeSafeAreaData[shape]![index * 2];
+        expect(rect.width / rect.height, closeTo(ratio, 1e-10));
+        final expanded = rect.inflate(
+          0.009,
+        ); // Within the reserved 0.01 margin.
+        for (var y = 0; y <= 20; y++) {
+          for (var x = 0; x <= 20; x++) {
+            final point = Offset(
+              expanded.left + expanded.width * x / 20,
+              expanded.top + expanded.height * y / 20,
+            );
+            expect(
+              path.contains(point),
+              isTrue,
+              reason: '${shape.name} ratio=$ratio point=$point',
+            );
           }
         }
       }

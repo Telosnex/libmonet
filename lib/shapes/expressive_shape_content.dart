@@ -21,9 +21,9 @@ enum ExpressiveContentOverflow {
 /// Place this *inside* the surface, with no additional external content padding
 /// or alignment sizing: this widget's bounds must equal the painted surface's
 /// bounds. It adds [padding] inside a precomputed safe rectangle, wraps text at
-/// the available width, and balances minimum legibility against displacement
-/// from the shape's design anchor. No per-aspect-ratio computation is required
-/// in consumer code.
+/// the available width, and keeps it at the shape's optical center. If the
+/// parent is too small, content scales down rather than translating for more
+/// room. No per-aspect-ratio computation is required in consumer code.
 ///
 /// For stock Flutter buttons use ExpressiveButton, which sets the necessary
 /// zero button padding and standard visual density. For a custom button, replace
@@ -42,24 +42,14 @@ class ExpressiveShapeContent extends SingleChildRenderObjectWidget {
     this.stretch = false,
     this.padding = const EdgeInsets.all(8),
     this.clearance = 1,
-    this.minimumScale = 2 / 3,
     this.overflow = ExpressiveContentOverflow.scaleDown,
     required super.child,
-  }) : assert(clearance >= 0 && clearance < double.infinity),
-       assert(minimumScale >= 0 && minimumScale <= 1);
+  }) : assert(clearance >= 0 && clearance < double.infinity);
 
   final ExpressiveShapeGeometry geometry;
   final bool stretch;
   final EdgeInsetsGeometry padding;
   final double clearance;
-
-  /// Smallest acceptable fraction of the child's requested paint size before
-  /// placement may move away from the shape's design anchor.
-  ///
-  /// Candidates at or above this threshold minimize anchor displacement first.
-  /// If none reaches it, the largest rendering wins. The default maps a 36 px
-  /// icon to Material's 24 px minimum legible icon size.
-  final double minimumScale;
   final ExpressiveContentOverflow overflow;
 
   @override
@@ -69,7 +59,6 @@ class ExpressiveShapeContent extends SingleChildRenderObjectWidget {
         stretch,
         padding.resolve(Directionality.of(context)),
         clearance,
-        minimumScale,
         overflow,
       );
 
@@ -83,7 +72,6 @@ class ExpressiveShapeContent extends SingleChildRenderObjectWidget {
       stretch,
       padding.resolve(Directionality.of(context)),
       clearance,
-      minimumScale,
       overflow,
     );
   }
@@ -110,7 +98,6 @@ class _RenderExpressiveContent extends RenderShiftedBox {
     this.stretch,
     this.padding,
     this.clearance,
-    this.minimumScale,
     this.overflow,
   ) : super(null);
 
@@ -118,7 +105,6 @@ class _RenderExpressiveContent extends RenderShiftedBox {
   bool stretch;
   EdgeInsets padding;
   double clearance;
-  double minimumScale;
   ExpressiveContentOverflow overflow;
   double _scale = 1;
 
@@ -127,14 +113,12 @@ class _RenderExpressiveContent extends RenderShiftedBox {
     bool s,
     EdgeInsets p,
     double c,
-    double m,
     ExpressiveContentOverflow o,
   ) {
     if (identical(g, geometry) &&
         s == stretch &&
         p == padding &&
         c == clearance &&
-        m == minimumScale &&
         o == overflow) {
       return;
     }
@@ -142,7 +126,6 @@ class _RenderExpressiveContent extends RenderShiftedBox {
     stretch = s;
     padding = p;
     clearance = c;
-    minimumScale = m;
     overflow = o;
     markNeedsLayout();
   }
@@ -157,20 +140,6 @@ class _RenderExpressiveContent extends RenderShiftedBox {
       rect.height * sy,
     );
   }
-
-  Offset _mappedPoint(Offset point, Size size) {
-    final sx = stretch ? size.width : size.shortestSide;
-    final sy = stretch ? size.height : size.shortestSide;
-    return Offset(
-      (size.width - sx) / 2 + point.dx * sx,
-      (size.height - sy) / 2 + point.dy * sy,
-    );
-  }
-
-  double _preferredCenterDistanceSquared(_Plan plan) =>
-      (_mapped(plan.rect, plan.size).center -
-              _mappedPoint(geometry.preferredCenter, plan.size))
-          .distanceSquared;
 
   _Plan _fit(
     BoxConstraints constraints,
@@ -222,28 +191,14 @@ class _RenderExpressiveContent extends RenderShiftedBox {
 
   bool _prefer(_Plan candidate, _Plan current) {
     const tolerance = 1e-9;
-    final candidateLegible = candidate.scale >= minimumScale - tolerance;
-    final currentLegible = current.scale >= minimumScale - tolerance;
-    if (candidateLegible != currentLegible) return candidateLegible;
-
-    final candidateDistance = _preferredCenterDistanceSquared(candidate);
-    final currentDistance = _preferredCenterDistanceSquared(current);
+    if ((candidate.scale - current.scale).abs() > tolerance) {
+      return candidate.scale > current.scale;
+    }
     final candidateArea = candidate.size.width * candidate.size.height;
     final currentArea = current.size.width * current.size.height;
     final areaTolerance =
         math.max(1.0, math.max(candidateArea, currentArea)) * tolerance;
-
-    if (!candidateLegible &&
-        (candidate.scale - current.scale).abs() > tolerance) {
-      return candidate.scale > current.scale;
-    }
-    if ((candidateDistance - currentDistance).abs() > tolerance) {
-      return candidateDistance < currentDistance;
-    }
-    if ((candidateArea - currentArea).abs() > areaTolerance) {
-      return candidateArea < currentArea;
-    }
-    return candidate.scale > current.scale + tolerance;
+    return candidateArea < currentArea - areaTolerance;
   }
 
   _Plan _plan(BoxConstraints constraints) {
@@ -251,12 +206,9 @@ class _RenderExpressiveContent extends RenderShiftedBox {
         !padding.horizontal.isFinite ||
         !padding.vertical.isFinite ||
         !clearance.isFinite ||
-        clearance < 0 ||
-        !minimumScale.isFinite ||
-        minimumScale < 0 ||
-        minimumScale > 1) {
+        clearance < 0) {
       throw FlutterError(
-        'ExpressiveShapeContent requires finite nonnegative padding and clearance, and minimumScale in [0, 1].',
+        'ExpressiveShapeContent requires finite nonnegative padding and clearance.',
       );
     }
     _Plan? best;

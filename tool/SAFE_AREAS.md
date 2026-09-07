@@ -21,56 +21,41 @@ libmonet; consumers need no assets or JSON loading. See
 
 ## Meaning of an entry
 
-Each aspect-ratio entry contains two rectangles in the package polygon's
-**original unit coordinates**:
-
-- `anchoredRect`: the largest rectangle whose center is the path-bounds center.
-- `maximumRect`: a rectangle within `tolerance` of the globally largest freely
-  translated rectangle, choosing the placement nearest that same anchor.
-
-Both use `[left, top, right, bottom]`. Keeping these two Pareto endpoints lets
-runtime layout decide whether additional size is worth visible displacement. We
-do not resize or renormalize the path; some shapes leave unused space inside the
-unit square.
+Each aspect-ratio entry contains the largest certified rectangle centered on the
+shape's generated optical center, in the package polygon's **original unit
+coordinates**. `rect` uses `[left, top, right, bottom]`.
 
 - Each rectangle has the requested width/height ratio.
-- `preferredCenter` is the design anchor used by both generation and runtime.
+- `preferredCenter` is the generated optical center used by layout.
+- `centerMethod` records which branch of the center algorithm selected it.
+- `reflectionAxisCount` records the number of detected axes.
+- `areaCentroid` and `convexHullCentroid` are diagnostic metadata.
 - `clearance` is additional rectangular clearance from the outline, in source
   units (default 0.01). It is **not logical-pixel padding or a stroke allowance**.
-- `tolerance` bounds the maximum rectangle's source-coordinate height loss from
-  the global maximum (default `1e-5`).
-- `areaCentroid` is retained as exact geometric diagnostic metadata; it is not
-  the design anchor.
-- `null` means no useful certified rectangle exists for that objective.
+- `tolerance` bounds fixed-center size bisection (default `1e-5`).
+- `null` means no useful certified rectangle exists at that optical center.
 - Output preserves full double precision. Do not round coordinates outward.
-- Generation is deterministic. Regenerate after upgrading the geometry fork.
+- Generation is deterministic. Regenerate after upgrading the geometry fork or
+  changing the optical-center algorithm.
 
 ## Algorithm and safety limits
 
-For a fixed center, binary-search the size of nested rectangles. A candidate is
-accepted only if its center is inside the actual filled Path and every outline
-cubic is excluded from the rectangle inflated by clearance plus a `1e-9`
-numerical guard.
+The generator derives the optical center from the silhouette without a
+shape-name lookup. It flattens each cubic into 200 segments and resamples the
+closed outline at 512 equal arc-length positions. Reflection reverses traversal
+order, so cyclic reversal fits reveal reflection axes. The fit uses both RMS and
+maximum residual thresholds.
 
-The center is optimized globally with deterministic branch-and-bound. If `F(c)`
-is the maximum rectangle height at center `c`, then for centers `c` and `d`,
+- Multiple detected axes meet at the area centroid, which becomes the center.
+- With exactly one axis, a deterministic 4096-interval search chooses the
+  interior point on that axis with maximum distance from the outline.
+- With no detected axis, the filled convex-hull centroid becomes the center.
 
-```text
-|F(c) - F(d)| <= 2 * max(|cx-dx| / aspectRatio, |cy-dy|).
-```
-
-This follows by translating a contained rectangle and reducing its half-extents
-by the translation on each axis. The inequality gives a certified upper bound
-for every unvisited center cell. Local coordinate searches supply good lower
-bounds but cannot decide termination.
-
-`anchoredRect` needs only fixed-center bisection. For `maximumRect`, the first
-branch-and-bound search uses one quarter of `tolerance` to bound the unknown
-global maximum. A second search uses the remaining budget as an epsilon
-constraint and minimizes Euclidean center distance from `preferredCenter`. Its
-cells are ordered by a lower bound on anchor distance and rejected when the
-Lipschitz bound proves they cannot contain the target rectangle. This prevents
-binary-search grid noise from moving symmetric plateaus.
+At that fixed center, binary-search the size of nested rectangles. A candidate
+is accepted only if its center is inside the actual filled Path and every
+outline cubic is excluded from the rectangle inflated by clearance plus a
+`1e-9` numerical guard. The polyline approximation chooses placement only;
+rectangle containment is separately checked against the original cubics.
 
 A cubic lies inside the convex hull of its four control points, hence inside
 their axis-aligned bounding box. If that box is strictly separated from the
@@ -79,7 +64,7 @@ and test both children. Touching or unresolved overlap at depth 24 is rejected,
 not assumed safe. This avoids the concave-notch failure of corner-only tests
 and does not rely on raster/frame sampling. Bounds are cached for the offline
 search. The returned rectangle is contained and within the requested numerical
-tolerance of the global maximum over translations.
+tolerance of the maximum at its fixed optical center.
 
 This is floating-point geometry with a guard, not a formally verified exact
 arithmetic proof. Visual anti-aliasing and border strokes need their own runtime
@@ -104,9 +89,10 @@ rectangle. `ExpressiveShapeGeometry` wraps the fork's borders with
 `BoundsCenteredBorder`: scale by the shortest surface dimension when stretch is
 off, independently by width/height when on, then center the scaled path bounds.
 The layout applies the border's exact bounds-centering translation to every
-certified rectangle. It prefers the anchored option once content reaches its
-configured minimum scale and otherwise prefers maximum rendered scale. For morphs, endpoint rectangles are translated independently and then
-intersected. Do not substitute
+certified rectangle and its optical center. For morphs, endpoint rectangles are
+translated independently, intersected, and cropped around the averaged optical
+center. Content can scale down but never translates to gain size. Do not
+substitute
 the unwrapped fork border, whose unit-square centering differs. Tests check the
 rendered transform and containment, not just the raw lookup data.
 
