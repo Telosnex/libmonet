@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:androidx_graphics_shapes/material_shapes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/shapes/material_expressive_shape.dart';
 
@@ -21,29 +22,41 @@ void main() {
     final entries = <Map<String, Object?>>[];
     for (final shape in MaterialExpressiveShape.values) {
       final outline = SafeInteriorOutline(shape.polygon.cubics);
+      final preferredCenter = shape.polygon.toPath().getBounds().center;
       entries.add({
         'shape': shape.name,
+        'preferredCenter': [preferredCenter.dx, preferredCenter.dy],
         'areaCentroid': [outline.areaCentroid.dx, outline.areaCentroid.dy],
         'rectangles': [
           for (final ratio in ratios)
             (() {
-              final Rect? rect;
+              final Rect? anchoredRect;
+              final Rect? maximumRect;
               try {
-                rect = outline.find(
+                anchoredRect = outline.findAtCenter(
+                  aspectRatio: ratio.toDouble(),
+                  center: preferredCenter,
+                  clearance: clearance,
+                  tolerance: tolerance,
+                );
+                maximumRect = outline.find(
                   aspectRatio: ratio.toDouble(),
                   clearance: clearance,
                   tolerance: tolerance,
+                  preferredCenter: preferredCenter,
                 );
               } on StateError catch (error) {
                 throw StateError(
                   '${shape.name} ratio=$ratio: ${error.message}',
                 );
               }
+              List<double>? encode(Rect? rect) => rect == null
+                  ? null
+                  : [rect.left, rect.top, rect.right, rect.bottom];
               return {
                 'aspectRatio': ratio,
-                'rect': rect == null
-                    ? null
-                    : [rect.left, rect.top, rect.right, rect.bottom],
+                'anchoredRect': encode(anchoredRect),
+                'maximumRect': encode(maximumRect),
               };
             })(),
         ],
@@ -53,17 +66,17 @@ void main() {
     output.parent.createSync(recursive: true);
     output.writeAsStringSync(
       '${const JsonEncoder.withIndent('  ').convert({
-        'schemaVersion': 3,
+        'schemaVersion': 4,
         'generator': 'tool/precompute_safe_areas.dart',
         'source': 'androidx_graphics_shapes MaterialShapes via MaterialExpressiveShape',
         'coordinates': 'Original package unit coordinates; no bounds renormalization',
-        'objective': 'Largest freely translated axis-aligned rectangle at each aspect ratio',
-        'secondaryObjective': 'Nearest center to exact cubic area centroid within the size tolerance',
+        'objective': 'Pareto endpoints at each aspect ratio: largest rectangle at the design anchor and globally largest translated rectangle',
+        'secondaryObjective': 'Maximum rectangle nearest the design anchor within the size tolerance',
         'rectFormat': ['left', 'top', 'right', 'bottom'],
         'clearance': clearance,
         'tolerance': tolerance,
         'numericGuard': SafeInteriorOutline.numericGuard,
-        'method': 'Two-stage Lipschitz branch-and-bound over size and centroid distance; monotonic size bisection; recursive cubic control bounds depth 24; inconclusive rejected',
+        'method': 'Fixed-anchor bisection plus two-stage Lipschitz branch-and-bound over size and anchor distance; recursive cubic control bounds depth 24; inconclusive rejected',
         'scope': 'Static endpoints only; no intermediate morph containment required',
         'shapes': entries,
       })}\n',
@@ -88,15 +101,29 @@ void main() {
       }
       buffer.writeln('};\n');
       buffer.writeln(
+        'const materialShapePreferredCenterData = '
+        '<MaterialExpressiveShape, Offset>{',
+      );
+      for (final shape in entries) {
+        final center = shape['preferredCenter']! as List<double>;
+        buffer.writeln(
+          '  MaterialExpressiveShape.${shape['shape']}: '
+          'Offset(${center.join(', ')}),',
+        );
+      }
+      buffer.writeln('};\n');
+      buffer.writeln(
         'const materialShapeSafeAreaData = '
         '<MaterialExpressiveShape, List<Rect>>{',
       );
       for (final shape in entries) {
         buffer.writeln('  MaterialExpressiveShape.${shape['shape']}: [');
         for (final entry in shape['rectangles']! as List) {
-          final rect = entry['rect'] as List<double>?;
-          if (rect != null) {
-            buffer.writeln('    Rect.fromLTRB(${rect.join(', ')}),');
+          for (final key in ['anchoredRect', 'maximumRect']) {
+            final rect = entry[key] as List<double>?;
+            if (rect != null) {
+              buffer.writeln('    Rect.fromLTRB(${rect.join(', ')}),');
+            }
           }
         }
         buffer.writeln('  ],');

@@ -110,9 +110,10 @@ corner features that the morph needs. These borders center the unit square. Only
 
 ## Content-safe rectangles
 
-`ExpressiveShapeGeometry.safeRects` gives freely placed rectangles that stay
-inside the outline. Each is within the generator tolerance of the largest
-axis-aligned rectangle for its aspect ratio. libmonet ships this table as const
+`ExpressiveShapeGeometry.safeRects` gives certified rectangles that stay inside
+the outline. For each aspect ratio it includes the largest design-anchor-centered
+rectangle and a translated rectangle within generator tolerance of the global
+maximum. libmonet ships this table as const
 Dart data in `lib/shapes/src/material_shape_safe_area_data.dart`. Consumers load
 no assets and parse no JSON.
 

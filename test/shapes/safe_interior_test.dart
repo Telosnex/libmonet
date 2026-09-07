@@ -38,21 +38,27 @@ void main() {
     );
     for (var i = 0; i < shapes.length; i++) {
       final shape = MaterialExpressiveShape.values[i];
-      final centroid = (shapes[i]['areaCentroid'] as List).cast<num>();
+      Offset decodePoint(String key) {
+        final values = (shapes[i][key] as List).cast<num>();
+        return Offset(values[0].toDouble(), values[1].toDouble());
+      }
+
+      expect(materialShapeAreaCentroidData[shape], decodePoint('areaCentroid'));
       expect(
-        materialShapeAreaCentroidData[shape],
-        Offset(centroid[0].toDouble(), centroid[1].toDouble()),
+        materialShapePreferredCenterData[shape],
+        decodePoint('preferredCenter'),
       );
       final dartRects = materialShapeSafeAreaData[shape]!;
       final jsonRects = [
         for (final entry in shapes[i]['rectangles'] as List)
-          (() {
-            final values = (entry['rect'] as List)
-                .cast<num>()
-                .map((value) => value.toDouble())
-                .toList();
-            return Rect.fromLTRB(values[0], values[1], values[2], values[3]);
-          })(),
+          for (final key in ['anchoredRect', 'maximumRect'])
+            (() {
+              final values = (entry[key] as List)
+                  .cast<num>()
+                  .map((value) => value.toDouble())
+                  .toList();
+              return Rect.fromLTRB(values[0], values[1], values[2], values[3]);
+            })(),
       ];
       expect(jsonRects, dartRects);
     }
@@ -79,8 +85,21 @@ void main() {
     final outline = SafeInteriorOutline(
       lines(const [Offset(0.5, 0), Offset(1, 1), Offset(0, 1)]),
     );
-    final rect = outline.find(aspectRatio: 1, clearance: 0, tolerance: 1e-6)!;
+    final rect = outline.find(
+      aspectRatio: 1,
+      clearance: 0,
+      tolerance: 1e-6,
+      preferredCenter: const Offset(0.5, 0.5),
+    )!;
+    final anchored = outline.findAtCenter(
+      aspectRatio: 1,
+      center: const Offset(0.5, 0.5),
+      clearance: 0,
+      tolerance: 1e-6,
+    )!;
 
+    expect(anchored.width, closeTo(1 / 3, 2e-5));
+    expect(anchored.center, const Offset(0.5, 0.5));
     expect(outline.areaCentroid.dx, closeTo(0.5, 1e-12));
     expect(outline.areaCentroid.dy, closeTo(2 / 3, 1e-12));
     expect(rect.width, closeTo(0.5, 2e-5));
@@ -90,16 +109,17 @@ void main() {
     expect(outline.contains(rect, clearance: 0), isTrue);
   });
 
-  test('flat catalog optima remain at their area centroids', () {
+  test('flat catalog optima remain at their design anchors', () {
     for (final (shape, ratio) in [
       (MaterialExpressiveShape.bun, 0.75),
       (MaterialExpressiveShape.bun, 1.0),
       (MaterialExpressiveShape.pixelCircle, 1.0),
     ]) {
       final outline = SafeInteriorOutline(shape.polygon.cubics);
-      final rect = outline.find(aspectRatio: ratio)!;
+      final anchor = shape.polygon.toPath().getBounds().center;
+      final rect = outline.find(aspectRatio: ratio, preferredCenter: anchor)!;
       expect(
-        (rect.center - outline.areaCentroid).distance,
+        (rect.center - anchor).distance,
         lessThan(1e-10),
         reason: '${shape.name} ratio=$ratio',
       );
@@ -217,22 +237,26 @@ void main() {
     for (final shape in MaterialExpressiveShape.values) {
       final path = shape.polygon.toPath();
       for (final (index, ratio) in [0.5, 1.0, 2.0, 4.0, 8.0].indexed) {
-        final rect = materialShapeSafeAreaData[shape]![index * 2];
-        expect(rect.width / rect.height, closeTo(ratio, 1e-10));
-        final expanded = rect.inflate(
-          0.009,
-        ); // Within the reserved 0.01 margin.
-        for (var y = 0; y <= 20; y++) {
-          for (var x = 0; x <= 20; x++) {
-            final point = Offset(
-              expanded.left + expanded.width * x / 20,
-              expanded.top + expanded.height * y / 20,
-            );
-            expect(
-              path.contains(point),
-              isTrue,
-              reason: '${shape.name} ratio=$ratio point=$point',
-            );
+        for (var alternative = 0; alternative < 2; alternative++) {
+          final rect =
+              materialShapeSafeAreaData[shape]![index * 4 + alternative];
+          expect(rect.width / rect.height, closeTo(ratio, 1e-10));
+          final expanded = rect.inflate(
+            0.009,
+          ); // Within the reserved 0.01 margin.
+          for (var y = 0; y <= 20; y++) {
+            for (var x = 0; x <= 20; x++) {
+              final point = Offset(
+                expanded.left + expanded.width * x / 20,
+                expanded.top + expanded.height * y / 20,
+              );
+              expect(
+                path.contains(point),
+                isTrue,
+                reason:
+                    '${shape.name} ratio=$ratio alternative=$alternative point=$point',
+              );
+            }
           }
         }
       }

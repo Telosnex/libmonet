@@ -21,22 +21,29 @@ libmonet; consumers need no assets or JSON loading. See
 
 ## Meaning of an entry
 
-`rect` is `[left, top, right, bottom]` in the package polygon's **original unit
-coordinates**. Its center is free: the optimizer translates the rectangle to
-use asymmetric interiors such as the lower half of Triangle. We do not resize or
-renormalize the path. Some shapes leave unused space inside the unit square.
+Each aspect-ratio entry contains two rectangles in the package polygon's
+**original unit coordinates**:
+
+- `anchoredRect`: the largest rectangle whose center is the path-bounds center.
+- `maximumRect`: a rectangle within `tolerance` of the globally largest freely
+  translated rectangle, choosing the placement nearest that same anchor.
+
+Both use `[left, top, right, bottom]`. Keeping these two Pareto endpoints lets
+runtime layout decide whether additional size is worth visible displacement. We
+do not resize or renormalize the path; some shapes leave unused space inside the
+unit square.
 
 - Each rectangle has the requested width/height ratio.
+- `preferredCenter` is the design anchor used by both generation and runtime.
 - `clearance` is additional rectangular clearance from the outline, in source
   units (default 0.01). It is **not logical-pixel padding or a stroke allowance**.
-- `tolerance` is the maximum source-coordinate height sacrificed by the
-  returned rectangle relative to the global maximum (default `1e-5`).
-- `areaCentroid` is the exact filled-area centroid obtained by polynomial
-  integration of the cubic chain. It defines the secondary placement objective.
-- `null` means no useful certified safe rectangle was found anywhere.
+- `tolerance` bounds the maximum rectangle's source-coordinate height loss from
+  the global maximum (default `1e-5`).
+- `areaCentroid` is retained as exact geometric diagnostic metadata; it is not
+  the design anchor.
+- `null` means no useful certified rectangle exists for that objective.
 - Output preserves full double precision. Do not round coordinates outward.
-- Generation is deterministic. Regenerate after upgrading the geometry fork;
-  the checked-in table test detects changes to the calculated rectangles.
+- Generation is deterministic. Regenerate after upgrading the geometry fork.
 
 ## Algorithm and safety limits
 
@@ -57,14 +64,13 @@ by the translation on each axis. The inequality gives a certified upper bound
 for every unvisited center cell. Local coordinate searches supply good lower
 bounds but cannot decide termination.
 
-The optimization is explicitly two-stage. The first branch-and-bound search uses
-one quarter of `tolerance` to bound the unknown global maximum. A second search
-uses the remaining budget as an epsilon constraint and minimizes Euclidean
-center distance from the area centroid. Its cells are ordered by a lower bound
-on centroid distance and rejected when the Lipschitz bound proves they cannot
-contain the target rectangle. This avoids ordering truly equal optima by
-binary-search grid noise: symmetric plateaus stay centered, while asymmetric
-shapes move only when doing so buys more than the declared tolerance.
+`anchoredRect` needs only fixed-center bisection. For `maximumRect`, the first
+branch-and-bound search uses one quarter of `tolerance` to bound the unknown
+global maximum. A second search uses the remaining budget as an epsilon
+constraint and minimizes Euclidean center distance from `preferredCenter`. Its
+cells are ordered by a lower bound on anchor distance and rejected when the
+Lipschitz bound proves they cannot contain the target rectangle. This prevents
+binary-search grid noise from moving symmetric plateaus.
 
 A cubic lies inside the convex hull of its four control points, hence inside
 their axis-aligned bounding box. If that box is strictly separated from the
@@ -97,9 +103,10 @@ Use the same coordinate transform as the rendered border for both shape and safe
 rectangle. `ExpressiveShapeGeometry` wraps the fork's borders with
 `BoundsCenteredBorder`: scale by the shortest surface dimension when stretch is
 off, independently by width/height when on, then center the scaled path bounds.
-The layout applies the border's exact bounds-centering translation to each
-certified rectangle, retaining its optimized offset. For morphs, endpoint
-rectangles are translated independently and then intersected. Do not substitute
+The layout applies the border's exact bounds-centering translation to every
+certified rectangle. It prefers the anchored option once content reaches its
+configured minimum scale and otherwise prefers maximum rendered scale. For morphs, endpoint rectangles are translated independently and then
+intersected. Do not substitute
 the unwrapped fork border, whose unit-square centering differs. Tests check the
 rendered transform and containment, not just the raw lookup data.
 

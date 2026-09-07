@@ -76,8 +76,9 @@ class SafeInteriorOutline {
   ///
   /// This is a deterministic two-stage branch-and-bound search. First it proves
   /// the globally maximal height to part of [tolerance]. It then minimizes
-  /// distance from the filled-area centroid subject to losing no more than the
-  /// remainder of [tolerance]. At each center, monotonic bisection finds a
+  /// distance from [preferredCenter] (or [areaCentroid]) subject to losing no
+  /// more than the remainder of [tolerance]. At each center, monotonic
+  /// bisection finds a
   /// certified lower bound and an upper bound on height. The objective is
   /// 2-Lipschitz in the aspect-weighted L-infinity metric, which gives every
   /// center cell a valid global upper bound.
@@ -89,6 +90,7 @@ class SafeInteriorOutline {
     required double aspectRatio,
     double clearance = 0.01,
     double tolerance = 1e-5,
+    Offset? preferredCenter,
   }) {
     if (!aspectRatio.isFinite || aspectRatio <= 0) {
       throw ArgumentError.value(aspectRatio, 'aspectRatio');
@@ -98,6 +100,10 @@ class SafeInteriorOutline {
     }
     if (!tolerance.isFinite || tolerance <= 0) {
       throw ArgumentError.value(tolerance, 'tolerance');
+    }
+    final anchor = preferredCenter ?? areaCentroid;
+    if (!anchor.dx.isFinite || !anchor.dy.isFinite) {
+      throw ArgumentError.value(preferredCenter, 'preferredCenter');
     }
 
     final domain = _bounds.deflate(clearance + numericGuard);
@@ -125,8 +131,8 @@ class SafeInteriorOutline {
       final fitEligible = fit.lower >= maxLower - fitTolerance;
       if (!currentEligible ||
           (fitEligible &&
-              (fit.center - areaCentroid).distanceSquared <
-                  (current.center - areaCentroid).distanceSquared)) {
+              (fit.center - anchor).distanceSquared <
+                  (current.center - anchor).distanceSquared)) {
         maximumWitness = fit;
       }
     }
@@ -166,7 +172,7 @@ class SafeInteriorOutline {
     }
 
     final seeds = <Offset>{
-      if (domain.contains(areaCentroid)) areaCentroid,
+      if (domain.contains(anchor)) anchor,
       for (final x in [0.25, 0.5, 0.75])
         for (final y in [0.25, 0.5, 0.75])
           Offset(
@@ -223,20 +229,21 @@ class SafeInteriorOutline {
     // Since the unknown optimum is at most optimalityTolerance above maxLower,
     // this target is guaranteed to be within the public tolerance of it.
     final targetHeight = math.max(0.0, maxLower - placementTolerance);
-    final preferredCenter = _nearestFeasibleCenter(
+    final selectedCenter = _nearestFeasibleCenter(
       domain,
       targetHeight: targetHeight,
       aspectRatio: aspectRatio,
       clearance: clearance,
       fitTolerance: fitTolerance,
       witness: witness,
+      preferredCenter: anchor,
     );
     final target = Rect.fromCenter(
-      center: preferredCenter,
+      center: selectedCenter,
       width: targetHeight * aspectRatio,
       height: targetHeight,
     );
-    final fitted = fitAt(preferredCenter);
+    final fitted = fitAt(selectedCenter);
     final result = fitted.lower > targetHeight ? fitted.rect : target;
     if (result == null || result.shortestSide < 1e-8) return null;
     return contains(result, clearance: clearance) ? result : null;
@@ -249,6 +256,7 @@ class SafeInteriorOutline {
     required double clearance,
     required double fitTolerance,
     required _CenterFit witness,
+    required Offset preferredCenter,
   }) {
     Rect targetAt(Offset center) => Rect.fromCenter(
       center: center,
@@ -259,23 +267,23 @@ class SafeInteriorOutline {
     bool feasible(Offset center) =>
         contains(targetAt(center), clearance: clearance);
 
-    if (feasible(areaCentroid)) return areaCentroid;
+    if (feasible(preferredCenter)) return preferredCenter;
 
     var nearest = witness.center;
-    var nearestDistance = (nearest - areaCentroid).distance;
+    var nearestDistance = (nearest - preferredCenter).distance;
     final centerTolerance = fitTolerance;
     final queue = _MinDistanceCellHeap();
 
     double lowerDistance(Rect bounds) {
-      final dx = areaCentroid.dx < bounds.left
-          ? bounds.left - areaCentroid.dx
-          : areaCentroid.dx > bounds.right
-          ? areaCentroid.dx - bounds.right
+      final dx = preferredCenter.dx < bounds.left
+          ? bounds.left - preferredCenter.dx
+          : preferredCenter.dx > bounds.right
+          ? preferredCenter.dx - bounds.right
           : 0.0;
-      final dy = areaCentroid.dy < bounds.top
-          ? bounds.top - areaCentroid.dy
-          : areaCentroid.dy > bounds.bottom
-          ? areaCentroid.dy - bounds.bottom
+      final dy = preferredCenter.dy < bounds.top
+          ? bounds.top - preferredCenter.dy
+          : preferredCenter.dy > bounds.bottom
+          ? preferredCenter.dy - bounds.bottom
           : 0.0;
       return math.sqrt(dx * dx + dy * dy);
     }
@@ -295,7 +303,7 @@ class SafeInteriorOutline {
       );
       if (fit.upper + 2 * centerRadius < targetHeight) return;
       if (feasible(bounds.center)) {
-        final candidateDistance = (bounds.center - areaCentroid).distance;
+        final candidateDistance = (bounds.center - preferredCenter).distance;
         if (candidateDistance < nearestDistance) {
           nearest = bounds.center;
           nearestDistance = candidateDistance;
@@ -332,6 +340,39 @@ class SafeInteriorOutline {
       }
     }
     return nearest;
+  }
+
+  /// Largest certified rectangle of [aspectRatio] at exactly [center].
+  ///
+  /// Unlike [find], this preserves the caller's design anchor. It is useful as
+  /// one endpoint of the size-versus-alignment Pareto set.
+  Rect? findAtCenter({
+    required double aspectRatio,
+    required Offset center,
+    double clearance = 0.01,
+    double tolerance = 1e-5,
+  }) {
+    if (!aspectRatio.isFinite || aspectRatio <= 0) {
+      throw ArgumentError.value(aspectRatio, 'aspectRatio');
+    }
+    if (!center.dx.isFinite || !center.dy.isFinite) {
+      throw ArgumentError.value(center, 'center');
+    }
+    if (!clearance.isFinite || clearance < 0) {
+      throw ArgumentError.value(clearance, 'clearance');
+    }
+    if (!tolerance.isFinite || tolerance <= 0) {
+      throw ArgumentError.value(tolerance, 'tolerance');
+    }
+    final fit = _fitAtCenter(
+      center,
+      aspectRatio: aspectRatio,
+      clearance: clearance,
+      tolerance: tolerance / 32,
+    );
+    final result = fit.rect;
+    if (result == null || result.shortestSide < 1e-8) return null;
+    return contains(result, clearance: clearance) ? result : null;
   }
 
   _CenterFit _fitAtCenter(

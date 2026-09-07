@@ -97,9 +97,9 @@ class ExpressiveShapeGeometry {
     }
   }
 
-  /// Filled-area centroid in the same centered unit coordinates as [safeRects].
-  /// Candidate selection uses this only after legibility and surface size are
-  /// tied, preventing table order from choosing an arbitrary equivalent lobe.
+  /// Design anchor in the same bounds-centered unit coordinates as [safeRects].
+  /// Candidate selection prefers proximity to this point once its minimum
+  /// legibility requirement is met.
   late final Offset preferredCenter = from == null
       ? _translatedPoint(
           to,
@@ -139,7 +139,8 @@ class ExpressiveShapeGeometry {
   });
 
   Offset _translatedPoint(MaterialExpressiveShape shape, Offset center) =>
-      materialShapeAreaCentroidData[shape]! + (const Offset(0.5, 0.5) - center);
+      materialShapePreferredCenterData[shape]! +
+      (const Offset(0.5, 0.5) - center);
 
   Iterable<Rect> _translatedRects(
     MaterialExpressiveShape shape,

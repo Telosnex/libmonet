@@ -11,19 +11,21 @@ void main() {
   test('shipped Dart rectangles are certified for the current catalog', () {
     for (final shape in MaterialExpressiveShape.values) {
       final outline = SafeInteriorOutline(shape.polygon.cubics);
-      expect(materialShapeSafeAreaData[shape], hasLength(9));
+      expect(materialShapeSafeAreaData[shape], hasLength(18));
       for (final rect in materialShapeSafeAreaData[shape]!) {
         expect(outline.contains(rect), isTrue, reason: shape.name);
       }
     }
   });
 
-  testWidgets('equivalent fixed-size candidates prefer the area centroid', (
+  testWidgets('legible fixed-size candidates prefer the design anchor', (
     tester,
   ) async {
     for (final shape in [
       MaterialExpressiveShape.bun,
       MaterialExpressiveShape.pixelCircle,
+      MaterialExpressiveShape.arch,
+      MaterialExpressiveShape.softBurst,
     ]) {
       final geometry = ExpressiveShapeGeometry(to: shape);
       final childKey = ValueKey(shape);
@@ -57,6 +59,40 @@ void main() {
         reason: shape.name,
       );
     }
+  });
+
+  testWidgets('translation wins when centered content is below minimum scale', (
+    tester,
+  ) async {
+    const childKey = ValueKey('triangle-icon');
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Center(
+          child: SizedBox.square(
+            dimension: 52,
+            child: ExpressiveShapeContent(
+              geometry: ExpressiveShapeGeometry(
+                to: MaterialExpressiveShape.triangle,
+              ),
+              padding: EdgeInsets.zero,
+              clearance: 1,
+              child: const SizedBox.square(key: childKey, dimension: 36),
+            ),
+          ),
+        ),
+      ),
+    );
+    final content = tester.renderObject<RenderBox>(
+      find.byType(ExpressiveShapeContent),
+    );
+    final child = tester.renderObject<RenderBox>(find.byKey(childKey));
+    final painted = MatrixUtils.transformRect(
+      child.getTransformTo(content),
+      Offset.zero & child.size,
+    );
+    expect(painted.shortestSide, greaterThanOrEqualTo(24));
+    expect(painted.center.dy, greaterThan(26));
   });
 
   for (final stretch in [false, true]) {
