@@ -340,13 +340,26 @@ export function darkerTextLstar(backgroundLstar: number, apca: number): number {
 export function contrastingTone(opts: {withArgb: Argb; withTone: number; targetHue: number; targetChroma: number; usage: Usage; by?: Algo; contrast: number; forceDirection?: ContrastDirection; colorModel?: ColorModel}): number {
   const by = opts.by ?? Algo.apca;
   if (by === Algo.wcag21) {
-    return contrastingLstar({
+    const seed = contrastingLstar({
       withLstar: opts.withTone,
       usage: opts.usage,
       by,
       contrast: opts.contrast,
       ...(opts.forceDirection === undefined ? {} : {forceDirection: opts.forceDirection}),
     });
+    // Verify the quantized RGB, not just the continuous L* solution.
+    const target = getAbsoluteContrast(by, opts.contrast, opts.usage);
+    const ratioAt = (tone: number) => contrastBetweenArgbs(by, opts.withArgb,
+      Hct.from(opts.targetHue, opts.targetChroma, tone, opts.colorModel).toInt());
+    if (ratioAt(seed) >= target) return seed;
+    const extreme = seed >= opts.withTone ? 100 : 0;
+    if (ratioAt(extreme) < target) return extreme;
+    let fail = seed, pass = extreme;
+    for (let i = 0; i < 15; i++) {
+      const mid = (fail + pass) / 2;
+      if (ratioAt(mid) >= target) pass = mid; else fail = mid;
+    }
+    return pass;
   }
   const target = getAbsoluteContrast(by, opts.contrast, opts.usage);
   const prefersLighter = opts.forceDirection === ContrastDirection.lighter ? true : opts.forceDirection === ContrastDirection.darker ? false : lstarPrefersLighterPair(opts.withTone);

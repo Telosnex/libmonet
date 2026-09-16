@@ -240,61 +240,63 @@ class MonetColorScheme extends ThemeExtension<MonetColorScheme> {
     required Palette primary,
     required Palette secondary,
     required Palette tertiary,
-  })  : primaryColor = primary.color,
-        primaryColorText = primary.colorText,
-        primaryColorHover = primary.colorHovered,
-        primaryColorHoverText = primary.colorHoveredText,
-        primaryColorSplash = primary.colorSplashed,
-        primaryColorSplashText = primary.colorSplashedText,
-        primaryFill = primary.color,
-        primaryFillText = primary.colorText,
-        primaryFillHover = primary.colorHovered,
-        primaryFillHoverText = primary.colorHoveredText,
-        primaryFillSplash = primary.colorSplashed,
-        primaryFillSplashText = primary.colorSplashedText,
-        primaryText = primary.colorText,
-        primaryTextHover = primary.colorHoveredText,
-        primaryTextHoverText = primary.colorHoveredText,
-        primaryTextSplash = primary.colorSplashedText,
-        primaryTextSplashText = primary.colorSplashedText,
-        secondaryColor = secondary.color,
-        secondaryColorText = secondary.colorText,
-        secondaryColorHover = secondary.colorHovered,
-        secondaryColorHoverText = secondary.colorHoveredText,
-        secondaryColorSplash = secondary.colorSplashed,
-        secondaryColorSplashText = secondary.colorSplashedText,
-        secondaryFill = secondary.color,
-        secondaryFillText = secondary.colorText,
-        secondaryFillHover = secondary.colorHovered,
-        secondaryFillHoverText = secondary.colorHoveredText,
-        secondaryFillSplash = secondary.colorSplashed,
-        secondaryFillSplashText = secondary.colorSplashedText,
-        secondaryText = secondary.colorText,
-        secondaryTextHover = secondary.colorHoveredText,
-        secondaryTextHoverText = secondary.colorHoveredText,
-        secondaryTextSplash = secondary.colorSplashedText,
-        secondaryTextSplashText = secondary.colorSplashedText,
-        tertiaryColor = tertiary.color,
-        tertiaryColorText = tertiary.colorText,
-        tertiaryColorHover = tertiary.colorHovered,
-        tertiaryColorHoverText = tertiary.colorHoveredText,
-        tertiaryColorSplash = tertiary.colorSplashed,
-        tertiaryColorSplashText = tertiary.colorSplashedText,
-        tertiaryFill = tertiary.color,
-        tertiaryFillText = tertiary.colorText,
-        tertiaryFillHover = tertiary.colorHovered,
-        tertiaryFillHoverText = tertiary.colorHoveredText,
-        tertiaryFillSplash = tertiary.colorSplashed,
-        tertiaryFillSplashText = tertiary.colorSplashedText,
-        tertiaryText = tertiary.colorText,
-        tertiaryTextHover = tertiary.colorHoveredText,
-        tertiaryTextHoverText = tertiary.colorHoveredText,
-        tertiaryTextSplash = tertiary.colorSplashedText,
-        tertiaryTextSplashText = tertiary.colorSplashedText;
+  }) : primaryColor = primary.color,
+       primaryColorText = primary.colorText,
+       primaryColorHover = primary.colorHovered,
+       primaryColorHoverText = primary.colorHoveredText,
+       primaryColorSplash = primary.colorSplashed,
+       primaryColorSplashText = primary.colorSplashedText,
+       primaryFill = primary.fill,
+       primaryFillText = primary.fillText,
+       primaryFillHover = primary.fillHovered,
+       primaryFillHoverText = primary.fillHoveredText,
+       primaryFillSplash = primary.fillSplashed,
+       primaryFillSplashText = primary.fillSplashedText,
+       primaryText = primary.text,
+       primaryTextHover = primary.textHovered,
+       primaryTextHoverText = primary.textHoveredText,
+       primaryTextSplash = primary.textSplashed,
+       primaryTextSplashText = primary.textSplashedText,
+       secondaryColor = secondary.color,
+       secondaryColorText = secondary.colorText,
+       secondaryColorHover = secondary.colorHovered,
+       secondaryColorHoverText = secondary.colorHoveredText,
+       secondaryColorSplash = secondary.colorSplashed,
+       secondaryColorSplashText = secondary.colorSplashedText,
+       secondaryFill = secondary.fill,
+       secondaryFillText = secondary.fillText,
+       secondaryFillHover = secondary.fillHovered,
+       secondaryFillHoverText = secondary.fillHoveredText,
+       secondaryFillSplash = secondary.fillSplashed,
+       secondaryFillSplashText = secondary.fillSplashedText,
+       secondaryText = secondary.text,
+       secondaryTextHover = secondary.textHovered,
+       secondaryTextHoverText = secondary.textHoveredText,
+       secondaryTextSplash = secondary.textSplashed,
+       secondaryTextSplashText = secondary.textSplashedText,
+       tertiaryColor = tertiary.color,
+       tertiaryColorText = tertiary.colorText,
+       tertiaryColorHover = tertiary.colorHovered,
+       tertiaryColorHoverText = tertiary.colorHoveredText,
+       tertiaryColorSplash = tertiary.colorSplashed,
+       tertiaryColorSplashText = tertiary.colorSplashedText,
+       tertiaryFill = tertiary.fill,
+       tertiaryFillText = tertiary.fillText,
+       tertiaryFillHover = tertiary.fillHovered,
+       tertiaryFillHoverText = tertiary.fillHoveredText,
+       tertiaryFillSplash = tertiary.fillSplashed,
+       tertiaryFillSplashText = tertiary.fillSplashedText,
+       tertiaryText = tertiary.text,
+       tertiaryTextHover = tertiary.textHovered,
+       tertiaryTextHoverText = tertiary.textHoveredText,
+       tertiaryTextSplash = tertiary.textSplashed,
+       tertiaryTextSplashText = tertiary.textSplashedText;
 
   @override
   ThemeExtension<MonetColorScheme> lerp(
-      covariant ThemeExtension<MonetColorScheme>? other, double t) {
+    covariant ThemeExtension<MonetColorScheme>? other,
+    double t,
+  ) {
     if (other == null) return this;
     if (identical(other, this)) {
       return this;
@@ -306,7 +308,10 @@ class MonetColorScheme extends ThemeExtension<MonetColorScheme> {
   }
 
   static MonetColorScheme _lerpKeepHue(
-      MonetColorScheme a, MonetColorScheme b, double t) {
+    MonetColorScheme a,
+    MonetColorScheme b,
+    double t,
+  ) {
     if (identical(a, b)) {
       return a;
     }
@@ -316,97 +321,220 @@ class MonetColorScheme extends ThemeExtension<MonetColorScheme> {
       // brightness: Hct.lerp(brightness, other.brightness, t),
 
       primaryColor: Hct.lerpKeepHue(a.primaryColor, b.primaryColor, t),
-      primaryColorText:
-          Hct.lerpKeepHue(a.primaryColorText, b.primaryColorText, t),
-      primaryColorHover:
-          Hct.lerpKeepHue(a.primaryColorHover, b.primaryColorHover, t),
-      primaryColorHoverText:
-          Hct.lerpKeepHue(a.primaryColorHoverText, b.primaryColorHoverText, t),
-      primaryColorSplash:
-          Hct.lerpKeepHue(a.primaryColorSplash, b.primaryColorSplash, t),
+      primaryColorText: Hct.lerpKeepHue(
+        a.primaryColorText,
+        b.primaryColorText,
+        t,
+      ),
+      primaryColorHover: Hct.lerpKeepHue(
+        a.primaryColorHover,
+        b.primaryColorHover,
+        t,
+      ),
+      primaryColorHoverText: Hct.lerpKeepHue(
+        a.primaryColorHoverText,
+        b.primaryColorHoverText,
+        t,
+      ),
+      primaryColorSplash: Hct.lerpKeepHue(
+        a.primaryColorSplash,
+        b.primaryColorSplash,
+        t,
+      ),
       primaryColorSplashText: Hct.lerpKeepHue(
-          a.primaryColorSplashText, b.primaryColorSplashText, t),
+        a.primaryColorSplashText,
+        b.primaryColorSplashText,
+        t,
+      ),
       primaryFill: Hct.lerpKeepHue(a.primaryFill, b.primaryFill, t),
       primaryFillText: Hct.lerpKeepHue(a.primaryFillText, b.primaryFillText, t),
-      primaryFillHover:
-          Hct.lerpKeepHue(a.primaryFillHover, b.primaryFillHover, t),
-      primaryFillHoverText:
-          Hct.lerpKeepHue(a.primaryFillHoverText, b.primaryFillHoverText, t),
-      primaryFillSplash:
-          Hct.lerpKeepHue(a.primaryFillSplash, b.primaryFillSplash, t),
-      primaryFillSplashText:
-          Hct.lerpKeepHue(a.primaryFillSplashText, b.primaryFillSplashText, t),
+      primaryFillHover: Hct.lerpKeepHue(
+        a.primaryFillHover,
+        b.primaryFillHover,
+        t,
+      ),
+      primaryFillHoverText: Hct.lerpKeepHue(
+        a.primaryFillHoverText,
+        b.primaryFillHoverText,
+        t,
+      ),
+      primaryFillSplash: Hct.lerpKeepHue(
+        a.primaryFillSplash,
+        b.primaryFillSplash,
+        t,
+      ),
+      primaryFillSplashText: Hct.lerpKeepHue(
+        a.primaryFillSplashText,
+        b.primaryFillSplashText,
+        t,
+      ),
       primaryText: Hct.lerpKeepHue(a.primaryText, b.primaryText, t),
-      primaryTextHover:
-          Hct.lerpKeepHue(a.primaryTextHover, b.primaryTextHover, t),
-      primaryTextHoverText:
-          Hct.lerpKeepHue(a.primaryTextHoverText, b.primaryTextHoverText, t),
-      primaryTextSplash:
-          Hct.lerpKeepHue(a.primaryTextSplash, b.primaryTextSplash, t),
-      primaryTextSplashText:
-          Hct.lerpKeepHue(a.primaryTextSplashText, b.primaryTextSplashText, t),
+      primaryTextHover: Hct.lerpKeepHue(
+        a.primaryTextHover,
+        b.primaryTextHover,
+        t,
+      ),
+      primaryTextHoverText: Hct.lerpKeepHue(
+        a.primaryTextHoverText,
+        b.primaryTextHoverText,
+        t,
+      ),
+      primaryTextSplash: Hct.lerpKeepHue(
+        a.primaryTextSplash,
+        b.primaryTextSplash,
+        t,
+      ),
+      primaryTextSplashText: Hct.lerpKeepHue(
+        a.primaryTextSplashText,
+        b.primaryTextSplashText,
+        t,
+      ),
       secondaryColor: Hct.lerpKeepHue(a.secondaryColor, b.secondaryColor, t),
-      secondaryColorText:
-          Hct.lerpKeepHue(a.secondaryColorText, b.secondaryColorText, t),
-      secondaryColorHover:
-          Hct.lerpKeepHue(a.secondaryColorHover, b.secondaryColorHover, t),
+      secondaryColorText: Hct.lerpKeepHue(
+        a.secondaryColorText,
+        b.secondaryColorText,
+        t,
+      ),
+      secondaryColorHover: Hct.lerpKeepHue(
+        a.secondaryColorHover,
+        b.secondaryColorHover,
+        t,
+      ),
       secondaryColorHoverText: Hct.lerpKeepHue(
-          a.secondaryColorHoverText, b.secondaryColorHoverText, t),
-      secondaryColorSplash:
-          Hct.lerpKeepHue(a.secondaryColorSplash, b.secondaryColorSplash, t),
+        a.secondaryColorHoverText,
+        b.secondaryColorHoverText,
+        t,
+      ),
+      secondaryColorSplash: Hct.lerpKeepHue(
+        a.secondaryColorSplash,
+        b.secondaryColorSplash,
+        t,
+      ),
       secondaryColorSplashText: Hct.lerpKeepHue(
-          a.secondaryColorSplashText, b.secondaryColorSplashText, t),
+        a.secondaryColorSplashText,
+        b.secondaryColorSplashText,
+        t,
+      ),
       secondaryFill: Hct.lerpKeepHue(a.secondaryFill, b.secondaryFill, t),
-      secondaryFillText:
-          Hct.lerpKeepHue(a.secondaryFillText, b.secondaryFillText, t),
-      secondaryFillHover:
-          Hct.lerpKeepHue(a.secondaryFillHover, b.secondaryFillHover, t),
+      secondaryFillText: Hct.lerpKeepHue(
+        a.secondaryFillText,
+        b.secondaryFillText,
+        t,
+      ),
+      secondaryFillHover: Hct.lerpKeepHue(
+        a.secondaryFillHover,
+        b.secondaryFillHover,
+        t,
+      ),
       secondaryFillHoverText: Hct.lerpKeepHue(
-          a.secondaryFillHoverText, b.secondaryFillHoverText, t),
-      secondaryFillSplash:
-          Hct.lerpKeepHue(a.secondaryFillSplash, b.secondaryFillSplash, t),
+        a.secondaryFillHoverText,
+        b.secondaryFillHoverText,
+        t,
+      ),
+      secondaryFillSplash: Hct.lerpKeepHue(
+        a.secondaryFillSplash,
+        b.secondaryFillSplash,
+        t,
+      ),
       secondaryFillSplashText: Hct.lerpKeepHue(
-          a.secondaryFillSplashText, b.secondaryFillSplashText, t),
+        a.secondaryFillSplashText,
+        b.secondaryFillSplashText,
+        t,
+      ),
       secondaryText: Hct.lerpKeepHue(a.secondaryText, b.secondaryText, t),
-      secondaryTextHover:
-          Hct.lerpKeepHue(a.secondaryTextHover, b.secondaryTextHover, t),
+      secondaryTextHover: Hct.lerpKeepHue(
+        a.secondaryTextHover,
+        b.secondaryTextHover,
+        t,
+      ),
       secondaryTextHoverText: Hct.lerpKeepHue(
-          a.secondaryTextHoverText, b.secondaryTextHoverText, t),
-      secondaryTextSplash:
-          Hct.lerpKeepHue(a.secondaryTextSplash, b.secondaryTextSplash, t),
+        a.secondaryTextHoverText,
+        b.secondaryTextHoverText,
+        t,
+      ),
+      secondaryTextSplash: Hct.lerpKeepHue(
+        a.secondaryTextSplash,
+        b.secondaryTextSplash,
+        t,
+      ),
       secondaryTextSplashText: Hct.lerpKeepHue(
-          a.secondaryTextSplashText, b.secondaryTextSplashText, t),
+        a.secondaryTextSplashText,
+        b.secondaryTextSplashText,
+        t,
+      ),
       tertiaryColor: Hct.lerpKeepHue(a.tertiaryColor, b.tertiaryColor, t),
-      tertiaryColorText:
-          Hct.lerpKeepHue(a.tertiaryColorText, b.tertiaryColorText, t),
-      tertiaryColorHover:
-          Hct.lerpKeepHue(a.tertiaryColorHover, b.tertiaryColorHover, t),
+      tertiaryColorText: Hct.lerpKeepHue(
+        a.tertiaryColorText,
+        b.tertiaryColorText,
+        t,
+      ),
+      tertiaryColorHover: Hct.lerpKeepHue(
+        a.tertiaryColorHover,
+        b.tertiaryColorHover,
+        t,
+      ),
       tertiaryColorHoverText: Hct.lerpKeepHue(
-          a.tertiaryColorHoverText, b.tertiaryColorHoverText, t),
-      tertiaryColorSplash:
-          Hct.lerpKeepHue(a.tertiaryColorSplash, b.tertiaryColorSplash, t),
+        a.tertiaryColorHoverText,
+        b.tertiaryColorHoverText,
+        t,
+      ),
+      tertiaryColorSplash: Hct.lerpKeepHue(
+        a.tertiaryColorSplash,
+        b.tertiaryColorSplash,
+        t,
+      ),
       tertiaryColorSplashText: Hct.lerpKeepHue(
-          a.tertiaryColorSplashText, b.tertiaryColorSplashText, t),
+        a.tertiaryColorSplashText,
+        b.tertiaryColorSplashText,
+        t,
+      ),
       tertiaryFill: Hct.lerpKeepHue(a.tertiaryFill, b.tertiaryFill, t),
-      tertiaryFillText:
-          Hct.lerpKeepHue(a.tertiaryFillText, b.tertiaryFillText, t),
-      tertiaryFillHover:
-          Hct.lerpKeepHue(a.tertiaryFillHover, b.tertiaryFillHover, t),
-      tertiaryFillHoverText:
-          Hct.lerpKeepHue(a.tertiaryFillHoverText, b.tertiaryFillHoverText, t),
-      tertiaryFillSplash:
-          Hct.lerpKeepHue(a.tertiaryFillSplash, b.tertiaryFillSplash, t),
+      tertiaryFillText: Hct.lerpKeepHue(
+        a.tertiaryFillText,
+        b.tertiaryFillText,
+        t,
+      ),
+      tertiaryFillHover: Hct.lerpKeepHue(
+        a.tertiaryFillHover,
+        b.tertiaryFillHover,
+        t,
+      ),
+      tertiaryFillHoverText: Hct.lerpKeepHue(
+        a.tertiaryFillHoverText,
+        b.tertiaryFillHoverText,
+        t,
+      ),
+      tertiaryFillSplash: Hct.lerpKeepHue(
+        a.tertiaryFillSplash,
+        b.tertiaryFillSplash,
+        t,
+      ),
       tertiaryFillSplashText: Hct.lerpKeepHue(
-          a.tertiaryFillSplashText, b.tertiaryFillSplashText, t),
+        a.tertiaryFillSplashText,
+        b.tertiaryFillSplashText,
+        t,
+      ),
       tertiaryText: Hct.lerpKeepHue(a.tertiaryText, b.tertiaryText, t),
-      tertiaryTextHover:
-          Hct.lerpKeepHue(a.tertiaryTextHover, b.tertiaryTextHover, t),
-      tertiaryTextHoverText:
-          Hct.lerpKeepHue(a.tertiaryTextHoverText, b.tertiaryTextHoverText, t),
-      tertiaryTextSplash:
-          Hct.lerpKeepHue(a.tertiaryTextSplash, b.tertiaryTextSplash, t),
+      tertiaryTextHover: Hct.lerpKeepHue(
+        a.tertiaryTextHover,
+        b.tertiaryTextHover,
+        t,
+      ),
+      tertiaryTextHoverText: Hct.lerpKeepHue(
+        a.tertiaryTextHoverText,
+        b.tertiaryTextHoverText,
+        t,
+      ),
+      tertiaryTextSplash: Hct.lerpKeepHue(
+        a.tertiaryTextSplash,
+        b.tertiaryTextSplash,
+        t,
+      ),
       tertiaryTextSplashText: Hct.lerpKeepHue(
-          a.tertiaryTextSplashText, b.tertiaryTextSplashText, t),
+        a.tertiaryTextSplashText,
+        b.tertiaryTextSplashText,
+        t,
+      ),
     );
   }
 }

@@ -10,79 +10,71 @@ import '../utils/color_matcher.dart';
 
 double _tone(Color c) => Hct.fromColor(c).tone;
 
-/// Minimal class mirroring Palette's `late final` pattern.
-/// Tracks evaluation counts to prove laziness.
-class _LazyProbe {
-  int aCount = 0;
-  int bCount = 0;
-  int cCount = 0;
-
-  /// Computed once on first access, never again.
-  late final int a = _computeA();
-
-  /// Depends on [a] — still lazy, evaluated on first access of [b].
-  late final int b = _computeB();
-
-  /// Independent of [a] and [b].
-  late final int c = _computeC();
-
-  int _computeA() {
-    aCount++;
-    return 1;
-  }
-
-  int _computeB() {
-    bCount++;
-    return a + 10;
-  }
-
-  int _computeC() {
-    cCount++;
-    return 99;
-  }
-}
-
 void main() {
-  group('late final laziness', () {
-    test('fields are not evaluated at construction time', () {
-      final probe = _LazyProbe();
-      expect(probe.aCount, 0);
-      expect(probe.bCount, 0);
-      expect(probe.cCount, 0);
+  group('actual palette laziness', () {
+    test('construction and equality do not solve contrasts', () {
+      final stats = PaletteWorkStats();
+      final p = Palette.from(
+        const Color(0xff1565c0),
+        backgroundTone: 94,
+        stats: stats,
+      );
+      expect(stats.backgroundConstructions, 1);
+      expect(stats.contrastRequests, 0);
+      expect(p, Palette.from(const Color(0xff1565c0), backgroundTone: 94));
+      p.hashCode;
+      p.background;
+      p.color;
+      expect(stats.contrastRequests, 0);
+      expect(stats.colorMaterializations, 0);
+      final explicit = PaletteWorkStats();
+      Palette.fromColorAndBackground(
+        const Color(0xff1565c0),
+        const Color(0xffffffff),
+        stats: explicit,
+      );
+      expect(explicit.backgroundConstructions, 0);
+      expect(explicit.contrastRequests, 0);
     });
-
-    test('accessing a field evaluates it exactly once', () {
-      final probe = _LazyProbe();
-      expect(probe.a, 1);
-      expect(probe.aCount, 1);
-      // Second access — no recomputation.
-      expect(probe.a, 1);
-      expect(probe.aCount, 1);
-      // b and c still untouched.
-      expect(probe.bCount, 0);
-      expect(probe.cCount, 0);
-    });
-
-    test('dependent field triggers its dependency but each runs once', () {
-      final probe = _LazyProbe();
-      // Access b first — should trigger a (dependency), then b.
-      expect(probe.b, 11);
-      expect(probe.aCount, 1);
-      expect(probe.bCount, 1);
-      // Access a again — already cached.
-      expect(probe.a, 1);
-      expect(probe.aCount, 1);
-      // c still untouched.
-      expect(probe.cCount, 0);
-    });
-
-    test('unused fields are never evaluated', () {
-      final probe = _LazyProbe();
-      // Only touch a.
-      expect(probe.a, 1);
-      expect(probe.aCount, 1);
-      expect(probe.bCount, 0);
-      expect(probe.cCount, 0);
+    test('a getter calculates prerequisites once, not unrelated families', () {
+      final stats = PaletteWorkStats();
+      final p = Palette.from(
+        const Color(0xff1565c0),
+        backgroundTone: 94,
+        stats: stats,
+      );
+      p.text;
+      expect(
+        stats.contrastRequests,
+        2,
+        reason: 'neutral polarity plus actual branded foreground',
+      );
+      expect(stats.colorMaterializations, 1);
+      for (var i = 0; i < 100; i++) {
+        p.text;
+      }
+      expect(stats.contrastRequests, 2);
+      p.fill;
+      expect(
+        stats.contrastRequests,
+        3,
+        reason: 'reuse already-solved background polarity',
+      );
+      p.fillHoveredIcon;
+      final requests = stats.contrastRequests,
+          conversions = stats.colorMaterializations;
+      expect(requests, greaterThan(3));
+      for (var i = 0; i < 100; i++) {
+        p.fillHoveredIcon;
+      }
+      expect(stats.contrastRequests, requests);
+      expect(stats.colorMaterializations, conversions);
+      p.colorText;
+      expect(
+        stats.contrastRequests,
+        requests + 1,
+        reason: 'color-surface family was not calculated',
+      );
     });
   });
 
@@ -107,69 +99,109 @@ void main() {
       final ta = _tone(a);
       final tb = _tone(b);
       final d = tb - ta;
-      expect(d.abs(), greaterThan(1.0),
-          reason: '$label: tones too close '
-              '(${ta.toStringAsFixed(1)} vs ${tb.toStringAsFixed(1)})');
+      expect(
+        d.abs(),
+        greaterThan(1.0),
+        reason:
+            '$label: tones too close '
+            '(${ta.toStringAsFixed(1)} vs ${tb.toStringAsFixed(1)})',
+      );
       return d.sign;
     }
 
     for (final bgTone in [10, 20, 30, 40, 50, 55, 60, 70, 80, 90, 95]) {
       group('bgTone=$bgTone', () {
         late Palette p;
-        setUp(() =>
-            p = Palette.from(brandColor, backgroundTone: bgTone.toDouble()));
+        setUp(
+          () => p = Palette.from(brandColor, backgroundTone: bgTone.toDouble()),
+        );
 
         test('fill and text share polarity vs background', () {
           final fillDir = dir(p.background, p.fill, 'bg→fill');
           final textDir = dir(p.background, p.text, 'bg→text');
-          expect(fillDir, textDir,
-              reason: 'fill (T${_tone(p.fill).round()}) and '
-                  'text (T${_tone(p.text).round()}) should both be '
-                  '${fillDir > 0 ? "lighter" : "darker"} than '
-                  'background (T${_tone(p.background).round()})');
-        });
-
-        test('hovered overlay fill and text share polarity vs hovered overlay',
-            () {
-          final fillDir =
-              dir(p.backgroundHovered, p.backgroundHoveredFill, 'bgHover→fill');
-          final textDir =
-              dir(p.backgroundHovered, p.backgroundHoveredText, 'bgHover→text');
-          expect(fillDir, textDir,
-              reason: 'backgroundHoveredFill and backgroundHoveredText '
-                  'should be on the same side of backgroundHovered');
+          expect(
+            fillDir,
+            textDir,
+            reason:
+                'fill (T${_tone(p.fill).round()}) and '
+                'text (T${_tone(p.text).round()}) should both be '
+                '${fillDir > 0 ? "lighter" : "darker"} than '
+                'background (T${_tone(p.background).round()})',
+          );
         });
 
         test(
-            'splashed overlay fill and text share polarity vs splashed overlay',
-            () {
-          final fillDir = dir(
-              p.backgroundSplashed, p.backgroundSplashedFill, 'bgSplash→fill');
-          final textDir = dir(
-              p.backgroundSplashed, p.backgroundSplashedText, 'bgSplash→text');
-          expect(fillDir, textDir,
-              reason: 'backgroundSplashedFill and backgroundSplashedText '
-                  'should be on the same side of backgroundSplashed');
-        });
+          'hovered overlay fill and text share polarity vs hovered overlay',
+          () {
+            final fillDir = dir(
+              p.backgroundHovered,
+              p.backgroundHoveredFill,
+              'bgHover→fill',
+            );
+            final textDir = dir(
+              p.backgroundHovered,
+              p.backgroundHoveredText,
+              'bgHover→text',
+            );
+            expect(
+              fillDir,
+              textDir,
+              reason:
+                  'backgroundHoveredFill and backgroundHoveredText '
+                  'should be on the same side of backgroundHovered',
+            );
+          },
+        );
+
+        test(
+          'splashed overlay fill and text share polarity vs splashed overlay',
+          () {
+            final fillDir = dir(
+              p.backgroundSplashed,
+              p.backgroundSplashedFill,
+              'bgSplash→fill',
+            );
+            final textDir = dir(
+              p.backgroundSplashed,
+              p.backgroundSplashedText,
+              'bgSplash→text',
+            );
+            expect(
+              fillDir,
+              textDir,
+              reason:
+                  'backgroundSplashedFill and backgroundSplashedText '
+                  'should be on the same side of backgroundSplashed',
+            );
+          },
+        );
 
         test('fillText and fillIcon share polarity vs fill', () {
           final fillToText = dir(p.fill, p.fillText, 'fill→fillText');
           final fillToIcon = dir(p.fill, p.fillIcon, 'fill→fillIcon');
-          expect(fillToText, fillToIcon,
-              reason: 'fillText (T${_tone(p.fillText).round()}) and '
-                  'fillIcon (T${_tone(p.fillIcon).round()}) should both be '
-                  '${fillToText > 0 ? "lighter" : "darker"} than '
-                  'fill (T${_tone(p.fill).round()})');
+          expect(
+            fillToText,
+            fillToIcon,
+            reason:
+                'fillText (T${_tone(p.fillText).round()}) and '
+                'fillIcon (T${_tone(p.fillIcon).round()}) should both be '
+                '${fillToText > 0 ? "lighter" : "darker"} than '
+                'fill (T${_tone(p.fill).round()})',
+          );
         });
 
         test('colorText and colorIcon share polarity vs color', () {
           final colorToText = dir(p.color, p.colorText, 'color→colorText');
           final colorToIcon = dir(p.color, p.colorIcon, 'color→colorIcon');
-          expect(colorToText, colorToIcon,
-              reason: 'colorText (T${_tone(p.colorText).round()}) and '
-                  'colorIcon (T${_tone(p.colorIcon).round()}) should both be '
-                  '${colorToText > 0 ? "lighter" : "darker"} than '
-                  'color (T${_tone(p.color).round()})');
+          expect(
+            colorToText,
+            colorToIcon,
+            reason:
+                'colorText (T${_tone(p.colorText).round()}) and '
+                'colorIcon (T${_tone(p.colorIcon).round()}) should both be '
+                '${colorToText > 0 ? "lighter" : "darker"} than '
+                'color (T${_tone(p.color).round()})',
+          );
         });
       });
     }
@@ -177,15 +209,12 @@ void main() {
 
   group('#1177AA bgTone=10', () {
     test('snapshot', () {
-      final p = Palette.from(
-        const Color(0xff1177AA),
-        backgroundTone: 10,
-      );
+      final p = Palette.from(const Color(0xff1177AA), backgroundTone: 10);
       expect(p.color, isColor(0xff1177AA));
       expect(p.colorBorder, isColor(0xff1177AA));
       expect(p.fill, isColor(0xff529FD2));
       expect(p.fillBorder, isColor(0xff529FD2));
-      expect(p.text, isColor(0xff73BBEE));
+      expect(p.text, isColor(0xff73BBEF));
       expect(p.fillText, isColor(0xffFFFFFF));
       expect(p.fillIcon, isColor(0xffD4EBFF));
     });
@@ -212,7 +241,7 @@ void main() {
       expect(colors.fillHoveredText, isColor(0xffE8EFFF));
       expect(colors.fillSplashed, isColor(0xff5A677D));
       expect(colors.fillSplashedText, isColor(0xffD0DBF1));
-      expect(colors.text, isColor(0xff838FA5));
+      expect(colors.text, isColor(0xff828FA5));
       expect(colors.textHovered, isColor(0xffC8D2E9));
       expect(colors.textHoveredText, isColor(0xff47546A));
       expect(colors.textSplashed, isColor(0xffA6B1C8));
@@ -220,10 +249,7 @@ void main() {
     });
 
     test('dark mode', () {
-      final colors = Palette.from(
-        const Color(0xff334157),
-        backgroundTone: 0.0,
-      );
+      final colors = Palette.from(const Color(0xff334157), backgroundTone: 0.0);
       expect(colors.color, isColor(0xff334157));
       expect(colors.colorBorder, isColor(0xff455368));
       expect(colors.colorText, isColor(0xffB7C3D9));
@@ -239,7 +265,7 @@ void main() {
       expect(colors.fillHoveredText, isColor(0xff1E2D44));
       expect(colors.fillSplashed, isColor(0xffC5D0E6));
       expect(colors.fillSplashedText, isColor(0xff445167));
-      expect(colors.text, isColor(0xffA6B1C7));
+      expect(colors.text, isColor(0xffA6B2C8));
       expect(colors.textHovered, isColor(0xff5C697F));
       expect(colors.textHoveredText, isColor(0xffD1DCF2));
       expect(colors.textSplashed, isColor(0xff8390A5));
@@ -281,8 +307,10 @@ void main() {
         backgroundTone: lstarFromArgb(0xff986E38),
       );
       expect(colors.color, isColor(0xffA57B43));
-      expect(colors.colorBorder,
-          isColor(0xff7D5418)); // subtle shadow, not harsh hole
+      expect(
+        colors.colorBorder,
+        isColor(0xff7D5418),
+      ); // subtle shadow, not harsh hole
       expect(lstarFromArgb(colors.color.argb), closeTo(54.627, 0.001));
       expect(lstarFromArgb(colors.colorBorder.argb), closeTo(39.184, 0.001));
     });
@@ -292,10 +320,7 @@ void main() {
       // because APCA is flat in the deep darks. With Usage.border (Lc 15)
       // it correctly lands at T~37 — still lighter (no darker headroom at
       // T10), but a much more reasonable delta.
-      final p = Palette.from(
-        const Color(0xff1177AA),
-        backgroundTone: 10,
-      );
+      final p = Palette.from(const Color(0xff1177AA), backgroundTone: 10);
       expect(p.backgroundBorder, isColor(0xff445969));
       expect(_tone(p.backgroundBorder), closeTo(36.896, 0.5));
       // The old bug produced T~51; ensure we're well below that.
@@ -324,20 +349,29 @@ void main() {
 
     // Hover and splash chroma should be at least as high as the
     // background's, not collapsed to the base color's gamut-capped value.
-    expect(hovChroma, greaterThanOrEqualTo(bgChroma - 1),
-        reason: 'backgroundHovered chroma ($hovChroma) should be '
-            'close to background chroma ($bgChroma)');
-    expect(splChroma, greaterThanOrEqualTo(bgChroma - 1),
-        reason: 'backgroundSplashed chroma ($splChroma) should be '
-            'close to background chroma ($bgChroma)');
+    expect(
+      hovChroma,
+      greaterThanOrEqualTo(bgChroma - 1),
+      reason:
+          'backgroundHovered chroma ($hovChroma) should be '
+          'close to background chroma ($bgChroma)',
+    );
+    expect(
+      splChroma,
+      greaterThanOrEqualTo(bgChroma - 1),
+      reason:
+          'backgroundSplashed chroma ($splChroma) should be '
+          'close to background chroma ($bgChroma)',
+    );
   });
 
-group('helpers', skip: 'test generators', () {
+  group('helpers', skip: 'test generators', () {
     const color = Color(0xff334157);
 
     test('generate light mode test code', () {
       final answers = Palette.from(color, backgroundTone: 100.0);
-      final code = '''
+      final code =
+          '''
       expect(colors.color, isColor(${hexFromArgb(color.argb).replaceAll('#', '0xff')}));
       expect(colors.colorBorder, isColor(${hexFromArgb(answers.colorBorder.argb).replaceAll('#', '0xff')}));
       expect(colors.colorText, isColor(${hexFromArgb(answers.colorText.argb).replaceAll('#', '0xff')}));
@@ -365,7 +399,8 @@ group('helpers', skip: 'test generators', () {
 
     test('generate dark mode test code', () {
       final answers = Palette.from(color, backgroundTone: 0.0);
-      final code = '''
+      final code =
+          '''
       expect(colors.color, isColor(${hexFromArgb(color.argb).replaceAll('#', '0xff')}));
       expect(colors.colorBorder, isColor(${hexFromArgb(answers.colorBorder.argb).replaceAll('#', '0xff')}));
       expect(colors.colorText, isColor(${hexFromArgb(answers.colorText.argb).replaceAll('#', '0xff')}));

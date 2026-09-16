@@ -1,7 +1,14 @@
 import {describe, expect, test} from 'vitest';
-import {argbFromHex, Hct, Palette, hexFromArgb} from '../index.js';
+import {Algo, argbFromHex, contrastBetweenArgbs, Hct, Palette, hexFromArgb} from '../index.js';
 
 const tone = (argb: number) => Hct.fromInt(argb).tone;
+
+test('branded text verifies its own RGB against the actual background', () => {
+  const p = Palette.from(0xff7b4338, {backgroundTone: 93, algo: Algo.wcag21, colorModel: 'cam16v11'});
+  expect(contrastBetweenArgbs(Algo.wcag21, p.background, p.backgroundText)).toBeGreaterThanOrEqual(4.5);
+  expect(contrastBetweenArgbs(Algo.wcag21, p.background, p.text)).toBeGreaterThanOrEqual(4.5);
+});
+
 const expectHex = (actual: number, expected: string, tolerance = 36) => {
   const a = actual;
   const e = argbFromHex(expected);

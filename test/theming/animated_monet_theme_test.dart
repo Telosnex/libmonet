@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/theming/animated_monet_theme.dart';
 import 'package:libmonet/theming/interpolation_style.dart';
@@ -21,25 +22,30 @@ class _PaintProbe extends StatefulWidget {
 
 class _PaintProbeState extends State<_PaintProbe> {
   MonetPaintColors? _colors;
+  MonetPaletteBinding? _binding;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final next = MonetPaintColorsScope.of(context);
     if (identical(_colors, next)) return;
-    _colors?.removeListener(_notify);
-    _colors = next..addListener(_notify);
+    _binding?.dispose();
+    _binding = next.bindThemePalette(MonetPalette.primary)
+      ..addListener(_notify);
+    _colors = next;
     _notify();
   }
 
   void _notify() {
     final colors = _colors;
-    if (colors != null) widget.onValue(colors.value);
+    if (colors != null) {
+      widget.onValue(colors.value.copyWith(primary: _binding!.value));
+    }
   }
 
   @override
   void dispose() {
-    _colors?.removeListener(_notify);
+    _binding?.dispose();
     super.dispose();
   }
 
@@ -147,25 +153,14 @@ void main() {
     expect(mid, isNot(equals(begin.primary.background)));
     expect(mid, isNot(equals(end.primary.background)));
 
-    // The spring is barely underdamped: it visually arrives well before it
-    // rigorously settles within tolerance (overshoot/ring), so it can take
-    // meaningfully longer than `duration` to reach `isDone`. Wait for actual
-    // completion rather than assuming a fixed-duration Tween's exact timing.
+    // Duration is a spring pacing hint, not a fixed tween deadline.
     await tester.pumpAndSettle();
     expect(sampled, equals(end.primary.background));
   });
 
-  // `AnimatedMonetTheme` used to interpolate colors via `PaletteLerped`
-  // (HCT-space cartesian/polar hue lerp) driven by a scalar `t` from a
-  // fixed-duration `AnimationController`. It now drives a moving-target spring
-  // over raw sRGB channels of the underlying base colors instead (see
-  // `_ThemeVectorSim`/`_springDescriptionFor` in animated_monet_theme.dart),
-  // which is what makes retargeting velocity-continuous rather than
-  // clock-resetting. `interpolationStyle` no longer changes the live
-  // animation's color path -- it is kept only for API compatibility. These
-  // tests now assert the architecture-independent property that actually
-  // matters: the animated color moves smoothly from `begin` toward `end`,
-  // rather than an exact `PaletteLerped` midpoint.
+  // Live animation interpolates solved colors with shared progress. Assert
+  // intermediate colors and position-continuous retargets, not a fixed-duration
+  // tween fraction: the duration parameter controls spring stiffness.
   testWidgets('AnimatedMonetTheme interpolates through intermediate colors', (
     tester,
   ) async {
@@ -212,53 +207,51 @@ void main() {
     expect(sampled, equals(end.primary.color));
   });
 
-  testWidgets(
-    'AnimatedMonetTheme accepts interpolationStyle without effect on the '
-    'live spring (kept for API compatibility)',
-    (tester) async {
-      final begin = themeFrom(Colors.red);
-      final end = themeFrom(Colors.blue);
-      Color? sampled;
+  testWidgets('AnimatedMonetTheme also animates with the polar style', (
+    tester,
+  ) async {
+    final begin = themeFrom(Colors.red);
+    final end = themeFrom(Colors.blue);
+    Color? sampled;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AnimatedMonetTheme(
-            data: begin,
-            animateThemeData: false,
-            interpolationStyle: InterpolationStyle.polar,
-            duration: const Duration(milliseconds: 200),
-            child: _Probe(
-              onBuild: (ctx) {
-                sampled = MonetTheme.of(ctx).primary.color;
-              },
-            ),
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: begin,
+          animateThemeData: false,
+          interpolationStyle: InterpolationStyle.polar,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.color;
+            },
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AnimatedMonetTheme(
-            data: end,
-            animateThemeData: false,
-            interpolationStyle: InterpolationStyle.polar,
-            duration: const Duration(milliseconds: 200),
-            child: _Probe(
-              onBuild: (ctx) {
-                sampled = MonetTheme.of(ctx).primary.color;
-              },
-            ),
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedMonetTheme(
+          data: end,
+          animateThemeData: false,
+          interpolationStyle: InterpolationStyle.polar,
+          duration: const Duration(milliseconds: 200),
+          child: _Probe(
+            onBuild: (ctx) {
+              sampled = MonetTheme.of(ctx).primary.color;
+            },
           ),
         ),
-      );
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(sampled, isNot(equals(begin.primary.color)));
-      expect(sampled, isNot(equals(end.primary.color)));
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(sampled, isNot(equals(begin.primary.color)));
+    expect(sampled, isNot(equals(end.primary.color)));
 
-      await tester.pumpAndSettle();
-      expect(sampled, equals(end.primary.color));
-    },
-  );
+    await tester.pumpAndSettle();
+    expect(sampled, equals(end.primary.color));
+  });
 
   testWidgets('ThemeData stable when animateThemeData=false', (tester) async {
     final begin = themeFrom(Colors.blue);
@@ -274,9 +267,9 @@ void main() {
         ),
       ),
     );
-    final initialThemePrimary = Theme.of(
-      tester.element(find.byType(SizedBox)),
-    ).colorScheme.primary;
+    final initialThemePrimary = Theme.of(tester.element(find.byType(SizedBox)))
+        .colorScheme
+        .primary;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -290,15 +283,15 @@ void main() {
     );
 
     await tester.pump(const Duration(milliseconds: 100));
-    final midThemePrimary = Theme.of(
-      tester.element(find.byType(SizedBox)),
-    ).colorScheme.primary;
+    final midThemePrimary = Theme.of(tester.element(find.byType(SizedBox)))
+        .colorScheme
+        .primary;
     expect(midThemePrimary, equals(initialThemePrimary));
 
     await tester.pumpAndSettle();
-    final endThemePrimary = Theme.of(
-      tester.element(find.byType(SizedBox)),
-    ).colorScheme.primary;
+    final endThemePrimary = Theme.of(tester.element(find.byType(SizedBox)))
+        .colorScheme
+        .primary;
     expect(
       endThemePrimary,
       equals(
@@ -373,6 +366,127 @@ void main() {
     await tester.pumpAndSettle();
     expect(sampled, equals(secondEnd.primary.background));
   });
+
+  testWidgets(
+    'paint motion respects timeDilation across ticks and ticker restarts',
+    (tester) async {
+      addTearDown(() => timeDilation = 1);
+      final begin = themeFrom(Colors.red);
+      final end = themeFrom(Colors.blue);
+
+      Future<(Color, Color)> run(double dilation) async {
+        await tester.pumpWidget(const SizedBox());
+        timeDilation = dilation;
+        await tester.pump(); // Establish the scheduler's new monotonic epoch.
+        late MonetPaintColors bus;
+        var completions = 0;
+        Widget tree(MonetThemeData data) => MaterialApp(
+          home: AnimatedMonetTheme(
+            data: data,
+            maxUpdatesPerSecond: 0,
+            duration: const Duration(milliseconds: 160),
+            onEnd: () => completions++,
+            child: Builder(
+              builder: (context) {
+                bus = MonetPaintColorsScope.of(context);
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+        await tester.pumpWidget(tree(begin));
+        final binding = bus.bindThemePalette(
+          MonetPalette.primary,
+          roles: const {PaletteRole.color},
+        );
+        await tester.pumpWidget(tree(end));
+        await tester.pump(const Duration(milliseconds: 100));
+        final at100 = binding.value.color;
+        if (dilation > 1) {
+          await tester.pump(
+            Duration(milliseconds: (100 * (dilation - 1)).round()),
+          );
+        }
+        final atEqualAnimationTime = binding.value.color;
+        await tester.pumpAndSettle();
+        expect(binding.value.color, end.primary.color);
+        expect(completions, 1);
+        await tester.pump(const Duration(seconds: 10));
+        // A restarted ticker's elapsed resets to zero; the motion epoch must not.
+        await tester.pumpWidget(tree(begin));
+        expect(binding.value.color, end.primary.color);
+        await tester.pump(Duration(milliseconds: (100 * dilation).round()));
+        expect(binding.value.color, isNot(end.primary.color));
+        expect(binding.value.color, isNot(begin.primary.color));
+        await tester.pumpAndSettle();
+        expect(binding.value.color, begin.primary.color);
+        expect(completions, 2);
+        expect(tester.hasRunningAnimations, false);
+        binding.dispose();
+        await tester.pumpWidget(const SizedBox());
+        return (at100, atEqualAnimationTime);
+      }
+
+      final normal = await run(1);
+      final slow = await run(10);
+      // Flutter verifies scheduler invariants before addTearDown callbacks.
+      timeDilation = 1;
+      expect(
+        slow.$1,
+        isNot(normal.$1),
+        reason: '100 ms wall time is only 10 ms of slow motion',
+      );
+      expect(
+        slow.$2,
+        normal.$2,
+        reason: 'equal animation time follows the same color path',
+      );
+    },
+  );
+
+  testWidgets(
+    'changing timeDilation mid-flight preserves retarget continuity',
+    (tester) async {
+      addTearDown(() => timeDilation = 1);
+      final begin = themeFrom(Colors.red);
+      final end = themeFrom(Colors.blue);
+      late MonetPaintColors bus;
+      Widget tree(MonetThemeData data) => MaterialApp(
+        home: AnimatedMonetTheme(
+          data: data,
+          maxUpdatesPerSecond: 0,
+          child: Builder(
+            builder: (context) {
+              bus = MonetPaintColorsScope.of(context);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+      await tester.pumpWidget(tree(begin));
+      final binding = bus.bindThemePalette(
+        MonetPalette.primary,
+        roles: const {PaletteRole.color},
+      );
+      addTearDown(binding.dispose);
+      await tester.pumpWidget(tree(end));
+      await tester.pump(const Duration(milliseconds: 50));
+      final before = binding.value.color;
+      timeDilation = 10;
+      await tester.pumpWidget(tree(begin));
+      expect(binding.value.color, before);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(bus.isAnimating, true);
+      expect(binding.value.color, isNot(begin.primary.color));
+      final beforeNormal = binding.value.color;
+      timeDilation = 1;
+      await tester.pump();
+      expect(binding.value.color, beforeNormal);
+      await tester.pumpAndSettle();
+      expect(binding.value.color, begin.primary.color);
+      expect(tester.hasRunningAnimations, false);
+    },
+  );
 
   testWidgets('semantically equal data objects do not restart animation', (
     tester,
@@ -542,11 +656,8 @@ void main() {
     final buildsAfterRetarget = inheritedBuilds;
     final paintUpdatesAfterRetarget = paintUpdates;
 
-    // The spring has a soft onset (acceleration ramps 0->1 over ~167ms, see
-    // RK4Spring), so a single 16ms tick is too early to show visible integer
-    // RGB movement for a 1000ms-duration spring. Use a slightly longer elapsed
-    // time so the ramp has engaged, while still being comfortably before
-    // `pumpAndSettle()`.
+    // Allow enough spring travel to change rounded RGB values, while remaining
+    // comfortably before settlement. There is no separate onset/easing ramp.
     await tester.pump(const Duration(milliseconds: 100));
     expect(inheritedBuilds, buildsAfterRetarget);
     expect(inheritedColor, equals(begin.primary.background));
@@ -659,9 +770,9 @@ void main() {
             onEnd: () => onEndCalls++,
             child: _Probe(
               onBuild: (ctx) {
-                inheritedTypography = MonetTheme.of(
-                  ctx,
-                ).monetThemeData.typography;
+                inheritedTypography = MonetTheme.of(ctx)
+                    .monetThemeData
+                    .typography;
               },
             ),
           ),
@@ -684,19 +795,13 @@ void main() {
   );
 
   testWidgets(
-    'rapid continuous retargets do not freeze then jump (moving-target bug)',
+    'rapid retargets keep moving and settle smoothly with shared progress',
     (tester) async {
-      // Reproduces the WallpaperPositionedTheme scroll-jank bug: a scroll
-      // gesture retargets AnimatedMonetTheme roughly every 8ms (one vsync at
-      // 120Hz), well inside its 200ms duration. Each individual retarget is
-      // handled correctly (current -> new target), but `_controller.forward(
-      // from: 0)` resets the animation clock on every single retarget. Since
-      // retargets arrive far faster than `duration`, the visible value never
-      // gets past `t ~= elapsed/duration` before being reset again, so it sits
-      // almost frozen near `begin` for the whole gesture. The instant retargets
-      // stop, the last scheduled animation is finally allowed to run
-      // uninterrupted, covering all the accumulated distance in one visible
-      // burst -- exactly the reported "eases slowly, then suddenly jumps".
+      // Shared-progress interpolation restarts at rest and can lag during
+      // 120 Hz target streams. The old '<30% remaining travel' requirement
+      // depended on per-color velocity-preserving springs. Preserve
+      // meaningful movement during the gesture, no single-frame catch-up jump,
+      // and prompt/exact completion rather than that latency guarantee.
       final begin = themeFrom(Colors.blue);
       final end = themeFrom(Colors.red);
       final samples = <Color>[];
@@ -706,9 +811,9 @@ void main() {
           data: data,
           animateThemeData: false,
           duration: const Duration(milliseconds: 200),
-          child: _Probe(
-            onBuild: (ctx) {
-              samples.add(MonetTheme.of(ctx).primary.background);
+          child: _PaintProbe(
+            onValue: (value) {
+              samples.add(value.primary.background);
             },
           ),
         ),
@@ -743,16 +848,12 @@ void main() {
         samples.last,
       );
 
-      // "Scrolling" now stops. Let the final in-flight animation finish.
-      final beforeSettle = samples.last;
-      await tester.pumpAndSettle();
-      final afterSettle = samples.last;
-      final postScrollJump = rgbColorDistance(beforeSettle, afterSettle);
-
-      // A well-behaved moving-target follow should have visibly tracked most
-      // of the true target's motion *during* the 400ms of continuous
-      // scrolling, so the remaining post-scroll settle is a small tail, not a
-      // big sudden swing.
+      // "Scrolling" stops. Sample every 8ms instead of conflating all remaining
+      // travel (pumpAndSettle) with a single-frame jump.
+      final settleStart = samples.length - 1;
+      for (var i = 0; i < 100; i++) {
+        await tester.pump(const Duration(milliseconds: 8));
+      }
       expect(
         distanceCoveredDuringScroll,
         greaterThan(totalDistance * 0.5),
@@ -761,29 +862,23 @@ void main() {
             'target during the scroll gesture, not sit frozen near `begin`',
       );
       expect(
-        postScrollJump,
-        lessThan(totalDistance * 0.3),
-        reason:
-            'expected only a small residual settle after scrolling stops, not '
-            'a big one-shot jump covering most of the total distance',
+        [
+          for (var i = settleStart + 1; i < samples.length; i++)
+            rgbColorDistance(samples[i - 1], samples[i]),
+        ].reduce(math.max),
+        lessThan(totalDistance * 0.15),
+        reason: 'catch-up must remain a smooth fade, not an endpoint snap',
       );
+      expect(samples.last, end.primary.background);
+      expect(tester.hasRunningAnimations, isFalse);
     },
   );
 
   testWidgets('settles promptly after a big retarget followed by a tiny one '
       '(no post-settle tick storm)', (tester) async {
-    // Reproduces a real scroll trace (repro4.txt): a big wallpaper-driven
-    // retarget, then ~100ms later a second retarget only ~1 unit away in RGB
-    // (essentially "already there"). `_springDescriptionFor` used to fix
-    // friction=50 (Fuchsia's UI-spring convention), which is underdamped for
-    // these tensions and rings -- repeatedly overshoots and returns past the
-    // target -- for a long time after any fast chase, observed as ~30 extra
-    // ticks / ~250ms of paint-bus notifications and repaints doing nothing
-    // perceptible. Deriving friction from tension to hold a critical damping
-    // ratio removes the ringing: the value still converges monotonically
-    // (verified below), leaving only genuine, proportional settle time --
-    // not oscillation. `_ThemeVectorSim.isDone`'s perceptual early-exit is a
-    // secondary backstop for the remaining tail.
+    // Interrupted motion must converge without ringing. Conservative paint
+    // invalidation can publish equal RGB values near completion; stopping is
+    // governed by normalized progress, not when RGB rounding first plateaus.
     final begin = themeFrom(Colors.blue);
     final bigRetarget = themeFrom(const Color(0xFF391A0F));
     // Only ~1 unit of RGB distance from bigRetarget -- matches repro4.txt.
@@ -814,19 +909,20 @@ void main() {
 
     final samplesAtSecondRetarget = samples.length;
 
-    // Give it a generous window: 320ms at ~8ms/frame is 40 frames.
-    for (var i = 0; i < 40; i++) {
+    // Normalized progress completes within 480ms at this response speed.
+    // Keep pumping past that deadline to verify no post-completion notifications.
+    for (var i = 0; i < 80; i++) {
       await tester.pump(const Duration(milliseconds: 8));
     }
 
     final ticksDuringWindow = samples.length - samplesAtSecondRetarget;
 
-    // The property that actually matters: no ringing. Once two consecutive
-    // published colors are equal, every later one must also equal it --
-    // i.e. the value converges monotonically and settles once, rather than
-    // oscillating in and out of "visually arrived" repeatedly.
+    // Once the endpoint is reached it must not oscillate away again. Temporary
+    // rounding plateaus before reaching the endpoint are permitted.
     final tail = samples.sublist(samplesAtSecondRetarget);
     final finalValue = tail.last;
+    expect(finalValue, tinyRetarget.primary.background);
+    expect(tester.hasRunningAnimations, false);
     final firstSettledIndex = tail.indexWhere((c) => c == finalValue);
     for (var i = firstSettledIndex; i < tail.length; i++) {
       expect(
@@ -839,17 +935,10 @@ void main() {
       );
     }
 
-    // A generous bound on genuine settle time. Before deriving friction from
-    // tension (critical damping), this scenario needed on the order of 30
-    // ticks / ~250ms purely from ringing; it now needs meaningfully less,
-    // proportional to the (large) first retarget's distance and how early
-    // the second retarget interrupted it -- not an arbitrary tail.
     expect(
       ticksDuringWindow,
-      lessThan(25),
-      reason:
-          'expected the spring to converge well within the settle window, not '
-          'keep ticking for nearly the whole 40-frame window',
+      lessThan(60),
+      reason: 'normalized completion must stop notifications without further getters',
     );
   });
 
@@ -868,9 +957,9 @@ void main() {
       ),
     );
 
-    final initial = Theme.of(
-      tester.element(find.byType(SizedBox)),
-    ).colorScheme.primary;
+    final initial = Theme.of(tester.element(find.byType(SizedBox)))
+        .colorScheme
+        .primary;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -884,15 +973,15 @@ void main() {
     );
 
     await tester.pump(const Duration(milliseconds: 100));
-    final mid = Theme.of(
-      tester.element(find.byType(SizedBox)),
-    ).colorScheme.primary;
+    final mid = Theme.of(tester.element(find.byType(SizedBox)))
+        .colorScheme
+        .primary;
     expect(mid, isNot(equals(initial)));
 
     await tester.pump(const Duration(milliseconds: 120));
-    final endColor = Theme.of(
-      tester.element(find.byType(SizedBox)),
-    ).colorScheme.primary;
+    final endColor = Theme.of(tester.element(find.byType(SizedBox)))
+        .colorScheme
+        .primary;
     expect(endColor, isNot(equals(initial)));
   });
 
@@ -900,17 +989,10 @@ void main() {
     'derived text hue moves smoothly, without large per-tick swings, through '
     'a near-complementary retarget (repro13.txt)',
     (tester) async {
-      // `primary.text` is *derived* (contrast-solved from primary.color and
-      // primary.background), not itself directly animated. Before hue/chroma
-      // /tone became the animated base seed representation (see
-      // `_ThemeMotionState`), the seeds sprang independently in raw sRGB, so a
-      // transition between two sufficiently different hues drew a straight
-      // line through RGB space that could pass close to the neutral axis --
-      // and near that axis, derived hue became numerically unstable, showing
-      // single-tick swings of 30-150 degrees even though the actual color was
-      // nearly imperceptible from gray (see repro13.txt and
-      // hue_instability_diagnostic_test.dart). Confirms that no longer
-      // happens end-to-end through the real widget/spring pipeline.
+      // The old raw-sRGB seed path re-solved text every tick and could produce
+      // 30-150 degree hue swings near the neutral axis (repro13.txt). Text is
+      // now solved only at the endpoints and directly animated in perceptual
+      // coordinates. Keep this end-to-end regression against hue whipsaw.
       final begin = themeFrom(Colors.blue);
       final end = themeFrom(Colors.deepOrange);
       // Signed shortest-arc per-tick hue deltas of the derived text color.
@@ -952,9 +1034,8 @@ void main() {
       // The instability this guards against was NON-MONOTONE: derived hue
       // whipping back and forth by 30-150 degrees per tick while the color
       // sat near the neutral axis. Smooth motion is allowed to accelerate
-      // mid-flight — the derived (contrast-solved) text sweeps hue faster
-      // while its chroma dips through the valley between near-complementary
-      // endpoints (observed peak: ~27 deg/tick at chroma ~16). So assert the
+      // mid-flight — text can sweep hue faster while its chroma dips through
+      // the valley between near-complementary endpoints. So assert the
       // two properties that separate a sweep from the pathology:
       // 1. one consistent direction of travel (reversals only as sub-degree
       //    settle jitter, not tens-of-degrees whipsaw);
@@ -1037,8 +1118,8 @@ void main() {
       // tone 0 -> 100 (black -> white) in a single 8ms tick regardless of
       // spring speed or timeDilation, which read as "the mod snaps to dark"
       // when a transparent surface scrolled across a light->dark wallpaper
-      // boundary. Derived-palette-space interpolation (lerping the two solved
-      // endpoint palettes) keeps every role continuous.
+      // boundary. Interpolating between solved paint outputs keeps each
+      // retained role continuous instead of re-solving during the transition.
       final deltas = await textToneDeltasThrough(tester, [
         themeFrom(Colors.blue, brightness: Brightness.light), // bg tone 94
         themeFrom(Colors.blue), // dark, bg tone 12
@@ -1059,10 +1140,8 @@ void main() {
   testWidgets('derived text stays continuous under rapid retargets that cross '
       'polarity mid-flight (throttled wallpaper resampling)', (tester) async {
     // The wallpaper pipeline retargets every ~80ms during a scroll, so the
-    // polarity crossing usually happens *mid-flight*, between retargets
-    // whose begin palette is itself an in-flight lerped value. Exercises
-    // the rebased-begin path (including nested-lerp flattening) across
-    // several segments spanning light->dark and back.
+    // polarity crossing usually happens *mid-flight*. Exercise RGB rebasing
+    // across several light->dark->light retargets; no nested lerp history grows.
     MonetThemeData at(double tone, Brightness brightness) =>
         MonetThemeData.fromColors(
           brightness: brightness,
@@ -1083,12 +1162,7 @@ void main() {
     ]);
     expect(deltas, isNotEmpty);
     final maxDelta = deltas.reduce(math.max);
-    // Threshold note: a chasing spring with carried velocity legitimately
-    // moves the solved text ~12 tones/tick here -- the foreground's journey
-    // within one 80ms segment can be several times longer than the
-    // background's, so the lerp traverses it faster. That is continuous
-    // motion, not the pathology. The polarity flip this guards against was
-    // a ~100-tone single-tick step.
+    // The polarity flip this guards against was a ~100-tone single-tick step.
     expect(
       maxDelta,
       lessThan(25),
@@ -1101,16 +1175,11 @@ void main() {
   for (final model in ColorModel.values) {
     for (final style in InterpolationStyle.values) {
       testWidgets(
-        'a large color transition actually animates under $model x $style '
-        '(motion epsilons must match the model\'s native coordinate scale)',
+        'a large color transition animates and settles under $model x $style',
         (tester) async {
-          // The motion channels spring in each color model's *native*
-          // coordinates, whose scales differ by ~100x (CAM16 aStar spans
-          // roughly +-50, oklch a/b roughly +-0.3). A model-blind epsilon
-          // sized for CAM16 would classify almost any oklch journey as
-          // sub-epsilon: born-done, one publish, instant snap. Assert every
-          // model/basis pairing produces a real multi-tick animation that
-          // settles at the target.
+          // Progress and completion are normalized, not measured in a color
+          // model's native units. Every model/path must produce intermediate
+          // colors and eventually return the exact endpoint.
           MonetThemeData themeOf(Color color) => MonetThemeData.fromColors(
             brightness: Brightness.dark,
             backgroundTone: 12,
@@ -1129,7 +1198,14 @@ void main() {
               duration: const Duration(milliseconds: 160),
               maxUpdatesPerSecond: 0,
               interpolationStyle: style,
-              child: _PaintProbe(onValue: publishes.add),
+              child: _PaintProbe(
+                onValue: (value) {
+                  // A real paint consumer reads the output it displays. Merely
+                  // archiving theme objects is not a color subscription.
+                  value.primary.color;
+                  publishes.add(value);
+                },
+              ),
             ),
           );
           await tester.pumpWidget(tree(begin));

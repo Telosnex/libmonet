@@ -11,6 +11,14 @@ enum ColorModel {
 
   static const kDefault = cam16v11;
 
+  /// Low-chroma canvas tint in native model units. OKLCH uses fractional
+  /// chroma, not CAM16's tens. This is a design cap, not a unit conversion or
+  /// a claim of identical appearance between models.
+  double get neutralBackgroundChroma => switch (this) {
+    cam16 || cam16v11 => 16,
+    oklch => 0.04,
+  };
+
   String get label {
     return switch (this) {
       ColorModel.cam16 => 'CAM16',

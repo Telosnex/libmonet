@@ -25,7 +25,9 @@ export class Palette {
   static from(color: Argb, options: PaletteOptions): Palette {
     const colorModel = options.colorModel ?? 'cam16v11';
     const hct = Hct.fromInt(color, colorModel);
-    const bg = Hct.from(hct.hue, Math.min(16, hct.chroma), options.backgroundTone, colorModel).toInt();
+    // Native model units, not a cross-model chroma conversion.
+    const neutralChroma = colorModel === 'oklch' ? 0.04 : 16;
+    const bg = Hct.from(hct.hue, Math.min(neutralChroma, hct.chroma), options.backgroundTone, colorModel).toInt();
     return new Palette(color, bg, options.backgroundTone, options.contrast ?? 0.5, options.algo ?? Algo.apca, colorModel);
   }
 
@@ -74,6 +76,8 @@ export class Palette {
 
   private get bgTextTone(): number { return this.memo('bgTextTone', () => this.solve(this.backgroundTone, this.baseBackground, this.backgroundHue, this.backgroundChroma, Usage.text, this.contrast)); }
   private get bgDirection(): ContrastDirection { return this.memo('bgDirection', () => this.bgTextTone >= this.backgroundTone ? ContrastDirection.lighter : ContrastDirection.darker); }
+  // Share polarity with the neutral family, not a tone verified for a different RGB.
+  private get textTone(): number { return this.memo('textTone', () => this.solve(this.backgroundTone, this.baseBackground, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.bgDirection)); }
   private get fillTextTone(): number { return this.memo('fillTextTone', () => this.solve(this.bgFillTone, this.fill, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
   private get fillDirection(): ContrastDirection { return this.memo('fillDirection', () => this.fillTextTone >= this.bgFillTone ? ContrastDirection.lighter : ContrastDirection.darker); }
   private get colorTextTone(): number { return this.memo('colorTextTone', () => this.solve(this.colorTone, this.baseColor, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
@@ -131,7 +135,7 @@ export class Palette {
   get fillSplashedText(): Argb { return this.withColorsChroma(this.fillSplashTextTone); }
   get fillHoveredIcon(): Argb { return this.withColorsChroma(this.solve(this.fillHoverTone, this.fillHovered, this.colorHue, this.colorChroma, Usage.fill, this.contrast, this.fillHoverDirection)); }
   get fillSplashedIcon(): Argb { return this.withColorsChroma(this.solve(this.fillSplashTone, this.fillSplashed, this.colorHue, this.colorChroma, Usage.fill, this.contrast, this.fillSplashDirection)); }
-  get text(): Argb { return this.withColorsChroma(this.bgTextTone); }
+  get text(): Argb { return this.withColorsChroma(this.textTone); }
   get textHovered(): Argb { return this.withColorsChroma(this.textHoverTone); }
   get textSplashed(): Argb { return this.withColorsChroma(this.textSplashTone); }
   get textHoveredText(): Argb { return this.withColorsChroma(this.solve(this.textHoverTone, this.textHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
@@ -235,16 +239,6 @@ export class Palette {
     return pool[0]!.argb;
   }
 
-  private hasValidContrastHelper(tone: number, backgroundTone: number, colorTone: number): boolean {
-    const toneArgb = Hct.from(this.colorHue, this.colorChroma, tone, this.colorModel).toInt();
-    const bgArgb = Hct.from(this.backgroundHue, this.backgroundChroma, backgroundTone, this.colorModel).toInt();
-    const colorArgb = Hct.from(this.colorHue, this.colorChroma, colorTone, this.colorModel).toInt();
-    return Math.abs(contrastBetweenArgbs(this.algo, bgArgb, toneArgb)) >= this.borderContrast ||
-      Math.abs(contrastBetweenArgbs(this.algo, colorArgb, toneArgb)) >= this.borderContrast ||
-      Math.abs(contrastBetweenArgbs(this.algo, toneArgb, bgArgb)) >= this.borderContrast ||
-      Math.abs(contrastBetweenArgbs(this.algo, toneArgb, colorArgb)) >= this.borderContrast;
-  }
-
   private twoRefBorderTone(refA: number, refAArgb: Argb, refB: number, refBArgb: Argb, hue: number, chroma: number): number {
     const delta = (t: number) => Math.abs(t - refA) + Math.abs(t - refB);
     const candidateSet = new Set<number>();
@@ -257,7 +251,12 @@ export class Palette {
       if (t >= 0 && t <= 100) candidateSet.add(clamp(t, 0, 100));
     }
     const candidates = Array.from(candidateSet);
-    const valid = candidates.filter(t => this.hasValidContrastHelper(t, refA, refB));
+    const valid = candidates.filter(t => {
+      const argb = Hct.from(hue, chroma, t, this.colorModel).toInt();
+      return [refAArgb, refBArgb].some(ref =>
+        Math.abs(contrastBetweenArgbs(this.algo, ref, argb)) >= this.borderContrast ||
+        Math.abs(contrastBetweenArgbs(this.algo, argb, ref)) >= this.borderContrast);
+    });
     // No tone can meet the required contrast against either reference. Fall
     // back to the core aesthetic rule (mid/dark surfaces pair with lighter
     // companions) instead of comparing tone distances, which is decided by
@@ -269,11 +268,9 @@ export class Palette {
     const pool = directional.length ? directional : valid;
     pool.sort((a, b) => {
       const diff = delta(a) - delta(b);
-      // WCAG candidates can be separated only by floating-point dust
-      // (~1e-14), and Dart's private selection honors that. APCA still uses
-      // the historical epsilon because its candidates come from iterative
-      // ARGB/APCA threshold search and are noisier.
-      return this.algo === Algo.wcag21 ? diff : Math.abs(diff) <= 1e-6 ? 0 : diff;
+      // Match Dart: keep candidate order for equal-distance solutions rather
+      // than letting platform floating-point dust choose a different border.
+      return Math.abs(diff) <= 1e-6 ? 0 : diff;
     });
     return pool[0]!;
   }

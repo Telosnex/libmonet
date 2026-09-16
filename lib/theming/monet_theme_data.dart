@@ -29,6 +29,10 @@ List<String> _mergedFontFamilyFallback(TextStyle? style) => [
 ];
 
 class MonetThemeData {
+  /// Logical endpoint, including through nested explicit/live animations.
+  MonetThemeData get target => this;
+  bool get isAnimating => false;
+
   final Palette primary;
   final Palette secondary;
   final Palette tertiary;
@@ -44,11 +48,19 @@ class MonetThemeData {
 
   late final MonetShapes shapes = shapeTheme.resolve(scale);
 
-  // Static cache using weak references - allows GC to reclaim unused ThemeData.
-  // Key by the semantic theme object itself instead of hashCode.toString();
-  // Map lookup handles hash collisions by falling back to ==.
+  // Bound strong keys as well as weak values. Include every environmental
+  // input before looking up: cache hits must still subscribe to MediaQuery.
+  static const themeCacheCapacity = 32;
   static final _themeCache =
-      <MonetThemeData, Map<TextDirection, WeakReference<ThemeData>>>{};
+      LruCache<
+        (MonetThemeData, TextDirection, TextScaler, double, TargetPlatform),
+        WeakReference<ThemeData>
+      >(capacity: themeCacheCapacity);
+
+  @visibleForTesting
+  static int get debugThemeCacheSize => _themeCache.entries.length;
+  @visibleForTesting
+  static void debugClearThemeCache() => _themeCache.clear();
 
   static const double buttonElevation = 4.0;
 
@@ -58,7 +70,7 @@ class MonetThemeData {
   static const double maxPanelWidth = 800.0;
   static const double modalElevation = 2.0;
   static const double touchSize = 36.0;
-  static final InteractiveInkFeatureFactory splashFactory =
+  static InteractiveInkFeatureFactory get splashFactory =>
       defaultTargetPlatform == TargetPlatform.android && !kIsWeb
       ? InkSparkle.splashFactory
       : InkRipple.splashFactory;
@@ -250,7 +262,16 @@ class MonetThemeData {
 
   ThemeData createThemeData(BuildContext context) {
     final textDirection = Directionality.maybeOf(context) ?? TextDirection.ltr;
-    final cachedRef = _themeCache[this]?[textDirection];
+    final textScaler = MediaQuery.textScalerOf(context);
+    final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
+    final key = (
+      this,
+      textDirection,
+      textScaler,
+      devicePixelRatio,
+      defaultTargetPlatform,
+    );
+    final cachedRef = _themeCache[key];
     final cached = cachedRef?.target;
     if (cached != null) {
       return cached;
@@ -276,10 +297,9 @@ class MonetThemeData {
 
     final typographyData =
         typography?.call(colorScheme) ?? _typography(colorScheme);
-    final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
     final textTheme = createTextTheme(
       typographyData,
-      MediaQuery.textScalerOf(context),
+      textScaler,
       scale,
       devicePixelRatio,
     );
@@ -415,7 +435,7 @@ class MonetThemeData {
     final finalThemeData = themeData.copyWith(
       cupertinoOverrideTheme: cupertinoOverrideTheme,
     );
-    (_themeCache[this] ??= {})[textDirection] = WeakReference(finalThemeData);
+    _themeCache[key] = WeakReference(finalThemeData);
     return finalThemeData;
   }
 
@@ -588,8 +608,7 @@ class MonetThemeData {
       surfaceTintColor: WidgetStateColor.resolveWith((states) {
         return colors.background;
       }),
-      selectedColor: Colors
-          .transparent, // messes everything up because FG can't be set based on state
+      selectedColor: Colors.transparent, // messes everything up because FG can't be set based on state
       secondarySelectedColor: colors.textHovered,
       secondaryLabelStyle: textTheme.labelLarge!.copyWith(
         color: colors.textHoveredText,
@@ -1280,8 +1299,7 @@ class MonetThemeData {
       insetPadding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 10.0),
       showCloseIcon: true,
       closeIconColor: colors.colorIcon,
-      actionOverflowThreshold:
-          0.25, // match default,  the percentage threshold for action widget's width before it overflows  to a new line.
+      actionOverflowThreshold: 0.25, // match default,  the percentage threshold for action widget's width before it overflows  to a new line.
       actionBackgroundColor: colors.color,
       disabledActionBackgroundColor: colors.color,
     );
@@ -1775,6 +1793,7 @@ ColorScheme _createColorScheme(
     Colors.red,
     backgroundTone: surfaceHct.tone,
     contrast: contrast,
+    algo: algo,
     colorModel: colorModel,
   );
 
@@ -1788,6 +1807,7 @@ ColorScheme _createColorScheme(
       targetChroma: surfaceHct.chroma,
       usage: Usage.text,
       contrast: contrast,
+      by: algo,
       colorModel: colorModel,
     ),
     model: colorModel,
