@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest';
-import {Algo, contrastBetweenArgbs, contrastRatioInterpolation, contrastingLstar, contrastingTone, Palette, Usage} from '../index.js';
+import {Algo, contrastBetweenArgbs, contrastRatioInterpolation, contrastingLstar, contrastingTone, Hct, Palette, Usage} from '../index.js';
 
 describe('WCAG 2.1 contrast', () => {
   test('contrast ratio interpolation mirrors Dart thresholds', () => {
@@ -32,9 +32,11 @@ describe('WCAG 2.1 contrast', () => {
 
   test('Palette can be generated with wcag21 algorithm', () => {
     const p = Palette.from(0xff1177aa, {backgroundTone: 93, algo: Algo.wcag21});
-    expect(contrastBetweenArgbs(Algo.wcag21, p.background, p.text)).toBeGreaterThanOrEqual(4.49);
-    // Mirrors Dart's WCAG path: when the preferred side cannot reach the
-    // target, the closest extreme is chosen rather than flipping polarity.
-    expect(p.fillText).toBe(0xffffffff);
+    expect(contrastBetweenArgbs(Algo.wcag21, p.background, p.text)).toBeGreaterThanOrEqual(4.5);
+    // The fill is its own logical context. White cannot meet 4.5:1 here;
+    // the shared policy chooses dark, then solves against the actual fill RGB.
+    expect(contrastBetweenArgbs(Algo.wcag21, p.fill, 0xffffffff)).toBeLessThan(4.5);
+    expect(Hct.fromInt(p.fillText).tone).toBeLessThan(Hct.fromInt(p.fill).tone);
+    expect(contrastBetweenArgbs(Algo.wcag21, p.fill, p.fillText)).toBeGreaterThanOrEqual(4.5);
   });
 });

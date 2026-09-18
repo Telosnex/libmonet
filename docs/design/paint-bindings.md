@@ -152,8 +152,12 @@ class _SwatchPainter extends CustomPainter {
 
 Prefer `bus.bindRecipe(ColorPaletteRecipe(seed))` for custom palettes: immutable
 inputs and identity live together, including optional tone, explicit background,
-contrast, algorithm and model overrides. Null overrides inherit the logical
-theme endpoint. Update with `binding.updateRecipe(nextRecipe)`.
+contrast, algorithm and model overrides. Null contrast, algorithm and model
+inherit the logical theme endpoint. A null tone inherits only when no explicit
+background is supplied; an explicit background without a tone forms its own
+context from its measured L*. Pass the original shared tone explicitly when
+different tinted backgrounds belong to one context. Update with
+`binding.updateRecipe(nextRecipe)`.
 
 Use `bus.bind(key, resolve)` as an escape hatch for arbitrary recipes. The resolver gets
 **the logical theme endpoint**, not an intermediate paint frame. Include all
@@ -259,15 +263,25 @@ strong keys. Cache hits register MediaQuery dependencies just like misses.
 Intentional color corrections: Material surface/error respect the chosen contrast
 algorithm; WCAG verifies quantized RGB before accepting a tone; overlay borders
 validate actual surfaces (either side, best effort). OKLCH page backgrounds use
-a native 0.04 chroma cap rather than CAM16's 16. Explicit backgrounds are unchanged.
+a native 0.04 chroma cap rather than CAM16's 16. Explicit background RGB is
+preserved, while its foreground polarity can now use an optional shared logical tone.
 `MonetColorScheme.fromPalettes` now maps fill/text fields to their actual families,
 not the color-surface family. These corrections also update JS parity fixtures.
 
-Branded `text` now solves its own hue/chroma against the actual background, using
-the neutral text's chosen polarity. Reusing the neutral tone changed the RGB after
-contrast verification (one recorded WCAG case was 4.468:1 instead of 4.5:1).
+Branded `text` solves its own hue/chroma against the actual background, using
+the context's shared hue-independent polarity. Reusing the neutral tone changed
+the RGB after contrast verification (one recorded WCAG case was 4.468:1 instead
+of 4.5:1).
 This adds one memoized endpoint solve when branded text is first requested—not
 work on animation ticks—and applies consistently in Dart and TypeScript.
+
+Foreground direction and contrast distance are separate decisions. The pure
+`sharedForegroundDirection` policy takes only nominal background tone, text
+contrast dial and algorithm. APCA uses conservative full-sRGB brightness bounds;
+WCAG uses direct L* luminance. Actual-RGB solvers are then forced in that direction
+for every sibling, clamping rather than flipping if unreachable. Explicit tinted
+backgrounds that share a context pass `backgroundTone`; omitted tones deliberately
+form separate contexts. See [apca-tone-bounds.md](apca-tone-bounds.md).
 
 See [palette-performance.md](palette-performance.md) for profile measurements,
 the reproducible harness, and limits of the performance claims.

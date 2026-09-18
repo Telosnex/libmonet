@@ -133,6 +133,15 @@ void main() {
       final observer = _CountingPalette(0x123456, ColorModel.kDefault);
       expect(a, isNot(observer));
       expect(observer.reads, isEmpty);
+      expect(
+        Palette.fromColorAndBackground(
+          Colors.blue,
+          Colors.white,
+          backgroundTone: 99,
+        ),
+        isNot(a),
+        reason: 'logical polarity context participates in endpoint identity',
+      );
     },
   );
 
@@ -326,6 +335,7 @@ void main() {
           final expected = Palette.fromColorAndBackground(
             scheme.surface,
             scheme.surface,
+            backgroundTone: data.backgroundTone,
             algo: algo,
             colorModel: model,
             contrast: data.contrast,

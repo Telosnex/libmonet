@@ -46,24 +46,25 @@ void main() {
       p.text;
       expect(
         stats.contrastRequests,
-        2,
-        reason: 'neutral polarity plus actual branded foreground',
+        1,
+        reason:
+            'policy chooses polarity without solving a throwaway foreground',
       );
       expect(stats.colorMaterializations, 1);
       for (var i = 0; i < 100; i++) {
         p.text;
       }
-      expect(stats.contrastRequests, 2);
+      expect(stats.contrastRequests, 1);
       p.fill;
       expect(
         stats.contrastRequests,
-        3,
-        reason: 'reuse already-solved background polarity',
+        2,
+        reason: 'reuse the context-level background polarity',
       );
       p.fillHoveredIcon;
       final requests = stats.contrastRequests,
           conversions = stats.colorMaterializations;
-      expect(requests, greaterThan(3));
+      expect(requests, greaterThan(2));
       for (var i = 0; i < 100; i++) {
         p.fillHoveredIcon;
       }
@@ -259,7 +260,7 @@ void main() {
       expect(colors.colorSplashed, isColor(0xff828FA4));
       expect(colors.colorSplashedText, isColor(0xffF4F7FF));
       expect(colors.fill, isColor(0xff8A96AB));
-      expect(colors.fillText, isColor(0xffFFFFFF));
+      expect(colors.fillText, isColor(0xffFDFCFF));
       expect(colors.fillIcon, isColor(0xffDBE6FC));
       expect(colors.fillHovered, isColor(0xffADB9CF));
       expect(colors.fillHoveredText, isColor(0xff1E2D44));

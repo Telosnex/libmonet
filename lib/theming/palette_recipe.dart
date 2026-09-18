@@ -6,14 +6,18 @@ import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:libmonet/theming/palette.dart';
 
 /// Immutable recipe identity and inputs in one value. Use with bindRecipe rather
-/// than a separate key and closure. Null overrides inherit the logical theme
-/// endpoint, never its moving frame. Subclasses must have immutable value equality.
+/// than a separate key and closure. Inherited inputs come from the logical theme
+/// endpoint, never its moving frame. Subclasses define which inputs inherit and
+/// must have immutable value equality.
 abstract class PaletteRecipe {
   const PaletteRecipe();
   Palette resolve(MonetThemeData theme);
 }
 
 /// A brand color on a theme-derived, tone-selected, or explicit background.
+/// With an explicit [background], [backgroundTone] optionally identifies the
+/// shared logical context used for polarity. Without it, that concrete surface
+/// forms its own context. Without [background], a null tone inherits the theme.
 final class ColorPaletteRecipe extends PaletteRecipe {
   const ColorPaletteRecipe(
     this.color, {
@@ -22,7 +26,7 @@ final class ColorPaletteRecipe extends PaletteRecipe {
     this.contrast,
     this.algo,
     this.colorModel,
-  }) : assert(background == null || backgroundTone == null);
+  });
 
   final Color color;
   final Color? background;
@@ -36,6 +40,7 @@ final class ColorPaletteRecipe extends PaletteRecipe {
       ? Palette.fromColorAndBackground(
           color,
           background!,
+          backgroundTone: backgroundTone,
           contrast: contrast ?? theme.contrast,
           algo: algo ?? theme.algo,
           colorModel: colorModel ?? theme.colorModel,

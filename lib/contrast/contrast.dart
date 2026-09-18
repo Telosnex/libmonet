@@ -5,6 +5,7 @@ import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/colorspaces/hct_solver.dart';
 import 'package:libmonet/contrast/apca.dart';
 import 'package:libmonet/contrast/apca_contrast.dart';
+import 'package:libmonet/contrast/apca_tone_bounds.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/contrast/wcag.dart';
 
@@ -67,6 +68,74 @@ enum Usage {
 /// Use this to ensure siblings solved against the same container always
 /// land on the same side.
 enum ContrastDirection { lighter, darker }
+
+/// Chooses foreground polarity from context-level inputs only.
+///
+/// Independent palettes with the same nominal [backgroundTone], [contrast]
+/// and [by] therefore agree even when their materialized background RGBs have
+/// different hues/chromas. The policy uses the shared text requirement; roles
+/// still solve their own distance against actual RGB after this decision.
+///
+/// APCA compares worst-case black/white capacities over the full opaque sRGB
+/// gamut and a ±[kPaletteToneMaterializationUncertainty] interval. WCAG uses
+/// its direct CIE L*→luminance relationship over the same interval. If a target
+/// is unreachable in the selected direction, [contrastingTone] must be called
+/// with this result as [forceDirection] so it clamps rather than flips.
+ContrastDirection sharedForegroundDirection({
+  required double backgroundTone,
+  required double contrast,
+  Algo by = Algo.apca,
+}) {
+  if (!backgroundTone.isFinite) {
+    throw ArgumentError.value(
+      backgroundTone,
+      'backgroundTone',
+      'must be finite',
+    );
+  }
+  final tone = backgroundTone.clamp(0.0, 100.0);
+  final lowTone = (tone - kPaletteToneMaterializationUncertainty).clamp(
+    0.0,
+    100.0,
+  );
+  final highTone = (tone + kPaletteToneMaterializationUncertainty).clamp(
+    0.0,
+    100.0,
+  );
+  final target = by.getAbsoluteContrast(contrast, Usage.text);
+  late final double darkCapacity;
+  late final double lightCapacity;
+  switch (by) {
+    case Algo.apca:
+      final darkestBackground = apcaBrightnessBoundsAtTone(lowTone).minimum;
+      final lightestBackground = apcaBrightnessBoundsAtTone(highTone).maximum;
+      const whiteApcaY = sRco + sGco + sBco;
+      darkCapacity = apcaContrastOfApcaY(0, darkestBackground);
+      lightCapacity = -apcaContrastOfApcaY(whiteApcaY, lightestBackground);
+    case Algo.wcag21:
+      darkCapacity = contrastRatioOfLstars(0, lowTone);
+      lightCapacity = contrastRatioOfLstars(100, highTone);
+  }
+  final darkMeets = darkCapacity >= target;
+  final lightMeets = lightCapacity >= target;
+  if (darkMeets != lightMeets) {
+    return darkMeets ? ContrastDirection.darker : ContrastDirection.lighter;
+  }
+  final aesthetic = lstarPrefersLighterPair(tone)
+      ? ContrastDirection.lighter
+      : ContrastDirection.darker;
+  if (darkMeets) {
+    return aesthetic; // Both directions are guaranteed.
+  }
+  const tieEpsilon = 1e-9;
+  if (darkCapacity > lightCapacity + tieEpsilon) {
+    return ContrastDirection.darker;
+  }
+  if (lightCapacity > darkCapacity + tieEpsilon) {
+    return ContrastDirection.lighter;
+  }
+  return aesthetic;
+}
 
 /// Solve for a tone that achieves [usage]-level contrast against
 /// a reference surface, using actual ARGB for APCA precision.
@@ -197,7 +266,11 @@ double _contrastingToneUncached({
       ),
     );
     if (ratioAt(seed) >= target) return seed;
-    final extreme = seed >= withTone ? 100.0 : 0.0;
+    final extreme = switch (forceDirection) {
+      ContrastDirection.lighter => 100.0,
+      ContrastDirection.darker => 0.0,
+      null => seed >= withTone ? 100.0 : 0.0,
+    };
     if (ratioAt(extreme) < target) {
       return extreme; // unreachable in this polarity
     }

@@ -9,6 +9,20 @@ test('branded text verifies its own RGB against the actual background', () => {
   expect(contrastBetweenArgbs(Algo.wcag21, p.background, p.text)).toBeGreaterThanOrEqual(4.5);
 });
 
+test('explicit chromatic backgrounds share nominal-tone polarity', () => {
+  const directions = new Set<boolean>();
+  for (let hue = 0; hue < 360; hue += 15) {
+    const background = Hct.from(hue, 100, 66.6, 'cam16v11').toInt();
+    const brand = Hct.from((hue + 137) % 360, 80, 50, 'cam16v11').toInt();
+    const p = Palette.fromColorAndBackground(brand, background, {backgroundTone: 66.6});
+    const lighter = tone(p.backgroundText) >= tone(background);
+    directions.add(lighter);
+    expect(tone(p.text) >= tone(background)).toBe(lighter);
+    expect(tone(p.fill) >= tone(background)).toBe(lighter);
+  }
+  expect(directions.size).toBe(1);
+});
+
 const expectHex = (actual: number, expected: string, tolerance = 36) => {
   const a = actual;
   const e = argbFromHex(expected);

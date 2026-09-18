@@ -1,5 +1,6 @@
 import {Hct, lstarFromArgb, yFromLstar, delinearized, linearized, type ColorModel} from './hct.js';
 import {type Argb, argbFromRgb, redFromArgb, greenFromArgb, blueFromArgb} from './color.js';
+import {apcaMaximumAtQuarterTone, apcaMinimumAtQuarterTone} from './apca-tone-bounds-data.js';
 
 export enum Algo { wcag21 = 'wcag21', apca = 'apca' }
 export enum Usage { text = 'text', fill = 'fill', large = 'large', border = 'border' }
@@ -21,6 +22,37 @@ export const loBoWOffset = 0.027;
 export const loWoBOffset = 0.027;
 export const deltaYMin = 0.0005;
 export const loClip = 0.1;
+export const paletteToneMaterializationUncertainty = 0.3;
+
+export interface ApcaBrightnessBounds {
+  readonly minimum: number;
+  readonly maximum: number;
+}
+const whiteApcaY = sRco + sGco + sBco;
+const boundsCache = new Map<number, ApcaBrightnessBounds>();
+
+/**
+ * Conservative quarter-tone-bracketed opaque-sRGB APCA brightness bounds.
+ * Input is actual CIE L*, and output is raw brightness before APCA's black clamp.
+ * Results are frozen because callers share the cache-owned value.
+ */
+export function apcaBrightnessBoundsAtTone(actualTone: number): ApcaBrightnessBounds {
+  if (!Number.isFinite(actualTone) || actualTone < 0 || actualTone > 100) {
+    throw new RangeError('actualTone must be finite and in 0...100');
+  }
+  const cached = boundsCache.get(actualTone);
+  if (cached) return cached;
+  const scaled = actualTone * 4;
+  const result = Object.freeze({
+    minimum: Math.max(0, apcaMinimumAtQuarterTone[Math.floor(scaled)]! - 1e-10),
+    maximum: Math.min(whiteApcaY, apcaMaximumAtQuarterTone[Math.ceil(scaled)]! + 1e-10),
+  });
+  if (boundsCache.size >= 256) {
+    boundsCache.delete(boundsCache.keys().next().value as number);
+  }
+  boundsCache.set(actualTone, result);
+  return result;
+}
 
 export function clamp(v: number, lo: number, hi: number): number { return Math.min(hi, Math.max(lo, v)); }
 
@@ -59,6 +91,68 @@ export function lstarToApcaY(lstar: number): number {
 }
 
 export function lstarPrefersLighterPair(lstar: number): boolean { return Math.round(lstar) <= 60; }
+
+/**
+ * Chooses polarity from the original nominal background tone, contrast dial and
+ * algorithm only. Independent palettes sharing those inputs agree regardless
+ * of hue/chroma or RGB quantization. All siblings use the text requirement.
+ *
+ * APCA compares worst-case black/white capacities over the opaque sRGB gamut;
+ * WCAG uses direct CIE L* luminance. Both account for the shared ±0.3-tone
+ * materialization interval. If only one direction meets the target, choose it.
+ * If both meet, use the aesthetic preference. If neither meets, choose the
+ * larger worst-case capacity, breaking near ties with the aesthetic preference.
+ * A worst-case miss does not imply that every actual background hue fails.
+ *
+ * Pass the result as `forceDirection` to {@link contrastingTone} for every
+ * sibling, including leading text. Solve each role's distance against actual
+ * RGB using its own hue/chroma and contrast requirement; unreachable roles must
+ * clamp in that direction, never flip. Nested surfaces choose their own context.
+ */
+export function sharedForegroundDirection(opts: {
+  backgroundTone: number;
+  contrast: number;
+  by?: Algo;
+}): ContrastDirection {
+  if (!Number.isFinite(opts.backgroundTone)) {
+    throw new RangeError('backgroundTone must be finite');
+  }
+  const by = opts.by ?? Algo.apca;
+  const tone = clamp(opts.backgroundTone, 0, 100);
+  const lowTone = clamp(tone - paletteToneMaterializationUncertainty, 0, 100);
+  const highTone = clamp(tone + paletteToneMaterializationUncertainty, 0, 100);
+  const target = getAbsoluteContrast(by, opts.contrast, Usage.text);
+  let darkCapacity: number;
+  let lightCapacity: number;
+  if (by === Algo.apca) {
+    const darkestBackground = apcaBrightnessBoundsAtTone(lowTone).minimum;
+    const lightestBackground = apcaBrightnessBoundsAtTone(highTone).maximum;
+    darkCapacity = apcaContrastOfApcaY(0, darkestBackground);
+    lightCapacity = -apcaContrastOfApcaY(whiteApcaY, lightestBackground);
+  } else {
+    darkCapacity = contrastRatioOfLstars(0, lowTone);
+    lightCapacity = contrastRatioOfLstars(100, highTone);
+  }
+  const darkMeets = darkCapacity >= target;
+  const lightMeets = lightCapacity >= target;
+  if (darkMeets !== lightMeets) {
+    return darkMeets ? ContrastDirection.darker : ContrastDirection.lighter;
+  }
+  const aesthetic = lstarPrefersLighterPair(tone)
+    ? ContrastDirection.lighter
+    : ContrastDirection.darker;
+  if (darkMeets) {
+    return aesthetic; // Both directions are guaranteed.
+  }
+  const tieEpsilon = 1e-9;
+  if (darkCapacity > lightCapacity + tieEpsilon) {
+    return ContrastDirection.darker;
+  }
+  if (lightCapacity > darkCapacity + tieEpsilon) {
+    return ContrastDirection.lighter;
+  }
+  return aesthetic;
+}
 
 export function apcaInterpolation(percent: number, usage: Usage): number {
   const mid = usage === Usage.text ? 60 : usage === Usage.fill ? 45 : usage === Usage.large ? 30 : 15;
@@ -352,7 +446,9 @@ export function contrastingTone(opts: {withArgb: Argb; withTone: number; targetH
     const ratioAt = (tone: number) => contrastBetweenArgbs(by, opts.withArgb,
       Hct.from(opts.targetHue, opts.targetChroma, tone, opts.colorModel).toInt());
     if (ratioAt(seed) >= target) return seed;
-    const extreme = seed >= opts.withTone ? 100 : 0;
+    const extreme = opts.forceDirection === ContrastDirection.lighter ? 100
+      : opts.forceDirection === ContrastDirection.darker ? 0
+      : seed >= opts.withTone ? 100 : 0;
     if (ratioAt(extreme) < target) return extreme;
     let fail = seed, pass = extreme;
     for (let i = 0; i < 15; i++) {

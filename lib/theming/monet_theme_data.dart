@@ -122,6 +122,10 @@ class MonetThemeData {
     typography,
   );
 
+  /// Copies theme fields and palette values verbatim. Policy fields do not
+  /// re-solve arbitrary [Palette] adapters; when changing background tone,
+  /// contrast, algorithm, or model for a logical endpoint, also supply palettes
+  /// constructed with those inputs. Motion frames intentionally rely on this.
   MonetThemeData copyWith({
     Palette? primary,
     Palette? secondary,
@@ -292,6 +296,7 @@ class MonetThemeData {
       contrast,
       algo,
       Hct.colorFrom(0, 0, backgroundTone, model: colorModel),
+      backgroundTone,
       colorModel,
     );
 
@@ -1785,33 +1790,25 @@ ColorScheme _createColorScheme(
   double contrast,
   Algo algo,
   Color surface,
+  double backgroundTone,
   ColorModel colorModel,
 ) {
-  final surfaceHct = Hct.fromColor(surface, model: colorModel);
-
   final error = Palette.from(
     Colors.red,
-    backgroundTone: surfaceHct.tone,
+    backgroundTone: backgroundTone,
     contrast: contrast,
     algo: algo,
     colorModel: colorModel,
   );
 
-  final onSurface = Hct.colorFrom(
-    surfaceHct.hue,
-    surfaceHct.chroma,
-    contrastingTone(
-      withArgb: surface.argb,
-      withTone: surfaceHct.tone,
-      targetHue: surfaceHct.hue,
-      targetChroma: surfaceHct.chroma,
-      usage: Usage.text,
-      contrast: contrast,
-      by: algo,
-      colorModel: colorModel,
-    ),
-    model: colorModel,
-  );
+  final onSurface = Palette.fromColorAndBackground(
+    surface,
+    surface,
+    backgroundTone: backgroundTone,
+    contrast: contrast,
+    algo: algo,
+    colorModel: colorModel,
+  ).backgroundText;
   return ColorScheme(
     brightness: brightness,
     primary: primary.fill,

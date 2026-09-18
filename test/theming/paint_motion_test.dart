@@ -656,38 +656,52 @@ void main() {
   );
 
   test(
-    'one RGB step crossing the foreground seam produces a complete fade',
+    'one RGB step within a shared context does not flip foreground polarity',
     () {
-      final a = _theme(67).copyWith(
-        primary: Palette.fromColorAndBackground(
+      for (final background in [0xffbb9c9e, 0xffbb9b9e]) {
+        final palette = Palette.fromColorAndBackground(
           const Color(0xffc3999a),
-          const Color(0xffbb9c9e),
-        ),
-      );
-      final b = a.copyWith(
-        primary: Palette.fromColorAndBackground(
-          const Color(0xffc3999a),
-          const Color(0xffbb9b9e),
-        ),
-      );
-      expect(a.primary.text, Colors.black);
-      expect(b.primary.text, Colors.white);
-      final bus = MonetPaintColors(a);
-      addTearDown(bus.dispose);
-      expect(bus.value.primary.text, Colors.black);
-      bus.retarget(b, time: 0, duration: _duration);
-      final tones = <double>[0];
-      for (var i = 1; i <= 100; i++) {
-        bus.sample(i * 0.008);
-        tones.add(Hct.fromColor(bus.value.primary.text).tone);
+          Color(background),
+          backgroundTone: 67,
+        );
+        expect(palette.text, Colors.black);
+        expect(palette.backgroundText, Colors.black);
       }
-      expect(tones.last, 100);
-      expect(tones.where((v) => v > 0 && v < 100).length, greaterThan(8));
-      expect(
-        [for (var i = 1; i < tones.length; i++) (tones[i] - tones[i - 1]).abs()]
-            .reduce(math.max),
-        lessThan(12),
-      );
     },
   );
+
+  test('small nominal-tone change crossing the shared seam produces a complete fade', () {
+    final a = _theme(67).copyWith(
+      primary: Palette.fromColorAndBackground(
+        const Color(0xffc3999a),
+        const Color(0xffbb9c9e),
+        backgroundTone: 67,
+      ),
+    );
+    final b = _theme(66.5).copyWith(
+      primary: Palette.fromColorAndBackground(
+        const Color(0xffc3999a),
+        const Color(0xffbb9b9e),
+        backgroundTone: 66.5,
+      ),
+    );
+    expect(a.primary.text, Colors.black);
+    expect(b.primary.text, Colors.white);
+    final bus = MonetPaintColors(a);
+    addTearDown(bus.dispose);
+    expect(bus.value.primary.text, Colors.black);
+    bus.retarget(b, time: 0, duration: _duration);
+    final tones = <double>[0];
+    for (var i = 1; i <= 100; i++) {
+      bus.sample(i * 0.008);
+      tones.add(Hct.fromColor(bus.value.primary.text).tone);
+    }
+    expect(tones.last, 100);
+    expect(tones.where((v) => v > 0 && v < 100).length, greaterThan(8));
+    expect(
+      [for (var i = 1; i < tones.length; i++) (tones[i] - tones[i - 1]).abs()]
+          .reduce(math.max),
+      lessThan(12),
+    );
+  });
 }

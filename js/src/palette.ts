@@ -1,9 +1,19 @@
 import {Hct, lstarFromArgb, type ColorModel} from './hct.js';
 import {type Argb, hexFromArgb} from './color.js';
-import {Algo, Usage, ContrastDirection, clamp, contrastingTone, contrastBetweenArgbs, getAbsoluteContrast, lighterLstarUnsafe, darkerLstarUnsafe, lstarPrefersLighterPair} from './contrast.js';
+import {Algo, Usage, ContrastDirection, clamp, contrastingTone, contrastBetweenArgbs, getAbsoluteContrast, lighterLstarUnsafe, darkerLstarUnsafe, lstarPrefersLighterPair, sharedForegroundDirection} from './contrast.js';
 
 export interface PaletteOptions { backgroundTone: number; contrast?: number; algo?: Algo; colorModel?: ColorModel }
-export interface PaletteWithBackgroundOptions { contrast?: number; algo?: Algo; colorModel?: ColorModel }
+export interface PaletteWithBackgroundOptions {
+  /**
+   * Original logical CIE L* shared by independently tinted backgrounds.
+   * Omit for a distinct explicit surface; its measured tone then defines its
+   * own foreground-polarity context.
+   */
+  backgroundTone?: number;
+  contrast?: number;
+  algo?: Algo;
+  colorModel?: ColorModel;
+}
 
 export type PaletteRole =
   | 'background' | 'backgroundText' | 'backgroundFill' | 'backgroundBorder'
@@ -32,7 +42,7 @@ export class Palette {
   }
 
   static fromColorAndBackground(color: Argb, background: Argb, options: PaletteWithBackgroundOptions = {}): Palette {
-    return new Palette(color, background, undefined, options.contrast ?? 0.5, options.algo ?? Algo.apca, options.colorModel ?? 'cam16v11');
+    return new Palette(color, background, options.backgroundTone, options.contrast ?? 0.5, options.algo ?? Algo.apca, options.colorModel ?? 'cam16v11');
   }
 
   private readonly colorHct: Hct;
@@ -64,8 +74,8 @@ export class Palette {
     this.backgroundTone = this.backgroundToneOverride ?? this.backgroundHct.tone;
   }
 
-  private solve(containerTone: number, containerArgb: Argb, targetHue: number, targetChroma: number, usage: Usage, dial: number, direction?: ContrastDirection): number {
-    return contrastingTone({withArgb: containerArgb, withTone: containerTone, targetHue, targetChroma, usage, by: this.algo, contrast: dial, colorModel: this.colorModel, ...(direction === undefined ? {} : {forceDirection: direction})});
+  private solve(containerTone: number, containerArgb: Argb, targetHue: number, targetChroma: number, usage: Usage, dial: number, direction: ContrastDirection): number {
+    return contrastingTone({withArgb: containerArgb, withTone: containerTone, targetHue, targetChroma, usage, by: this.algo, contrast: dial, colorModel: this.colorModel, forceDirection: direction});
   }
   private withColorsChroma(tone: number): Argb { return Hct.from(this.colorHue, this.colorChroma, tone, this.colorModel).toInt(); }
   private withBackgroundsChroma(tone: number): Argb { return Hct.from(this.backgroundHue, this.backgroundChroma, tone, this.colorModel).toInt(); }
@@ -73,15 +83,18 @@ export class Palette {
     if (!this.cache.has(key)) this.cache.set(key, fn());
     return this.cache.get(key) as T;
   }
+  private directionFor(backgroundTone: number): ContrastDirection {
+    return sharedForegroundDirection({backgroundTone, contrast: this.contrast, by: this.algo});
+  }
 
-  private get bgTextTone(): number { return this.memo('bgTextTone', () => this.solve(this.backgroundTone, this.baseBackground, this.backgroundHue, this.backgroundChroma, Usage.text, this.contrast)); }
-  private get bgDirection(): ContrastDirection { return this.memo('bgDirection', () => this.bgTextTone >= this.backgroundTone ? ContrastDirection.lighter : ContrastDirection.darker); }
-  // Share polarity with the neutral family, not a tone verified for a different RGB.
+  private get bgDirection(): ContrastDirection { return this.memo('bgDirection', () => this.directionFor(this.backgroundTone)); }
+  private get bgTextTone(): number { return this.memo('bgTextTone', () => this.solve(this.backgroundTone, this.baseBackground, this.backgroundHue, this.backgroundChroma, Usage.text, this.contrast, this.bgDirection)); }
+  // Share context polarity, not a tone verified for a different foreground RGB.
   private get textTone(): number { return this.memo('textTone', () => this.solve(this.backgroundTone, this.baseBackground, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.bgDirection)); }
-  private get fillTextTone(): number { return this.memo('fillTextTone', () => this.solve(this.bgFillTone, this.fill, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get fillDirection(): ContrastDirection { return this.memo('fillDirection', () => this.fillTextTone >= this.bgFillTone ? ContrastDirection.lighter : ContrastDirection.darker); }
-  private get colorTextTone(): number { return this.memo('colorTextTone', () => this.solve(this.colorTone, this.baseColor, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get colorDirection(): ContrastDirection { return this.memo('colorDirection', () => this.colorTextTone >= this.colorTone ? ContrastDirection.lighter : ContrastDirection.darker); }
+  private get fillDirection(): ContrastDirection { return this.memo('fillDirection', () => this.directionFor(this.bgFillTone)); }
+  private get fillTextTone(): number { return this.memo('fillTextTone', () => this.solve(this.bgFillTone, this.fill, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.fillDirection)); }
+  private get colorDirection(): ContrastDirection { return this.memo('colorDirection', () => this.directionFor(this.colorTone)); }
+  private get colorTextTone(): number { return this.memo('colorTextTone', () => this.solve(this.colorTone, this.baseColor, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.colorDirection)); }
   private get hoverDial(): number { return Math.max(this.contrast - 0.3, 0.1); }
   private get splashDial(): number { return Math.max(this.contrast - 0.15, 0.25); }
   private get borderContrast(): number { return getAbsoluteContrast(this.algo, this.contrast, Usage.border); }
@@ -93,20 +106,22 @@ export class Palette {
   private get colorSplashTone(): number { return this.memo('colorSplashTone', () => this.solve(this.colorTone, this.baseColor, this.colorHue, this.colorChroma, Usage.fill, this.splashDial, this.colorDirection)); }
   private get fillHoverTone(): number { return this.memo('fillHoverTone', () => this.solve(this.bgFillTone, this.fill, this.colorHue, this.colorChroma, Usage.fill, this.hoverDial, this.fillDirection)); }
   private get fillSplashTone(): number { return this.memo('fillSplashTone', () => this.solve(this.bgFillTone, this.fill, this.colorHue, this.colorChroma, Usage.fill, this.splashDial, this.fillDirection)); }
-  private get bgHoverTextTone(): number { return this.memo('bgHoverTextTone', () => this.solve(this.bgHoverTone, this.backgroundHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get bgHoverDirection(): ContrastDirection { return this.memo('bgHoverDirection', () => this.bgHoverTextTone >= this.bgHoverTone ? ContrastDirection.lighter : ContrastDirection.darker); }
-  private get bgSplashTextTone(): number { return this.memo('bgSplashTextTone', () => this.solve(this.bgSplashTone, this.backgroundSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get bgSplashDirection(): ContrastDirection { return this.memo('bgSplashDirection', () => this.bgSplashTextTone >= this.bgSplashTone ? ContrastDirection.lighter : ContrastDirection.darker); }
-  private get colorHoverTextTone(): number { return this.memo('colorHoverTextTone', () => this.solve(this.colorHoverTone, this.colorHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get colorHoverDirection(): ContrastDirection { return this.memo('colorHoverDirection', () => this.colorHoverTextTone >= this.colorHoverTone ? ContrastDirection.lighter : ContrastDirection.darker); }
-  private get colorSplashTextTone(): number { return this.memo('colorSplashTextTone', () => this.solve(this.colorSplashTone, this.colorSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get colorSplashDirection(): ContrastDirection { return this.memo('colorSplashDirection', () => this.colorSplashTextTone >= this.colorSplashTone ? ContrastDirection.lighter : ContrastDirection.darker); }
-  private get fillHoverTextTone(): number { return this.memo('fillHoverTextTone', () => this.solve(this.fillHoverTone, this.fillHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get fillHoverDirection(): ContrastDirection { return this.memo('fillHoverDirection', () => this.fillHoverTextTone >= this.fillHoverTone ? ContrastDirection.lighter : ContrastDirection.darker); }
-  private get fillSplashTextTone(): number { return this.memo('fillSplashTextTone', () => this.solve(this.fillSplashTone, this.fillSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  private get fillSplashDirection(): ContrastDirection { return this.memo('fillSplashDirection', () => this.fillSplashTextTone >= this.fillSplashTone ? ContrastDirection.lighter : ContrastDirection.darker); }
+  private get bgHoverDirection(): ContrastDirection { return this.memo('bgHoverDirection', () => this.directionFor(this.bgHoverTone)); }
+  private get bgHoverTextTone(): number { return this.memo('bgHoverTextTone', () => this.solve(this.bgHoverTone, this.backgroundHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.bgHoverDirection)); }
+  private get bgSplashDirection(): ContrastDirection { return this.memo('bgSplashDirection', () => this.directionFor(this.bgSplashTone)); }
+  private get bgSplashTextTone(): number { return this.memo('bgSplashTextTone', () => this.solve(this.bgSplashTone, this.backgroundSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.bgSplashDirection)); }
+  private get colorHoverDirection(): ContrastDirection { return this.memo('colorHoverDirection', () => this.directionFor(this.colorHoverTone)); }
+  private get colorHoverTextTone(): number { return this.memo('colorHoverTextTone', () => this.solve(this.colorHoverTone, this.colorHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.colorHoverDirection)); }
+  private get colorSplashDirection(): ContrastDirection { return this.memo('colorSplashDirection', () => this.directionFor(this.colorSplashTone)); }
+  private get colorSplashTextTone(): number { return this.memo('colorSplashTextTone', () => this.solve(this.colorSplashTone, this.colorSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.colorSplashDirection)); }
+  private get fillHoverDirection(): ContrastDirection { return this.memo('fillHoverDirection', () => this.directionFor(this.fillHoverTone)); }
+  private get fillHoverTextTone(): number { return this.memo('fillHoverTextTone', () => this.solve(this.fillHoverTone, this.fillHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.fillHoverDirection)); }
+  private get fillSplashDirection(): ContrastDirection { return this.memo('fillSplashDirection', () => this.directionFor(this.fillSplashTone)); }
+  private get fillSplashTextTone(): number { return this.memo('fillSplashTextTone', () => this.solve(this.fillSplashTone, this.fillSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.fillSplashDirection)); }
   private get textHoverTone(): number { return this.memo('textHoverTone', () => this.solve(this.backgroundTone, this.baseBackground, this.colorHue, this.colorChroma, Usage.text, this.hoverDial, this.bgDirection)); }
   private get textSplashTone(): number { return this.memo('textSplashTone', () => this.solve(this.backgroundTone, this.baseBackground, this.colorHue, this.colorChroma, Usage.text, this.splashDial, this.bgDirection)); }
+  private get textHoverDirection(): ContrastDirection { return this.memo('textHoverDirection', () => this.directionFor(this.textHoverTone)); }
+  private get textSplashDirection(): ContrastDirection { return this.memo('textSplashDirection', () => this.directionFor(this.textSplashTone)); }
 
   get background(): Argb { return this.baseBackground; }
   get backgroundText(): Argb { return this.withBackgroundsChroma(this.bgTextTone); }
@@ -138,8 +153,8 @@ export class Palette {
   get text(): Argb { return this.withColorsChroma(this.textTone); }
   get textHovered(): Argb { return this.withColorsChroma(this.textHoverTone); }
   get textSplashed(): Argb { return this.withColorsChroma(this.textSplashTone); }
-  get textHoveredText(): Argb { return this.withColorsChroma(this.solve(this.textHoverTone, this.textHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
-  get textSplashedText(): Argb { return this.withColorsChroma(this.solve(this.textSplashTone, this.textSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast)); }
+  get textHoveredText(): Argb { return this.withColorsChroma(this.solve(this.textHoverTone, this.textHovered, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.textHoverDirection)); }
+  get textSplashedText(): Argb { return this.withColorsChroma(this.solve(this.textSplashTone, this.textSplashed, this.colorHue, this.colorChroma, Usage.text, this.contrast, this.textSplashDirection)); }
 
   get backgroundBorder(): Argb { return this.withBackgroundsChroma(this.solveBorderTone(this.backgroundTone, this.baseBackground, this.backgroundHue, this.backgroundChroma)); }
   get colorBorder(): Argb { return this.solveEitherSideBorder(this.colorTone, this.colorTone, this.backgroundTone, this.colorHue, this.colorChroma); }

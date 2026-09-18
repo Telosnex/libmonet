@@ -63,6 +63,7 @@ interface PaletteWithBackgroundCaseFixture {
   name: string;
   color: string;
   background: string;
+  backgroundTone?: number;
   algo: 'apca' | 'wcag21';
   contrast: number;
   colorModel?: 'cam16' | 'cam16v11' | 'oklch';
@@ -281,7 +282,7 @@ function hexRecord(map: Map<number, number>): Record<string, number> {
 
 describe('Dart libmonet parity fixtures', () => {
   test('fixture has the expected schema', () => {
-    expect(fixture.schema).toBe(12);
+    expect(fixture.schema).toBe(13);
     expect(fixture.paletteRoles.length).toBeGreaterThan(40);
     expect(fixture.paletteCases.length).toBeGreaterThan(0);
     expect(fixture.hctRoundTripSweepCases.length).toBeGreaterThan(700);
@@ -448,6 +449,7 @@ describe('Dart libmonet parity fixtures', () => {
   for (const c of fixture.paletteWithBackgroundCases) {
     test(`Palette.fromColorAndBackground parity: ${c.name}`, () => {
       const palette = Palette.fromColorAndBackground(argbFromHex(c.color), argbFromHex(c.background), {
+        ...(c.backgroundTone === undefined ? {} : {backgroundTone: c.backgroundTone}),
         contrast: c.contrast,
         algo: c.algo === 'wcag21' ? Algo.wcag21 : Algo.apca,
         colorModel: c.colorModel ?? 'cam16v11',

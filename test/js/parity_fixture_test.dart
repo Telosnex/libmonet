@@ -391,6 +391,7 @@ Map<String, Object?> _paletteWithBackgroundCase({
   required String name,
   required int color,
   required int background,
+  double? backgroundTone,
   Algo algo = Algo.apca,
   double contrast = 0.5,
   ColorModel colorModel = ColorModel.kDefault,
@@ -398,6 +399,7 @@ Map<String, Object?> _paletteWithBackgroundCase({
   final p = Palette.fromColorAndBackground(
     Color(color),
     Color(background),
+    backgroundTone: backgroundTone,
     algo: algo,
     contrast: contrast,
     colorModel: colorModel,
@@ -406,6 +408,7 @@ Map<String, Object?> _paletteWithBackgroundCase({
     'name': name,
     'color': _hex(Color(color)),
     'background': _hex(Color(background)),
+    'backgroundTone': ?backgroundTone,
     'algo': algo.name,
     'contrast': contrast,
     'colorModel': colorModel.name,
@@ -670,7 +673,7 @@ Map<String, Object?> _triadCase() {
 void main() {
   test('generate JS parity fixtures', () async {
     final fixture = {
-      'schema': 12,
+      'schema': 13,
       'paletteRoles': _paletteRoles,
       'hctColorCases': [
         _hctColorCase(0xff1177aa),
@@ -926,6 +929,12 @@ void main() {
             Hct.fromInt(0xffa2c6f0).chroma,
             Hct.fromInt(0xffa2c6f0).tone,
           ).color.argb,
+        ),
+        _paletteWithBackgroundCase(
+          name: 'shared-mid-tone-chromatic-background',
+          color: 0xfff5a623,
+          background: Hct.from(300, 100, 66.6).color.argb,
+          backgroundTone: 66.6,
         ),
       ],
       'lerpCases': [

@@ -6,6 +6,9 @@
   First-use getters can solve endpoints; interruption snapshots calculate retained
   colors as necessary. Those are separate operations, not hidden tick work.
 - Each used role is memoized per shared immutable frame, not per widget.
+- Shared polarity is an O(1) lookup in a cached, quarter-tone APCA envelope
+  table. The research optimizer never runs per endpoint, role, or frame; choosing
+  direction also avoids the former throwaway neutral text solve.
 - Binding-local notifications reach only consumers of potentially changing roles.
   Same-RGB rounding plateaus can still notify. Completion works without getters.
 - Consumer disposal releases recipe entries; equal recipes share endpoint work

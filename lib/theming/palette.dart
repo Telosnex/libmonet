@@ -141,10 +141,13 @@ abstract class Palette {
   /// Creates a palette from an explicit [color] and [background].
   ///
   /// Use when you already have a concrete background color (e.g. a colorful
-  /// card).  [Palette.from] is preferred for typical page backgrounds.
+  /// card). Pass [backgroundTone] only when this RGB surface shares an original
+  /// logical CIE L* context with other independently tinted backgrounds. Omit it
+  /// for an explicitly distinct surface. [Palette.from] is preferred for pages.
   factory Palette.fromColorAndBackground(
     Color color,
     Color background, {
+    double? backgroundTone,
     double contrast = 0.5,
     Algo algo = Algo.apca,
     ColorModel colorModel = ColorModel.kDefault,
@@ -153,6 +156,7 @@ abstract class Palette {
     return Palette.base(
       baseColor: color,
       baseBackground: background,
+      backgroundTone: backgroundTone,
       contrast: contrast,
       algo: algo,
       colorModel: colorModel,
@@ -203,10 +207,10 @@ class _ComputedPalette extends Palette {
 
   // ── Per-container polarity ───────────────────────────────
   //
-  // Siblings solved against the same container must land on the same side.
-  // The *hardest* sibling (text, which needs the most contrast) solves
-  // first without constraint.  Its actual result determines the direction
-  // that every easier sibling (fill, icon, hover, …) is forced to follow.
+  // Siblings solved against the same container must land on the same side. A
+  // hue-independent policy first chooses direction from the container's
+  // nominal tone and text requirement. Text and easier siblings are all forced
+  // that way, while actual container/foreground RGB determines distance.
 
   // Cached ARGBs for container surfaces used as _solve references.
   late final int _backgroundArgb = _baseBackground.argb;
@@ -222,7 +226,17 @@ class _ComputedPalette extends Palette {
   late final Color _fillHoverColor = _withColorsChroma(_fillHoverTone);
   late final Color _fillSplashColor = _withColorsChroma(_fillSplashTone);
 
-  /// Text tone on the background — solved first, unconstrained.
+  ContrastDirection _directionFor(double backgroundTone) =>
+      sharedForegroundDirection(
+        backgroundTone: backgroundTone,
+        contrast: _contrast,
+        by: _algo,
+      );
+
+  /// Context policy is hue-independent; actual RGB still determines distance.
+  late final ContrastDirection _bgDirection = _directionFor(_backgroundTone);
+
+  /// Text tone on the background, forced to the shared context polarity.
   late final double _bgTextTone = _solve(
     _backgroundTone,
     _backgroundArgb,
@@ -230,13 +244,10 @@ class _ComputedPalette extends Palette {
     _backgroundChroma,
     Usage.text,
     _contrast,
+    _bgDirection,
   );
 
-  late final ContrastDirection _bgDirection = _bgTextTone >= _backgroundTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
-
-  /// Branded text shares the background family's polarity, not its neutral
+  /// Branded text shares the background context's policy, not its neutral
   /// foreground tone: changing hue/chroma changes quantized RGB and contrast.
   /// Solve the color we actually paint, once, only when branded text is read.
   late final double _textTone = _solve(
@@ -249,7 +260,9 @@ class _ComputedPalette extends Palette {
     _bgDirection,
   );
 
-  /// Text tone on the fill surface — solved first, unconstrained.
+  late final ContrastDirection _fillDirection = _directionFor(_bgFillTone);
+
+  /// Text tone on the fill's own nested surface context.
   late final double _fillTextTone = _solve(
     _bgFillTone,
     _fillColor.argb,
@@ -257,13 +270,12 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _fillDirection,
   );
 
-  late final ContrastDirection _fillDirection = _fillTextTone >= _bgFillTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
+  late final ContrastDirection _colorDirection = _directionFor(_colorTone);
 
-  /// Text tone on the color surface — solved first, unconstrained.
+  /// Text tone on the color's own nested surface context.
   late final double _colorTextTone = _solve(
     _colorTone,
     _colorArgb,
@@ -271,11 +283,8 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _colorDirection,
   );
-
-  late final ContrastDirection _colorDirection = _colorTextTone >= _colorTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
 
   // ── Contrast dials & thresholds ───────────────────────────────
 
@@ -354,7 +363,11 @@ class _ComputedPalette extends Palette {
     _colorDirection,
   );
 
-  /// Text on the hovered color surface — solved first, unconstrained.
+  late final ContrastDirection _colorHoverDirection = _directionFor(
+    _colorHoverTone,
+  );
+
+  /// Text on the hovered color surface.
   late final double _colorHoverTextTone = _solve(
     _colorHoverTone,
     _colorHoverColor.argb,
@@ -362,12 +375,8 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _colorHoverDirection,
   );
-
-  late final ContrastDirection _colorHoverDirection =
-      _colorHoverTextTone >= _colorHoverTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
 
   /// Splash overlay tone on the color surface.
   late final double _colorSplashTone = _solve(
@@ -380,7 +389,11 @@ class _ComputedPalette extends Palette {
     _colorDirection,
   );
 
-  /// Text on the splashed color surface — solved first, unconstrained.
+  late final ContrastDirection _colorSplashDirection = _directionFor(
+    _colorSplashTone,
+  );
+
+  /// Text on the splashed color surface.
   late final double _colorSplashTextTone = _solve(
     _colorSplashTone,
     _colorSplashColor.argb,
@@ -388,12 +401,8 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _colorSplashDirection,
   );
-
-  late final ContrastDirection _colorSplashDirection =
-      _colorSplashTextTone >= _colorSplashTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
 
   /// Hover overlay tone on the fill surface.
   late final double _fillHoverTone = _solve(
@@ -406,7 +415,11 @@ class _ComputedPalette extends Palette {
     _fillDirection,
   );
 
-  /// Text on the hovered fill surface — solved first, unconstrained.
+  late final ContrastDirection _fillHoverDirection = _directionFor(
+    _fillHoverTone,
+  );
+
+  /// Text on the hovered fill surface.
   late final double _fillHoverTextTone = _solve(
     _fillHoverTone,
     _fillHoverColor.argb,
@@ -414,12 +427,8 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _fillHoverDirection,
   );
-
-  late final ContrastDirection _fillHoverDirection =
-      _fillHoverTextTone >= _fillHoverTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
 
   /// Splash overlay tone on the fill surface.
   late final double _fillSplashTone = _solve(
@@ -432,7 +441,11 @@ class _ComputedPalette extends Palette {
     _fillDirection,
   );
 
-  /// Text on the splashed fill surface — solved first, unconstrained.
+  late final ContrastDirection _fillSplashDirection = _directionFor(
+    _fillSplashTone,
+  );
+
+  /// Text on the splashed fill surface.
   late final double _fillSplashTextTone = _solve(
     _fillSplashTone,
     _fillSplashColor.argb,
@@ -440,12 +453,8 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _fillSplashDirection,
   );
-
-  late final ContrastDirection _fillSplashDirection =
-      _fillSplashTextTone >= _fillSplashTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
 
   /// Text-hover tone on the background (used by textHovered family).
   late final double _textHoverTone = _solve(
@@ -469,8 +478,9 @@ class _ComputedPalette extends Palette {
     _bgDirection,
   );
 
-  /// Text tone on the hovered background overlay — solved first,
-  /// unconstrained, then used to derive shared sibling polarity.
+  late final ContrastDirection _bgHoverDirection = _directionFor(_bgHoverTone);
+
+  /// Text tone on the hovered background overlay.
   late final double _bgHoverTextTone = _solve(
     _bgHoverTone,
     _bgHoverColor.argb,
@@ -478,12 +488,8 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _bgHoverDirection,
   );
-
-  late final ContrastDirection _bgHoverDirection =
-      _bgHoverTextTone >= _bgHoverTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
 
   /// Fill tone on the hovered background overlay.
   /// Shares polarity with [_bgHoverTextTone].
@@ -497,8 +503,11 @@ class _ComputedPalette extends Palette {
     _bgHoverDirection,
   );
 
-  /// Text tone on the splashed background overlay — solved first,
-  /// unconstrained, then used to derive shared sibling polarity.
+  late final ContrastDirection _bgSplashDirection = _directionFor(
+    _bgSplashTone,
+  );
+
+  /// Text tone on the splashed background overlay.
   late final double _bgSplashTextTone = _solve(
     _bgSplashTone,
     _bgSplashColor.argb,
@@ -506,12 +515,15 @@ class _ComputedPalette extends Palette {
     _colorChroma,
     Usage.text,
     _contrast,
+    _bgSplashDirection,
   );
 
-  late final ContrastDirection _bgSplashDirection =
-      _bgSplashTextTone >= _bgSplashTone
-      ? ContrastDirection.lighter
-      : ContrastDirection.darker;
+  late final ContrastDirection _textHoverDirection = _directionFor(
+    _textHoverTone,
+  );
+  late final ContrastDirection _textSplashDirection = _directionFor(
+    _textSplashTone,
+  );
 
   /// Fill tone on the splashed background overlay.
   /// Shares polarity with [_bgSplashTextTone].
@@ -537,9 +549,9 @@ class _ComputedPalette extends Palette {
     double targetHue,
     double targetChroma,
     Usage usage,
-    double dial, [
-    ContrastDirection? direction,
-  ]) {
+    double dial,
+    ContrastDirection direction,
+  ) {
     stats?.contrastRequests++;
     return contrastingTone(
       withArgb: containerArgb,
@@ -859,6 +871,7 @@ class _ComputedPalette extends Palette {
       _colorChroma,
       Usage.text,
       _contrast,
+      _textHoverDirection,
     ),
   );
 
@@ -872,6 +885,7 @@ class _ComputedPalette extends Palette {
       _colorChroma,
       Usage.text,
       _contrast,
+      _textSplashDirection,
     ),
   );
 

@@ -5,6 +5,24 @@ import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/libmonet.dart';
 
 void main() {
+  test('nested fill chooses the feasible WCAG polarity instead of white', () {
+    final palette = Palette.from(
+      const Color(0xff1177aa),
+      backgroundTone: 93,
+      algo: Algo.wcag21,
+    );
+    double ratio(Color foreground) => Algo.wcag21.contrastBetweenArgbs(
+      bgArgb: palette.fill.toARGB32(),
+      fgArgb: foreground.toARGB32(),
+    );
+    expect(ratio(const Color(0xffffffff)), lessThan(4.5));
+    expect(
+      Hct.fromColor(palette.fillText).tone,
+      lessThan(Hct.fromColor(palette.fill).tone),
+    );
+    expect(ratio(palette.fillText), greaterThanOrEqualTo(4.5));
+  });
+
   test('branded text verifies its own RGB against the actual background', () {
     final palette = Palette.from(
       const Color(0xff7b4338),
