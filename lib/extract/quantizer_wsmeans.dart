@@ -636,7 +636,10 @@ class QuantizerWsmeans {
     if (returnInputPixelToClusterPixel) {
       final stopwatch = Stopwatch()..start();
       for (var i = 0; i < pointCount; i++) {
-        final inputPixel = pixels[i];
+        // `pixels` is an Int32List, so opaque colors read back negative.
+        // Keys must match the unsigned ARGB ints callers pass in, and the
+        // non-Lab path, or lookups silently miss.
+        final inputPixel = pixels[i] & 0xffffffff;
         final clusterIndex = clusterIndices[i];
         final clusterPixel = argbFromLab(
           clusterLs[clusterIndex],

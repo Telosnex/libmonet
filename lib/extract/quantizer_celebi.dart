@@ -39,10 +39,14 @@ class QuantizerCelebi implements Quantizer {
       returnInputPixelToClusterPixel: returnInputPixelToClusterPixel,
     );
     // argbToCount: refined cluster centers from WSMeans
+    // inputPixelToClusterPixel: each distinct input pixel -> its final cluster
+    //               center, when requested. Lets callers reconstruct the
+    //               palette-ized image without rerunning quantization.
     // lstarToCount: original input image's L* distribution (from Wu/Map),
     //               intentionally preserved for source image analysis
     return QuantizerResult(
       wsmeansResult.argbToCount,
+      inputPixelToClusterPixel: wsmeansResult.inputPixelToClusterPixel,
       lstarToCount: wuResult.lstarToCount,
     );
   }
