@@ -36,12 +36,6 @@ const double _fallbackPixelVisualAngleDegrees = 0.0213;
 /// Adaptation factor = 0.5 + [_adaptationDistanceMm] / vdist.
 const double _adaptationDistanceMm = 180.0;
 
-/// Densities outside 30..600 ppi are treated as lies (EDID physical-size
-/// bytes are frequently zero, wrong, or copy-pasted from another panel;
-/// projectors report nonsense by definition) and trigger the fallback path.
-const double _minPlausiblePxPerMm = 30.0 / 25.4;
-const double _maxPlausiblePxPerMm = 600.0 / 25.4;
-
 /// Expected viewing distance, when not directly known. Values from Fuchsia.
 enum DisplayUsage {
   /// Held in the hand: phone, small tablet.
@@ -72,10 +66,7 @@ enum DisplayUsage {
 /// max(visualScale, touchScale) where touchScale guarantees that
 /// [minLogicalPx] logical pixels span at least [minPhysicalMm] millimeters.
 class TouchTargets {
-  const TouchTargets({
-    this.minPhysicalMm = 8.0,
-    this.minLogicalPx = 48.0,
-  });
+  const TouchTargets({this.minPhysicalMm = 8.0, this.minLogicalPx = 48.0});
 
   /// Minimum physical size of a touch target. ~7-9mm fits adult fingertips;
   /// 8mm is a reasonable default. (Material's 48dp at 160dpi is 7.62mm.)
@@ -90,9 +81,10 @@ class TouchTargets {
 /// [DisplayMetrics].
 ///
 /// Physical size may be given as [widthMm]/[heightMm] (e.g. from EDID) or as
-/// [diagonalInches] (e.g. from a spec sheet). If neither is available — or
-/// the claimed density is implausible — the model falls back to assuming a
-/// 96dpi desktop monitor rather than inventing precision it doesn't have.
+/// [diagonalInches] (e.g. from a spec sheet). If neither supplies a finite,
+/// positive density, the model falls back to assuming a 96dpi desktop monitor.
+/// Valid densities are not limited: a density cutoff would make small changes
+/// in physical size abruptly switch between calculated and fallback scales.
 class DisplayModel {
   DisplayModel({
     required this.widthPx,
@@ -105,9 +97,9 @@ class DisplayModel {
     this.userScaleFactor = 1.0,
     this.touch,
     this.integerSnapTolerance = 0.02,
-  })  : assert(widthPx > 0),
-        assert(heightPx > 0),
-        assert(userScaleFactor > 0);
+  }) : assert(widthPx > 0),
+       assert(heightPx > 0),
+       assert(userScaleFactor > 0);
 
   final int widthPx;
   final int heightPx;
@@ -138,22 +130,20 @@ class DisplayModel {
   /// crisper at integer scales, and a ~2% size change is imperceptible.
   final double integerSnapTolerance;
 
-  /// Pixel density in px/mm, or null if unknown or implausible.
+  /// Pixel density in px/mm, or null if unknown or invalid.
   double? get pxPerMm {
     final wMm = widthMm;
     final hMm = heightMm;
-    final diagonalPx =
-        math.sqrt((widthPx * widthPx + heightPx * heightPx).toDouble());
+    final diagonalPx = math.sqrt(
+      (widthPx * widthPx + heightPx * heightPx).toDouble(),
+    );
     double? ppm;
     if (wMm != null && hMm != null && wMm > 0 && hMm > 0) {
       ppm = diagonalPx / math.sqrt(wMm * wMm + hMm * hMm);
     } else if (diagonalInches != null && diagonalInches! > 0) {
       ppm = diagonalPx / (diagonalInches! * 25.4);
     }
-    if (ppm == null) {
-      return null;
-    }
-    if (ppm < _minPlausiblePxPerMm || ppm > _maxPlausiblePxPerMm) {
+    if (ppm == null || !ppm.isFinite || ppm <= 0) {
       return null;
     }
     return ppm;
@@ -162,17 +152,21 @@ class DisplayModel {
   DisplayMetrics compute() {
     final ppm = pxPerMm;
     final vdist = viewingDistanceMm ?? usage?.viewingDistanceMm;
-    final tanPip =
-        math.tan(logicalPixelVisualAngleDegrees * math.pi / 180.0);
+    final tanPip = math.tan(logicalPixelVisualAngleDegrees * math.pi / 180.0);
 
     final double visualScale;
     final bool usedFallback;
-    if (ppm != null && vdist != null && vdist > 0) {
-      final adaptation = 0.5 + _adaptationDistanceMm / vdist;
-      visualScale = ppm * tanPip * vdist * adaptation * userScaleFactor;
+    if (ppm != null && vdist != null && vdist.isFinite && vdist > 0) {
+      // vdist * (0.5 + 180 / vdist), without division by a small distance.
+      visualScale =
+          ppm *
+          tanPip *
+          (0.5 * vdist + _adaptationDistanceMm) *
+          userScaleFactor;
       usedFallback = false;
     } else {
-      visualScale = logicalPixelVisualAngleDegrees /
+      visualScale =
+          logicalPixelVisualAngleDegrees /
           _fallbackPixelVisualAngleDegrees *
           userScaleFactor;
       usedFallback = true;
@@ -240,7 +234,7 @@ class DisplayMetrics {
   final double logicalWidth;
   final double logicalHeight;
 
-  /// Derived density, or null if unknown/implausible.
+  /// Derived density, or null if unknown/invalid.
   final double? pxPerMm;
 
   /// Viewing distance used, or null if unknown.
@@ -254,7 +248,7 @@ class DisplayMetrics {
   final double? touchScale;
 
   /// True if the 96dpi-monitor fallback was used because density or viewing
-  /// distance were unknown.
+  /// distance were unknown or invalid.
   final bool usedFallback;
 
   /// Visual angle actually subtended by one logical pixel, in degrees, or
@@ -263,7 +257,7 @@ class DisplayMetrics {
   double? get logicalPixelAngleDegrees {
     final ppm = pxPerMm;
     final vdist = viewingDistanceMm;
-    if (ppm == null || vdist == null || vdist <= 0) {
+    if (ppm == null || vdist == null || !vdist.isFinite || vdist <= 0) {
       return null;
     }
     return math.atan((scale / ppm) / vdist) * 180.0 / math.pi;

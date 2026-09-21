@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:test/test.dart';
 import 'package:libmonet/display/display_metrics.dart';
 
@@ -85,8 +87,10 @@ void main() {
       // floor = 12.389 * 8 / 48 = 2.0649. Integer snap to 2.0 is refused
       // (below floor); round-quantize gives 2.0625, also below floor, so
       // the next quantization step up is taken: 133/256 * 4 = 2.078125.
-      final metrics =
-          model(DisplayUsage.handheld, touch: const TouchTargets()).compute();
+      final metrics = model(
+        DisplayUsage.handheld,
+        touch: const TouchTargets(),
+      ).compute();
       expect(metrics.touchScale!, closeTo(2.0649, 0.001));
       expect(metrics.scale, closeTo(2.078125, 1e-9));
       expect(metrics.scale, greaterThanOrEqualTo(metrics.touchScale!));
@@ -121,18 +125,31 @@ void main() {
       expect(metrics.scale, closeTo(1.1953125, 1e-9)); // 153/256 * 2
     });
 
-    test('implausible EDID density is treated as unknown', () {
-      // Claims 1920px across 10mm: ~4900ppi. EDID lies; fall back.
-      final metrics = DisplayModel(
-        widthPx: 1920,
-        heightPx: 1080,
-        widthMm: 10.0,
-        heightMm: 5.6,
-        usage: DisplayUsage.near,
-      ).compute();
-      expect(metrics.pxPerMm, isNull);
-      expect(metrics.usedFallback, isTrue);
-    });
+    for (final invalid in [0.0, -1.0, double.nan, double.infinity]) {
+      test('invalid physical size $invalid still falls back', () {
+        final metrics = DisplayModel(
+          widthPx: 1920,
+          heightPx: 1080,
+          diagonalInches: invalid,
+          usage: DisplayUsage.near,
+        ).compute();
+        expect(metrics.pxPerMm, isNull);
+        expect(metrics.usedFallback, isTrue);
+        expect(metrics.scale, 1.1953125);
+      });
+
+      test('invalid viewing distance $invalid still falls back', () {
+        final metrics = DisplayModel(
+          widthPx: 1920,
+          heightPx: 1080,
+          diagonalInches: 7,
+          viewingDistanceMm: invalid,
+        ).compute();
+        expect(metrics.usedFallback, isTrue);
+        expect(metrics.scale, 1.1953125);
+        expect(metrics.logicalPixelAngleDegrees, isNull);
+      });
+    }
 
     test('unknown viewing distance also falls back', () {
       final metrics = DisplayModel(
@@ -141,6 +158,87 @@ void main() {
         diagonalInches: 7.0,
       ).compute();
       expect(metrics.usedFallback, isTrue);
+    });
+  });
+
+  group('density continuity', () {
+    DisplayMetrics atDensity(
+      double ppi,
+      double distance, {
+      bool useMm = false,
+    }) {
+      return DisplayModel(
+        widthPx: 1920,
+        heightPx: 1080,
+        diagonalInches: useMm
+            ? null
+            : math.sqrt(1920 * 1920 + 1080 * 1080) / ppi,
+        widthMm: useMm ? 1920 * 25.4 / ppi : null,
+        heightMm: useMm ? 1080 * 25.4 / ppi : null,
+        viewingDistanceMm: distance,
+      ).compute();
+    }
+
+    for (final useMm in [false, true]) {
+      for (final ppi in [16.0, 800.0, 4800.0]) {
+        test('$ppi PPI is used without clamping (millimeters: $useMm)', () {
+          final metrics = atDensity(ppi, 500, useMm: useMm);
+          final expected =
+              ppi /
+              25.4 *
+              math.tan(logicalPixelVisualAngleDegrees * math.pi / 180) *
+              430;
+          expect(metrics.usedFallback, isFalse);
+          expect(metrics.pxPerMm, closeTo(ppi / 25.4, 1e-9));
+          expect(metrics.visualScale, closeTo(expected, 1e-9));
+          expect(metrics.scale, closeTo(expected, expected * 0.025));
+          expect(metrics.logicalWidth, 1920 / metrics.scale);
+        });
+      }
+
+      for (final boundary in [30.0, 600.0]) {
+        for (final distance in [100.0, 360.0, 500.0, 3000.0, 5000.0]) {
+          test('crossing $boundary PPI at $distance mm has no fallback jump '
+              '(millimeters: $useMm)', () {
+            final before = atDensity(boundary - 0.1, distance, useMm: useMm);
+            final after = atDensity(boundary + 0.1, distance, useMm: useMm);
+            expect(before.usedFallback, isFalse);
+            expect(after.usedFallback, isFalse);
+            expect(
+              after.visualScale / before.visualScale,
+              closeTo((boundary + 0.1) / (boundary - 0.1), 1e-9),
+            );
+            // Allow the existing 2% integer snapping and mantissa quantization.
+            expect(after.scale / before.scale, inInclusiveRange(1, 1.04));
+          });
+        }
+      }
+    }
+
+    test('density and viewing distance can compensate beyond old cutoffs', () {
+      expect(atDensity(16, 6840).scale, atDensity(160, 360).scale);
+      expect(atDensity(800, 360).scale, atDensity(160, 3240).scale);
+    });
+
+    test('4K panel crosses the former 600 PPI diagonal threshold smoothly', () {
+      final scales = [
+        for (final diagonal in [7.0, 7.1, 7.2, 7.3, 7.4, 7.5])
+          DisplayModel(
+            widthPx: 3840,
+            heightPx: 2160,
+            diagonalInches: diagonal,
+            viewingDistanceMm: 500,
+          ).compute(),
+      ];
+      for (var i = 0; i < scales.length; i++) {
+        expect(scales[i].usedFallback, isFalse);
+        if (i > 0) {
+          expect(
+            scales[i].scale / scales[i - 1].scale,
+            inInclusiveRange(0.96, 1),
+          );
+        }
+      }
     });
   });
 
@@ -261,8 +359,7 @@ void main() {
       expect(metrics.logicalHeight, closeTo(354.6, 0.1));
     });
 
-    test('Cheap Yellow Display + touch: fingertip floor wins, 256 lp wide',
-        () {
+    test('Cheap Yellow Display + touch: fingertip floor wins, 256 lp wide', () {
       // With resistive touch enabled, the 8mm/48lp floor (0.9374) beats the
       // visual scale (0.9011). Quantizes to exactly 15/16, making the
       // logical width exactly 256.0.
@@ -303,9 +400,13 @@ void main() {
           while (s >= 256.0) {
             s /= 2.0;
           }
-          expect(s, equals(s.roundToDouble()),
-              reason: 'scale $scale (usage $usage, ${diagonal}in) '
-                  'has more than 8 mantissa bits');
+          expect(
+            s,
+            equals(s.roundToDouble()),
+            reason:
+                'scale $scale (usage $usage, ${diagonal}in) '
+                'has more than 8 mantissa bits',
+          );
         }
       }
     });
