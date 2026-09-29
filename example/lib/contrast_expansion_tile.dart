@@ -2,7 +2,7 @@ import 'package:libmonet/contrast/contrast.dart';
 import 'package:monet_studio/contrast_picker.dart';
 import 'package:monet_studio/contrast_slider.dart';
 import 'package:monet_studio/padding.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 

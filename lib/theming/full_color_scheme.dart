@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/colorspaces/hct.dart';
 import 'package:libmonet/theming/palette.dart';
 

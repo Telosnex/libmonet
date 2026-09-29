@@ -1,5 +1,5 @@
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class HorizontalPadding extends StatelessWidget {
   static const rightInset = EdgeInsets.only(right: 8);

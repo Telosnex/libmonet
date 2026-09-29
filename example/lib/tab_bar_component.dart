@@ -1,21 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
 
-class TabBarComponent extends HookConsumerWidget {
+class TabBarComponent extends StatelessWidget {
   const TabBarComponent({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tabBarController = useTabController(initialLength: 3);
-    return Column(children: [
-      TabBar(
-        controller: tabBarController,
-        tabs: const [
-          Tab(icon: Icon(Icons.directions_car)),
-          Tab(icon: Icon(Icons.directions_transit)),
-          Tab(icon: Icon(Icons.directions_bike)),
-        ],
-      ),
-    ]);
+  Widget build(BuildContext context) {
+    return const DefaultTabController(
+      length: 3,
+      child: Column(children: [
+        TabBar(
+          tabs: [
+            Tab(icon: Icon(Icons.directions_car)),
+            Tab(icon: Icon(Icons.directions_transit)),
+            Tab(icon: Icon(Icons.directions_bike)),
+          ],
+        ),
+      ]),
+    );
   }
 }

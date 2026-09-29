@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/contrast/contrast.dart';

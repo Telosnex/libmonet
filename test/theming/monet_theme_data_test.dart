@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/theming/animated_monet_theme.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';

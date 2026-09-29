@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' show Color;
 
-import 'package:flutter/material.dart' show Brightness;
+import 'package:material_ui/material_ui.dart' show Brightness;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/contrast/apca_contrast.dart' as apca_contrast;

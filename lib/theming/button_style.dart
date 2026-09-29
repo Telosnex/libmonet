@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/theming/palette.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 import 'package:libmonet/util/size_scale.dart';

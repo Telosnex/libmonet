@@ -1,5 +1,5 @@
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ChessBoardPainter extends CustomPainter {
   final double squareSize;

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/util/size_scale.dart';
 
 /// Creates an outlined border from resolved logical-pixel geometry.

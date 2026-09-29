@@ -4,7 +4,7 @@ import 'package:libmonet/effects/shadows.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/halo_text.dart';
 import 'package:monet_studio/padding.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/theming/monet_theme.dart';
 

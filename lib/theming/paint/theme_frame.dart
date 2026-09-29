@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';
 
 /// Immutable theme view, including at rest so getters can discover demand.

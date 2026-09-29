@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart' show kThemeAnimationDuration;
+import 'package:material_ui/material_ui.dart' show kThemeAnimationDuration;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:libmonet/theming/monet_theme_data.dart';

@@ -3,7 +3,7 @@
 import 'dart:ui' show FontFeature;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/libmonet.dart';
 import 'package:libmonet/util/with_opacity_neue.dart';

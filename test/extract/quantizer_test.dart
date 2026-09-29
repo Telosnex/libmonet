@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart' show FileImage;
+import 'package:material_ui/material_ui.dart' show FileImage;
 import 'package:libmonet/extract/extract.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/effects/protection.dart';
 
 /// Renders text with a single dilated-then-blurred halo underlay — i.e. a 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/util/debug_print.dart';
 import 'package:libmonet/extract/quantizer_result.dart';

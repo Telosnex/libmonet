@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:libmonet/extract/extract.dart';
 import 'package:libmonet/extract/quantizer_result.dart';

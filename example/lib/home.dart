@@ -28,7 +28,7 @@ import 'package:monet_studio/theme_data_provider.dart';
 import 'package:monet_studio/custom_bg_expansion_tile.dart';
 import 'package:monet_studio/tokens_expansion_tile.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
