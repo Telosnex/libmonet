@@ -5,7 +5,8 @@ Generated font data for dynamic Google Fonts support.
 ## Runtime files
 
 - `font_height_equalizer.g.dart` — per-family raster metrics and `visualHeightScaleForFontFamily`.
-- `google_fonts_catalog.g.dart` — picker/search metadata for families present in both the locked `google_fonts` package and public Google Fonts metadata.
+- `google_fonts_catalog.g.dart` — picker/search metadata for every family in the resolved `google_fonts` package.
+  Its variants come from the package descriptors. Its categories and language subsets come from Google Fonts metadata.
 
 ## Font height equalizer
 
@@ -76,28 +77,34 @@ Roboto                 reference font
 
 ## Maintenance
 
-When `google_fonts` changes, regenerate both generated files:
+The Dart workflow updates both runtime files with one command.
+It resolves the exact package from `package_config.json`.
+It saves the metadata snapshot and records the source fingerprints.
 
 ```bash
-/opt/homebrew/bin/python3 -u lib/fonts/generate_font_height_equalizer.py \
-  --cache-dir /tmp/google_fonts_ttf_cache
-
-/opt/homebrew/bin/python3 lib/fonts/generate_google_fonts_catalog.py
+dart tool/generate_fonts.dart --write --refresh-metadata
 ```
 
-Also regenerate if the phrase corpus, reference font, generator logic, or Google Fonts metadata requirements change.
-
-Before committing:
+For a consuming app, use its resolved package configuration:
 
 ```bash
-/opt/homebrew/bin/python3 -m py_compile \
-  lib/fonts/generate_font_height_equalizer.py \
-  lib/fonts/generate_google_fonts_catalog.py
-
-dart analyze \
-  lib/fonts/font_height_equalizer.g.dart \
-  lib/fonts/google_fonts_catalog.g.dart \
-  lib/theming/monet_theme_data.dart
+dart tool/generate_fonts.dart --write --refresh-metadata \
+  --package-config=../telosnex/.dart_tool/package_config.json
 ```
+
+The workflow creates a local Python environment with pinned Pillow for the existing offline rasterizer.
+Python 3 must be installed. Font downloads and the environment stay in `.dart_tool/font_generation/`.
+The workflow verifies downloaded font hashes. Download failures stop publication of the runtime files.
+Families without measurable Latin text remain selectable. Their visual-height scale defaults to `1.0`.
+The generation manifest lists these exclusions.
+
+The offline check detects changes to the package, descriptors, metadata, rasterizer, or output metrics:
+
+```bash
+dart tool/generate_fonts.dart --check
+```
+
+The generator tests run this check. A dependency upgrade therefore cannot silently leave old tables in place.
+The old Python catalog generator is no longer part of the update workflow.
 
 Quick sanity check: inspect scale changes for `Roboto`, `Bahianita`, `Cormorant Garamond`, `JetBrains Mono`, `Fauna One`, and `Tenor Sans`.
