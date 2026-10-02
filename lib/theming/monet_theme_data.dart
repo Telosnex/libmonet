@@ -1664,6 +1664,17 @@ class MonetThemeData {
       tt.labelMedium!.fontFamily,
     );
 
+    // Sizes are logical pixels for a Roboto-equivalent visual height. The
+    // per-family scales above convert them for the selected fonts.
+    //
+    // bodyMedium is the reading size. 17 lp gives a Roboto x-height of about
+    // 15 arcminutes on phones and tablets at typical viewing distances: three
+    // times the 20/20 acuity limit, the size needed for fluent reading. The
+    // body steps use a ratio of about 1.125. Labels are short strings at a
+    // heavier weight, so labelMedium is one step below bodyMedium. labelLarge
+    // matches bodyMedium, as button text does on iOS and in Material 3.
+    // labelSmall stays at 14 until its uses are reviewed.
+
     final textTheme = tt.copyWith(
       displayLarge: tt.displayLarge!.copyWith(
         fontSize: 32 * scale * displayScale,
@@ -1720,7 +1731,7 @@ class MonetThemeData {
         height: h,
       ),
       bodyLarge: tt.bodyLarge!.copyWith(
-        fontSize: 18 * scale * bodyScale,
+        fontSize: 19 * scale * bodyScale,
         color: txtC,
         fontFamilyFallback: _mergedFontFamilyFallback(tt.bodyLarge),
         height: h,
@@ -1732,19 +1743,19 @@ class MonetThemeData {
         height: h,
       ),
       bodySmall: tt.bodySmall!.copyWith(
-        fontSize: 14 * scale * bodyScale,
+        fontSize: 15 * scale * bodyScale,
         color: txtC,
         fontFamilyFallback: _mergedFontFamilyFallback(tt.bodySmall),
         height: h,
       ),
       labelLarge: tt.labelLarge!.copyWith(
-        fontSize: 18 * scale * labelScale,
+        fontSize: 17 * scale * labelScale,
         color: txtC,
         fontFamilyFallback: _mergedFontFamilyFallback(tt.labelLarge),
         height: h,
       ),
       labelMedium: tt.labelMedium!.copyWith(
-        fontSize: 16 * scale * labelScale,
+        fontSize: 15 * scale * labelScale,
         color: txtC,
         fontFamilyFallback: _mergedFontFamilyFallback(tt.labelMedium),
         height: h,
