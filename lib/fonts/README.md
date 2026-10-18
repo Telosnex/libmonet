@@ -5,6 +5,7 @@ Generated font data for dynamic Google Fonts support.
 ## Runtime files
 
 - `font_height_equalizer.g.dart` — per-family raster metrics and `visualHeightScaleForFontFamily`.
+- `optical_font_size.dart` — `opticallyMatchedFontSize`, for sizing one font to look as large as another (e.g. monospace next to prose).
 - `google_fonts_catalog.g.dart` — picker/search metadata for every family in the resolved `google_fonts` package.
   Its variants come from the package descriptors. Its categories and language subsets come from Google Fonts metadata.
 
@@ -61,11 +62,37 @@ Alice                  caps/lowercase balance made glyph blends overboost
 Cormorant Garamond     tiny lowercase; pure x-height overboosts
 Sen                    looked small only relative to overboosted serifs
 Imbue                  vertically normal but very condensed/low footprint
-JetBrains Mono         mono/prose matching needs x-height, not role visual metric
+JetBrains Mono         mono/prose matching; see "Matching one font to another"
 Fauna One              large x-height; should shrink somewhat
 Tenor Sans             moderate baseline sanity check
 Roboto                 reference font
 ```
+
+## Matching one font to another
+
+To size text in one font so it looks as large as text in another font, use
+`opticallyMatchedFontSize`:
+
+```text
+matchedPx = referencePx / visualHeightScale(referenceFont) * visualHeightScale(font)
+```
+
+Use the same visual-height metric as the role equalizer; do not match raw
+x-height. The role equalizer only weights x-height at 0.5, so copying a
+reference font's x-height in full overshoots: a large-x-height body font
+(Antonio) is shrunk by the equalizer, yet x-height matching makes monospace
+next to it *larger* than the prose. Small-x-height fonts (IM Fell) do the
+opposite.
+
+Because roles are already equalized, matching against any role gives the
+same result as sizing the font directly from the base size. Monospace size
+then depends only on the monospace font, never on which fonts were picked
+for body, label, or headline. Pass the role or surrounding style the text
+replaces or sits inline with (body, heading, table cell, ...).
+
+The `rasterXHeightEmForFontFamily` doc comment in the generated file still
+recommends x-height for code/prose matching. It comes from the generator and
+is fingerprinted, so it changes with the next regeneration.
 
 ## Non-goals
 
@@ -73,7 +100,6 @@ Roboto                 reference font
 - No `Picture.toImage` / `toByteData` in UI paths.
 - No perfect perceptual model for every decorative font.
 - No full ink-area/density compensation in the main role scale yet.
-- Monospace fonts are supported, but code/prose size matching should use x-height rather than normal role visual-height scaling.
 
 ## Maintenance
 
