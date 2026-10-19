@@ -13516,6 +13516,3866 @@ const kRasterVisualHeightEmByFontFamily = <String, double>{
   'zillaslabhighlight': 1.005112, // Zilla Slab Highlight w400
 };
 
+/// Ascent from the font's hhea table, in em. Flutter's line metrics use it.
+const kAscentEmByFontFamily = <String, double>{
+  'abeezee': 0.920000, // ABeeZee w400
+  'abel': 0.979492, // Abel w400
+  'abhayalibre': 0.839844, // Abhaya Libre w500
+  'aboreto': 0.930000, // Aboreto w400
+  'abrilfatface': 1.058000, // Abril Fatface w400
+  'abyssinicasil': 0.993164, // Abyssinica SIL w400
+  'aclonica': 0.823730, // Aclonica w400
+  'acme': 0.959000, // Acme w400
+  'actor': 0.941000, // Actor w400
+  'adamina': 1.072000, // Adamina w400
+  'adlamdisplay': 1.044922, // ADLaM Display w400
+  'adventpro': 0.964000, // Advent Pro w500
+  'afacad': 1.000000, // Afacad w500
+  'afacadflux': 1.000000, // Afacad Flux w500
+  'agbalumo': 1.200000, // Agbalumo w400
+  'agdasima': 0.983887, // Agdasima w400
+  'aguafinascript': 0.966000, // Aguafina Script w400
+  'agudisplay': 1.190000, // Agu Display w400
+  'akatab': 1.021973, // Akatab w500
+  'akayakanadaka': 0.920000, // Akaya Kanadaka w400
+  'akayatelivigala': 0.920000, // Akaya Telivigala w400
+  'akronim': 0.785000, // Akronim w400
+  'akshar': 0.990000, // Akshar w500
+  'akt': 0.950000, // Akt w500
+  'aladin': 0.905000, // Aladin w400
+  'alansans': 0.990000, // Alan Sans w500
+  'alata': 1.100000, // Alata w400
+  'alatsi': 1.000000, // Alatsi w400
+  'albertsans': 0.950000, // Albert Sans w500
+  'aldrich': 0.720215, // Aldrich w400
+  'alef': 1.009277, // Alef w400
+  'alegreya': 1.016000, // Alegreya w500
+  'alegreyasans': 0.900000, // Alegreya Sans w500
+  'alegreyasanssc': 0.900000, // Alegreya Sans SC w500
+  'alegreyasc': 1.016000, // Alegreya SC w500
+  'aleo': 0.905000, // Aleo w500
+  'alexandria': 0.968000, // Alexandria w500
+  'alexbrush': 0.825000, // Alex Brush w400
+  'alfaslabone': 1.036000, // Alfa Slab One w400
+  'alice': 0.909000, // Alice w400
+  'alienblock': 1.010000, // Alien Block w400
+  'alike': 0.984000, // Alike w400
+  'alikeangular': 0.984000, // Alike Angular w400
+  'alkalami': 1.035000, // Alkalami w400
+  'alkatra': 1.095000, // Alkatra w500
+  'allan': 0.941406, // Allan w400
+  'allerta': 1.032227, // Allerta w400
+  'allertastencil': 1.032227, // Allerta Stencil w400
+  'allison': 0.890000, // Allison w400
+  'allkin': 0.600000, // Allkin w400
+  'allura': 0.800000, // Allura w400
+  'almarai': 0.905000, // Almarai w400
+  'almendra': 0.951000, // Almendra w400
+  'almendradisplay': 0.951000, // Almendra Display w400
+  'almendrasc': 0.939000, // Almendra SC w400
+  'alumnisans': 0.900000, // Alumni Sans w500
+  'alumnisanscollegiateone': 0.900000, // Alumni Sans Collegiate One w400
+  'alumnisansinlineone': 0.900000, // Alumni Sans Inline One w400
+  'alumnisanspinstripe': 0.900000, // Alumni Sans Pinstripe w400
+  'alumnisanssc': 0.900000, // Alumni Sans SC w500
+  'alyamama': 0.900000, // Alyamama w500
+  'amarante': 0.986328, // Amarante w400
+  'amaranth': 0.976000, // Amaranth w400
+  'amarna': 1.025000, // Amarna w500
+  'amaticsc': 1.016000, // Amatic SC w400
+  'amethysta': 0.987305, // Amethysta w400
+  'amiko': 0.928000, // Amiko w400
+  'amiri': 1.124000, // Amiri w400
+  'amiriquran': 1.815000, // Amiri Quran w400
+  'amita': 1.292000, // Amita w400
+  'anaheim': 0.960938, // Anaheim w500
+  'ancizarsans': 0.900000, // Ancizar Sans w500
+  'ancizarserif': 0.900000, // Ancizar Serif w500
+  'andadapro': 0.942000, // Andada Pro w500
+  'andika': 1.220703, // Andika w400
+  'anekbangla': 1.250000, // Anek Bangla w500
+  'anekdevanagari': 1.013000, // Anek Devanagari w500
+  'anekgujarati': 0.987500, // Anek Gujarati w500
+  'anekgurmukhi': 0.750000, // Anek Gurmukhi w500
+  'anekkannada': 1.015000, // Anek Kannada w500
+  'aneklatin': 0.900000, // Anek Latin w500
+  'anekmalayalam': 1.017500, // Anek Malayalam w500
+  'anekodia': 0.980000, // Anek Odia w500
+  'anektamil': 0.981500, // Anek Tamil w500
+  'anektelugu': 0.900000, // Anek Telugu w500
+  'angkor': 1.220703, // Angkor w400
+  'annapurnasil': 0.946777, // Annapurna SIL w400
+  'annieuseyourtelescope': 1.024414, // Annie Use Your Telescope w400
+  'anonymouspro': 0.817871, // Anonymous Pro w400
+  'anta': 0.959961, // Anta w400
+  'antic': 0.940000, // Antic w400
+  'anticdidone': 0.940000, // Antic Didone w400
+  'anticslab': 0.940000, // Antic Slab w400
+  'anton': 1.176270, // Anton w400
+  'antonio': 1.154785, // Antonio w500
+  'antonsc': 1.176270, // Anton SC w400
+  'anuphan': 1.025000, // Anuphan w500
+  'anybody': 0.795000, // Anybody w500
+  'aoboshione': 1.160000, // Aoboshi One w400
+  'arapey': 0.868000, // Arapey w400
+  'arbutus': 0.981445, // Arbutus w400
+  'arbutusslab': 0.981445, // Arbutus Slab w400
+  'architectsdaughter': 0.986328, // Architects Daughter w400
+  'archivo': 0.878000, // Archivo w500
+  'archivoblack': 0.878000, // Archivo Black w400
+  'archivonarrow': 1.035000, // Archivo Narrow w500
+  'arefruqaa': 1.221000, // Aref Ruqaa w400
+  'arefruqaaink': 1.221000, // Aref Ruqaa Ink w400
+  'areyouserious': 0.880000, // Are You Serious w400
+  'arima': 1.073000, // Arima w500
+  'arimo': 0.905273, // Arimo w500
+  'arizonia': 0.900000, // Arizonia w400
+  'armata': 0.976562, // Armata w400
+  'aronesans': 1.060000, // AR One Sans w500
+  'arsenal': 1.000000, // Arsenal w400
+  'arsenalsc': 1.000000, // Arsenal SC w400
+  'artifika': 0.968750, // Artifika w400
+  'arvo': 0.960938, // Arvo w400
+  'arya': 1.265000, // Arya w400
+  'asap': 0.934000, // Asap w500
+  'asar': 1.196000, // Asar w400
+  'asimovian': 1.000000, // Asimovian w400
+  'asset': 0.962402, // Asset w400
+  'assistant': 1.021000, // Assistant w500
+  'astasans': 0.952000, // Asta Sans w500
+  'astloch': 0.951172, // Astloch w400
+  'asul': 0.949000, // Asul w400
+  'athiti': 1.150000, // Athiti w500
+  'atkinsonhyperlegible': 0.950000, // Atkinson Hyperlegible w400
+  'atkinsonhyperlegiblemono': 0.984000, // Atkinson Hyperlegible Mono w500
+  'atkinsonhyperlegiblenext': 0.984000, // Atkinson Hyperlegible Next w500
+  'atma': 1.101000, // Atma w500
+  'atomicage': 1.020996, // Atomic Age w400
+  'aubrey': 0.830000, // Aubrey w400
+  'audiowide': 0.989746, // Audiowide w400
+  'autourone': 0.981445, // Autour One w400
+  'average': 0.953000, // Average w400
+  'averagesans': 1.027000, // Average Sans w400
+  'averiagruesalibre': 0.953125, // Averia Gruesa Libre w400
+  'averialibre': 0.953125, // Averia Libre w400
+  'averiasanslibre': 0.993652, // Averia Sans Libre w400
+  'averiaseriflibre': 0.892578, // Averia Serif Libre w400
+  'azeretmono': 0.937000, // Azeret Mono w500
+  'b612': 0.965000, // B612 w400
+  'b612mono': 0.965000, // B612 Mono w400
+  'babylonica': 0.875000, // Babylonica w400
+  'bacasimeantique': 0.750000, // Bacasime Antique w400
+  'badeendisplay': 1.150000, // Badeen Display w400
+  'badscript': 1.324000, // Bad Script w400
+  'bagelfatone': 1.160000, // Bagel Fat One w400
+  'bahiana': 0.900000, // Bahiana w400
+  'bahianita': 0.962000, // Bahianita w400
+  'baijamjuree': 1.000000, // Bai Jamjuree w500
+  'bakbakone': 1.050000, // Bakbak One w400
+  'ballet': 1.130000, // Ballet w400
+  'baloo2': 1.078000, // Baloo 2 w500
+  'baloobhai2': 1.078000, // Baloo Bhai 2 w500
+  'baloobhaijaan2': 1.080000, // Baloo Bhaijaan 2 w500
+  'baloobhaina2': 1.185000, // Baloo Bhaina 2 w500
+  'baloochettan2': 1.078000, // Baloo Chettan 2 w500
+  'balooda2': 1.095000, // Baloo Da 2 w500
+  'baloopaaji2': 1.157000, // Baloo Paaji 2 w500
+  'balootamma2': 1.078000, // Baloo Tamma 2 w500
+  'balootammudu2': 1.177000, // Baloo Tammudu 2 w500
+  'baloothambi2': 1.078000, // Baloo Thambi 2 w500
+  'balsamiqsans': 0.900000, // Balsamiq Sans w400
+  'balthazar': 0.796000, // Balthazar w400
+  'bangers': 0.883000, // Bangers w400
+  'barlow': 1.000000, // Barlow w500
+  'barlowcondensed': 1.000000, // Barlow Condensed w500
+  'barlowsemicondensed': 1.000000, // Barlow Semi Condensed w500
+  'barriecito': 0.962000, // Barriecito w400
+  'barrio': 0.880000, // Barrio w400
+  'basic': 1.008789, // Basic w400
+  'baskervville': 0.998000, // Baskervville w500
+  'baskervvillesc': 0.998000, // Baskervville SC w500
+  'battambang': 1.220703, // Battambang w400
+  'baumans': 0.942000, // Baumans w400
+  'bayon': 1.220703, // Bayon w400
+  'bbhbartle': 0.950000, // BBH Bartle w400
+  'bbhbogle': 0.950000, // BBH Bogle w400
+  'bbhhegarty': 0.950000, // BBH Hegarty w400
+  'beaurivage': 0.940000, // Beau Rivage w400
+  'bebasneue': 0.900000, // Bebas Neue w400
+  'beiruti': 0.900000, // Beiruti w500
+  'belanosima': 0.895996, // Belanosima w400
+  'belgrano': 0.990000, // Belgrano w400
+  'bellefair': 0.869000, // Bellefair w400
+  'belleza': 0.928000, // Belleza w400
+  'bellota': 0.968000, // Bellota w400
+  'bellotatext': 0.968000, // Bellota Text w400
+  'benchnine': 0.986328, // BenchNine w400
+  'benne': 0.630000, // Benne w400
+  'bentham': 0.858398, // Bentham w400
+  'berkshireswash': 0.979980, // Berkshire Swash w400
+  'besley': 1.250000, // Besley w500
+  'betaniapatmos': 1.038000, // Betania Patmos w400
+  'betaniapatmosgdl': 1.038000, // Betania Patmos GDL w400
+  'betaniapatmosin': 1.038000, // Betania Patmos In w400
+  'betaniapatmosingdl': 1.038000, // Betania Patmos In GDL w400
+  'bethellen': 1.625000, // Beth Ellen w400
+  'bevan': 1.155273, // Bevan w400
+  'bevietnampro': 1.000000, // Be Vietnam Pro w500
+  'bhutukaexpandedone': 0.826000, // BhuTuka Expanded One w400
+  'bigelowrules': 0.906738, // Bigelow Rules w400
+  'bigshotone': 0.869000, // Bigshot One w400
+  'bigshoulders': 0.985500, // Big Shoulders w500
+  'bigshouldersinline': 0.985500, // Big Shoulders Inline w500
+  'bigshouldersstencil': 0.985500, // Big Shoulders Stencil w500
+  'bilbo': 0.850000, // Bilbo w400
+  'bilboswashcaps': 0.850000, // Bilbo Swash Caps w400
+  'biorhyme': 1.127000, // BioRhyme w500
+  'birthstone': 0.950000, // Birthstone w400
+  'birthstonebounce': 0.950000, // Birthstone Bounce w500
+  'biryani': 1.109000, // Biryani w400
+  'bitcount': 0.840000, // Bitcount w500
+  'bitcountgriddouble': 0.840000, // Bitcount Grid Double w500
+  'bitcountgriddoubleink': 0.840000, // Bitcount Grid Double Ink w500
+  'bitcountgridsingle': 0.840000, // Bitcount Grid Single w500
+  'bitcountgridsingleink': 0.840000, // Bitcount Grid Single Ink w500
+  'bitcountink': 0.840000, // Bitcount Ink w500
+  'bitcountpropdouble': 0.840000, // Bitcount Prop Double w500
+  'bitcountpropdoubleink': 0.840000, // Bitcount Prop Double Ink w500
+  'bitcountpropsingle': 0.840000, // Bitcount Prop Single w500
+  'bitcountpropsingleink': 0.840000, // Bitcount Prop Single Ink w500
+  'bitcountsingle': 0.840000, // Bitcount Single w500
+  'bitcountsingleink': 0.840000, // Bitcount Single Ink w500
+  'bitter': 0.935000, // Bitter w500
+  'bizudgothic': 0.879883, // BIZ UDGothic w400
+  'bizudmincho': 0.879883, // BIZ UDMincho w400
+  'bizudpgothic': 0.879883, // BIZ UDPGothic w400
+  'bizudpmincho': 0.879883, // BIZ UDPMincho w400
+  'bjcree': 1.015625, // BJCree w500
+  'blackandwhitepicture': 0.800000, // Black And White Picture w400
+  'blackhansans': 0.790000, // Black Han Sans w400
+  'blackopsone': 0.913574, // Black Ops One w400
+  'blaka': 0.932000, // Blaka w400
+  'blakahollow': 0.932000, // Blaka Hollow w400
+  'blakaink': 0.932000, // Blaka Ink w400
+  'blinker': 0.960000, // Blinker w400
+  'bodonimoda': 1.125000, // Bodoni Moda w500
+  'bodonimodasc': 1.125000, // Bodoni Moda SC w500
+  'bokor': 1.220703, // Bokor w400
+  'boldonse': 1.520000, // Boldonse w400
+  'bonanova': 0.932000, // Bona Nova w400
+  'bonanovasc': 0.932000, // Bona Nova SC w400
+  'bonbon': 0.845000, // Bonbon w400
+  'bonheurroyale': 0.780000, // Bonheur Royale w400
+  'boogaloo': 0.943000, // Boogaloo w400
+  'borel': 0.986000, // Borel w400
+  'bowlbyone': 1.111328, // Bowlby One w400
+  'bowlbyonesc': 1.097656, // Bowlby One SC w400
+  'bpmfhuninn': 0.940000, // Bpmf Huninn w400
+  'bpmfiansui': 0.940000, // Bpmf Iansui w400
+  'bpmfzihikaistd': 0.940000, // Bpmf Zihi Kai Std w400
+  'braahone': 1.018000, // Braah One w400
+  'brawler': 0.971000, // Brawler w400
+  'breeserif': 1.077000, // Bree Serif w400
+  'bricolagegrotesque': 0.930000, // Bricolage Grotesque w500
+  'brunoace': 0.953000, // Bruno Ace w400
+  'brunoacesc': 0.953000, // Bruno Ace SC w400
+  'brygada1918': 0.920000, // Brygada 1918 w500
+  'bubblegumsans': 0.852000, // Bubblegum Sans w400
+  'bubblerone': 0.900000, // Bubbler One w400
+  'buda': 0.896484, // Buda w300
+  'buenard': 1.031000, // Buenard w500
+  'bungee': 1.020000, // Bungee w400
+  'bungeehairline': 1.020000, // Bungee Hairline w400
+  'bungeeinline': 1.020000, // Bungee Inline w400
+  'bungeeoutline': 1.020000, // Bungee Outline w400
+  'bungeeshade': 1.020000, // Bungee Shade w400
+  'bungeespice': 1.020000, // Bungee Spice w400
+  'bungeetint': 1.020000, // Bungee Tint w400
+  'butcherman': 1.269531, // Butcherman w400
+  'butterflykids': 0.895508, // Butterfly Kids w400
+  'bytesized': 0.750000, // Bytesized w400
+  'cabin': 0.965000, // Cabin w500
+  'cabinsketch': 0.873000, // Cabin Sketch w400
+  'cactusclassicalserif': 0.995000, // Cactus Classical Serif w400
+  'caesardressing': 0.993164, // Caesar Dressing w400
+  'cagliostro': 0.998000, // Cagliostro w400
+  'cairo': 1.303000, // Cairo w500
+  'cairoplay': 1.303000, // Cairo Play w500
+  'caladea': 0.900000, // Caladea w400
+  'calistoga': 1.000000, // Calistoga w400
+  'calligraffitti': 0.962891, // Calligraffitti w400
+  'calsans': 1.000000, // Cal Sans w400
+  'cambay': 1.000000, // Cambay w400
+  'cambo': 0.879000, // Cambo w400
+  'candal': 1.086914, // Candal w400
+  'cantarell': 1.093750, // Cantarell w400
+  'cantataone': 0.996094, // Cantata One w400
+  'cantoraone': 1.000000, // Cantora One w400
+  'caprasimo': 0.917969, // Caprasimo w400
+  'capriola': 0.972656, // Capriola w400
+  'caramel': 0.900000, // Caramel w400
+  'carattere': 0.800000, // Carattere w400
+  'cardo': 0.990234, // Cardo w400
+  'carlito': 0.952148, // Carlito w400
+  'carme': 0.950195, // Carme w400
+  'carroisgothic': 0.922000, // Carrois Gothic w400
+  'carroisgothicsc': 0.922000, // Carrois Gothic SC w400
+  'carterone': 1.105469, // Carter One w400
+  'cascadiacode': 0.927734, // Cascadia Code w500
+  'cascadiamono': 0.927734, // Cascadia Mono w500
+  'castoro': 0.755000, // Castoro w400
+  'castorotitling': 0.755000, // Castoro Titling w400
+  'catamaran': 1.100000, // Catamaran w500
+  'caudex': 0.993164, // Caudex w400
+  'cause': 0.950000, // Cause w500
+  'caveat': 0.960000, // Caveat w500
+  'caveatbrush': 0.960000, // Caveat Brush w400
+  'cedarvillecursive': 1.249023, // Cedarville Cursive w400
+  'cevicheone': 0.806000, // Ceviche One w400
+  'chakrapetch': 0.992000, // Chakra Petch w500
+  'changa': 1.227000, // Changa w500
+  'changaone': 0.882000, // Changa One w400
+  'chango': 0.995000, // Chango w400
+  'charissil': 1.196289, // Charis SIL w400
+  'charm': 1.115000, // Charm w400
+  'charmonman': 1.200000, // Charmonman w400
+  'chathura': 1.020000, // Chathura w400
+  'chauphilomeneone': 1.033000, // Chau Philomene One w400
+  'chelaone': 0.942000, // Chela One w400
+  'chelseamarket': 1.004883, // Chelsea Market w400
+  'chenla': 1.220703, // Chenla w400
+  'cherish': 0.850000, // Cherish w400
+  'cherrybombone': 1.160000, // Cherry Bomb One w400
+  'cherrycreamsoda': 0.982422, // Cherry Cream Soda w400
+  'cherryswash': 1.025000, // Cherry Swash w400
+  'chewy': 0.979492, // Chewy w400
+  'chicle': 0.915000, // Chicle w400
+  'chilanka': 0.732422, // Chilanka w400
+  'chironheihk': 0.970000, // Chiron Hei HK w500
+  'chivo': 0.940000, // Chivo w500
+  'chivomono': 0.940000, // Chivo Mono w500
+  'chocolateclassicalsans': 1.160000, // Chocolate Classical Sans w400
+  'chokokutai': 1.160000, // Chokokutai w400
+  'chonburi': 0.950000, // Chonburi w400
+  'cinzel': 0.976000, // Cinzel w500
+  'cinzeldecorative': 0.976000, // Cinzel Decorative w400
+  'clickerscript': 0.926758, // Clicker Script w400
+  'climatecrisis': 1.070000, // Climate Crisis w400
+  'coda': 1.037109, // Coda w400
+  'codystar': 0.930664, // Codystar w400
+  'coiny': 0.750000, // Coiny w400
+  'combo': 0.907000, // Combo w400
+  'comfortaa': 0.881000, // Comfortaa w500
+  'comforter': 0.930000, // Comforter w400
+  'comforterbrush': 0.930000, // Comforter Brush w400
+  'comicneue': 0.900000, // Comic Neue w400
+  'comicrelief': 1.054688, // Comic Relief w400
+  'comingsoon': 1.028320, // Coming Soon w400
+  'comme': 0.955566, // Comme w500
+  'commissioner': 1.017000, // Commissioner w500
+  'concertone': 0.979004, // Concert One w400
+  'condiment': 0.882000, // Condiment w400
+  'content': 1.220703, // Content w400
+  'contrailone': 0.946777, // Contrail One w400
+  'convergence': 0.943000, // Convergence w400
+  'cookie': 0.789000, // Cookie w400
+  'copse': 0.972168, // Copse w400
+  'coralpixels': 1.039000, // Coral Pixels w400
+  'corben': 1.379883, // Corben w400
+  'corinthia': 0.760000, // Corinthia w400
+  'cormorant': 0.924000, // Cormorant w500
+  'cormorantgaramond': 0.924000, // Cormorant Garamond w500
+  'cormorantinfant': 0.924000, // Cormorant Infant w500
+  'cormorantsc': 0.924000, // Cormorant SC w500
+  'cormorantunicase': 0.924000, // Cormorant Unicase w500
+  'cormorantupright': 0.924000, // Cormorant Upright w500
+  'cossettetexte': 1.000000, // Cossette Texte w400
+  'cossettetitre': 1.000000, // Cossette Titre w400
+  'courgette': 0.976562, // Courgette w400
+  'courierprime': 0.781250, // Courier Prime w400
+  'cousine': 0.832520, // Cousine w400
+  'coustard': 1.022949, // Coustard w400
+  'coveredbyyourgrace': 0.971680, // Covered By Your Grace w400
+  'craftygirls': 0.977539, // Crafty Girls w400
+  'creepster': 0.951172, // Creepster w400
+  'creteround': 0.990000, // Crete Round w400
+  'crimsonpro': 0.896484, // Crimson Pro w500
+  'crimsontext': 0.949219, // Crimson Text w400
+  'croissantone': 1.071000, // Croissant One w400
+  'crushed': 0.888672, // Crushed w400
+  'cuprum': 0.895000, // Cuprum w500
+  'cutefont': 0.710000, // Cute Font w400
+  'cutive': 0.771484, // Cutive w400
+  'cutivemono': 0.828613, // Cutive Mono w400
+  'daibannasil': 0.822754, // Dai Banna SIL w500
+  'damion': 1.009766, // Damion w400
+  'dancingscript': 0.920000, // Dancing Script w500
+  'danfo': 1.050000, // Danfo w400
+  'dangrek': 1.220703, // Dangrek w400
+  'darkergrotesque': 1.060000, // Darker Grotesque w500
+  'darumadropone': 1.160000, // Darumadrop One w400
+  'datatype': 1.000000, // Datatype w500
+  'davidlibre': 0.780762, // David Libre w500
+  'dawningofanewday': 1.124023, // Dawning of a New Day w400
+  'daysone': 0.996094, // Days One w400
+  'dekko': 0.910000, // Dekko w400
+  'delagothicone': 1.160000, // Dela Gothic One w400
+  'delicioushandrawn': 1.000000, // Delicious Handrawn w400
+  'delius': 0.986000, // Delius w400
+  'deliusswashcaps': 0.986000, // Delius Swash Caps w400
+  'deliusunicase': 1.016000, // Delius Unicase w400
+  'dellarespira': 1.072266, // Della Respira w400
+  'denkone': 1.034180, // Denk One w400
+  'devonshire': 0.981000, // Devonshire w400
+  'dhurjati': 1.265517, // Dhurjati w400
+  'didactgothic': 1.046000, // Didact Gothic w400
+  'diphylleia': 1.160000, // Diphylleia w400
+  'diplomata': 0.930000, // Diplomata w400
+  'diplomatasc': 0.930000, // Diplomata SC w400
+  'dmmono': 0.992000, // DM Mono w500
+  'dmsans': 0.992000, // DM Sans w500
+  'dmserifdisplay': 1.036000, // DM Serif Display w400
+  'dmseriftext': 1.036000, // DM Serif Text w400
+  'dohyeon': 0.800000, // Do Hyeon w400
+  'dokdo': 0.696000, // Dokdo w400
+  'domine': 0.900000, // Domine w500
+  'donegalone': 0.976562, // Donegal One w400
+  'dongle': 0.850000, // Dongle w400
+  'doppioone': 1.005859, // Doppio One w400
+  'dorsa': 0.857000, // Dorsa w400
+  'dosis': 1.027000, // Dosis w500
+  'dotgothic16': 1.160000, // DotGothic16 w400
+  'doto': 0.950000, // Doto w500
+  'drsugiyama': 1.009000, // Dr Sugiyama w400
+  'durusans': 0.986328, // Duru Sans w400
+  'dynalight': 0.898438, // Dynalight w400
+  'dynapuff': 0.965000, // DynaPuff w500
+  'eaglelake': 1.181641, // Eagle Lake w400
+  'eastseadokdo': 0.706000, // East Sea Dokdo w400
+  'eater': 1.415039, // Eater w400
+  'ebgaramond': 1.007000, // EB Garamond w500
+  'economica': 0.949000, // Economica w400
+  'eczar': 1.143000, // Eczar w500
+  'eduauvicwantarrows': 1.288000, // Edu AU VIC WA NT Arrows w500
+  'eduauvicwantdots': 1.288000, // Edu AU VIC WA NT Dots w500
+  'eduauvicwantguides': 1.288000, // Edu AU VIC WA NT Guides w500
+  'eduauvicwanthand': 1.288000, // Edu AU VIC WA NT Hand w500
+  'eduauvicwantpre': 1.288000, // Edu AU VIC WA NT Pre w500
+  'edunswactcursive': 1.321000, // Edu NSW ACT Cursive w500
+  'edunswactfoundation': 1.016000, // Edu NSW ACT Foundation w500
+  'edunswacthandpre': 1.321000, // Edu NSW ACT Hand Pre w500
+  'eduqldbeginner': 1.016000, // Edu QLD Beginner w500
+  'eduqldhand': 1.363500, // Edu QLD Hand w500
+  'edusabeginner': 1.016000, // Edu SA Beginner w500
+  'edusahand': 1.288000, // Edu SA Hand w500
+  'edutasbeginner': 1.016000, // Edu TAS Beginner w500
+  'eduvicwantbeginner': 1.016000, // Edu VIC WA NT Beginner w500
+  'eduvicwanthand': 1.288000, // Edu VIC WA NT Hand w500
+  'eduvicwanthandpre': 1.288000, // Edu VIC WA NT Hand Pre w500
+  'electrolize': 0.911000, // Electrolize w400
+  'elmessiri': 1.019000, // El Messiri w500
+  'elmssans': 1.000000, // Elms Sans w500
+  'elsie': 0.878000, // Elsie w400
+  'elsieswashcaps': 0.878000, // Elsie Swash Caps w400
+  'emblemaone': 0.926758, // Emblema One w400
+  'emilyscandy': 0.972656, // Emilys Candy w400
+  'encodesans': 1.030000, // Encode Sans w500
+  'encodesanssc': 1.030000, // Encode Sans SC w500
+  'engagement': 0.899902, // Engagement w400
+  'englebert': 1.007812, // Englebert w400
+  'enriqueta': 1.077000, // Enriqueta w500
+  'ephesis': 0.900000, // Ephesis w400
+  'epilogue': 0.790000, // Epilogue w500
+  'epundasans': 0.985000, // Epunda Sans w500
+  'epundaslab': 0.985000, // Epunda Slab w500
+  'ericaone': 1.153000, // Erica One w400
+  'esteban': 0.984000, // Esteban w400
+  'estedad': 1.030000, // Estedad w500
+  'estonia': 0.900000, // Estonia w400
+  'euphoriascript': 0.811200, // Euphoria Script w400
+  'ewert': 0.944000, // Ewert w400
+  'exile': 1.000000, // Exile w400
+  'exo': 1.002000, // Exo w500
+  'exo2': 0.999000, // Exo 2 w500
+  'expletussans': 1.033000, // Expletus Sans w500
+  'explora': 0.850000, // Explora w400
+  'facultyglyphic': 1.037000, // Faculty Glyphic w400
+  'fahkwang': 1.008000, // Fahkwang w500
+  'familjengrotesk': 1.025000, // Familjen Grotesk w500
+  'fanwoodtext': 0.918213, // Fanwood Text w400
+  'farro': 0.800000, // Farro w500
+  'farsan': 0.711000, // Farsan w400
+  'fascinate': 1.037598, // Fascinate w400
+  'fascinateinline': 1.037598, // Fascinate Inline w400
+  'fasterone': 0.898000, // Faster One w400
+  'fasthand': 1.220703, // Fasthand w400
+  'faunaone': 0.987000, // Fauna One w400
+  'faustina': 1.043000, // Faustina w500
+  'federant': 0.942000, // Federant w400
+  'federo': 0.919434, // Federo w400
+  'felipa': 0.966000, // Felipa w400
+  'fenix': 0.879000, // Fenix w400
+  'festive': 1.100000, // Festive w400
+  'figtree': 0.950000, // Figtree w500
+  'fingerpaint': 1.097000, // Finger Paint w400
+  'finlandicaheadline': 0.950000, // Finlandica Headline w500
+  'finlandicatext': 0.950000, // Finlandica Text w500
+  'firacode': 0.990000, // Fira Code w500
+  'firamono': 0.935000, // Fira Mono w500
+  'firasans': 0.935000, // Fira Sans w500
+  'firasanscondensed': 0.935000, // Fira Sans Condensed w500
+  'firasansextracondensed': 0.935000, // Fira Sans Extra Condensed w500
+  'fjallaone': 1.008789, // Fjalla One w400
+  'fjordone': 0.947266, // Fjord One w400
+  'flamenco': 0.800000, // Flamenco w400
+  'flavors': 0.991211, // Flavors w400
+  'fleurdeleah': 0.920000, // Fleur De Leah w400
+  'flowblock': 1.000000, // Flow Block w400
+  'flowcircular': 1.000000, // Flow Circular w400
+  'flowrounded': 1.000000, // Flow Rounded w400
+  'foldit': 0.900000, // Foldit w500
+  'fondamento': 1.005859, // Fondamento w400
+  'fontdinerswanky': 1.022461, // Fontdiner Swanky w400
+  'forum': 0.856000, // Forum w400
+  'fragmentmono': 0.950000, // Fragment Mono w400
+  'francoisone': 1.089000, // Francois One w400
+  'frankruhllibre': 0.957000, // Frank Ruhl Libre w500
+  'fraunces': 0.978000, // Fraunces w500
+  'freckleface': 0.950195, // Freckle Face w400
+  'frederickathegreat': 0.977539, // Fredericka the Great w400
+  'fredoka': 0.974000, // Fredoka w500
+  'freehand': 1.220703, // Freehand w400
+  'freeman': 1.050000, // Freeman w400
+  'fresca': 0.869000, // Fresca w400
+  'frijole': 1.049805, // Frijole w400
+  'fruktur': 0.986328, // Fruktur w400
+  'fugazone': 1.046000, // Fugaz One w400
+  'fuggles': 0.850000, // Fuggles w400
+  'funneldisplay': 1.000000, // Funnel Display w500
+  'funnelsans': 1.000000, // Funnel Sans w500
+  'fustat': 1.000000, // Fustat w500
+  'fuzzybubbles': 0.900000, // Fuzzy Bubbles w400
+  'gabarito': 0.940000, // Gabarito w500
+  'gabriela': 0.986000, // Gabriela w400
+  'gaegu': 0.760000, // Gaegu w400
+  'gafata': 0.921000, // Gafata w400
+  'gajrajone': 1.065000, // Gajraj One w400
+  'galada': 1.035000, // Galada w400
+  'galdeano': 0.820000, // Galdeano w400
+  'galindo': 0.983398, // Galindo w400
+  'gamaamli': 1.000000, // Ga Maamli w400
+  'gamjaflower': 0.781250, // Gamja Flower w400
+  'gantari': 0.950000, // Gantari w500
+  'gasoekone': 1.160000, // Gasoek One w400
+  'gayathri': 0.732422, // Gayathri w400
+  'geist': 1.005000, // Geist w500
+  'geistmono': 1.005000, // Geist Mono w500
+  'geistpixel': 1.005000, // Geist Pixel w400
+  'gelasio': 0.927734, // Gelasio w500
+  'gemunulibre': 0.884000, // Gemunu Libre w500
+  'genos': 0.900000, // Genos w500
+  'gentiumbookplus': 1.098633, // Gentium Book Plus w400
+  'gentiumplus': 1.098633, // Gentium Plus w400
+  'geo': 0.801758, // Geo w400
+  'geologica': 0.975000, // Geologica w500
+  'geom': 1.015000, // Geom w500
+  'georama': 0.968000, // Georama w500
+  'geostar': 0.922000, // Geostar w400
+  'geostarfill': 0.922000, // Geostar Fill w400
+  'germaniaone': 0.911000, // Germania One w400
+  'gfsdidot': 0.947000, // GFS Didot w400
+  'gfsneohellenic': 0.873000, // GFS Neohellenic w400
+  'gideonroman': 0.900000, // Gideon Roman w400
+  'gidole': 0.957031, // Gidole w400
+  'gidugu': 1.151246, // Gidugu w400
+  'gildadisplay': 0.892000, // Gilda Display w400
+  'girassol': 0.944000, // Girassol w400
+  'giveyouglory': 0.996094, // Give You Glory w400
+  'glassantiqua': 0.835000, // Glass Antiqua w400
+  'glegoo': 1.267000, // Glegoo w400
+  'gloock': 0.975000, // Gloock w400
+  'gloriahallelujah': 1.405273, // Gloria Hallelujah w400
+  'glory': 0.900000, // Glory w500
+  'gluten': 0.645000, // Gluten w500
+  'goblinone': 0.937500, // Goblin One w400
+  'gochihand': 0.770996, // Gochi Hand w400
+  'goldman': 0.900000, // Goldman w400
+  'golostext': 0.980000, // Golos Text w500
+  'googlesans': 0.966000, // Google Sans w500
+  'googlesanscode': 0.966000, // Google Sans Code w500
+  'googlesansflex': 0.966000, // Google Sans Flex w500
+  'gorditas': 0.954000, // Gorditas w400
+  'gothica1': 0.797852, // Gothic A1 w500
+  'gotu': 1.115000, // Gotu w400
+  'goudybookletter1911': 0.959961, // Goudy Bookletter 1911 w400
+  'gowunbatang': 1.160000, // Gowun Batang w400
+  'gowundodum': 1.160000, // Gowun Dodum w400
+  'graduate': 0.953000, // Graduate w400
+  'grandhotel': 0.946289, // Grand Hotel w400
+  'grandifloraone': 1.160000, // Grandiflora One w400
+  'grandstander': 0.732500, // Grandstander w500
+  'grapenuts': 0.900000, // Grape Nuts w400
+  'gravitasone': 0.945801, // Gravitas One w400
+  'greatvibes': 0.851000, // Great Vibes w400
+  'grechenfuemen': 0.900000, // Grechen Fuemen w400
+  'grenze': 1.100000, // Grenze w500
+  'grenzegotisch': 1.100000, // Grenze Gotisch w500
+  'greyqo': 0.900000, // Grey Qo w400
+  'griffy': 0.960938, // Griffy w400
+  'gruppo': 0.800293, // Gruppo w400
+  'gudea': 0.972000, // Gudea w400
+  'gugi': 0.858000, // Gugi w400
+  'gulzar': 1.500000, // Gulzar w400
+  'gupter': 0.900000, // Gupter w500
+  'gurajada': 1.209346, // Gurajada w400
+  'gveretlevin': 0.990000, // Gveret Levin w400
+  'gwendolyn': 0.880000, // Gwendolyn w400
+  'habibi': 0.976562, // Habibi w400
+  'hachimarupop': 1.160000, // Hachi Maru Pop w400
+  'hahmlet': 1.160000, // Hahmlet w500
+  'halant': 1.089000, // Halant w500
+  'hammersmithone': 0.900391, // Hammersmith One w400
+  'hanalei': 1.037109, // Hanalei w400
+  'hanaleifill': 1.037109, // Hanalei Fill w400
+  'handjet': 0.882353, // Handjet w500
+  'handlee': 0.934000, // Handlee w400
+  'hankengrotesk': 1.000000, // Hanken Grotesk w500
+  'hanuman': 0.976562, // Hanuman w500
+  'happymonkey': 0.950000, // Happy Monkey w400
+  'harmattan': 1.057617, // Harmattan w500
+  'headlandone': 0.997559, // Headland One w400
+  'hedvigletterssans': 1.020000, // Hedvig Letters Sans w400
+  'hedviglettersserif': 1.020000, // Hedvig Letters Serif w400
+  'heebo': 1.047852, // Heebo w500
+  'hennypenny': 1.134766, // Henny Penny w400
+  'heptaslab': 0.988000, // Hepta Slab w500
+  'herrvonmuellerhoff': 0.925000, // Herr Von Muellerhoff w400
+  'himelody': 0.663086, // Hi Melody w400
+  'hinamincho': 1.160000, // Hina Mincho w400
+  'hind': 1.055000, // Hind w500
+  'hindguntur': 1.115000, // Hind Guntur w500
+  'hindmadurai': 0.982000, // Hind Madurai w500
+  'hindmysuru': 0.989000, // Hind Mysuru w500
+  'hindsiliguri': 1.116000, // Hind Siliguri w500
+  'hindvadodara': 1.125000, // Hind Vadodara w500
+  'holtwoodonesc': 1.199707, // Holtwood One SC w400
+  'homemadeapple': 1.295898, // Homemade Apple w400
+  'homenaje': 0.892000, // Homenaje w400
+  'honk': 0.900000, // Honk w400
+  'hostgrotesk': 1.015000, // Host Grotesk w500
+  'hubballi': 0.765000, // Hubballi w400
+  'hubotsans': 1.090000, // Hubot Sans w500
+  'huninn': 0.940000, // Huninn w400
+  'hurricane': 0.950000, // Hurricane w400
+  'iansui': 0.940000, // Iansui w400
+  'ibarrarealnova': 0.950000, // Ibarra Real Nova w500
+  'ibmplexmono': 1.025000, // IBM Plex Mono w500
+  'ibmplexsans': 1.025000, // IBM Plex Sans w500
+  'ibmplexsansarabic': 1.085000, // IBM Plex Sans Arabic w500
+  'ibmplexsansdevanagari': 1.070000, // IBM Plex Sans Devanagari w500
+  'ibmplexsanshebrew': 1.025000, // IBM Plex Sans Hebrew w500
+  'ibmplexsansjp': 1.060000, // IBM Plex Sans JP w500
+  'ibmplexsanskr': 1.085000, // IBM Plex Sans KR w500
+  'ibmplexsansthai': 1.116000, // IBM Plex Sans Thai w500
+  'ibmplexsansthailooped': 1.116000, // IBM Plex Sans Thai Looped w500
+  'ibmplexserif': 1.025000, // IBM Plex Serif w500
+  'iceberg': 0.936000, // Iceberg w400
+  'iceland': 0.750000, // Iceland w400
+  'idiqlat': 1.090332, // Idiqlat w400
+  'imbue': 0.950000, // Imbue w500
+  'imfelldoublepica': 0.939453, // IM Fell Double Pica w400
+  'imfelldoublepicasc': 0.939453, // IM Fell Double Pica SC w400
+  'imfelldwpica': 0.912109, // IM Fell DW Pica w400
+  'imfelldwpicasc': 0.912109, // IM Fell DW Pica SC w400
+  'imfellenglish': 0.905273, // IM Fell English w400
+  'imfellenglishsc': 0.905273, // IM Fell English SC w400
+  'imfellfrenchcanon': 0.912109, // IM Fell French Canon w400
+  'imfellfrenchcanonsc': 0.912109, // IM Fell French Canon SC w400
+  'imfellgreatprimer': 0.948242, // IM Fell Great Primer w400
+  'imfellgreatprimersc': 0.948242, // IM Fell Great Primer SC w400
+  'imperialscript': 0.880000, // Imperial Script w400
+  'imprima': 0.919000, // Imprima w400
+  'inclusivesans': 0.950000, // Inclusive Sans w500
+  'inconsolata': 0.859000, // Inconsolata w500
+  'inder': 0.996094, // Inder w400
+  'indieflower': 0.970703, // Indie Flower w400
+  'ingriddarling': 0.860000, // Ingrid Darling w400
+  'inika': 1.006000, // Inika w400
+  'inknutantiqua': 1.703000, // Inknut Antiqua w500
+  'inriasans': 0.976000, // Inria Sans w400
+  'inriaserif': 0.976000, // Inria Serif w400
+  'inspiration': 0.870000, // Inspiration w400
+  'instrumentsans': 0.970000, // Instrument Sans w500
+  'instrumentserif': 0.990000, // Instrument Serif w400
+  'intelonemono': 1.090000, // Intel One Mono w500
+  'inter': 0.968750, // Inter w500
+  'intertight': 0.968750, // Inter Tight w500
+  'iosevkacharon': 1.015000, // Iosevka Charon w500
+  'iosevkacharonmono': 1.015000, // Iosevka Charon Mono w500
+  'irishgrover': 0.942383, // Irish Grover w400
+  'islandmoments': 0.750000, // Island Moments w400
+  'istokweb': 1.006348, // Istok Web w400
+  'italiana': 0.928000, // Italiana w400
+  'italianno': 0.800000, // Italianno w400
+  'itim': 0.950000, // Itim w400
+  'jacquard12': 0.761905, // Jacquard 12 w400
+  'jacquard12charted': 0.761905, // Jacquard 12 Charted w400
+  'jacquard24': 0.790698, // Jacquard 24 w400
+  'jacquard24charted': 0.790698, // Jacquard 24 Charted w400
+  'jacquardabastarda9': 1.004808, // Jacquarda Bastarda 9 w400
+  'jacquardabastarda9charted': 1.004808, // Jacquarda Bastarda 9 Charted w400
+  'jacquesfrancois': 1.022949, // Jacques Francois w400
+  'jacquesfrancoisshadow': 1.022949, // Jacques Francois Shadow w400
+  'jaini': 1.048000, // Jaini w400
+  'jainipurva': 1.048000, // Jaini Purva w400
+  'jaldi': 1.147461, // Jaldi w400
+  'jaro': 1.000000, // Jaro w400
+  'jersey10': 0.803571, // Jersey 10 w400
+  'jersey10charted': 0.803571, // Jersey 10 Charted w400
+  'jersey15': 0.777778, // Jersey 15 w400
+  'jersey15charted': 0.777778, // Jersey 15 Charted w400
+  'jersey20': 0.794118, // Jersey 20 w400
+  'jersey20charted': 0.794118, // Jersey 20 Charted w400
+  'jersey25': 0.803252, // Jersey 25 w400
+  'jersey25charted': 0.803252, // Jersey 25 Charted w400
+  'jetbrainsmono': 1.020000, // JetBrains Mono w500
+  'jimnightshade': 0.904297, // Jim Nightshade w400
+  'joan': 1.000000, // Joan w400
+  'jockeyone': 1.079000, // Jockey One w400
+  'jollylodger': 0.964844, // Jolly Lodger w400
+  'jomhuria': 0.613333, // Jomhuria w400
+  'jomolhari': 1.218750, // Jomolhari w400
+  'josefinsans': 0.750000, // Josefin Sans w500
+  'josefinslab': 0.750000, // Josefin Slab w500
+  'jost': 1.070000, // Jost w500
+  'jotione': 1.003000, // Joti One w400
+  'jua': 0.800000, // Jua w400
+  'judson': 0.902000, // Judson w400
+  'julee': 0.894000, // Julee w400
+  'juliussansone': 0.863000, // Julius Sans One w400
+  'junge': 0.928223, // Junge w400
+  'jura': 0.965000, // Jura w500
+  'justanotherhand': 0.703125, // Just Another Hand w400
+  'justmeagaindownhere': 1.069000, // Just Me Again Down Here w400
+  'k2d': 1.048000, // K2D w500
+  'kablammo': 1.039000, // Kablammo w400
+  'kadwa': 1.313965, // Kadwa w400
+  'kaiseidecol': 1.160000, // Kaisei Decol w500
+  'kaiseiharunoumi': 1.160000, // Kaisei HarunoUmi w500
+  'kaiseiopti': 1.160000, // Kaisei Opti w500
+  'kaiseitokumin': 1.160000, // Kaisei Tokumin w500
+  'kalam': 1.063000, // Kalam w400
+  'kalnia': 1.045000, // Kalnia w500
+  'kalniaglaze': 1.045000, // Kalnia Glaze w500
+  'kameron': 0.890137, // Kameron w500
+  'kanchenjunga': 1.220703, // Kanchenjunga w500
+  'kanit': 1.100000, // Kanit w500
+  'kantumruypro': 0.920000, // Kantumruy Pro w500
+  'kapakana': 0.680000, // Kapakana w400
+  'karantina': 0.859000, // Karantina w400
+  'karla': 0.917000, // Karla w500
+  'karma': 0.945000, // Karma w500
+  'katibeh': 0.490000, // Katibeh w400
+  'kaushanscript': 1.084000, // Kaushan Script w400
+  'kavivanar': 1.065000, // Kavivanar w400
+  'kavoon': 0.986328, // Kavoon w400
+  'kayphodu': 0.949219, // Kay Pho Du w500
+  'kdamthmorpro': 1.146000, // Kdam Thmor Pro w400
+  'keaniaone': 0.989000, // Keania One w400
+  'kedebideri': 1.000000, // Kedebideri w500
+  'kellyslab': 0.962000, // Kelly Slab w400
+  'kenia': 0.750000, // Kenia w400
+  'khand': 1.050000, // Khand w500
+  'khula': 1.000000, // Khula w400
+  'kings': 0.950000, // Kings w400
+  'kiranghaerang': 0.750000, // Kirang Haerang w400
+  'kiteone': 1.094000, // Kite One w400
+  'kiwimaru': 1.160000, // Kiwi Maru w500
+  'kleeone': 1.160000, // Klee One w400
+  'knewave': 1.169000, // Knewave w400
+  'kodchasan': 1.024000, // Kodchasan w500
+  'kodemono': 0.980000, // Kode Mono w500
+  'koho': 1.045000, // KoHo w500
+  'kohsantepheap': 1.000977, // Koh Santepheap w400
+  'kolkerbrush': 0.750000, // Kolker Brush w400
+  'konkhmersleokchher': 1.220703, // Konkhmer Sleokchher w400
+  'kosugi': 0.879883, // Kosugi w400
+  'kosugimaru': 0.879883, // Kosugi Maru w400
+  'kottaone': 0.915000, // Kotta One w400
+  'koulen': 1.220703, // Koulen w400
+  'kranky': 0.954102, // Kranky w400
+  'kreon': 0.974000, // Kreon w500
+  'kristi': 0.896484, // Kristi w400
+  'kronaone': 0.991211, // Krona One w400
+  'krub': 1.007000, // Krub w500
+  'kufam': 0.900000, // Kufam w500
+  'kulimpark': 0.931000, // Kulim Park w400
+  'kumarone': 1.137000, // Kumar One w400
+  'kumaroneoutline': 1.137000, // Kumar One Outline w400
+  'kumbhsans': 0.986328, // Kumbh Sans w500
+  'kurale': 1.095000, // Kurale w400
+  'labelleaurore': 1.077148, // La Belle Aurore w400
+  'labrada': 1.145000, // Labrada w500
+  'lacquer': 1.000000, // Lacquer w400
+  'laila': 1.098000, // Laila w500
+  'lakkireddy': 0.916016, // Lakki Reddy w400
+  'lalezar': 0.979000, // Lalezar w400
+  'lancelot': 0.778809, // Lancelot w400
+  'langar': 0.739000, // Langar w400
+  'lateef': 0.945801, // Lateef w500
+  'lato': 0.987000, // Lato w400
+  'lavishlyyours': 1.100000, // Lavishly Yours w400
+  'leaguegothic': 0.967500, // League Gothic w400
+  'leaguescript': 0.716146, // League Script w400
+  'leaguespartan': 0.700000, // League Spartan w500
+  'leckerlione': 1.032000, // Leckerli One w400
+  'ledger': 1.062000, // Ledger w400
+  'lekton': 0.750000, // Lekton w400
+  'lemon': 1.019000, // Lemon w400
+  'lemonada': 1.345000, // Lemonada w500
+  'lexend': 1.000000, // Lexend w500
+  'lexenddeca': 1.000000, // Lexend Deca w500
+  'lexendexa': 1.000000, // Lexend Exa w500
+  'lexendgiga': 1.000000, // Lexend Giga w500
+  'lexendmega': 1.000000, // Lexend Mega w500
+  'lexendpeta': 1.000000, // Lexend Peta w500
+  'lexendtera': 1.000000, // Lexend Tera w500
+  'lexendzetta': 1.000000, // Lexend Zetta w500
+  'libertinuskeyboard': 0.894000, // Libertinus Keyboard w400
+  'libertinusmath': 0.894000, // Libertinus Math w400
+  'libertinusmono': 0.894000, // Libertinus Mono w400
+  'libertinussans': 0.894000, // Libertinus Sans w400
+  'libertinusserif': 0.894000, // Libertinus Serif w400
+  'libertinusserifdisplay': 0.894000, // Libertinus Serif Display w400
+  'librebarcode128': 0.600000, // Libre Barcode 128 w400
+  'librebarcode128text': 0.600000, // Libre Barcode 128 Text w400
+  'librebarcode39': 0.600000, // Libre Barcode 39 w400
+  'librebarcode39extended': 0.600000, // Libre Barcode 39 Extended w400
+  'librebarcode39extendedtext': 0.600000, // Libre Barcode 39 Extended Text w400
+  'librebarcode39text': 0.600000, // Libre Barcode 39 Text w400
+  'librebarcodeean13text': 0.820312, // Libre Barcode EAN13 Text w400
+  'librebaskerville': 0.970000, // Libre Baskerville w500
+  'librebodoni': 0.924000, // Libre Bodoni w500
+  'librecaslondisplay': 0.970000, // Libre Caslon Display w400
+  'librecaslontext': 0.970000, // Libre Caslon Text w400
+  'librefranklin': 0.966000, // Libre Franklin w500
+  'licorice': 0.850000, // Licorice w400
+  'lifesavers': 0.972000, // Life Savers w400
+  'lilex': 0.999000, // Lilex w500
+  'lilitaone': 0.923000, // Lilita One w400
+  'lilyscriptone': 1.017000, // Lily Script One w400
+  'limelight': 0.910156, // Limelight w400
+  'lindenhill': 0.886963, // Linden Hill w400
+  'linefont': 1.200000, // Linefont w500
+  'lineseedjp': 0.932000, // LINE Seed JP w400
+  'lisubosa': 0.800000, // Lisu Bosa w500
+  'liter': 1.030000, // Liter w400
+  'literata': 1.177000, // Literata w500
+  'liujianmaocao': 0.880000, // Liu Jian Mao Cao w400
+  'livvic': 1.005000, // Livvic w500
+  'lobster': 1.000000, // Lobster w400
+  'lobstertwo': 1.000000, // Lobster Two w400
+  'londrinaoutline': 0.945000, // Londrina Outline w400
+  'londrinashadow': 0.945000, // Londrina Shadow w400
+  'londrinasketch': 0.945000, // Londrina Sketch w400
+  'londrinasolid': 0.945000, // Londrina Solid w400
+  'longcang': 0.880000, // Long Cang w400
+  'lora': 1.006000, // Lora w500
+  'lovedbytheking': 1.170898, // Loved by the King w400
+  'lovelight': 0.900000, // Love Light w400
+  'loversquarrel': 0.726000, // Lovers Quarrel w400
+  'loveyalikeasister': 0.919922, // Love Ya Like A Sister w400
+  'luckiestguy': 0.703125, // Luckiest Guy w400
+  'lugrasimo': 1.036133, // Lugrasimo w400
+  'lumanosimo': 1.024414, // Lumanosimo w400
+  'lunasima': 0.966797, // Lunasima w400
+  'lusitana': 0.956000, // Lusitana w400
+  'lustria': 0.955000, // Lustria w400
+  'luxuriousroman': 0.950000, // Luxurious Roman w400
+  'luxuriousscript': 0.850000, // Luxurious Script w400
+  'lxgwmarkergothic': 0.982000, // LXGW Marker Gothic w400
+  'lxgwwenkaimonotc': 0.928000, // LXGW WenKai Mono TC w400
+  'lxgwwenkaitc': 1.032000, // LXGW WenKai TC w400
+  'macondo': 0.888000, // Macondo w400
+  'macondoswashcaps': 0.888000, // Macondo Swash Caps w400
+  'mada': 0.950000, // Mada w500
+  'madimione': 1.010000, // Madimi One w400
+  'magra': 0.968000, // Magra w400
+  'maidenorange': 0.703125, // Maiden Orange w400
+  'maitree': 1.150000, // Maitree w500
+  'majormonodisplay': 0.900000, // Major Mono Display w400
+  'mako': 1.045410, // Mako w400
+  'mali': 1.050000, // Mali w500
+  'mallanna': 1.270115, // Mallanna w400
+  'maname': 1.200000, // Maname w400
+  'mandali': 1.375949, // Mandali w400
+  'manjari': 0.732422, // Manjari w400
+  'manrope': 1.066000, // Manrope w500
+  'mansalva': 1.112000, // Mansalva w400
+  'manuale': 0.980000, // Manuale w500
+  'manufacturingconsent': 0.916667, // Manufacturing Consent w400
+  'marcellus': 0.974121, // Marcellus w400
+  'marcellussc': 0.974121, // Marcellus SC w400
+  'marckscript': 0.864000, // Marck Script w400
+  'margarine': 1.013184, // Margarine w400
+  'marhey': 1.100000, // Marhey w500
+  'markazitext': 0.838867, // Markazi Text w500
+  'markoone': 0.985840, // Marko One w400
+  'marmelad': 0.972000, // Marmelad w400
+  'martel': 1.125000, // Martel w400
+  'martelsans': 1.150000, // Martel Sans w400
+  'martianmono': 1.000000, // Martian Mono w500
+  'marvel': 0.951000, // Marvel w400
+  'mashanzheng': 0.880000, // Ma Shan Zheng w400
+  'matangi': 1.200000, // Matangi w500
+  'mate': 0.958000, // Mate w400
+  'matemasie': 1.250000, // Matemasie w400
+  'matesc': 0.958000, // Mate SC w400
+  'mavenpro': 0.965000, // Maven Pro w500
+  'mclaren': 1.082031, // McLaren w400
+  'meaculpa': 1.000000, // Mea Culpa w400
+  'meddon': 1.396484, // Meddon w400
+  'medievalsharp': 0.864746, // MedievalSharp w400
+  'medulaone': 0.846000, // Medula One w400
+  'meerainimai': 0.969727, // Meera Inimai w400
+  'megrim': 0.880000, // Megrim w400
+  'meiescript': 0.885742, // Meie Script w400
+  'menbere': 1.229000, // Menbere w500
+  'meowscript': 0.830000, // Meow Script w400
+  'merienda': 1.102000, // Merienda w500
+  'merriweather': 0.984000, // Merriweather w500
+  'merriweathersans': 0.984000, // Merriweather Sans w500
+  'metal': 1.269531, // Metal w400
+  'metalmania': 0.942383, // Metal Mania w400
+  'metamorphous': 0.962891, // Metamorphous w400
+  'metrophobic': 1.008301, // Metrophobic w400
+  'michroma': 1.156250, // Michroma w400
+  'micro5': 0.721212, // Micro 5 w400
+  'micro5charted': 0.721212, // Micro 5 Charted w400
+  'milonga': 0.990000, // Milonga w400
+  'miltonian': 0.918000, // Miltonian w400
+  'miltoniantattoo': 0.918000, // Miltonian Tattoo w400
+  'mina': 1.075000, // Mina w400
+  'mingzat': 1.427000, // Mingzat w400
+  'miniver': 0.995117, // Miniver w400
+  'mirandasans': 0.990000, // Miranda Sans w500
+  'miriamlibre': 0.969000, // Miriam Libre w500
+  'mirza': 0.547000, // Mirza w500
+  'missfajardose': 0.859000, // Miss Fajardose w400
+  'mitr': 1.150000, // Mitr w500
+  'mochiypopone': 1.160000, // Mochiy Pop One w400
+  'mochiypoppone': 1.160000, // Mochiy Pop P One w400
+  'modak': 0.993652, // Modak w400
+  'modernantiqua': 0.886230, // Modern Antiqua w400
+  'moderustic': 1.000000, // Moderustic w500
+  'mogra': 0.750000, // Mogra w400
+  'mohave': 0.990000, // Mohave w500
+  'moiraione': 1.160000, // Moirai One w400
+  'molengo': 0.941406, // Molengo w400
+  'momosignature': 1.145000, // Momo Signature w400
+  'momotrustdisplay': 1.025000, // Momo Trust Display w400
+  'momotrustsans': 1.025000, // Momo Trust Sans w500
+  'monasans': 1.090000, // Mona Sans w500
+  'monda': 1.201660, // Monda w500
+  'monofett': 0.977051, // Monofett w400
+  'monomakh': 0.932000, // Monomakh w400
+  'monomaniacone': 1.160000, // Monomaniac One w400
+  'monoton': 1.155273, // Monoton w400
+  'monsieurladoulaise': 1.048000, // Monsieur La Doulaise w400
+  'montaga': 0.978000, // Montaga w400
+  'montaguslab': 0.982000, // Montagu Slab w500
+  'montecarlo': 1.200000, // MonteCarlo w400
+  'montenegringothicone': 0.950000, // Montenegrin Gothic One w400
+  'montez': 0.894043, // Montez w400
+  'montserrat': 0.968000, // Montserrat w500
+  'montserratalternates': 0.968000, // Montserrat Alternates w500
+  'montserratunderline': 0.968000, // Montserrat Underline w500
+  'moolahlah': 0.920000, // Moo Lah Lah w400
+  'mooli': 0.964000, // Mooli w400
+  'moondance': 0.970000, // Moon Dance w400
+  'moul': 1.220703, // Moul w400
+  'moulpali': 1.416016, // Moulpali w400
+  'mountainsofchristmas': 1.041016, // Mountains of Christmas w400
+  'mousememoirs': 0.936035, // Mouse Memoirs w400
+  'mozillaheadline': 0.945000, // Mozilla Headline w500
+  'mozillatext': 0.945000, // Mozilla Text w500
+  'mplus1': 1.160000, // M PLUS 1 w500
+  'mplus1code': 1.000000, // M PLUS 1 Code w500
+  'mplus1p': 1.075000, // M PLUS 1p w500
+  'mplus2': 1.160000, // M PLUS 2 w500
+  'mpluscodelatin': 1.000000, // M PLUS Code Latin w500
+  'mplusrounded1c': 1.075000, // M PLUS Rounded 1c w500
+  'mplusu': 1.160000, // M PLUS U w500
+  'mrbedfort': 1.015000, // Mr Bedfort w400
+  'mrdafoe': 0.981000, // Mr Dafoe w400
+  'mrdehaviland': 0.875000, // Mr De Haviland w400
+  'mrssaintdelafield': 0.906000, // Mrs Saint Delafield w400
+  'mrssheppards': 0.959000, // Mrs Sheppards w400
+  'msmadi': 0.900000, // Ms Madi w400
+  'mukta': 1.130000, // Mukta w500
+  'muktamahee': 1.130000, // Mukta Mahee w500
+  'muktamalar': 1.130000, // Mukta Malar w500
+  'muktavaani': 1.130000, // Mukta Vaani w500
+  'mulish': 1.005000, // Mulish w500
+  'murecho': 1.160000, // Murecho w500
+  'museomoderno': 1.145000, // MuseoModerno w500
+  'mynerve': 0.930000, // Mynerve w400
+  'mysoul': 0.975000, // My Soul w400
+  'mysteryquest': 0.965820, // Mystery Quest w400
+  'nabla': 1.263000, // Nabla w400
+  'namdhinggo': 0.781250, // Namdhinggo w500
+  'nanumbrushscript': 0.630000, // Nanum Brush Script w400
+  'nanumgothic': 0.844000, // Nanum Gothic w400
+  'nanumgothiccoding': 0.800000, // Nanum Gothic Coding w400
+  'nanummyeongjo': 0.799805, // Nanum Myeongjo w400
+  'nanumpenscript': 0.800000, // Nanum Pen Script w400
+  'narnoor': 1.314000, // Narnoor w500
+  'natasans': 1.050000, // Nata Sans w500
+  'nationalpark': 1.030000, // National Park w500
+  'neonderthaw': 1.050000, // Neonderthaw w400
+  'nerkoone': 0.894000, // Nerko One w400
+  'neucha': 0.768555, // Neucha w400
+  'neuton': 1.028320, // Neuton w400
+  'newamsterdam': 0.925000, // New Amsterdam w400
+  'newrocker': 0.946000, // New Rocker w400
+  'newscycle': 1.256836, // News Cycle w400
+  'newsreader': 0.735000, // Newsreader w500
+  'newtegomin': 1.160000, // New Tegomin w400
+  'niconne': 0.926758, // Niconne w400
+  'niramit': 1.105000, // Niramit w500
+  'nixieone': 0.926000, // Nixie One w400
+  'nobile': 0.845215, // Nobile w500
+  'nokora': 0.931152, // Nokora w500
+  'norican': 1.022949, // Norican w400
+  'nosifer': 1.091797, // Nosifer w400
+  'notable': 1.143000, // Notable w400
+  'nothingyoucoulddo': 0.936523, // Nothing You Could Do w400
+  'noticiatext': 1.075195, // Noticia Text w400
+  'notocoloremoji': 0.927734, // Noto Color Emoji w400
+  'notoemoji': 0.927734, // Noto Emoji w500
+  'notokufiarabic': 1.282000, // Noto Kufi Arabic w500
+  'notomusic': 1.389000, // Noto Music w400
+  'notonaskharabic': 1.069000, // Noto Naskh Arabic w500
+  'notonastaliqurdu': 1.904000, // Noto Nastaliq Urdu w500
+  'notorashihebrew': 0.896000, // Noto Rashi Hebrew w500
+  'notosans': 1.069000, // Noto Sans w500
+  'notosansadlam': 1.069000, // Noto Sans Adlam w500
+  'notosansadlamunjoined': 1.069000, // Noto Sans Adlam Unjoined w500
+  'notosansanatolianhieroglyphs':
+      1.153000, // Noto Sans Anatolian Hieroglyphs w400
+  'notosansarabic': 1.374000, // Noto Sans Arabic w500
+  'notosansarmenian': 1.068000, // Noto Sans Armenian w500
+  'notosansavestan': 1.069000, // Noto Sans Avestan w400
+  'notosansbalinese': 1.363000, // Noto Sans Balinese w500
+  'notosansbamum': 1.069000, // Noto Sans Bamum w500
+  'notosansbassavah': 1.069000, // Noto Sans Bassa Vah w500
+  'notosansbatak': 1.069000, // Noto Sans Batak w400
+  'notosansbengali': 0.917000, // Noto Sans Bengali w500
+  'notosansbhaiksuki': 0.960000, // Noto Sans Bhaiksuki w400
+  'notosansbrahmi': 1.069000, // Noto Sans Brahmi w400
+  'notosansbuginese': 1.069000, // Noto Sans Buginese w400
+  'notosansbuhid': 1.069000, // Noto Sans Buhid w400
+  'notosanscanadianaboriginal': 1.069000, // Noto Sans Canadian Aboriginal w500
+  'notosanscarian': 1.069000, // Noto Sans Carian w400
+  'notosanscaucasianalbanian': 0.976000, // Noto Sans Caucasian Albanian w400
+  'notosanschakma': 1.140000, // Noto Sans Chakma w400
+  'notosanscham': 1.117000, // Noto Sans Cham w500
+  'notosanscherokee': 1.069000, // Noto Sans Cherokee w500
+  'notosanschorasmian': 1.069000, // Noto Sans Chorasmian w400
+  'notosanscoptic': 1.069000, // Noto Sans Coptic w400
+  'notosanscuneiform': 1.596000, // Noto Sans Cuneiform w400
+  'notosanscypriot': 1.069000, // Noto Sans Cypriot w400
+  'notosanscyprominoan': 1.069000, // Noto Sans Cypro Minoan w400
+  'notosansdeseret': 1.069000, // Noto Sans Deseret w400
+  'notosansdevanagari': 0.896000, // Noto Sans Devanagari w500
+  'notosansdisplay': 1.069000, // Noto Sans Display w500
+  'notosansduployan': 1.069000, // Noto Sans Duployan w400
+  'notosansegyptianhieroglyphs':
+      1.324000, // Noto Sans Egyptian Hieroglyphs w400
+  'notosanselbasan': 0.847000, // Noto Sans Elbasan w400
+  'notosanselymaic': 0.920000, // Noto Sans Elymaic w400
+  'notosansethiopic': 1.069000, // Noto Sans Ethiopic w500
+  'notosansgeorgian': 1.068000, // Noto Sans Georgian w500
+  'notosansglagolitic': 1.069000, // Noto Sans Glagolitic w400
+  'notosansgothic': 1.069000, // Noto Sans Gothic w400
+  'notosansgrantha': 1.290000, // Noto Sans Grantha w400
+  'notosansgujarati': 0.896000, // Noto Sans Gujarati w500
+  'notosansgunjalagondi': 1.014000, // Noto Sans Gunjala Gondi w500
+  'notosansgurmukhi': 0.896000, // Noto Sans Gurmukhi w500
+  'notosanshanifirohingya': 1.069000, // Noto Sans Hanifi Rohingya w500
+  'notosanshanunoo': 1.069000, // Noto Sans Hanunoo w400
+  'notosanshatran': 1.069000, // Noto Sans Hatran w400
+  'notosanshebrew': 1.068000, // Noto Sans Hebrew w500
+  'notosanshk': 1.160000, // Noto Sans HK w500
+  'notosansimperialaramaic': 1.069000, // Noto Sans Imperial Aramaic w400
+  'notosansindicsiyaqnumbers': 1.215000, // Noto Sans Indic Siyaq Numbers w400
+  'notosansinscriptionalpahlavi':
+      1.069000, // Noto Sans Inscriptional Pahlavi w400
+  'notosansinscriptionalparthian':
+      1.069000, // Noto Sans Inscriptional Parthian w400
+  'notosansjavanese': 1.120000, // Noto Sans Javanese w500
+  'notosansjp': 1.160000, // Noto Sans JP w500
+  'notosanskaithi': 1.077000, // Noto Sans Kaithi w400
+  'notosanskannada': 0.809000, // Noto Sans Kannada w500
+  'notosanskawi': 1.100000, // Noto Sans Kawi w500
+  'notosanskayahli': 1.069000, // Noto Sans Kayah Li w500
+  'notosanskharoshthi': 1.069000, // Noto Sans Kharoshthi w400
+  'notosanskhmer': 1.069000, // Noto Sans Khmer w500
+  'notosanskhojki': 1.409000, // Noto Sans Khojki w400
+  'notosanskhudawadi': 0.944000, // Noto Sans Khudawadi w400
+  'notosanskr': 1.160000, // Noto Sans KR w500
+  'notosanslao': 1.183000, // Noto Sans Lao w500
+  'notosanslaolooped': 1.250000, // Noto Sans Lao Looped w500
+  'notosanslepcha': 1.069000, // Noto Sans Lepcha w400
+  'notosanslimbu': 1.069000, // Noto Sans Limbu w400
+  'notosanslineara': 1.069000, // Noto Sans Linear A w400
+  'notosanslinearb': 1.069000, // Noto Sans Linear B w400
+  'notosanslisu': 1.069000, // Noto Sans Lisu w500
+  'notosanslycian': 1.069000, // Noto Sans Lycian w400
+  'notosanslydian': 1.069000, // Noto Sans Lydian w400
+  'notosansmahajani': 0.757000, // Noto Sans Mahajani w400
+  'notosansmalayalam': 0.864000, // Noto Sans Malayalam w500
+  'notosansmandaic': 0.724000, // Noto Sans Mandaic w400
+  'notosansmanichaean': 0.790000, // Noto Sans Manichaean w400
+  'notosansmarchen': 1.107000, // Noto Sans Marchen w400
+  'notosansmasaramgondi': 1.000000, // Noto Sans Masaram Gondi w400
+  'notosansmath': 1.069000, // Noto Sans Math w400
+  'notosansmayannumerals': 1.069000, // Noto Sans Mayan Numerals w400
+  'notosansmedefaidrin': 1.069000, // Noto Sans Medefaidrin w500
+  'notosansmeeteimayek': 1.069000, // Noto Sans Meetei Mayek w500
+  'notosansmendekikakui': 1.030000, // Noto Sans Mende Kikakui w400
+  'notosansmeroitic': 0.928000, // Noto Sans Meroitic w400
+  'notosansmiao': 1.142000, // Noto Sans Miao w400
+  'notosansmodi': 0.891000, // Noto Sans Modi w400
+  'notosansmongolian': 1.457000, // Noto Sans Mongolian w400
+  'notosansmono': 1.069000, // Noto Sans Mono w500
+  'notosansmro': 1.069000, // Noto Sans Mro w400
+  'notosansmultani': 1.069000, // Noto Sans Multani w400
+  'notosansmyanmar': 1.324000, // Noto Sans Myanmar w500
+  'notosansnabataean': 1.069000, // Noto Sans Nabataean w400
+  'notosansnagmundari': 1.069000, // Noto Sans Nag Mundari w500
+  'notosansnandinagari': 0.900000, // Noto Sans Nandinagari w400
+  'notosansnewa': 1.036000, // Noto Sans Newa w400
+  'notosansnewtailue': 1.069000, // Noto Sans New Tai Lue w500
+  'notosansnko': 1.069000, // Noto Sans NKo w400
+  'notosansnkounjoined': 1.069000, // Noto Sans NKo Unjoined w500
+  'notosansnushu': 1.069000, // Noto Sans Nushu w400
+  'notosansogham': 1.069000, // Noto Sans Ogham w400
+  'notosansolchiki': 1.069000, // Noto Sans Ol Chiki w500
+  'notosansoldhungarian': 0.859000, // Noto Sans Old Hungarian w400
+  'notosansolditalic': 1.069000, // Noto Sans Old Italic w400
+  'notosansoldnortharabian': 1.069000, // Noto Sans Old North Arabian w400
+  'notosansoldpermic': 1.069000, // Noto Sans Old Permic w400
+  'notosansoldpersian': 1.069000, // Noto Sans Old Persian w400
+  'notosansoldsogdian': 1.069000, // Noto Sans Old Sogdian w400
+  'notosansoldsoutharabian': 1.069000, // Noto Sans Old South Arabian w400
+  'notosansoldturkic': 1.069000, // Noto Sans Old Turkic w400
+  'notosansoriya': 1.069000, // Noto Sans Oriya w500
+  'notosansosage': 1.069000, // Noto Sans Osage w400
+  'notosansosmanya': 1.069000, // Noto Sans Osmanya w400
+  'notosanspahawhhmong': 1.069000, // Noto Sans Pahawh Hmong w400
+  'notosanspalmyrene': 1.069000, // Noto Sans Palmyrene w400
+  'notosanspaucinhau': 1.069000, // Noto Sans Pau Cin Hau w400
+  'notosansphagspa': 1.069000, // Noto Sans PhagsPa w400
+  'notosansphoenician': 1.069000, // Noto Sans Phoenician w400
+  'notosanspsalterpahlavi': 0.737000, // Noto Sans Psalter Pahlavi w400
+  'notosansrejang': 1.069000, // Noto Sans Rejang w400
+  'notosansrunic': 1.069000, // Noto Sans Runic w400
+  'notosanssamaritan': 1.069000, // Noto Sans Samaritan w400
+  'notosanssaurashtra': 1.069000, // Noto Sans Saurashtra w400
+  'notosanssc': 1.160000, // Noto Sans SC w500
+  'notosanssharada': 0.925000, // Noto Sans Sharada w400
+  'notosansshavian': 1.069000, // Noto Sans Shavian w400
+  'notosanssiddham': 1.000000, // Noto Sans Siddham w400
+  'notosanssignwriting': 0.802000, // Noto Sans SignWriting w400
+  'notosanssinhala': 1.011000, // Noto Sans Sinhala w500
+  'notosanssogdian': 1.069000, // Noto Sans Sogdian w400
+  'notosanssorasompeng': 1.069000, // Noto Sans Sora Sompeng w500
+  'notosanssoyombo': 1.239000, // Noto Sans Soyombo w400
+  'notosanssundanese': 1.069000, // Noto Sans Sundanese w500
+  'notosanssunuwar': 1.069000, // Noto Sans Sunuwar w400
+  'notosanssylotinagri': 1.069000, // Noto Sans Syloti Nagri w400
+  'notosanssymbols': 1.480000, // Noto Sans Symbols w500
+  'notosanssymbols2': 1.069000, // Noto Sans Symbols 2 w400
+  'notosanssyriac': 0.926000, // Noto Sans Syriac w500
+  'notosanssyriaceastern': 0.926000, // Noto Sans Syriac Eastern w500
+  'notosanssyriacwestern': 0.926000, // Noto Sans Syriac Western w500
+  'notosanstagalog': 1.069000, // Noto Sans Tagalog w400
+  'notosanstagbanwa': 1.069000, // Noto Sans Tagbanwa w400
+  'notosanstaile': 1.069000, // Noto Sans Tai Le w400
+  'notosanstaitham': 1.069000, // Noto Sans Tai Tham w500
+  'notosanstaiviet': 1.069000, // Noto Sans Tai Viet w400
+  'notosanstakri': 0.955000, // Noto Sans Takri w400
+  'notosanstamil': 0.870000, // Noto Sans Tamil w500
+  'notosanstamilsupplement': 0.870000, // Noto Sans Tamil Supplement w400
+  'notosanstangsa': 1.069000, // Noto Sans Tangsa w500
+  'notosanstc': 1.160000, // Noto Sans TC w500
+  'notosanstelugu': 0.869000, // Noto Sans Telugu w500
+  'notosansthaana': 1.069000, // Noto Sans Thaana w500
+  'notosansthai': 1.061000, // Noto Sans Thai w500
+  'notosansthailooped': 1.250000, // Noto Sans Thai Looped w500
+  'notosanstifinagh': 1.069000, // Noto Sans Tifinagh w400
+  'notosanstirhuta': 1.026000, // Noto Sans Tirhuta w400
+  'notosansugaritic': 0.743000, // Noto Sans Ugaritic w400
+  'notosansvai': 1.069000, // Noto Sans Vai w400
+  'notosansvithkuqi': 1.069000, // Noto Sans Vithkuqi w500
+  'notosanswancho': 1.096000, // Noto Sans Wancho w400
+  'notosanswarangciti': 1.042000, // Noto Sans Warang Citi w400
+  'notosansyi': 1.069000, // Noto Sans Yi w400
+  'notosanszanabazarsquare': 1.621000, // Noto Sans Zanabazar Square w400
+  'notoserif': 1.069000, // Noto Serif w500
+  'notoserifahom': 0.980000, // Noto Serif Ahom w400
+  'notoserifarmenian': 1.068000, // Noto Serif Armenian w500
+  'notoserifbalinese': 1.069000, // Noto Serif Balinese w400
+  'notoserifbengali': 1.092000, // Noto Serif Bengali w500
+  'notoserifdevanagari': 0.930000, // Noto Serif Devanagari w500
+  'notoserifdisplay': 1.069000, // Noto Serif Display w500
+  'notoserifdivesakuru': 1.069000, // Noto Serif Dives Akuru w400
+  'notoserifdogra': 1.130000, // Noto Serif Dogra w400
+  'notoserifethiopic': 1.069000, // Noto Serif Ethiopic w500
+  'notoserifgeorgian': 1.068000, // Noto Serif Georgian w500
+  'notoserifgrantha': 1.290000, // Noto Serif Grantha w400
+  'notoserifgujarati': 0.997000, // Noto Serif Gujarati w500
+  'notoserifgurmukhi': 1.006000, // Noto Serif Gurmukhi w500
+  'notoserifhebrew': 0.896000, // Noto Serif Hebrew w500
+  'notoserifhentaigana': 1.151000, // Noto Serif Hentaigana w500
+  'notoserifhk': 1.151000, // Noto Serif HK w500
+  'notoserifjp': 1.151000, // Noto Serif JP w500
+  'notoserifkannada': 0.910000, // Noto Serif Kannada w500
+  'notoserifkhitansmallscript': 2.300000, // Noto Serif Khitan Small Script w400
+  'notoserifkhmer': 1.069000, // Noto Serif Khmer w500
+  'notoserifkhojki': 1.409000, // Noto Serif Khojki w500
+  'notoserifkr': 1.151000, // Noto Serif KR w500
+  'notoseriflao': 1.174000, // Noto Serif Lao w500
+  'notoserifmakasar': 1.069000, // Noto Serif Makasar w400
+  'notoserifmalayalam': 0.864000, // Noto Serif Malayalam w500
+  'notoserifmyanmar': 1.239000, // Noto Serif Myanmar w500
+  'notoserifnphmong': 1.068000, // Noto Serif NP Hmong w500
+  'notoserifolduyghur': 1.069000, // Noto Serif Old Uyghur w400
+  'notoseriforiya': 0.917000, // Noto Serif Oriya w500
+  'notoserifottomansiyaq': 1.069000, // Noto Serif Ottoman Siyaq w400
+  'notoserifsc': 1.151000, // Noto Serif SC w500
+  'notoserifsinhala': 0.997000, // Noto Serif Sinhala w500
+  'notoseriftamil': 1.069000, // Noto Serif Tamil w500
+  'notoseriftangut': 0.856000, // Noto Serif Tangut w400
+  'notoseriftc': 1.151000, // Noto Serif TC w500
+  'notoseriftelugu': 0.869000, // Noto Serif Telugu w500
+  'notoserifthai': 1.064000, // Noto Serif Thai w500
+  'notoseriftibetan': 1.466000, // Noto Serif Tibetan w500
+  'notoseriftodhri': 1.043945, // Noto Serif Todhri w400
+  'notoseriftoto': 0.925000, // Noto Serif Toto w500
+  'notoserifvithkuqi': 1.069000, // Noto Serif Vithkuqi w500
+  'notoserifyezidi': 1.068000, // Noto Serif Yezidi w500
+  'nototraditionalnushu': 1.055000, // Noto Traditional Nushu w500
+  'notoznamennymusicalnotation':
+      0.995000, // Noto Znamenny Musical Notation w400
+  'novacut': 0.959961, // Nova Cut w400
+  'novaflat': 0.959961, // Nova Flat w400
+  'novamono': 1.081543, // Nova Mono w400
+  'novaoval': 0.959961, // Nova Oval w400
+  'novaround': 0.959961, // Nova Round w400
+  'novascript': 0.959961, // Nova Script w400
+  'novaslim': 0.959961, // Nova Slim w400
+  'novasquare': 0.959961, // Nova Square w400
+  'ntr': 1.263672, // NTR w400
+  'numans': 0.904785, // Numans w400
+  'nunito': 1.011000, // Nunito w500
+  'nunitosans': 1.011000, // Nunito Sans w500
+  'nuosusil': 1.074219, // Nuosu SIL w400
+  'odibeesans': 0.858000, // Odibee Sans w400
+  'odormeanchey': 1.220703, // Odor Mean Chey w400
+  'offside': 0.996000, // Offside w400
+  'oi': 1.070000, // Oi w400
+  'ojuju': 1.130000, // Ojuju w500
+  'oldenburg': 0.986328, // Oldenburg w400
+  'oldstandardtt': 0.762000, // Old Standard TT w400
+  'ole': 0.880000, // Ole w400
+  'oleoscript': 1.004000, // Oleo Script w400
+  'oleoscriptswashcaps': 1.004000, // Oleo Script Swash Caps w400
+  'onest': 0.970000, // Onest w500
+  'ooohbaby': 0.900000, // Oooh Baby w400
+  'opensans': 1.068848, // Open Sans w500
+  'oranienbaum': 0.895000, // Oranienbaum w400
+  'orbit': 1.160000, // Orbit w400
+  'orbitron': 1.011000, // Orbitron w500
+  'oregano': 0.964355, // Oregano w400
+  'orelegaone': 0.804688, // Orelega One w400
+  'orienta': 0.960000, // Orienta w400
+  'originalsurfer': 0.994141, // Original Surfer w400
+  'oswald': 1.193000, // Oswald w500
+  'outfit': 1.000000, // Outfit w500
+  'overlock': 0.966000, // Overlock w400
+  'overlocksc': 0.966000, // Overlock SC w400
+  'overpass': 0.883000, // Overpass w500
+  'overpassmono': 0.883000, // Overpass Mono w500
+  'overtherainbow': 1.378906, // Over the Rainbow w400
+  'ovo': 0.864258, // Ovo w400
+  'oxanium': 0.790000, // Oxanium w500
+  'oxygen': 1.026855, // Oxygen w400
+  'oxygenmono': 0.983887, // Oxygen Mono w400
+  'pacifico': 1.303000, // Pacifico w400
+  'padauk': 0.986328, // Padauk w400
+  'padyakkeexpandedone': 0.813000, // Padyakke Expanded One w400
+  'palanquin': 1.320000, // Palanquin w500
+  'palanquindark': 1.320000, // Palanquin Dark w500
+  'palettemosaic': 1.160000, // Palette Mosaic w400
+  'pangolin': 0.937000, // Pangolin w400
+  'paprika': 1.145000, // Paprika w400
+  'parastoo': 0.966263, // Parastoo w500
+  'parisienne': 0.915527, // Parisienne w400
+  'parkinsans': 1.050000, // Parkinsans w500
+  'passeroone': 0.888672, // Passero One w400
+  'passionone': 0.835000, // Passion One w400
+  'passionsconflict': 0.750000, // Passions Conflict w400
+  'pathwayextreme': 1.070000, // Pathway Extreme w500
+  'pathwaygothicone': 0.954000, // Pathway Gothic One w400
+  'patrickhand': 1.042000, // Patrick Hand w400
+  'patrickhandsc': 1.042000, // Patrick Hand SC w400
+  'pattaya': 1.008301, // Pattaya w400
+  'patuaone': 0.972000, // Patua One w400
+  'pavanam': 0.952000, // Pavanam w400
+  'paytoneone': 1.113000, // Paytone One w400
+  'peddana': 0.937333, // Peddana w400
+  'peralta': 0.978516, // Peralta w400
+  'permanentmarker': 1.109375, // Permanent Marker w400
+  'petemoss': 0.800000, // Petemoss w400
+  'petitformalscript': 0.992676, // Petit Formal Script w400
+  'petrona': 0.858000, // Petrona w500
+  'philosopher': 0.900000, // Philosopher w400
+  'phudu': 1.025000, // Phudu w500
+  'piazzolla': 1.110000, // Piazzolla w500
+  'piedra': 0.973000, // Piedra w400
+  'pinyonscript': 0.863281, // Pinyon Script w400
+  'pirataone': 1.006000, // Pirata One w400
+  'pixelifysans': 0.920000, // Pixelify Sans w500
+  'plaster': 0.976562, // Plaster w400
+  'platypi': 1.125000, // Platypi w500
+  'play': 0.937000, // Play w400
+  'playball': 0.950000, // Playball w400
+  'playfair': 0.885484, // Playfair w500
+  'playfairdisplay': 1.082000, // Playfair Display w500
+  'playfairdisplaysc': 1.082000, // Playfair Display SC w400
+  'playpensans': 1.170000, // Playpen Sans w500
+  'playpensansarabic': 1.100000, // Playpen Sans Arabic w500
+  'playpensansdeva': 1.280000, // Playpen Sans Deva w500
+  'playpensanshebrew': 1.070000, // Playpen Sans Hebrew w500
+  'playpensansthai': 1.363000, // Playpen Sans Thai w500
+  'playwritear': 1.508000, // Playwrite AR w400
+  'playwritearguides': 1.508000, // Playwrite AR Guides w400
+  'playwriteat': 1.275000, // Playwrite AT w400
+  'playwriteatguides': 1.275000, // Playwrite AT Guides w400
+  'playwriteaunsw': 1.428000, // Playwrite AU NSW w400
+  'playwriteaunswguides': 1.428000, // Playwrite AU NSW Guides w400
+  'playwriteauqld': 1.428000, // Playwrite AU QLD w400
+  'playwriteauqldguides': 1.428000, // Playwrite AU QLD Guides w400
+  'playwriteausa': 1.413000, // Playwrite AU SA w400
+  'playwriteausaguides': 1.413000, // Playwrite AU SA Guides w400
+  'playwriteautas': 1.428000, // Playwrite AU TAS w400
+  'playwriteautasguides': 1.428000, // Playwrite AU TAS Guides w400
+  'playwriteauvic': 1.428000, // Playwrite AU VIC w400
+  'playwriteauvicguides': 1.428000, // Playwrite AU VIC Guides w400
+  'playwritebevlg': 1.428000, // Playwrite BE VLG w400
+  'playwritebevlgguides': 1.428000, // Playwrite BE VLG Guides w400
+  'playwritebewal': 1.924000, // Playwrite BE WAL w400
+  'playwritebewalguides': 1.924000, // Playwrite BE WAL Guides w400
+  'playwritebr': 1.588000, // Playwrite BR w400
+  'playwritebrguides': 1.588000, // Playwrite BR Guides w400
+  'playwriteca': 1.423000, // Playwrite CA w400
+  'playwritecaguides': 1.423000, // Playwrite CA Guides w400
+  'playwritecl': 1.591000, // Playwrite CL w400
+  'playwriteclguides': 1.591000, // Playwrite CL Guides w400
+  'playwriteco': 1.452000, // Playwrite CO w400
+  'playwritecoguides': 1.452000, // Playwrite CO Guides w400
+  'playwritecu': 1.569000, // Playwrite CU w400
+  'playwritecuguides': 1.569000, // Playwrite CU Guides w400
+  'playwritecz': 1.410000, // Playwrite CZ w400
+  'playwriteczguides': 1.410000, // Playwrite CZ Guides w400
+  'playwritedegrund': 1.330000, // Playwrite DE Grund w400
+  'playwritedegrundguides': 1.330000, // Playwrite DE Grund Guides w400
+  'playwritedela': 1.330000, // Playwrite DE LA w400
+  'playwritedelaguides': 1.330000, // Playwrite DE LA Guides w400
+  'playwritedesas': 1.291000, // Playwrite DE SAS w400
+  'playwritedesasguides': 1.291000, // Playwrite DE SAS Guides w400
+  'playwritedeva': 1.402000, // Playwrite DE VA w400
+  'playwritedevaguides': 1.402000, // Playwrite DE VA Guides w400
+  'playwritedkloopet': 1.275000, // Playwrite DK Loopet w400
+  'playwritedkloopetguides': 1.275000, // Playwrite DK Loopet Guides w400
+  'playwritedkuloopet': 1.275000, // Playwrite DK Uloopet w400
+  'playwritedkuloopetguides': 1.275000, // Playwrite DK Uloopet Guides w400
+  'playwritees': 1.428000, // Playwrite ES w400
+  'playwriteesdeco': 1.428000, // Playwrite ES Deco w400
+  'playwriteesdecoguides': 1.428000, // Playwrite ES Deco Guides w400
+  'playwriteesguides': 1.428000, // Playwrite ES Guides w400
+  'playwritefrmoderne': 1.550000, // Playwrite FR Moderne w400
+  'playwritefrmoderneguides': 1.550000, // Playwrite FR Moderne Guides w400
+  'playwritefrtrad': 1.927000, // Playwrite FR Trad w400
+  'playwritefrtradguides': 1.927000, // Playwrite FR Trad Guides w400
+  'playwritegbj': 1.275000, // Playwrite GB J w400
+  'playwritegbjguides': 1.275000, // Playwrite GB J Guides w400
+  'playwritegbs': 1.275000, // Playwrite GB S w400
+  'playwritegbsguides': 1.275000, // Playwrite GB S Guides w400
+  'playwritehr': 1.280000, // Playwrite HR w400
+  'playwritehrguides': 1.280000, // Playwrite HR Guides w400
+  'playwritehrlijeva': 1.280000, // Playwrite HR Lijeva w400
+  'playwritehrlijevaguides': 1.280000, // Playwrite HR Lijeva Guides w400
+  'playwritehu': 1.362000, // Playwrite HU w400
+  'playwritehuguides': 1.362000, // Playwrite HU Guides w400
+  'playwriteid': 1.964000, // Playwrite ID w400
+  'playwriteidguides': 1.964000, // Playwrite ID Guides w400
+  'playwriteie': 1.405000, // Playwrite IE w400
+  'playwriteieguides': 1.405000, // Playwrite IE Guides w400
+  'playwritein': 1.456000, // Playwrite IN w400
+  'playwriteinguides': 1.456000, // Playwrite IN Guides w400
+  'playwriteis': 1.275000, // Playwrite IS w400
+  'playwriteisguides': 1.275000, // Playwrite IS Guides w400
+  'playwriteitmoderna': 1.275000, // Playwrite IT Moderna w400
+  'playwriteitmodernaguides': 1.275000, // Playwrite IT Moderna Guides w400
+  'playwriteittrad': 1.378000, // Playwrite IT Trad w400
+  'playwriteittradguides': 1.378000, // Playwrite IT Trad Guides w400
+  'playwritemx': 1.428000, // Playwrite MX w400
+  'playwritemxguides': 1.428000, // Playwrite MX Guides w400
+  'playwritengmodern': 1.428000, // Playwrite NG Modern w400
+  'playwritengmodernguides': 1.428000, // Playwrite NG Modern Guides w400
+  'playwritenl': 1.762000, // Playwrite NL w400
+  'playwritenlguides': 1.762000, // Playwrite NL Guides w400
+  'playwriteno': 1.391000, // Playwrite NO w400
+  'playwritenoguides': 1.391000, // Playwrite NO Guides w400
+  'playwritenz': 1.275000, // Playwrite NZ w400
+  'playwritenzbasic': 1.275000, // Playwrite NZ Basic w400
+  'playwritenzbasicguides': 1.275000, // Playwrite NZ Basic Guides w400
+  'playwritenzguides': 1.275000, // Playwrite NZ Guides w400
+  'playwritepe': 1.428000, // Playwrite PE w400
+  'playwritepeguides': 1.428000, // Playwrite PE Guides w400
+  'playwritepl': 1.411000, // Playwrite PL w400
+  'playwriteplguides': 1.411000, // Playwrite PL Guides w400
+  'playwritept': 1.527000, // Playwrite PT w400
+  'playwriteptguides': 1.527000, // Playwrite PT Guides w400
+  'playwritero': 1.428000, // Playwrite RO w400
+  'playwriteroguides': 1.428000, // Playwrite RO Guides w400
+  'playwritesk': 1.410000, // Playwrite SK w400
+  'playwriteskguides': 1.410000, // Playwrite SK Guides w400
+  'playwritetz': 1.428000, // Playwrite TZ w400
+  'playwritetzguides': 1.428000, // Playwrite TZ Guides w400
+  'playwriteusmodern': 1.352000, // Playwrite US Modern w400
+  'playwriteusmodernguides': 1.352000, // Playwrite US Modern Guides w400
+  'playwriteustrad': 1.428000, // Playwrite US Trad w400
+  'playwriteustradguides': 1.428000, // Playwrite US Trad Guides w400
+  'playwritevn': 1.743000, // Playwrite VN w400
+  'playwritevnguides': 1.743000, // Playwrite VN Guides w400
+  'playwriteza': 1.428000, // Playwrite ZA w400
+  'playwritezaguides': 1.428000, // Playwrite ZA Guides w400
+  'pliant': 0.950000, // Pliant w500
+  'plusjakartasans': 1.038000, // Plus Jakarta Sans w500
+  'pochaevsk': 1.051000, // Pochaevsk w400
+  'podkova': 0.859000, // Podkova w500
+  'poetsenone': 1.000000, // Poetsen One w400
+  'poiretone': 0.962000, // Poiret One w400
+  'pollerone': 0.937500, // Poller One w400
+  'poltawskinowy': 1.000000, // Poltawski Nowy w500
+  'poly': 0.964000, // Poly w400
+  'pompiere': 0.936523, // Pompiere w400
+  'ponnala': 0.916016, // Ponnala w400
+  'ponomar': 1.150000, // Ponomar w400
+  'pontanosans': 0.988770, // Pontano Sans w500
+  'poorstory': 0.799805, // Poor Story w400
+  'poppins': 1.050000, // Poppins w500
+  'portlligatsans': 0.860000, // Port Lligat Sans w400
+  'portlligatslab': 0.860000, // Port Lligat Slab w400
+  'pottaone': 1.160000, // Potta One w400
+  'pragatinarrow': 1.158000, // Pragati Narrow w400
+  'praise': 0.850000, // Praise w400
+  'prata': 0.993000, // Prata w400
+  'preahvihear': 1.220703, // Preahvihear w400
+  'pressstart2p': 1.000000, // Press Start 2P w400
+  'pridi': 1.100000, // Pridi w500
+  'princesssofia': 0.986328, // Princess Sofia w400
+  'prociono': 1.008000, // Prociono w400
+  'prompt': 1.090000, // Prompt w500
+  'prostoone': 0.940000, // Prosto One w400
+  'protestguerrilla': 0.960000, // Protest Guerrilla w400
+  'protestrevolution': 0.960000, // Protest Revolution w400
+  'protestriot': 0.960000, // Protest Riot w400
+  'proteststrike': 0.960000, // Protest Strike w400
+  'prozalibre': 0.991211, // Proza Libre w500
+  'ptmono': 0.885000, // PT Mono w400
+  'ptsans': 1.018000, // PT Sans w400
+  'ptsanscaption': 1.018000, // PT Sans Caption w400
+  'ptsansnarrow': 1.018000, // PT Sans Narrow w400
+  'ptserif': 1.039000, // PT Serif w400
+  'ptserifcaption': 1.039000, // PT Serif Caption w400
+  'publicsans': 0.950000, // Public Sans w500
+  'puppiesplay': 0.750000, // Puppies Play w400
+  'puritan': 0.860352, // Puritan w400
+  'purplepurse': 0.913086, // Purple Purse w400
+  'qahiri': 0.800000, // Qahiri w400
+  'quando': 0.991211, // Quando w400
+  'quantico': 1.063000, // Quantico w400
+  'quattrocento': 0.848000, // Quattrocento w400
+  'quattrocentosans': 0.848000, // Quattrocento Sans w400
+  'questrial': 0.820000, // Questrial w400
+  'quicksand': 1.000000, // Quicksand w500
+  'quintessential': 1.143066, // Quintessential w400
+  'qwigley': 0.750000, // Qwigley w400
+  'qwitchergrypen': 0.800000, // Qwitcher Grypen w400
+  'racingsansone': 0.976000, // Racing Sans One w400
+  'radiocanada': 0.945000, // Radio Canada w500
+  'radiocanadabig': 0.995000, // Radio Canada Big w500
+  'radley': 0.963379, // Radley w400
+  'rajdhani': 0.930000, // Rajdhani w500
+  'rakkas': 1.046000, // Rakkas w400
+  'raleway': 0.940000, // Raleway w500
+  'ralewaydots': 0.918000, // Raleway Dots w400
+  'ramabhadra': 1.326506, // Ramabhadra w400
+  'ramaraja': 0.988000, // Ramaraja w400
+  'rambla': 0.929000, // Rambla w400
+  'rammettoone': 1.189941, // Rammetto One w400
+  'rampartone': 1.160000, // Rampart One w400
+  'ramsina': 0.761719, // Ramsina w400
+  'ranchers': 1.045000, // Ranchers w400
+  'rancho': 0.897461, // Rancho w400
+  'ranga': 1.000000, // Ranga w400
+  'rasa': 0.728000, // Rasa w500
+  'rationale': 0.903000, // Rationale w400
+  'raviprakash': 0.916016, // Ravi Prakash w400
+  'readexpro': 1.000000, // Readex Pro w500
+  'recursive': 0.950000, // Recursive w500
+  'redacted': 0.800000, // Redacted w400
+  'redactedscript': 0.800000, // Redacted Script w400
+  'redditmono': 1.009766, // Reddit Mono w500
+  'redditsans': 1.009766, // Reddit Sans w500
+  'redditsanscondensed': 1.009766, // Reddit Sans Condensed w500
+  'redhatdisplay': 1.018000, // Red Hat Display w500
+  'redhatmono': 1.018000, // Red Hat Mono w500
+  'redhattext': 1.018000, // Red Hat Text w500
+  'redressed': 0.931152, // Redressed w400
+  'redrose': 0.937000, // Red Rose w500
+  'reemkufi': 1.100000, // Reem Kufi w500
+  'reemkufifun': 1.100000, // Reem Kufi Fun w500
+  'reemkufiink': 1.100000, // Reem Kufi Ink w400
+  'reeniebeanie': 0.750000, // Reenie Beanie w400
+  'reggaeone': 1.160000, // Reggae One w400
+  'rem': 0.980000, // REM w500
+  'rethinksans': 0.992000, // Rethink Sans w500
+  'revalia': 1.047852, // Revalia w400
+  'rhodiumlibre': 1.100000, // Rhodium Libre w400
+  'ribeye': 1.040039, // Ribeye w400
+  'ribeyemarrow': 1.040039, // Ribeye Marrow w400
+  'righteous': 0.984863, // Righteous w400
+  'risque': 0.904785, // Risque w400
+  'roadrage': 0.850000, // Road Rage w400
+  'roboto': 0.927734, // Roboto w500
+  'robotoflex': 0.927734, // Roboto Flex w400
+  'robotomono': 1.047852, // Roboto Mono w500
+  'robotoserif': 0.927000, // Roboto Serif w500
+  'robotoslab': 1.047852, // Roboto Slab w500
+  'rochester': 1.029785, // Rochester w400
+  'rock3d': 1.160000, // Rock 3D w400
+  'rocknrollone': 1.160000, // RocknRoll One w400
+  'rocksalt': 1.584961, // Rock Salt w400
+  'rokkitt': 0.817000, // Rokkitt w500
+  'romanesco': 0.911133, // Romanesco w400
+  'ropasans': 0.841000, // Ropa Sans w400
+  'rosario': 0.977000, // Rosario w500
+  'rosarivo': 0.979000, // Rosarivo w400
+  'rougescript': 0.840000, // Rouge Script w400
+  'rowdies': 0.997000, // Rowdies w400
+  'rozhaone': 0.998000, // Rozha One w400
+  'rubik': 0.935000, // Rubik w500
+  'rubik80sfade': 0.935000, // Rubik 80s Fade w400
+  'rubikbeastly': 0.935000, // Rubik Beastly w400
+  'rubikbrokenfax': 0.935000, // Rubik Broken Fax w400
+  'rubikbubbles': 0.935000, // Rubik Bubbles w400
+  'rubikburned': 0.935000, // Rubik Burned w400
+  'rubikdirt': 0.935000, // Rubik Dirt w400
+  'rubikdistressed': 0.935000, // Rubik Distressed w400
+  'rubikdoodleshadow': 0.935000, // Rubik Doodle Shadow w400
+  'rubikdoodletriangles': 0.935000, // Rubik Doodle Triangles w400
+  'rubikgemstones': 0.935000, // Rubik Gemstones w400
+  'rubikglitch': 0.935000, // Rubik Glitch w400
+  'rubikglitchpop': 0.935000, // Rubik Glitch Pop w400
+  'rubikiso': 0.935000, // Rubik Iso w400
+  'rubiklines': 0.935000, // Rubik Lines w400
+  'rubikmaps': 0.935000, // Rubik Maps w400
+  'rubikmarkerhatch': 0.935000, // Rubik Marker Hatch w400
+  'rubikmaze': 0.935000, // Rubik Maze w400
+  'rubikmicrobe': 0.935000, // Rubik Microbe w400
+  'rubikmonoone': 0.932000, // Rubik Mono One w400
+  'rubikmoonrocks': 0.935000, // Rubik Moonrocks w400
+  'rubikpixels': 0.935000, // Rubik Pixels w400
+  'rubikpuddles': 0.935000, // Rubik Puddles w400
+  'rubikscribble': 0.935000, // Rubik Scribble w400
+  'rubikspraypaint': 0.935000, // Rubik Spray Paint w400
+  'rubikstorm': 0.935000, // Rubik Storm w400
+  'rubikvinyl': 0.935000, // Rubik Vinyl w400
+  'rubikwetpaint': 0.935000, // Rubik Wet Paint w400
+  'ruda': 0.922000, // Ruda w500
+  'rufina': 0.945000, // Rufina w400
+  'rugeboogie': 0.875000, // Ruge Boogie w400
+  'ruluko': 0.914000, // Ruluko w400
+  'rumraisin': 0.982910, // Rum Raisin w400
+  'ruslandisplay': 0.688000, // Ruslan Display w400
+  'russoone': 0.926000, // Russo One w400
+  'ruthie': 0.800000, // Ruthie w400
+  'ruwudu': 0.867000, // Ruwudu w500
+  'rye': 0.986328, // Rye w400
+  'sacramento': 0.930176, // Sacramento w400
+  'sahitya': 1.106000, // Sahitya w400
+  'sail': 0.860000, // Sail w400
+  'saira': 1.135000, // Saira w500
+  'sairastencil': 1.135000, // Saira Stencil w500
+  'salsa': 0.974000, // Salsa w400
+  'sanchez': 1.004000, // Sanchez w400
+  'sancreek': 1.027344, // Sancreek w400
+  'sankofadisplay': 1.000000, // Sankofa Display w400
+  'sansation': 0.905273, // Sansation w400
+  'sansita': 1.020000, // Sansita w400
+  'sansitaswashed': 1.020000, // Sansita Swashed w500
+  'sarabun': 1.068000, // Sarabun w500
+  'sarala': 1.170898, // Sarala w400
+  'sarina': 0.935547, // Sarina w400
+  'sarpanch': 1.050000, // Sarpanch w500
+  'sassyfrass': 0.800000, // Sassy Frass w400
+  'satisfy': 0.934570, // Satisfy w400
+  'savate': 1.015000, // Savate w500
+  'sawarabigothic': 1.110000, // Sawarabi Gothic w400
+  'sawarabimincho': 1.070000, // Sawarabi Mincho w400
+  'scada': 0.955000, // Scada w400
+  'scheherazadenew': 1.342773, // Scheherazade New w500
+  'schibstedgrotesk': 0.976562, // Schibsted Grotesk w500
+  'schoolbell': 0.995117, // Schoolbell w400
+  'sciencegothic': 1.088000, // Science Gothic w500
+  'scopeone': 0.928000, // Scope One w400
+  'seaweedscript': 0.946289, // Seaweed Script w400
+  'secularone': 1.022000, // Secular One w400
+  'sedan': 0.950000, // Sedan w400
+  'sedansc': 0.950000, // Sedan SC w400
+  'sedgwickave': 0.937000, // Sedgwick Ave w400
+  'sedgwickavedisplay': 0.937000, // Sedgwick Ave Display w400
+  'sekuya': 1.000000, // Sekuya w400
+  'sen': 0.939453, // Sen w500
+  'sendflowers': 0.975000, // Send Flowers w400
+  'sevillana': 1.006836, // Sevillana w400
+  'seymourone': 0.983887, // Seymour One w400
+  'shadowsintolight': 1.174805, // Shadows Into Light w400
+  'shadowsintolighttwo': 1.118164, // Shadows Into Light Two w400
+  'shafarik': 1.080000, // Shafarik w400
+  'shalimar': 0.800000, // Shalimar w400
+  'shantellsans': 1.020000, // Shantell Sans w500
+  'shanti': 0.982422, // Shanti w400
+  'share': 0.885000, // Share w400
+  'sharetech': 0.885000, // Share Tech w400
+  'sharetechmono': 0.885000, // Share Tech Mono w400
+  'shipporiantique': 1.160000, // Shippori Antique w400
+  'shipporiantiqueb1': 1.160000, // Shippori Antique B1 w400
+  'shipporimincho': 1.160000, // Shippori Mincho w500
+  'shipporiminchob1': 1.160000, // Shippori Mincho B1 w500
+  'shizuru': 1.160000, // Shizuru w400
+  'shojumaru': 0.986328, // Shojumaru w400
+  'shortstack': 0.934082, // Short Stack w400
+  'shrikhand': 1.026000, // Shrikhand w400
+  'siemreap': 1.220703, // Siemreap w400
+  'sigmar': 1.172000, // Sigmar w400
+  'sigmarone': 1.172000, // Sigmar One w400
+  'signika': 0.940000, // Signika w500
+  'signikanegative': 0.940000, // Signika Negative w500
+  'silkscreen': 1.030000, // Silkscreen w400
+  'simonetta': 0.961914, // Simonetta w400
+  'singleday': 0.760742, // Single Day w400
+  'sintony': 0.995000, // Sintony w400
+  'sirinstencil': 1.162109, // Sirin Stencil w400
+  'sirivennela': 0.772500, // Sirivennela w400
+  'sixcaps': 1.104980, // Six Caps w400
+  'sixtyfour': 0.875000, // Sixtyfour w400
+  'sixtyfourconvergence': 0.875000, // Sixtyfour Convergence w400
+  'skranji': 0.984375, // Skranji w400
+  'slabo13px': 0.923077, // Slabo 13px w400
+  'slabo27px': 0.925926, // Slabo 27px w400
+  'slackey': 1.052734, // Slackey w400
+  'slacksideone': 1.160000, // Slackside One w400
+  'smokum': 0.969727, // Smokum w400
+  'smooch': 0.950000, // Smooch w400
+  'smoochsans': 0.900000, // Smooch Sans w500
+  'smythe': 0.919434, // Smythe w400
+  'sniglet': 0.956000, // Sniglet w400
+  'snippet': 0.890000, // Snippet w400
+  'snowburstone': 1.041992, // Snowburst One w400
+  'snpro': 0.985000, // SN Pro w500
+  'sofadione': 0.856000, // Sofadi One w400
+  'sofia': 1.138000, // Sofia w400
+  'sofiasans': 0.900000, // Sofia Sans w500
+  'sofiasanscondensed': 0.900000, // Sofia Sans Condensed w500
+  'sofiasansextracondensed': 0.900000, // Sofia Sans Extra Condensed w500
+  'sofiasanssemicondensed': 0.900000, // Sofia Sans Semi Condensed w500
+  'solitreo': 0.880000, // Solitreo w400
+  'solway': 0.950000, // Solway w500
+  'sometypemono': 0.925000, // Sometype Mono w500
+  'songmyung': 0.848000, // Song Myung w400
+  'sono': 0.912000, // Sono w500
+  'sonsieone': 1.000977, // Sonsie One w400
+  'sora': 0.970000, // Sora w500
+  'sortsmillgoudy': 0.960000, // Sorts Mill Goudy w400
+  'sourcecodepro': 0.984000, // Source Code Pro w500
+  'sourcesans3': 1.024000, // Source Sans 3 w500
+  'sourceserif4': 1.036000, // Source Serif 4 w500
+  'sourgummy': 0.996000, // Sour Gummy w500
+  'spacegrotesk': 0.984000, // Space Grotesk w500
+  'spacemono': 1.120000, // Space Mono w400
+  'specialelite': 0.703125, // Special Elite w400
+  'specialgothic': 1.005000, // Special Gothic w500
+  'specialgothiccondensedone': 1.005000, // Special Gothic Condensed One w400
+  'specialgothicexpandedone': 1.005000, // Special Gothic Expanded One w400
+  'spectral': 1.059000, // Spectral w500
+  'spectralsc': 1.059000, // Spectral SC w500
+  'spicyrice': 1.020996, // Spicy Rice w400
+  'spinnaker': 0.937500, // Spinnaker w400
+  'spirax': 0.947000, // Spirax w400
+  'splash': 1.050000, // Splash w400
+  'splinesans': 0.963500, // Spline Sans w500
+  'splinesansmono': 0.963500, // Spline Sans Mono w500
+  'squadaone': 0.861000, // Squada One w400
+  'squarepeg': 0.920000, // Square Peg w400
+  'sreekrushnadevaraya': 1.534722, // Sree Krushnadevaraya w400
+  'sriracha': 1.220000, // Sriracha w400
+  'srisakdi': 0.950000, // Srisakdi w400
+  'staatliches': 0.950000, // Staatliches w400
+  'stacksansheadline': 1.000000, // Stack Sans Headline w500
+  'stacksansnotch': 1.000000, // Stack Sans Notch w500
+  'stacksanstext': 1.000000, // Stack Sans Text w500
+  'stalemate': 0.896973, // Stalemate w400
+  'stalinistone': 1.037000, // Stalinist One w400
+  'stardosstencil': 0.973633, // Stardos Stencil w400
+  'stick': 1.160000, // Stick w400
+  'sticknobills': 0.940000, // Stick No Bills w500
+  'stintultracondensed': 0.893066, // Stint Ultra Condensed w400
+  'stintultraexpanded': 0.904785, // Stint Ultra Expanded w400
+  'stixtwomath': 0.762000, // STIX Two Math w400
+  'stixtwotext': 0.762000, // STIX Two Text w500
+  'stoke': 0.991211, // Stoke w400
+  'storyscript': 0.959000, // Story Script w400
+  'strait': 0.901000, // Strait w400
+  'strichpunktsans': 1.000000, // Strichpunkt Sans w500
+  'stylescript': 1.000000, // Style Script w400
+  'stylish': 0.821000, // Stylish w400
+  'sueellenfrancisco': 1.330078, // Sue Ellen Francisco w400
+  'suezone': 0.987000, // Suez One w400
+  'sulphurpoint': 0.790000, // Sulphur Point w400
+  'sumana': 1.922000, // Sumana w400
+  'sunflower': 0.782000, // Sunflower w500
+  'sunshiney': 0.995117, // Sunshiney w400
+  'supermercadoone': 0.939941, // Supermercado One w400
+  'sura': 1.151855, // Sura w400
+  'suranna': 1.411538, // Suranna w400
+  'suravaram': 1.321429, // Suravaram w400
+  'suse': 0.980000, // SUSE w500
+  'susemono': 0.980000, // SUSE Mono w500
+  'suwannaphum': 1.220703, // Suwannaphum w400
+  'swankyandmoomoo': 0.971680, // Swanky and Moo Moo w400
+  'syncopate': 0.759766, // Syncopate w400
+  'syne': 0.925000, // Syne w500
+  'synemono': 0.925000, // Syne Mono w400
+  'synetactile': 0.925000, // Syne Tactile w400
+  'tacone': 0.830000, // Tac One w400
+  'tagesschrift': 1.000000, // Tagesschrift w400
+  'taiheritagepro': 1.318359, // Tai Heritage Pro w400
+  'tajawal': 0.643000, // Tajawal w500
+  'tangerine': 0.750000, // Tangerine w400
+  'tapestry': 0.950000, // Tapestry w400
+  'taprom': 1.220703, // Taprom w400
+  'tasaexplorer': 0.940000, // TASA Explorer w500
+  'tasaorbiter': 0.940000, // TASA Orbiter w500
+  'tauri': 0.996094, // Tauri w400
+  'taviraj': 1.172000, // Taviraj w500
+  'teachers': 0.940000, // Teachers w500
+  'teko': 0.958000, // Teko w500
+  'tektur': 1.000000, // Tektur w500
+  'telex': 0.945000, // Telex w400
+  'tenaliramakrishna': 0.881333, // Tenali Ramakrishna w400
+  'tenorsans': 0.920000, // Tenor Sans w400
+  'textmeone': 0.952000, // Text Me One w400
+  'texturina': 1.260000, // Texturina w500
+  'thasadith': 1.005000, // Thasadith w400
+  'thegirlnextdoor': 1.112305, // The Girl Next Door w400
+  'thenautigal': 0.870000, // The Nautigal w400
+  'tienne': 0.991211, // Tienne w400
+  'tiktoksans': 1.000000, // TikTok Sans w500
+  'tillana': 1.158000, // Tillana w500
+  'tiltneon': 0.990000, // Tilt Neon w400
+  'tiltprism': 0.990000, // Tilt Prism w400
+  'tiltwarp': 0.990000, // Tilt Warp w400
+  'timmana': 0.890667, // Timmana w400
+  'tinos': 0.891113, // Tinos w400
+  'tiny5': 0.875000, // Tiny5 w400
+  'tirobangla': 0.755000, // Tiro Bangla w400
+  'tirodevanagarihindi': 0.755000, // Tiro Devanagari Hindi w400
+  'tirodevanagarimarathi': 0.755000, // Tiro Devanagari Marathi w400
+  'tirodevanagarisanskrit': 0.755000, // Tiro Devanagari Sanskrit w400
+  'tirogurmukhi': 0.755000, // Tiro Gurmukhi w400
+  'tirokannada': 0.755000, // Tiro Kannada w400
+  'tirotamil': 0.755000, // Tiro Tamil w400
+  'tirotelugu': 0.755000, // Tiro Telugu w400
+  'tirra': 1.021973, // Tirra w500
+  'titanone': 0.970000, // Titan One w400
+  'titilliumweb': 1.133000, // Titillium Web w400
+  'tomorrow': 1.000000, // Tomorrow w500
+  'tourney': 0.900000, // Tourney w500
+  'tradewinds': 0.995117, // Trade Winds w400
+  'trainone': 1.160000, // Train One w400
+  'triodion': 1.126000, // Triodion w400
+  'trirong': 1.200000, // Trirong w500
+  'trispace': 0.915000, // Trispace w500
+  'trocchi': 1.018066, // Trocchi w400
+  'trochut': 0.967000, // Trochut w400
+  'truculenta': 1.050000, // Truculenta w500
+  'trykker': 0.987305, // Trykker w400
+  'tsukimirounded': 1.160000, // Tsukimi Rounded w500
+  'tuffy': 1.142578, // Tuffy w400
+  'tulpenone': 0.862793, // Tulpen One w400
+  'turretroad': 0.850000, // Turret Road w500
+  'twinklestar': 0.930000, // Twinkle Star w400
+  'ubuntu': 0.932000, // Ubuntu w500
+  'ubuntucondensed': 0.932000, // Ubuntu Condensed w400
+  'ubuntumono': 0.830000, // Ubuntu Mono w400
+  'ubuntusans': 0.940000, // Ubuntu Sans w500
+  'ubuntusansmono': 0.940000, // Ubuntu Sans Mono w500
+  'uchen': 1.218750, // Uchen w400
+  'ultra': 1.008789, // Ultra w400
+  'unbounded': 0.995000, // Unbounded w500
+  'uncialantiqua': 0.985840, // Uncial Antiqua w400
+  'underdog': 0.909000, // Underdog w400
+  'unicaone': 0.917000, // Unica One w400
+  'unifrakturcook': 1.030273, // UnifrakturCook w700
+  'unifrakturmaguntia': 0.784668, // UnifrakturMaguntia w400
+  'unkempt': 0.954102, // Unkempt w400
+  'unlock': 0.873000, // Unlock w400
+  'unna': 0.883000, // Unna w400
+  'uoqmunthenkhung': 0.941000, // UoqMunThenKhung w400
+  'updock': 0.900000, // Updock w400
+  'urbanist': 0.950000, // Urbanist w500
+  'vampiroone': 0.956000, // Vampiro One w400
+  'varela': 1.015000, // Varela w400
+  'varelaround': 0.918000, // Varela Round w400
+  'varta': 0.928711, // Varta w500
+  'vastshadow': 0.915527, // Vast Shadow w400
+  'vazirmatn': 1.025391, // Vazirmatn w500
+  'vendsans': 1.090000, // Vend Sans w500
+  'vesperlibre': 1.137695, // Vesper Libre w500
+  'viaodalibre': 1.051000, // Viaoda Libre w400
+  'vibes': 1.105000, // Vibes w400
+  'vibur': 0.957031, // Vibur w400
+  'victormono': 1.100000, // Victor Mono w500
+  'vidaloka': 0.940918, // Vidaloka w400
+  'viga': 1.015000, // Viga w400
+  'vinasans': 1.045000, // Vina Sans w400
+  'voces': 1.014000, // Voces w400
+  'volkhov': 0.971000, // Volkhov w400
+  'vollkorn': 0.952000, // Vollkorn w500
+  'vollkornsc': 0.952000, // Vollkorn SC w400
+  'voltaire': 0.986328, // Voltaire w400
+  'vt323': 0.800000, // VT323 w400
+  'vujahdayscript': 0.950000, // Vujahday Script w400
+  'waitingforthesunrise': 1.119141, // Waiting for the Sunrise w400
+  'wallpoet': 0.806000, // Wallpoet w400
+  'walterturncoat': 1.052734, // Walter Turncoat w400
+  'warnes': 0.994000, // Warnes w400
+  'waterbrush': 1.000000, // Water Brush w400
+  'waterfall': 0.880000, // Waterfall w400
+  'wavefont': 1.200000, // Wavefont w500
+  'wdxllubrifontjpn': 0.945000, // WDXL Lubrifont JP N w400
+  'wdxllubrifontsc': 0.945000, // WDXL Lubrifont SC w400
+  'wdxllubrifonttc': 0.945000, // WDXL Lubrifont TC w400
+  'wellfleet': 0.986328, // Wellfleet w400
+  'wendyone': 0.819000, // Wendy One w400
+  'whisper': 0.880000, // Whisper w400
+  'windsong': 0.890000, // WindSong w500
+  'winkyrough': 1.015000, // Winky Rough w500
+  'winkysans': 1.015000, // Winky Sans w500
+  'wireone': 0.890000, // Wire One w400
+  'wittgenstein': 1.065000, // Wittgenstein w500
+  'wixmadefordisplay': 1.008000, // Wix Madefor Display w500
+  'wixmadefortext': 1.008000, // Wix Madefor Text w500
+  'workbench': 0.875000, // Workbench w400
+  'worksans': 0.930000, // Work Sans w500
+  'xanhmono': 0.970000, // Xanh Mono w400
+  'yaldevi': 1.060000, // Yaldevi w500
+  'yanonekaffeesatz': 0.735000, // Yanone Kaffeesatz w500
+  'yantramanav': 0.938965, // Yantramanav w500
+  'yarndings12': 0.875000, // Yarndings 12 w400
+  'yarndings12charted': 0.875000, // Yarndings 12 Charted w400
+  'yarndings20': 0.916667, // Yarndings 20 w400
+  'yarndings20charted': 0.916667, // Yarndings 20 Charted w400
+  'yatraone': 0.991000, // Yatra One w400
+  'yellowtail': 0.971680, // Yellowtail w400
+  'yeonsung': 0.800000, // Yeon Sung w400
+  'yesevaone': 0.915000, // Yeseva One w400
+  'yesteryear': 0.977051, // Yesteryear w400
+  'yomogi': 1.160000, // Yomogi w400
+  'youngserif': 1.046000, // Young Serif w400
+  'yrsa': 0.728000, // Yrsa w500
+  'ysabeau': 1.054000, // Ysabeau w500
+  'ysabeauinfant': 1.054000, // Ysabeau Infant w500
+  'ysabeauoffice': 1.054000, // Ysabeau Office w500
+  'ysabeausc': 1.054000, // Ysabeau SC w500
+  'yujiboku': 1.160000, // Yuji Boku w400
+  'yujihentaiganaakari': 1.160000, // Yuji Hentaigana Akari w400
+  'yujihentaiganaakebono': 1.160000, // Yuji Hentaigana Akebono w400
+  'yujimai': 1.160000, // Yuji Mai w400
+  'yujisyuku': 1.160000, // Yuji Syuku w400
+  'yuseimagic': 1.160000, // Yusei Magic w400
+  'yuyu': 0.930000, // Yuyu w400
+  'yuyushort': 0.930000, // Yuyu Short w400
+  'zain': 1.086250, // Zain w400
+  'zalandosans': 0.964000, // Zalando Sans w500
+  'zalandosansexpanded': 0.964000, // Zalando Sans Expanded w500
+  'zalandosanssemiexpanded': 0.964000, // Zalando Sans SemiExpanded w500
+  'zcoolkuaile': 0.880000, // ZCOOL KuaiLe w400
+  'zcoolqingkehuangyou': 0.880000, // ZCOOL QingKe HuangYou w400
+  'zcoolxiaowei': 0.880000, // ZCOOL XiaoWei w400
+  'zenantique': 1.160000, // Zen Antique w400
+  'zenantiquesoft': 1.160000, // Zen Antique Soft w400
+  'zendots': 0.930000, // Zen Dots w400
+  'zenkakugothicantique': 1.160000, // Zen Kaku Gothic Antique w500
+  'zenkakugothicnew': 1.160000, // Zen Kaku Gothic New w500
+  'zenkurenaido': 1.160000, // Zen Kurenaido w400
+  'zenloop': 0.850000, // Zen Loop w400
+  'zenmarugothic': 1.160000, // Zen Maru Gothic w500
+  'zenoldmincho': 1.160000, // Zen Old Mincho w500
+  'zentokyozoo': 0.950000, // Zen Tokyo Zoo w400
+  'zeyada': 0.912109, // Zeyada w400
+  'zhimangxing': 0.880000, // Zhi Mang Xing w400
+  'zillaslab': 0.944000, // Zilla Slab w500
+  'zillaslabhighlight': 0.944000, // Zilla Slab Highlight w400
+};
+
+/// Descent from the font's hhea table, in em, positive below the baseline.
+const kDescentEmByFontFamily = <String, double>{
+  'abeezee': 0.262000, // ABeeZee w400
+  'abel': 0.294922, // Abel w400
+  'abhayalibre': 0.339844, // Abhaya Libre w500
+  'aboreto': 0.230000, // Aboreto w400
+  'abrilfatface': 0.291000, // Abril Fatface w400
+  'abyssinicasil': 0.333008, // Abyssinica SIL w400
+  'aclonica': 0.260254, // Aclonica w400
+  'acme': 0.307000, // Acme w400
+  'actor': 0.262000, // Actor w400
+  'adamina': 0.290000, // Adamina w400
+  'adlamdisplay': 0.259766, // ADLaM Display w400
+  'adventpro': 0.232000, // Advent Pro w500
+  'afacad': 0.333333, // Afacad w500
+  'afacadflux': 0.333333, // Afacad Flux w500
+  'agbalumo': 0.280000, // Agbalumo w400
+  'agdasima': 0.200195, // Agdasima w400
+  'aguafinascript': 0.581000, // Aguafina Script w400
+  'agudisplay': 0.310000, // Agu Display w400
+  'akatab': 0.348145, // Akatab w500
+  'akayakanadaka': 0.276000, // Akaya Kanadaka w400
+  'akayatelivigala': 0.276000, // Akaya Telivigala w400
+  'akronim': 0.314000, // Akronim w400
+  'akshar': 0.390000, // Akshar w500
+  'akt': 0.250000, // Akt w500
+  'aladin': 0.321000, // Aladin w400
+  'alansans': 0.310000, // Alan Sans w500
+  'alata': 0.280000, // Alata w400
+  'alatsi': 0.280000, // Alatsi w400
+  'albertsans': 0.250000, // Albert Sans w500
+  'aldrich': 0.209961, // Aldrich w400
+  'alef': 0.352539, // Alef w400
+  'alegreya': 0.345000, // Alegreya w500
+  'alegreyasans': 0.300000, // Alegreya Sans w500
+  'alegreyasanssc': 0.300000, // Alegreya Sans SC w500
+  'alegreyasc': 0.345000, // Alegreya SC w500
+  'aleo': 0.295000, // Aleo w500
+  'alexandria': 0.251000, // Alexandria w500
+  'alexbrush': 0.425000, // Alex Brush w400
+  'alfaslabone': 0.333000, // Alfa Slab One w400
+  'alice': 0.234000, // Alice w400
+  'alienblock': 0.290000, // Alien Block w400
+  'alike': 0.270000, // Alike w400
+  'alikeangular': 0.270000, // Alike Angular w400
+  'alkalami': 0.857000, // Alkalami w400
+  'alkatra': 0.589000, // Alkatra w500
+  'allan': 0.201172, // Allan w400
+  'allerta': 0.246094, // Allerta w400
+  'allertastencil': 0.246094, // Allerta Stencil w400
+  'allison': 0.380000, // Allison w400
+  'allkin': 0.000000, // Allkin w400
+  'allura': 0.450000, // Allura w400
+  'almarai': 0.211000, // Almarai w400
+  'almendra': 0.345000, // Almendra w400
+  'almendradisplay': 0.345000, // Almendra Display w400
+  'almendrasc': 0.251000, // Almendra SC w400
+  'alumnisans': 0.300000, // Alumni Sans w500
+  'alumnisanscollegiateone': 0.300000, // Alumni Sans Collegiate One w400
+  'alumnisansinlineone': 0.300000, // Alumni Sans Inline One w400
+  'alumnisanspinstripe': 0.300000, // Alumni Sans Pinstripe w400
+  'alumnisanssc': 0.300000, // Alumni Sans SC w500
+  'alyamama': 0.530000, // Alyamama w500
+  'amarante': 0.263672, // Amarante w400
+  'amaranth': 0.236000, // Amaranth w400
+  'amarna': 0.350000, // Amarna w500
+  'amaticsc': 0.245000, // Amatic SC w400
+  'amethysta': 0.274902, // Amethysta w400
+  'amiko': 0.406000, // Amiko w400
+  'amiri': 0.634000, // Amiri w400
+  'amiriquran': 0.634000, // Amiri Quran w400
+  'amita': 0.650000, // Amita w400
+  'anaheim': 0.328125, // Anaheim w500
+  'ancizarsans': 0.300000, // Ancizar Sans w500
+  'ancizarserif': 0.300000, // Ancizar Serif w500
+  'andadapro': 0.235000, // Andada Pro w500
+  'andika': 0.390625, // Andika w400
+  'anekbangla': 0.616000, // Anek Bangla w500
+  'anekdevanagari': 0.692500, // Anek Devanagari w500
+  'anekgujarati': 0.532000, // Anek Gujarati w500
+  'anekgurmukhi': 0.450000, // Anek Gurmukhi w500
+  'anekkannada': 0.655000, // Anek Kannada w500
+  'aneklatin': 0.200000, // Anek Latin w500
+  'anekmalayalam': 0.415000, // Anek Malayalam w500
+  'anekodia': 0.700000, // Anek Odia w500
+  'anektamil': 0.426500, // Anek Tamil w500
+  'anektelugu': 0.600000, // Anek Telugu w500
+  'angkor': 0.585938, // Angkor w400
+  'annapurnasil': 0.480469, // Annapurna SIL w400
+  'annieuseyourtelescope': 0.409180, // Annie Use Your Telescope w400
+  'anonymouspro': 0.182129, // Anonymous Pro w400
+  'anta': 0.260742, // Anta w400
+  'antic': 0.251000, // Antic w400
+  'anticdidone': 0.250000, // Antic Didone w400
+  'anticslab': 0.250000, // Antic Slab w400
+  'anton': 0.329102, // Anton w400
+  'antonio': 0.139160, // Antonio w500
+  'antonsc': 0.329102, // Anton SC w400
+  'anuphan': 0.275000, // Anuphan w500
+  'anybody': 0.240000, // Anybody w500
+  'aoboshione': 0.288000, // Aoboshi One w400
+  'arapey': 0.228000, // Arapey w400
+  'arbutus': 0.268555, // Arbutus w400
+  'arbutusslab': 0.268555, // Arbutus Slab w400
+  'architectsdaughter': 0.403320, // Architects Daughter w400
+  'archivo': 0.210000, // Archivo w500
+  'archivoblack': 0.210000, // Archivo Black w400
+  'archivonarrow': 0.312000, // Archivo Narrow w500
+  'arefruqaa': 0.244000, // Aref Ruqaa w400
+  'arefruqaaink': 0.244000, // Aref Ruqaa Ink w400
+  'areyouserious': 0.320000, // Are You Serious w400
+  'arima': 0.560000, // Arima w500
+  'arimo': 0.211914, // Arimo w500
+  'arizonia': 0.350000, // Arizonia w400
+  'armata': 0.273438, // Armata w400
+  'aronesans': 0.300000, // AR One Sans w500
+  'arsenal': 0.254000, // Arsenal w400
+  'arsenalsc': 0.254000, // Arsenal SC w400
+  'artifika': 0.248047, // Artifika w400
+  'arvo': 0.247070, // Arvo w400
+  'arya': 0.544000, // Arya w400
+  'asap': 0.212000, // Asap w500
+  'asar': 0.557000, // Asar w400
+  'asimovian': 0.300000, // Asimovian w400
+  'asset': 0.287598, // Asset w400
+  'assistant': 0.287000, // Assistant w500
+  'astasans': 0.241000, // Asta Sans w500
+  'astloch': 0.256836, // Astloch w400
+  'asul': 0.264000, // Asul w400
+  'athiti': 0.450000, // Athiti w500
+  'atkinsonhyperlegible': 0.290000, // Atkinson Hyperlegible w400
+  'atkinsonhyperlegiblemono': 0.316000, // Atkinson Hyperlegible Mono w500
+  'atkinsonhyperlegiblenext': 0.316000, // Atkinson Hyperlegible Next w500
+  'atma': 0.518000, // Atma w500
+  'atomicage': 0.320312, // Atomic Age w400
+  'aubrey': 0.212000, // Aubrey w400
+  'audiowide': 0.285156, // Audiowide w400
+  'autourone': 0.268555, // Autour One w400
+  'average': 0.263000, // Average w400
+  'averagesans': 0.269000, // Average Sans w400
+  'averiagruesalibre': 0.240234, // Averia Gruesa Libre w400
+  'averialibre': 0.240234, // Averia Libre w400
+  'averiasanslibre': 0.243652, // Averia Sans Libre w400
+  'averiaseriflibre': 0.227051, // Averia Serif Libre w400
+  'azeretmono': 0.230000, // Azeret Mono w500
+  'b612': 0.250000, // B612 w400
+  'b612mono': 0.250000, // B612 Mono w400
+  'babylonica': 0.450000, // Babylonica w400
+  'bacasimeantique': 0.250000, // Bacasime Antique w400
+  'badeendisplay': 0.250000, // Badeen Display w400
+  'badscript': 0.648000, // Bad Script w400
+  'bagelfatone': 0.288000, // Bagel Fat One w400
+  'bahiana': 0.250000, // Bahiana w400
+  'bahianita': 0.238000, // Bahianita w400
+  'baijamjuree': 0.250000, // Bai Jamjuree w500
+  'bakbakone': 0.350000, // Bakbak One w400
+  'ballet': 0.770000, // Ballet w400
+  'baloo2': 0.524000, // Baloo 2 w500
+  'baloobhai2': 0.544000, // Baloo Bhai 2 w500
+  'baloobhaijaan2': 0.632000, // Baloo Bhaijaan 2 w500
+  'baloobhaina2': 0.827000, // Baloo Bhaina 2 w500
+  'baloochettan2': 0.392000, // Baloo Chettan 2 w500
+  'balooda2': 0.589000, // Baloo Da 2 w500
+  'baloopaaji2': 0.614000, // Baloo Paaji 2 w500
+  'balootamma2': 0.673000, // Baloo Tamma 2 w500
+  'balootammudu2': 1.119000, // Baloo Tammudu 2 w500
+  'baloothambi2': 0.486000, // Baloo Thambi 2 w500
+  'balsamiqsans': 0.300000, // Balsamiq Sans w400
+  'balthazar': 0.222000, // Balthazar w400
+  'bangers': 0.181000, // Bangers w400
+  'barlow': 0.200000, // Barlow w500
+  'barlowcondensed': 0.200000, // Barlow Condensed w500
+  'barlowsemicondensed': 0.200000, // Barlow Semi Condensed w500
+  'barriecito': 0.238000, // Barriecito w400
+  'barrio': 0.247000, // Barrio w400
+  'basic': 0.249512, // Basic w400
+  'baskervville': 0.295000, // Baskervville w500
+  'baskervvillesc': 0.295000, // Baskervville SC w500
+  'battambang': 0.585938, // Battambang w400
+  'baumans': 0.240000, // Baumans w400
+  'bayon': 0.585938, // Bayon w400
+  'bbhbartle': 0.250000, // BBH Bartle w400
+  'bbhbogle': 0.250000, // BBH Bogle w400
+  'bbhhegarty': 0.250000, // BBH Hegarty w400
+  'beaurivage': 0.400000, // Beau Rivage w400
+  'bebasneue': 0.300000, // Bebas Neue w400
+  'beiruti': 0.300000, // Beiruti w500
+  'belanosima': 0.203125, // Belanosima w400
+  'belgrano': 0.278000, // Belgrano w400
+  'bellefair': 0.277000, // Bellefair w400
+  'belleza': 0.224000, // Belleza w400
+  'bellota': 0.290000, // Bellota w400
+  'bellotatext': 0.290000, // Bellota Text w400
+  'benchnine': 0.351562, // BenchNine w400
+  'benne': 0.370000, // Benne w400
+  'bentham': 0.253906, // Bentham w400
+  'berkshireswash': 0.262207, // Berkshire Swash w400
+  'besley': 0.425000, // Besley w500
+  'betaniapatmos': 0.262000, // Betania Patmos w400
+  'betaniapatmosgdl': 0.262000, // Betania Patmos GDL w400
+  'betaniapatmosin': 0.262000, // Betania Patmos In w400
+  'betaniapatmosingdl': 0.262000, // Betania Patmos In GDL w400
+  'bethellen': 0.595000, // Beth Ellen w400
+  'bevan': 0.451660, // Bevan w400
+  'bevietnampro': 0.265000, // Be Vietnam Pro w500
+  'bhutukaexpandedone': 0.182000, // BhuTuka Expanded One w400
+  'bigelowrules': 0.251953, // Bigelow Rules w400
+  'bigshotone': 0.179000, // Bigshot One w400
+  'bigshoulders': 0.214500, // Big Shoulders w500
+  'bigshouldersinline': 0.214500, // Big Shoulders Inline w500
+  'bigshouldersstencil': 0.214500, // Big Shoulders Stencil w500
+  'bilbo': 0.400000, // Bilbo w400
+  'bilboswashcaps': 0.400000, // Bilbo Swash Caps w400
+  'biorhyme': 0.422000, // BioRhyme w500
+  'birthstone': 0.410000, // Birthstone w400
+  'birthstonebounce': 0.410000, // Birthstone Bounce w500
+  'biryani': 0.656000, // Biryani w400
+  'bitcount': 0.360000, // Bitcount w500
+  'bitcountgriddouble': 0.360000, // Bitcount Grid Double w500
+  'bitcountgriddoubleink': 0.360000, // Bitcount Grid Double Ink w500
+  'bitcountgridsingle': 0.360000, // Bitcount Grid Single w500
+  'bitcountgridsingleink': 0.360000, // Bitcount Grid Single Ink w500
+  'bitcountink': 0.360000, // Bitcount Ink w500
+  'bitcountpropdouble': 0.360000, // Bitcount Prop Double w500
+  'bitcountpropdoubleink': 0.360000, // Bitcount Prop Double Ink w500
+  'bitcountpropsingle': 0.360000, // Bitcount Prop Single w500
+  'bitcountpropsingleink': 0.360000, // Bitcount Prop Single Ink w500
+  'bitcountsingle': 0.360000, // Bitcount Single w500
+  'bitcountsingleink': 0.360000, // Bitcount Single Ink w500
+  'bitter': 0.265000, // Bitter w500
+  'bizudgothic': 0.120117, // BIZ UDGothic w400
+  'bizudmincho': 0.120117, // BIZ UDMincho w400
+  'bizudpgothic': 0.120117, // BIZ UDPGothic w400
+  'bizudpmincho': 0.120117, // BIZ UDPMincho w400
+  'bjcree': 0.195312, // BJCree w500
+  'blackandwhitepicture': 0.200000, // Black And White Picture w400
+  'blackhansans': 0.210000, // Black Han Sans w400
+  'blackopsone': 0.336426, // Black Ops One w400
+  'blaka': 0.235000, // Blaka w400
+  'blakahollow': 0.235000, // Blaka Hollow w400
+  'blakaink': 0.235000, // Blaka Ink w400
+  'blinker': 0.240000, // Blinker w400
+  'bodonimoda': 0.400000, // Bodoni Moda w500
+  'bodonimodasc': 0.400000, // Bodoni Moda SC w500
+  'bokor': 0.585938, // Bokor w400
+  'boldonse': 0.400000, // Boldonse w400
+  'bonanova': 0.268000, // Bona Nova w400
+  'bonanovasc': 0.268000, // Bona Nova SC w400
+  'bonbon': 0.330000, // Bonbon w400
+  'bonheurroyale': 0.380000, // Bonheur Royale w400
+  'boogaloo': 0.246000, // Boogaloo w400
+  'borel': 1.014000, // Borel w400
+  'bowlbyone': 0.455078, // Bowlby One w400
+  'bowlbyonesc': 0.427734, // Bowlby One SC w400
+  'bpmfhuninn': 0.180000, // Bpmf Huninn w400
+  'bpmfiansui': 0.180000, // Bpmf Iansui w400
+  'bpmfzihikaistd': 0.180000, // Bpmf Zihi Kai Std w400
+  'braahone': 0.382000, // Braah One w400
+  'brawler': 0.248000, // Brawler w400
+  'breeserif': 0.281000, // Bree Serif w400
+  'bricolagegrotesque': 0.270000, // Bricolage Grotesque w500
+  'brunoace': 0.253000, // Bruno Ace w400
+  'brunoacesc': 0.253000, // Bruno Ace SC w400
+  'brygada1918': 0.250000, // Brygada 1918 w500
+  'bubblegumsans': 0.311000, // Bubblegum Sans w400
+  'bubblerone': 0.263000, // Bubbler One w400
+  'buda': 0.353516, // Buda w300
+  'buenard': 0.270000, // Buenard w500
+  'bungee': 0.300000, // Bungee w400
+  'bungeehairline': 0.300000, // Bungee Hairline w400
+  'bungeeinline': 0.300000, // Bungee Inline w400
+  'bungeeoutline': 0.300000, // Bungee Outline w400
+  'bungeeshade': 0.300000, // Bungee Shade w400
+  'bungeespice': 0.300000, // Bungee Spice w400
+  'bungeetint': 0.300000, // Bungee Tint w400
+  'butcherman': 0.665527, // Butcherman w400
+  'butterflykids': 0.296875, // Butterfly Kids w400
+  'bytesized': 0.500000, // Bytesized w400
+  'cabin': 0.250000, // Cabin w500
+  'cabinsketch': 0.298000, // Cabin Sketch w400
+  'cactusclassicalserif': 0.229000, // Cactus Classical Serif w400
+  'caesardressing': 0.220703, // Caesar Dressing w400
+  'cagliostro': 0.355000, // Cagliostro w400
+  'cairo': 0.571000, // Cairo w500
+  'cairoplay': 0.571000, // Cairo Play w500
+  'caladea': 0.250000, // Caladea w400
+  'calistoga': 0.300000, // Calistoga w400
+  'calligraffitti': 0.592773, // Calligraffitti w400
+  'calsans': 0.300000, // Cal Sans w400
+  'cambay': 0.628750, // Cambay w400
+  'cambo': 0.243000, // Cambo w400
+  'candal': 0.210938, // Candal w400
+  'cantarell': 0.322266, // Cantarell w400
+  'cantataone': 0.273438, // Cantata One w400
+  'cantoraone': 0.250000, // Cantora One w400
+  'caprasimo': 0.229004, // Caprasimo w400
+  'capriola': 0.277344, // Capriola w400
+  'caramel': 0.300000, // Caramel w400
+  'carattere': 0.350000, // Carattere w400
+  'cardo': 0.363770, // Cardo w400
+  'carlito': 0.268555, // Carlito w400
+  'carme': 0.250488, // Carme w400
+  'carroisgothic': 0.270000, // Carrois Gothic w400
+  'carroisgothicsc': 0.270000, // Carrois Gothic SC w400
+  'carterone': 0.434570, // Carter One w400
+  'cascadiacode': 0.234375, // Cascadia Code w500
+  'cascadiamono': 0.234375, // Cascadia Mono w500
+  'castoro': 0.245000, // Castoro w400
+  'castorotitling': 0.245000, // Castoro Titling w400
+  'catamaran': 0.540000, // Catamaran w500
+  'caudex': 0.295898, // Caudex w400
+  'cause': 0.250000, // Cause w500
+  'caveat': 0.300000, // Caveat w500
+  'caveatbrush': 0.300000, // Caveat Brush w400
+  'cedarvillecursive': 0.647461, // Cedarville Cursive w400
+  'cevicheone': 0.237000, // Ceviche One w400
+  'chakrapetch': 0.308000, // Chakra Petch w500
+  'changa': 0.613000, // Changa w500
+  'changaone': 0.180000, // Changa One w400
+  'chango': 0.216000, // Chango w400
+  'charissil': 0.439453, // Charis SIL w400
+  'charm': 0.434000, // Charm w400
+  'charmonman': 0.700000, // Charmonman w400
+  'chathura': 0.602000, // Chathura w400
+  'chauphilomeneone': 0.334000, // Chau Philomene One w400
+  'chelaone': 0.235000, // Chela One w400
+  'chelseamarket': 0.267578, // Chelsea Market w400
+  'chenla': 0.585938, // Chenla w400
+  'cherish': 0.320000, // Cherish w400
+  'cherrybombone': 0.288000, // Cherry Bomb One w400
+  'cherrycreamsoda': 0.241211, // Cherry Cream Soda w400
+  'cherryswash': 0.301000, // Cherry Swash w400
+  'chewy': 0.302734, // Chewy w400
+  'chicle': 0.294000, // Chicle w400
+  'chilanka': 0.366211, // Chilanka w400
+  'chironheihk': 0.210000, // Chiron Hei HK w500
+  'chivo': 0.250000, // Chivo w500
+  'chivomono': 0.250000, // Chivo Mono w500
+  'chocolateclassicalsans': 0.288000, // Chocolate Classical Sans w400
+  'chokokutai': 0.288000, // Chokokutai w400
+  'chonburi': 0.250000, // Chonburi w400
+  'cinzel': 0.372000, // Cinzel w500
+  'cinzeldecorative': 0.372000, // Cinzel Decorative w400
+  'clickerscript': 0.394043, // Clicker Script w400
+  'climatecrisis': 0.260000, // Climate Crisis w400
+  'coda': 0.382812, // Coda w400
+  'codystar': 0.249023, // Codystar w400
+  'coiny': -0.250000, // Coiny w400
+  'combo': 0.269000, // Combo w400
+  'comfortaa': 0.234000, // Comfortaa w500
+  'comforter': 0.480000, // Comforter w400
+  'comforterbrush': 0.480000, // Comforter Brush w400
+  'comicneue': 0.250000, // Comic Neue w400
+  'comicrelief': 0.340332, // Comic Relief w400
+  'comingsoon': 0.486328, // Coming Soon w400
+  'comme': 0.244629, // Comme w500
+  'commissioner': 0.206000, // Commissioner w500
+  'concertone': 0.200195, // Concert One w400
+  'condiment': 0.641000, // Condiment w400
+  'content': 0.585938, // Content w400
+  'contrailone': 0.305176, // Contrail One w400
+  'convergence': 0.230000, // Convergence w400
+  'cookie': 0.320000, // Cookie w400
+  'copse': 0.235840, // Copse w400
+  'coralpixels': 0.346000, // Coral Pixels w400
+  'corben': 0.473145, // Corben w400
+  'corinthia': 0.440000, // Corinthia w400
+  'cormorant': 0.287000, // Cormorant w500
+  'cormorantgaramond': 0.287000, // Cormorant Garamond w500
+  'cormorantinfant': 0.287000, // Cormorant Infant w500
+  'cormorantsc': 0.287000, // Cormorant SC w500
+  'cormorantunicase': 0.287000, // Cormorant Unicase w500
+  'cormorantupright': 0.287000, // Cormorant Upright w500
+  'cossettetexte': 0.210000, // Cossette Texte w400
+  'cossettetitre': 0.210000, // Cossette Titre w400
+  'courgette': 0.273438, // Courgette w400
+  'courierprime': 0.341797, // Courier Prime w400
+  'cousine': 0.300293, // Cousine w400
+  'coustard': 0.381348, // Coustard w400
+  'coveredbyyourgrace': 0.375000, // Covered By Your Grace w400
+  'craftygirls': 0.450195, // Crafty Girls w400
+  'creepster': 0.217773, // Creepster w400
+  'creteround': 0.286000, // Crete Round w400
+  'crimsonpro': 0.214844, // Crimson Pro w500
+  'crimsontext': 0.350586, // Crimson Text w400
+  'croissantone': 0.344000, // Croissant One w400
+  'crushed': 0.235840, // Crushed w400
+  'cuprum': 0.260000, // Cuprum w500
+  'cutefont': 0.290000, // Cute Font w400
+  'cutive': 0.325195, // Cutive w400
+  'cutivemono': 0.272461, // Cutive Mono w400
+  'daibannasil': 0.311523, // Dai Banna SIL w500
+  'damion': 0.364258, // Damion w400
+  'dancingscript': 0.280000, // Dancing Script w500
+  'danfo': 0.250000, // Danfo w400
+  'dangrek': 0.585938, // Dangrek w400
+  'darkergrotesque': 0.296000, // Darker Grotesque w500
+  'darumadropone': 0.288000, // Darumadrop One w400
+  'datatype': 0.300000, // Datatype w500
+  'davidlibre': 0.219238, // David Libre w500
+  'dawningofanewday': 0.488281, // Dawning of a New Day w400
+  'daysone': 0.276855, // Days One w400
+  'dekko': 0.519000, // Dekko w400
+  'delagothicone': 0.288000, // Dela Gothic One w400
+  'delicioushandrawn': 0.200000, // Delicious Handrawn w400
+  'delius': 0.270000, // Delius w400
+  'deliusswashcaps': 0.270000, // Delius Swash Caps w400
+  'deliusunicase': 0.236000, // Delius Unicase w400
+  'dellarespira': 0.296387, // Della Respira w400
+  'denkone': 0.215820, // Denk One w400
+  'devonshire': 0.433000, // Devonshire w400
+  'dhurjati': 0.585057, // Dhurjati w400
+  'didactgothic': 0.265000, // Didact Gothic w400
+  'diphylleia': 0.288000, // Diphylleia w400
+  'diplomata': 0.287000, // Diplomata w400
+  'diplomatasc': 0.287000, // Diplomata SC w400
+  'dmmono': 0.310000, // DM Mono w500
+  'dmsans': 0.310000, // DM Sans w500
+  'dmserifdisplay': 0.335000, // DM Serif Display w400
+  'dmseriftext': 0.335000, // DM Serif Text w400
+  'dohyeon': 0.200000, // Do Hyeon w400
+  'dokdo': 0.304000, // Dokdo w400
+  'domine': 0.240000, // Domine w500
+  'donegalone': 0.273438, // Donegal One w400
+  'dongle': 0.598000, // Dongle w400
+  'doppioone': 0.244141, // Doppio One w400
+  'dorsa': 0.200000, // Dorsa w400
+  'dosis': 0.237000, // Dosis w500
+  'dotgothic16': 0.288000, // DotGothic16 w400
+  'doto': 0.250000, // Doto w500
+  'drsugiyama': 0.450000, // Dr Sugiyama w400
+  'durusans': 0.263672, // Duru Sans w400
+  'dynalight': 0.314941, // Dynalight w400
+  'dynapuff': 0.235000, // DynaPuff w500
+  'eaglelake': 0.451660, // Eagle Lake w400
+  'eastseadokdo': 0.294000, // East Sea Dokdo w400
+  'eater': 0.448730, // Eater w400
+  'ebgaramond': 0.298000, // EB Garamond w500
+  'economica': 0.200000, // Economica w400
+  'eczar': 0.634000, // Eczar w500
+  'eduauvicwantarrows': 0.451500, // Edu AU VIC WA NT Arrows w500
+  'eduauvicwantdots': 0.451500, // Edu AU VIC WA NT Dots w500
+  'eduauvicwantguides': 0.451500, // Edu AU VIC WA NT Guides w500
+  'eduauvicwanthand': 0.451500, // Edu AU VIC WA NT Hand w500
+  'eduauvicwantpre': 0.451500, // Edu AU VIC WA NT Pre w500
+  'edunswactcursive': 0.463000, // Edu NSW ACT Cursive w500
+  'edunswactfoundation': 0.244000, // Edu NSW ACT Foundation w500
+  'edunswacthandpre': 0.463000, // Edu NSW ACT Hand Pre w500
+  'eduqldbeginner': 0.244000, // Edu QLD Beginner w500
+  'eduqldhand': 0.571500, // Edu QLD Hand w500
+  'edusabeginner': 0.244000, // Edu SA Beginner w500
+  'edusahand': 0.451500, // Edu SA Hand w500
+  'edutasbeginner': 0.244000, // Edu TAS Beginner w500
+  'eduvicwantbeginner': 0.244000, // Edu VIC WA NT Beginner w500
+  'eduvicwanthand': 0.451500, // Edu VIC WA NT Hand w500
+  'eduvicwanthandpre': 0.451500, // Edu VIC WA NT Hand Pre w500
+  'electrolize': 0.275000, // Electrolize w400
+  'elmessiri': 0.544000, // El Messiri w500
+  'elmssans': 0.300000, // Elms Sans w500
+  'elsie': 0.274000, // Elsie w400
+  'elsieswashcaps': 0.274000, // Elsie Swash Caps w400
+  'emblemaone': 0.266602, // Emblema One w400
+  'emilyscandy': 0.279297, // Emilys Candy w400
+  'encodesans': 0.220000, // Encode Sans w500
+  'encodesanssc': 0.220000, // Encode Sans SC w500
+  'engagement': 0.333984, // Engagement w400
+  'englebert': 0.291992, // Englebert w400
+  'enriqueta': 0.261000, // Enriqueta w500
+  'ephesis': 0.400000, // Ephesis w400
+  'epilogue': 0.235000, // Epilogue w500
+  'epundasans': 0.316000, // Epunda Sans w500
+  'epundaslab': 0.316000, // Epunda Slab w500
+  'ericaone': 0.339000, // Erica One w400
+  'esteban': 0.290000, // Esteban w400
+  'estedad': 0.510000, // Estedad w500
+  'estonia': 0.340000, // Estonia w400
+  'euphoriascript': 0.353600, // Euphoria Script w400
+  'ewert': 0.299000, // Ewert w400
+  'exile': 0.350000, // Exile w400
+  'exo': 0.327000, // Exo w500
+  'exo2': 0.201000, // Exo 2 w500
+  'expletussans': 0.306000, // Expletus Sans w500
+  'explora': 0.350000, // Explora w400
+  'facultyglyphic': 0.262000, // Faculty Glyphic w400
+  'fahkwang': 0.292000, // Fahkwang w500
+  'familjengrotesk': 0.225000, // Familjen Grotesk w500
+  'fanwoodtext': 0.392822, // Fanwood Text w400
+  'farro': 0.200000, // Farro w500
+  'farsan': 0.289000, // Farsan w400
+  'fascinate': 0.288574, // Fascinate w400
+  'fascinateinline': 0.288574, // Fascinate Inline w400
+  'fasterone': 0.165000, // Faster One w400
+  'fasthand': 0.585938, // Fasthand w400
+  'faunaone': 0.243000, // Fauna One w400
+  'faustina': 0.217000, // Faustina w500
+  'federant': 0.284000, // Federant w400
+  'federo': 0.258789, // Federo w400
+  'felipa': 0.319000, // Felipa w400
+  'fenix': 0.238000, // Fenix w400
+  'festive': 0.590000, // Festive w400
+  'figtree': 0.250000, // Figtree w500
+  'fingerpaint': 0.377000, // Finger Paint w400
+  'finlandicaheadline': 0.250000, // Finlandica Headline w500
+  'finlandicatext': 0.250000, // Finlandica Text w500
+  'firacode': 0.322000, // Fira Code w500
+  'firamono': 0.265000, // Fira Mono w500
+  'firasans': 0.265000, // Fira Sans w500
+  'firasanscondensed': 0.265000, // Fira Sans Condensed w500
+  'firasansextracondensed': 0.265000, // Fira Sans Extra Condensed w500
+  'fjallaone': 0.248047, // Fjalla One w400
+  'fjordone': 0.302734, // Fjord One w400
+  'flamenco': 0.231000, // Flamenco w400
+  'flavors': 0.286133, // Flavors w400
+  'fleurdeleah': 0.450000, // Fleur De Leah w400
+  'flowblock': 0.200000, // Flow Block w400
+  'flowcircular': 0.200000, // Flow Circular w400
+  'flowrounded': 0.200000, // Flow Rounded w400
+  'foldit': 0.300000, // Foldit w500
+  'fondamento': 0.377930, // Fondamento w400
+  'fontdinerswanky': 0.498047, // Fontdiner Swanky w400
+  'forum': 0.248000, // Forum w400
+  'fragmentmono': 0.250000, // Fragment Mono w400
+  'francoisone': 0.329000, // Francois One w400
+  'frankruhllibre': 0.334000, // Frank Ruhl Libre w500
+  'fraunces': 0.255000, // Fraunces w500
+  'freckleface': 0.278809, // Freckle Face w400
+  'frederickathegreat': 0.248047, // Fredericka the Great w400
+  'fredoka': 0.236000, // Fredoka w500
+  'freehand': 0.585938, // Freehand w400
+  'freeman': 0.280000, // Freeman w400
+  'fresca': 0.285000, // Fresca w400
+  'frijole': 0.329102, // Frijole w400
+  'fruktur': 0.263672, // Fruktur w400
+  'fugazone': 0.422000, // Fugaz One w400
+  'fuggles': 0.351000, // Fuggles w400
+  'funneldisplay': 0.250000, // Funnel Display w500
+  'funnelsans': 0.250000, // Funnel Sans w500
+  'fustat': 0.420000, // Fustat w500
+  'fuzzybubbles': 0.350000, // Fuzzy Bubbles w400
+  'gabarito': 0.260000, // Gabarito w500
+  'gabriela': 0.295000, // Gabriela w400
+  'gaegu': 0.240000, // Gaegu w400
+  'gafata': 0.202000, // Gafata w400
+  'gajrajone': 0.400000, // Gajraj One w400
+  'galada': 0.592000, // Galada w400
+  'galdeano': 0.230000, // Galdeano w400
+  'galindo': 0.431152, // Galindo w400
+  'gamaamli': 0.250000, // Ga Maamli w400
+  'gamjaflower': 0.218750, // Gamja Flower w400
+  'gantari': 0.250000, // Gantari w500
+  'gasoekone': 0.288000, // Gasoek One w400
+  'gayathri': 0.488281, // Gayathri w400
+  'geist': 0.295000, // Geist w500
+  'geistmono': 0.295000, // Geist Mono w500
+  'geistpixel': 0.295000, // Geist Pixel w400
+  'gelasio': 0.341797, // Gelasio w500
+  'gemunulibre': 0.200000, // Gemunu Libre w500
+  'genos': 0.300000, // Genos w500
+  'gentiumbookplus': 0.366211, // Gentium Book Plus w400
+  'gentiumplus': 0.366211, // Gentium Plus w400
+  'geo': 0.219727, // Geo w400
+  'geologica': 0.275000, // Geologica w500
+  'geom': 0.235000, // Geom w500
+  'georama': 0.226000, // Georama w500
+  'geostar': 0.226000, // Geostar w400
+  'geostarfill': 0.226000, // Geostar Fill w400
+  'germaniaone': 0.250000, // Germania One w400
+  'gfsdidot': 0.277000, // GFS Didot w400
+  'gfsneohellenic': 0.245000, // GFS Neohellenic w400
+  'gideonroman': 0.300000, // Gideon Roman w400
+  'gidole': 0.273438, // Gidole w400
+  'gidugu': 0.702847, // Gidugu w400
+  'gildadisplay': 0.285000, // Gilda Display w400
+  'girassol': 0.250000, // Girassol w400
+  'giveyouglory': 0.610352, // Give You Glory w400
+  'glassantiqua': 0.200000, // Glass Antiqua w400
+  'glegoo': 0.526000, // Glegoo w400
+  'gloock': 0.225000, // Gloock w400
+  'gloriahallelujah': 0.577148, // Gloria Hallelujah w400
+  'glory': 0.220000, // Glory w500
+  'gluten': 0.237500, // Gluten w500
+  'goblinone': 0.312500, // Goblin One w400
+  'gochihand': 0.407715, // Gochi Hand w400
+  'goldman': 0.300000, // Goldman w400
+  'golostext': 0.220000, // Golos Text w500
+  'googlesans': 0.286000, // Google Sans w500
+  'googlesanscode': 0.286000, // Google Sans Code w500
+  'googlesansflex': 0.286000, // Google Sans Flex w500
+  'gorditas': 0.259000, // Gorditas w400
+  'gothica1': 0.202148, // Gothic A1 w500
+  'gotu': 0.545000, // Gotu w400
+  'goudybookletter1911': 0.310547, // Goudy Bookletter 1911 w400
+  'gowunbatang': 0.288000, // Gowun Batang w400
+  'gowundodum': 0.288000, // Gowun Dodum w400
+  'graduate': 0.186000, // Graduate w400
+  'grandhotel': 0.412109, // Grand Hotel w400
+  'grandifloraone': 0.288000, // Grandiflora One w400
+  'grandstander': 0.265000, // Grandstander w500
+  'grapenuts': 0.325000, // Grape Nuts w400
+  'gravitasone': 0.326172, // Gravitas One w400
+  'greatvibes': 0.401000, // Great Vibes w400
+  'grechenfuemen': 0.320000, // Grechen Fuemen w400
+  'grenze': 0.380000, // Grenze w500
+  'grenzegotisch': 0.380000, // Grenze Gotisch w500
+  'greyqo': 0.360000, // Grey Qo w400
+  'griffy': 0.389648, // Griffy w400
+  'gruppo': 0.166016, // Gruppo w400
+  'gudea': 0.264000, // Gudea w400
+  'gugi': 0.142000, // Gugi w400
+  'gulzar': 1.200000, // Gulzar w400
+  'gupter': 0.250000, // Gupter w500
+  'gurajada': 0.757009, // Gurajada w400
+  'gveretlevin': 0.310000, // Gveret Levin w400
+  'gwendolyn': 0.320000, // Gwendolyn w400
+  'habibi': 0.273438, // Habibi w400
+  'hachimarupop': 0.288000, // Hachi Maru Pop w400
+  'hahmlet': 0.288000, // Hahmlet w500
+  'halant': 0.486000, // Halant w500
+  'hammersmithone': 0.349609, // Hammersmith One w400
+  'hanalei': 0.264160, // Hanalei w400
+  'hanaleifill': 0.264160, // Hanalei Fill w400
+  'handjet': 0.235294, // Handjet w500
+  'handlee': 0.401000, // Handlee w400
+  'hankengrotesk': 0.303000, // Hanken Grotesk w500
+  'hanuman': 0.488281, // Hanuman w500
+  'happymonkey': 0.255000, // Happy Monkey w400
+  'harmattan': 0.645996, // Harmattan w500
+  'headlandone': 0.254883, // Headland One w400
+  'hedvigletterssans': 0.320000, // Hedvig Letters Sans w400
+  'hedviglettersserif': 0.320000, // Hedvig Letters Serif w400
+  'heebo': 0.420898, // Heebo w500
+  'hennypenny': 0.637207, // Henny Penny w400
+  'heptaslab': 0.263000, // Hepta Slab w500
+  'herrvonmuellerhoff': 0.497000, // Herr Von Muellerhoff w400
+  'himelody': 0.336914, // Hi Melody w400
+  'hinamincho': 0.288000, // Hina Mincho w400
+  'hind': 0.546000, // Hind w500
+  'hindguntur': 0.773000, // Hind Guntur w500
+  'hindmadurai': 0.398000, // Hind Madurai w500
+  'hindmysuru': 0.725000, // Hind Mysuru w500
+  'hindsiliguri': 0.501000, // Hind Siliguri w500
+  'hindvadodara': 0.373000, // Hind Vadodara w500
+  'holtwoodonesc': 0.427734, // Holtwood One SC w400
+  'homemadeapple': 0.845703, // Homemade Apple w400
+  'homenaje': 0.204000, // Homenaje w400
+  'honk': 0.320000, // Honk w400
+  'hostgrotesk': 0.315000, // Host Grotesk w500
+  'hubballi': 0.191000, // Hubballi w400
+  'hubotsans': 0.320000, // Hubot Sans w500
+  'huninn': 0.180000, // Huninn w400
+  'hurricane': 0.430000, // Hurricane w400
+  'iansui': 0.180000, // Iansui w400
+  'ibarrarealnova': 0.300000, // Ibarra Real Nova w500
+  'ibmplexmono': 0.275000, // IBM Plex Mono w500
+  'ibmplexsans': 0.275000, // IBM Plex Sans w500
+  'ibmplexsansarabic': 0.415000, // IBM Plex Sans Arabic w500
+  'ibmplexsansdevanagari': 0.460000, // IBM Plex Sans Devanagari w500
+  'ibmplexsanshebrew': 0.275000, // IBM Plex Sans Hebrew w500
+  'ibmplexsansjp': 0.440000, // IBM Plex Sans JP w500
+  'ibmplexsanskr': 0.415000, // IBM Plex Sans KR w500
+  'ibmplexsansthai': 0.534000, // IBM Plex Sans Thai w500
+  'ibmplexsansthailooped': 0.534000, // IBM Plex Sans Thai Looped w500
+  'ibmplexserif': 0.275000, // IBM Plex Serif w500
+  'iceberg': 0.284000, // Iceberg w400
+  'iceland': 0.220000, // Iceland w400
+  'idiqlat': 0.541504, // Idiqlat w400
+  'imbue': 0.250000, // Imbue w500
+  'imfelldoublepica': 0.313965, // IM Fell Double Pica w400
+  'imfelldoublepicasc': 0.313965, // IM Fell Double Pica SC w400
+  'imfelldwpica': 0.337891, // IM Fell DW Pica w400
+  'imfelldwpicasc': 0.337891, // IM Fell DW Pica SC w400
+  'imfellenglish': 0.363281, // IM Fell English w400
+  'imfellenglishsc': 0.363281, // IM Fell English SC w400
+  'imfellfrenchcanon': 0.258789, // IM Fell French Canon w400
+  'imfellfrenchcanonsc': 0.258789, // IM Fell French Canon SC w400
+  'imfellgreatprimer': 0.274414, // IM Fell Great Primer w400
+  'imfellgreatprimersc': 0.274414, // IM Fell Great Primer SC w400
+  'imperialscript': 0.330000, // Imperial Script w400
+  'imprima': 0.239000, // Imprima w400
+  'inclusivesans': 0.250000, // Inclusive Sans w500
+  'inconsolata': 0.190000, // Inconsolata w500
+  'inder': 0.253906, // Inder w400
+  'indieflower': 0.488281, // Indie Flower w400
+  'ingriddarling': 0.380000, // Ingrid Darling w400
+  'inika': 0.297000, // Inika w400
+  'inknutantiqua': 0.876000, // Inknut Antiqua w500
+  'inriasans': 0.223000, // Inria Sans w400
+  'inriaserif': 0.223000, // Inria Serif w400
+  'inspiration': 0.400000, // Inspiration w400
+  'instrumentsans': 0.250000, // Instrument Sans w500
+  'instrumentserif': 0.310000, // Instrument Serif w400
+  'intelonemono': 0.290000, // Intel One Mono w500
+  'inter': 0.241211, // Inter w500
+  'intertight': 0.241211, // Inter Tight w500
+  'iosevkacharon': 0.265000, // Iosevka Charon w500
+  'iosevkacharonmono': 0.265000, // Iosevka Charon Mono w500
+  'irishgrover': 0.240234, // Irish Grover w400
+  'islandmoments': 0.400000, // Island Moments w400
+  'istokweb': 0.433105, // Istok Web w400
+  'italiana': 0.250000, // Italiana w400
+  'italianno': 0.450000, // Italianno w400
+  'itim': 0.250000, // Itim w400
+  'jacquard12': 0.238095, // Jacquard 12 w400
+  'jacquard12charted': 0.238095, // Jacquard 12 Charted w400
+  'jacquard24': 0.209302, // Jacquard 24 w400
+  'jacquard24charted': 0.209302, // Jacquard 24 Charted w400
+  'jacquardabastarda9': 0.307692, // Jacquarda Bastarda 9 w400
+  'jacquardabastarda9charted': 0.307692, // Jacquarda Bastarda 9 Charted w400
+  'jacquesfrancois': 0.295898, // Jacques Francois w400
+  'jacquesfrancoisshadow': 0.295898, // Jacques Francois Shadow w400
+  'jaini': 0.266000, // Jaini w400
+  'jainipurva': 0.266000, // Jaini Purva w400
+  'jaldi': 0.542480, // Jaldi w400
+  'jaro': 0.250000, // Jaro w400
+  'jersey10': 0.267857, // Jersey 10 w400
+  'jersey10charted': 0.267857, // Jersey 10 Charted w400
+  'jersey15': 0.222222, // Jersey 15 w400
+  'jersey15charted': 0.222222, // Jersey 15 Charted w400
+  'jersey20': 0.205882, // Jersey 20 w400
+  'jersey20charted': 0.205882, // Jersey 20 Charted w400
+  'jersey25': 0.196748, // Jersey 25 w400
+  'jersey25charted': 0.196748, // Jersey 25 Charted w400
+  'jetbrainsmono': 0.300000, // JetBrains Mono w500
+  'jimnightshade': 0.512695, // Jim Nightshade w400
+  'joan': 0.292000, // Joan w400
+  'jockeyone': 0.319000, // Jockey One w400
+  'jollylodger': 0.250977, // Jolly Lodger w400
+  'jomhuria': 0.386667, // Jomhuria w400
+  'jomolhari': 0.382812, // Jomolhari w400
+  'josefinsans': 0.250000, // Josefin Sans w500
+  'josefinslab': 0.250000, // Josefin Slab w500
+  'jost': 0.375000, // Jost w500
+  'jotione': 0.331000, // Joti One w400
+  'jua': 0.200000, // Jua w400
+  'judson': 0.248000, // Judson w400
+  'julee': 0.284000, // Julee w400
+  'juliussansone': 0.228000, // Julius Sans One w400
+  'junge': 0.287109, // Junge w400
+  'jura': 0.218000, // Jura w500
+  'justanotherhand': 0.296875, // Just Another Hand w400
+  'justmeagaindownhere': 0.429000, // Just Me Again Down Here w400
+  'k2d': 0.252000, // K2D w500
+  'kablammo': 0.253000, // Kablammo w400
+  'kadwa': 0.693848, // Kadwa w400
+  'kaiseidecol': 0.288000, // Kaisei Decol w500
+  'kaiseiharunoumi': 0.288000, // Kaisei HarunoUmi w500
+  'kaiseiopti': 0.288000, // Kaisei Opti w500
+  'kaiseitokumin': 0.288000, // Kaisei Tokumin w500
+  'kalam': 0.531000, // Kalam w400
+  'kalnia': 0.300000, // Kalnia w500
+  'kalniaglaze': 0.300000, // Kalnia Glaze w500
+  'kameron': 0.296875, // Kameron w500
+  'kanchenjunga': 0.390625, // Kanchenjunga w500
+  'kanit': 0.395000, // Kanit w500
+  'kantumruypro': 0.260000, // Kantumruy Pro w500
+  'kapakana': 0.320000, // Kapakana w400
+  'karantina': 0.153000, // Karantina w400
+  'karla': 0.252000, // Karla w500
+  'karma': 0.548000, // Karma w500
+  'katibeh': 0.510000, // Katibeh w400
+  'kaushanscript': 0.367000, // Kaushan Script w400
+  'kavivanar': 0.417000, // Kavivanar w400
+  'kavoon': 0.263672, // Kavoon w400
+  'kayphodu': 0.256348, // Kay Pho Du w500
+  'kdamthmorpro': 0.400000, // Kdam Thmor Pro w400
+  'keaniaone': 0.228000, // Keania One w400
+  'kedebideri': 0.250000, // Kedebideri w500
+  'kellyslab': 0.250000, // Kelly Slab w400
+  'kenia': 0.250000, // Kenia w400
+  'khand': 0.479000, // Khand w500
+  'khula': 0.605662, // Khula w400
+  'kings': 0.450000, // Kings w400
+  'kiranghaerang': 0.250000, // Kirang Haerang w400
+  'kiteone': 0.351000, // Kite One w400
+  'kiwimaru': 0.288000, // Kiwi Maru w500
+  'kleeone': 0.288000, // Klee One w400
+  'knewave': 0.385000, // Knewave w400
+  'kodchasan': 0.276000, // Kodchasan w500
+  'kodemono': 0.300000, // Kode Mono w500
+  'koho': 0.255000, // KoHo w500
+  'kohsantepheap': 0.268555, // Koh Santepheap w400
+  'kolkerbrush': 0.350000, // Kolker Brush w400
+  'konkhmersleokchher': 0.585938, // Konkhmer Sleokchher w400
+  'kosugi': 0.120117, // Kosugi w400
+  'kosugimaru': 0.120117, // Kosugi Maru w400
+  'kottaone': 0.288000, // Kotta One w400
+  'koulen': 0.585938, // Koulen w400
+  'kranky': 0.287109, // Kranky w400
+  'kreon': 0.286000, // Kreon w500
+  'kristi': 0.353516, // Kristi w400
+  'kronaone': 0.258789, // Krona One w400
+  'krub': 0.293000, // Krub w500
+  'kufam': 0.400000, // Kufam w500
+  'kulimpark': 0.204000, // Kulim Park w400
+  'kumarone': 0.642000, // Kumar One w400
+  'kumaroneoutline': 0.642000, // Kumar One Outline w400
+  'kumbhsans': 0.253906, // Kumbh Sans w500
+  'kurale': 0.383000, // Kurale w400
+  'labelleaurore': 0.775391, // La Belle Aurore w400
+  'labrada': 0.300000, // Labrada w500
+  'lacquer': 0.200000, // Lacquer w400
+  'laila': 0.452000, // Laila w500
+  'lakkireddy': 0.747070, // Lakki Reddy w400
+  'lalezar': 0.588000, // Lalezar w400
+  'lancelot': 0.326172, // Lancelot w400
+  'langar': 0.200000, // Langar w400
+  'lateef': 0.500000, // Lateef w500
+  'lato': 0.213000, // Lato w400
+  'lavishlyyours': 0.500000, // Lavishly Yours w400
+  'leaguegothic': 0.232500, // League Gothic w400
+  'leaguescript': 0.390625, // League Script w400
+  'leaguespartan': 0.220000, // League Spartan w500
+  'leckerlione': 0.313000, // Leckerli One w400
+  'ledger': 0.329000, // Ledger w400
+  'lekton': 0.250000, // Lekton w400
+  'lemon': 0.287000, // Lemon w400
+  'lemonada': 0.653000, // Lemonada w500
+  'lexend': 0.250000, // Lexend w500
+  'lexenddeca': 0.250000, // Lexend Deca w500
+  'lexendexa': 0.250000, // Lexend Exa w500
+  'lexendgiga': 0.250000, // Lexend Giga w500
+  'lexendmega': 0.250000, // Lexend Mega w500
+  'lexendpeta': 0.250000, // Lexend Peta w500
+  'lexendtera': 0.250000, // Lexend Tera w500
+  'lexendzetta': 0.250000, // Lexend Zetta w500
+  'libertinuskeyboard': 0.246000, // Libertinus Keyboard w400
+  'libertinusmath': 0.246000, // Libertinus Math w400
+  'libertinusmono': 0.246000, // Libertinus Mono w400
+  'libertinussans': 0.246000, // Libertinus Sans w400
+  'libertinusserif': 0.246000, // Libertinus Serif w400
+  'libertinusserifdisplay': 0.246000, // Libertinus Serif Display w400
+  'librebarcode128': 0.400000, // Libre Barcode 128 w400
+  'librebarcode128text': 0.400000, // Libre Barcode 128 Text w400
+  'librebarcode39': 0.400000, // Libre Barcode 39 w400
+  'librebarcode39extended': 0.400000, // Libre Barcode 39 Extended w400
+  'librebarcode39extendedtext': 0.400000, // Libre Barcode 39 Extended Text w400
+  'librebarcode39text': 0.400000, // Libre Barcode 39 Text w400
+  'librebarcodeean13text': 0.117188, // Libre Barcode EAN13 Text w400
+  'librebaskerville': 0.270000, // Libre Baskerville w500
+  'librebodoni': 0.326000, // Libre Bodoni w500
+  'librecaslondisplay': 0.266000, // Libre Caslon Display w400
+  'librecaslontext': 0.260000, // Libre Caslon Text w400
+  'librefranklin': 0.246000, // Libre Franklin w500
+  'licorice': 0.400000, // Licorice w400
+  'lifesavers': 0.250000, // Life Savers w400
+  'lilex': 0.301000, // Lilex w500
+  'lilitaone': 0.220000, // Lilita One w400
+  'lilyscriptone': 0.359000, // Lily Script One w400
+  'limelight': 0.307129, // Limelight w400
+  'lindenhill': 0.460938, // Linden Hill w400
+  'linefont': 0.200000, // Linefont w500
+  'lineseedjp': 0.168000, // LINE Seed JP w400
+  'lisubosa': 0.200000, // Lisu Bosa w500
+  'liter': 0.396000, // Liter w400
+  'literata': 0.308000, // Literata w500
+  'liujianmaocao': 0.120000, // Liu Jian Mao Cao w400
+  'livvic': 0.250000, // Livvic w500
+  'lobster': 0.250000, // Lobster w400
+  'lobstertwo': 0.250000, // Lobster Two w400
+  'londrinaoutline': 0.238000, // Londrina Outline w400
+  'londrinashadow': 0.238000, // Londrina Shadow w400
+  'londrinasketch': 0.238000, // Londrina Sketch w400
+  'londrinasolid': 0.238000, // Londrina Solid w400
+  'longcang': 0.120000, // Long Cang w400
+  'lora': 0.274000, // Lora w500
+  'lovedbytheking': 0.555176, // Loved by the King w400
+  'lovelight': 0.500000, // Love Light w400
+  'loversquarrel': 0.401000, // Lovers Quarrel w400
+  'loveyalikeasister': 0.325195, // Love Ya Like A Sister w400
+  'luckiestguy': 0.296875, // Luckiest Guy w400
+  'lugrasimo': 0.325195, // Lugrasimo w400
+  'lumanosimo': 0.354980, // Lumanosimo w400
+  'lunasima': 0.210938, // Lunasima w400
+  'lusitana': 0.341000, // Lusitana w400
+  'lustria': 0.327000, // Lustria w400
+  'luxuriousroman': 0.250000, // Luxurious Roman w400
+  'luxuriousscript': 0.350000, // Luxurious Script w400
+  'lxgwmarkergothic': 0.198000, // LXGW Marker Gothic w400
+  'lxgwwenkaimonotc': 0.241000, // LXGW WenKai Mono TC w400
+  'lxgwwenkaitc': 0.285000, // LXGW WenKai TC w400
+  'macondo': 0.292000, // Macondo w400
+  'macondoswashcaps': 0.292000, // Macondo Swash Caps w400
+  'mada': 0.350000, // Mada w500
+  'madimione': 0.310000, // Madimi One w400
+  'magra': 0.247000, // Magra w400
+  'maidenorange': 0.296875, // Maiden Orange w400
+  'maitree': 0.500000, // Maitree w500
+  'majormonodisplay': 0.100000, // Major Mono Display w400
+  'mako': 0.262695, // Mako w400
+  'mali': 0.250000, // Mali w500
+  'mallanna': 0.579310, // Mallanna w400
+  'maname': 0.000000, // Maname w400
+  'mandali': 0.601266, // Mandali w400
+  'manjari': 0.366211, // Manjari w400
+  'manrope': 0.300000, // Manrope w500
+  'mansalva': 0.466000, // Mansalva w400
+  'manuale': 0.236000, // Manuale w500
+  'manufacturingconsent': 0.283333, // Manufacturing Consent w400
+  'marcellus': 0.279785, // Marcellus w400
+  'marcellussc': 0.279785, // Marcellus SC w400
+  'marckscript': 0.385000, // Marck Script w400
+  'margarine': 0.331055, // Margarine w400
+  'marhey': 0.640000, // Marhey w500
+  'markazitext': 0.361328, // Markazi Text w500
+  'markoone': 0.354980, // Marko One w400
+  'marmelad': 0.221000, // Marmelad w400
+  'martel': 0.562000, // Martel w400
+  'martelsans': 0.674000, // Martel Sans w400
+  'martianmono': 0.200000, // Martian Mono w500
+  'marvel': 0.259000, // Marvel w400
+  'mashanzheng': 0.120000, // Ma Shan Zheng w400
+  'matangi': 0.360000, // Matangi w500
+  'mate': 0.262000, // Mate w400
+  'matemasie': 0.230000, // Matemasie w400
+  'matesc': 0.262000, // Mate SC w400
+  'mavenpro': 0.210000, // Maven Pro w500
+  'mclaren': 0.352539, // McLaren w400
+  'meaculpa': 0.400000, // Mea Culpa w400
+  'meddon': 0.711426, // Meddon w400
+  'medievalsharp': 0.265137, // MedievalSharp w400
+  'medulaone': 0.162000, // Medula One w400
+  'meerainimai': 0.585938, // Meera Inimai w400
+  'megrim': 0.200000, // Megrim w400
+  'meiescript': 0.380859, // Meie Script w400
+  'menbere': 0.338000, // Menbere w500
+  'meowscript': 0.370000, // Meow Script w400
+  'merienda': 0.342000, // Merienda w500
+  'merriweather': 0.273000, // Merriweather w500
+  'merriweathersans': 0.273000, // Merriweather Sans w500
+  'metal': 0.781250, // Metal w400
+  'metalmania': 0.295898, // Metal Mania w400
+  'metamorphous': 0.287109, // Metamorphous w400
+  'metrophobic': 0.224609, // Metrophobic w400
+  'michroma': 0.265625, // Michroma w400
+  'micro5': 0.278788, // Micro 5 w400
+  'micro5charted': 0.278788, // Micro 5 Charted w400
+  'milonga': 0.260000, // Milonga w400
+  'miltonian': 0.274000, // Miltonian w400
+  'miltoniantattoo': 0.274000, // Miltonian Tattoo w400
+  'mina': 0.515000, // Mina w400
+  'mingzat': 0.670000, // Mingzat w400
+  'miniver': 0.462891, // Miniver w400
+  'mirandasans': 0.240000, // Miranda Sans w500
+  'miriamlibre': 0.344000, // Miriam Libre w500
+  'mirza': 0.453000, // Mirza w500
+  'missfajardose': 0.389000, // Miss Fajardose w400
+  'mitr': 0.420000, // Mitr w500
+  'mochiypopone': 0.288000, // Mochiy Pop One w400
+  'mochiypoppone': 0.288000, // Mochiy Pop P One w400
+  'modak': 0.512207, // Modak w400
+  'modernantiqua': 0.248047, // Modern Antiqua w400
+  'moderustic': 0.250000, // Moderustic w500
+  'mogra': 0.250000, // Mogra w400
+  'mohave': 0.403000, // Mohave w500
+  'moiraione': 0.288000, // Moirai One w400
+  'molengo': 0.254883, // Molengo w400
+  'momosignature': 0.285000, // Momo Signature w400
+  'momotrustdisplay': 0.275000, // Momo Trust Display w400
+  'momotrustsans': 0.275000, // Momo Trust Sans w500
+  'monasans': 0.320000, // Mona Sans w500
+  'monda': 0.427246, // Monda w500
+  'monofett': 0.153809, // Monofett w400
+  'monomakh': 0.341000, // Monomakh w400
+  'monomaniacone': 0.288000, // Monomaniac One w400
+  'monoton': 0.401367, // Monoton w400
+  'monsieurladoulaise': 0.513000, // Monsieur La Doulaise w400
+  'montaga': 0.254000, // Montaga w400
+  'montaguslab': 0.300000, // Montagu Slab w500
+  'montecarlo': 0.500000, // MonteCarlo w400
+  'montenegringothicone': 0.350000, // Montenegrin Gothic One w400
+  'montez': 0.414062, // Montez w400
+  'montserrat': 0.251000, // Montserrat w500
+  'montserratalternates': 0.251000, // Montserrat Alternates w500
+  'montserratunderline': 0.251000, // Montserrat Underline w500
+  'moolahlah': 0.300000, // Moo Lah Lah w400
+  'mooli': 0.236000, // Mooli w400
+  'moondance': 0.370000, // Moon Dance w400
+  'moul': 0.585938, // Moul w400
+  'moulpali': 0.781250, // Moulpali w400
+  'mountainsofchristmas': 0.345703, // Mountains of Christmas w400
+  'mousememoirs': 0.208984, // Mouse Memoirs w400
+  'mozillaheadline': 0.255000, // Mozilla Headline w500
+  'mozillatext': 0.255000, // Mozilla Text w500
+  'mplus1': 0.288000, // M PLUS 1 w500
+  'mplus1code': 0.235000, // M PLUS 1 Code w500
+  'mplus1p': 0.320000, // M PLUS 1p w500
+  'mplus2': 0.288000, // M PLUS 2 w500
+  'mpluscodelatin': 0.235000, // M PLUS Code Latin w500
+  'mplusrounded1c': 0.320000, // M PLUS Rounded 1c w500
+  'mplusu': 0.288000, // M PLUS U w500
+  'mrbedfort': 0.661000, // Mr Bedfort w400
+  'mrdafoe': 0.416000, // Mr Dafoe w400
+  'mrdehaviland': 0.442000, // Mr De Haviland w400
+  'mrssaintdelafield': 0.619000, // Mrs Saint Delafield w400
+  'mrssheppards': 0.378000, // Mrs Sheppards w400
+  'msmadi': 0.420000, // Ms Madi w400
+  'mukta': 0.532000, // Mukta w500
+  'muktamahee': 0.532000, // Mukta Mahee w500
+  'muktamalar': 0.532000, // Mukta Malar w500
+  'muktavaani': 0.532000, // Mukta Vaani w500
+  'mulish': 0.250000, // Mulish w500
+  'murecho': 0.288000, // Murecho w500
+  'museomoderno': 0.445000, // MuseoModerno w500
+  'mynerve': 0.380000, // Mynerve w400
+  'mysoul': 0.350000, // My Soul w400
+  'mysteryquest': 0.399414, // Mystery Quest w400
+  'nabla': 0.380000, // Nabla w400
+  'namdhinggo': 0.268555, // Namdhinggo w500
+  'nanumbrushscript': 0.370000, // Nanum Brush Script w400
+  'nanumgothic': 0.156000, // Nanum Gothic w400
+  'nanumgothiccoding': 0.200000, // Nanum Gothic Coding w400
+  'nanummyeongjo': 0.200195, // Nanum Myeongjo w400
+  'nanumpenscript': 0.200000, // Nanum Pen Script w400
+  'narnoor': 0.237000, // Narnoor w500
+  'natasans': 0.250000, // Nata Sans w500
+  'nationalpark': 0.300000, // National Park w500
+  'neonderthaw': 0.300000, // Neonderthaw w400
+  'nerkoone': 0.317000, // Nerko One w400
+  'neucha': 0.285156, // Neucha w400
+  'neuton': 0.236816, // Neuton w400
+  'newamsterdam': 0.275000, // New Amsterdam w400
+  'newrocker': 0.283000, // New Rocker w400
+  'newscycle': 0.387695, // News Cycle w400
+  'newsreader': 0.265000, // Newsreader w500
+  'newtegomin': 0.288000, // New Tegomin w400
+  'niconne': 0.285645, // Niconne w400
+  'niramit': 0.195000, // Niramit w500
+  'nixieone': 0.210000, // Nixie One w400
+  'nobile': 0.282227, // Nobile w500
+  'nokora': 0.390625, // Nokora w500
+  'norican': 0.386230, // Norican w400
+  'nosifer': 0.648438, // Nosifer w400
+  'notable': 0.157000, // Notable w400
+  'nothingyoucoulddo': 0.397461, // Nothing You Could Do w400
+  'noticiatext': 0.289551, // Noticia Text w400
+  'notocoloremoji': 0.244141, // Noto Color Emoji w400
+  'notoemoji': 0.244141, // Noto Emoji w500
+  'notokufiarabic': 0.615000, // Noto Kufi Arabic w500
+  'notomusic': 0.398000, // Noto Music w400
+  'notonaskharabic': 0.634000, // Noto Naskh Arabic w500
+  'notonastaliqurdu': 0.596000, // Noto Nastaliq Urdu w500
+  'notorashihebrew': 0.290000, // Noto Rashi Hebrew w500
+  'notosans': 0.293000, // Noto Sans w500
+  'notosansadlam': 0.293000, // Noto Sans Adlam w500
+  'notosansadlamunjoined': 0.293000, // Noto Sans Adlam Unjoined w500
+  'notosansanatolianhieroglyphs':
+      0.253000, // Noto Sans Anatolian Hieroglyphs w400
+  'notosansarabic': 0.738000, // Noto Sans Arabic w500
+  'notosansarmenian': 0.292000, // Noto Sans Armenian w500
+  'notosansavestan': 0.293000, // Noto Sans Avestan w400
+  'notosansbalinese': 0.838000, // Noto Sans Balinese w500
+  'notosansbamum': 0.293000, // Noto Sans Bamum w500
+  'notosansbassavah': 0.293000, // Noto Sans Bassa Vah w500
+  'notosansbatak': 0.293000, // Noto Sans Batak w400
+  'notosansbengali': 0.408000, // Noto Sans Bengali w500
+  'notosansbhaiksuki': 0.460000, // Noto Sans Bhaiksuki w400
+  'notosansbrahmi': 0.306000, // Noto Sans Brahmi w400
+  'notosansbuginese': 0.293000, // Noto Sans Buginese w400
+  'notosansbuhid': 0.293000, // Noto Sans Buhid w400
+  'notosanscanadianaboriginal': 0.293000, // Noto Sans Canadian Aboriginal w500
+  'notosanscarian': 0.293000, // Noto Sans Carian w400
+  'notosanscaucasianalbanian': 0.274000, // Noto Sans Caucasian Albanian w400
+  'notosanschakma': 0.320000, // Noto Sans Chakma w400
+  'notosanscham': 0.351000, // Noto Sans Cham w500
+  'notosanscherokee': 0.293000, // Noto Sans Cherokee w500
+  'notosanschorasmian': 0.293000, // Noto Sans Chorasmian w400
+  'notosanscoptic': 0.293000, // Noto Sans Coptic w400
+  'notosanscuneiform': 0.690000, // Noto Sans Cuneiform w400
+  'notosanscypriot': 0.293000, // Noto Sans Cypriot w400
+  'notosanscyprominoan': 0.293000, // Noto Sans Cypro Minoan w400
+  'notosansdeseret': 0.293000, // Noto Sans Deseret w400
+  'notosansdevanagari': 0.408000, // Noto Sans Devanagari w500
+  'notosansdisplay': 0.293000, // Noto Sans Display w500
+  'notosansduployan': 0.293000, // Noto Sans Duployan w400
+  'notosansegyptianhieroglyphs':
+      0.326000, // Noto Sans Egyptian Hieroglyphs w400
+  'notosanselbasan': 0.270000, // Noto Sans Elbasan w400
+  'notosanselymaic': 0.280000, // Noto Sans Elymaic w400
+  'notosansethiopic': 0.293000, // Noto Sans Ethiopic w500
+  'notosansgeorgian': 0.292000, // Noto Sans Georgian w500
+  'notosansglagolitic': 0.293000, // Noto Sans Glagolitic w400
+  'notosansgothic': 0.293000, // Noto Sans Gothic w400
+  'notosansgrantha': 0.534000, // Noto Sans Grantha w400
+  'notosansgujarati': 0.408000, // Noto Sans Gujarati w500
+  'notosansgunjalagondi': 0.252000, // Noto Sans Gunjala Gondi w500
+  'notosansgurmukhi': 0.408000, // Noto Sans Gurmukhi w500
+  'notosanshanifirohingya': 0.293000, // Noto Sans Hanifi Rohingya w500
+  'notosanshanunoo': 0.293000, // Noto Sans Hanunoo w400
+  'notosanshatran': 0.293000, // Noto Sans Hatran w400
+  'notosanshebrew': 0.292000, // Noto Sans Hebrew w500
+  'notosanshk': 0.288000, // Noto Sans HK w500
+  'notosansimperialaramaic': 0.293000, // Noto Sans Imperial Aramaic w400
+  'notosansindicsiyaqnumbers': 0.347000, // Noto Sans Indic Siyaq Numbers w400
+  'notosansinscriptionalpahlavi':
+      0.352000, // Noto Sans Inscriptional Pahlavi w400
+  'notosansinscriptionalparthian':
+      0.301000, // Noto Sans Inscriptional Parthian w400
+  'notosansjavanese': 0.916000, // Noto Sans Javanese w500
+  'notosansjp': 0.288000, // Noto Sans JP w500
+  'notosanskaithi': 0.425000, // Noto Sans Kaithi w400
+  'notosanskannada': 0.540000, // Noto Sans Kannada w500
+  'notosanskawi': 0.900000, // Noto Sans Kawi w500
+  'notosanskayahli': 0.293000, // Noto Sans Kayah Li w500
+  'notosanskharoshthi': 0.301000, // Noto Sans Kharoshthi w400
+  'notosanskhmer': 0.293000, // Noto Sans Khmer w500
+  'notosanskhojki': 0.447000, // Noto Sans Khojki w400
+  'notosanskhudawadi': 0.373000, // Noto Sans Khudawadi w400
+  'notosanskr': 0.288000, // Noto Sans KR w500
+  'notosanslao': 0.462000, // Noto Sans Lao w500
+  'notosanslaolooped': 0.350000, // Noto Sans Lao Looped w500
+  'notosanslepcha': 0.450000, // Noto Sans Lepcha w400
+  'notosanslimbu': 0.293000, // Noto Sans Limbu w400
+  'notosanslineara': 0.293000, // Noto Sans Linear A w400
+  'notosanslinearb': 0.293000, // Noto Sans Linear B w400
+  'notosanslisu': 0.293000, // Noto Sans Lisu w500
+  'notosanslycian': 0.293000, // Noto Sans Lycian w400
+  'notosanslydian': 0.293000, // Noto Sans Lydian w400
+  'notosansmahajani': 0.243000, // Noto Sans Mahajani w400
+  'notosansmalayalam': 0.383000, // Noto Sans Malayalam w500
+  'notosansmandaic': 0.423000, // Noto Sans Mandaic w400
+  'notosansmanichaean': 0.340000, // Noto Sans Manichaean w400
+  'notosansmarchen': 0.534000, // Noto Sans Marchen w400
+  'notosansmasaramgondi': 0.200000, // Noto Sans Masaram Gondi w400
+  'notosansmath': 0.423000, // Noto Sans Math w400
+  'notosansmayannumerals': 0.293000, // Noto Sans Mayan Numerals w400
+  'notosansmedefaidrin': 0.293000, // Noto Sans Medefaidrin w500
+  'notosansmeeteimayek': 0.321000, // Noto Sans Meetei Mayek w500
+  'notosansmendekikakui': 0.237000, // Noto Sans Mende Kikakui w400
+  'notosansmeroitic': 0.415000, // Noto Sans Meroitic w400
+  'notosansmiao': 0.350000, // Noto Sans Miao w400
+  'notosansmodi': 0.463000, // Noto Sans Modi w400
+  'notosansmongolian': 0.293000, // Noto Sans Mongolian w400
+  'notosansmono': 0.293000, // Noto Sans Mono w500
+  'notosansmro': 0.293000, // Noto Sans Mro w400
+  'notosansmultani': 0.293000, // Noto Sans Multani w400
+  'notosansmyanmar': 0.860000, // Noto Sans Myanmar w500
+  'notosansnabataean': 0.293000, // Noto Sans Nabataean w400
+  'notosansnagmundari': 0.293000, // Noto Sans Nag Mundari w500
+  'notosansnandinagari': 0.560000, // Noto Sans Nandinagari w400
+  'notosansnewa': 0.396000, // Noto Sans Newa w400
+  'notosansnewtailue': 0.293000, // Noto Sans New Tai Lue w500
+  'notosansnko': 0.293000, // Noto Sans NKo w400
+  'notosansnkounjoined': 0.293000, // Noto Sans NKo Unjoined w500
+  'notosansnushu': 0.321000, // Noto Sans Nushu w400
+  'notosansogham': 0.293000, // Noto Sans Ogham w400
+  'notosansolchiki': 0.293000, // Noto Sans Ol Chiki w500
+  'notosansoldhungarian': 0.177000, // Noto Sans Old Hungarian w400
+  'notosansolditalic': 0.293000, // Noto Sans Old Italic w400
+  'notosansoldnortharabian': 0.293000, // Noto Sans Old North Arabian w400
+  'notosansoldpermic': 0.293000, // Noto Sans Old Permic w400
+  'notosansoldpersian': 0.293000, // Noto Sans Old Persian w400
+  'notosansoldsogdian': 0.293000, // Noto Sans Old Sogdian w400
+  'notosansoldsoutharabian': 0.293000, // Noto Sans Old South Arabian w400
+  'notosansoldturkic': 0.293000, // Noto Sans Old Turkic w400
+  'notosansoriya': 0.293000, // Noto Sans Oriya w500
+  'notosansosage': 0.293000, // Noto Sans Osage w400
+  'notosansosmanya': 0.293000, // Noto Sans Osmanya w400
+  'notosanspahawhhmong': 0.293000, // Noto Sans Pahawh Hmong w400
+  'notosanspalmyrene': 0.293000, // Noto Sans Palmyrene w400
+  'notosanspaucinhau': 0.293000, // Noto Sans Pau Cin Hau w400
+  'notosansphagspa': 0.293000, // Noto Sans PhagsPa w400
+  'notosansphoenician': 0.293000, // Noto Sans Phoenician w400
+  'notosanspsalterpahlavi': 0.554000, // Noto Sans Psalter Pahlavi w400
+  'notosansrejang': 0.293000, // Noto Sans Rejang w400
+  'notosansrunic': 0.293000, // Noto Sans Runic w400
+  'notosanssamaritan': 0.293000, // Noto Sans Samaritan w400
+  'notosanssaurashtra': 0.293000, // Noto Sans Saurashtra w400
+  'notosanssc': 0.288000, // Noto Sans SC w500
+  'notosanssharada': 0.455000, // Noto Sans Sharada w400
+  'notosansshavian': 0.293000, // Noto Sans Shavian w400
+  'notosanssiddham': 1.030000, // Noto Sans Siddham w400
+  'notosanssignwriting': 0.200000, // Noto Sans SignWriting w400
+  'notosanssinhala': 0.293000, // Noto Sans Sinhala w500
+  'notosanssogdian': 0.313000, // Noto Sans Sogdian w400
+  'notosanssorasompeng': 0.293000, // Noto Sans Sora Sompeng w500
+  'notosanssoyombo': 0.357000, // Noto Sans Soyombo w400
+  'notosanssundanese': 0.368000, // Noto Sans Sundanese w500
+  'notosanssunuwar': 0.293000, // Noto Sans Sunuwar w400
+  'notosanssylotinagri': 0.293000, // Noto Sans Syloti Nagri w400
+  'notosanssymbols': 0.570000, // Noto Sans Symbols w500
+  'notosanssymbols2': 0.630000, // Noto Sans Symbols 2 w400
+  'notosanssyriac': 0.486000, // Noto Sans Syriac w500
+  'notosanssyriaceastern': 0.486000, // Noto Sans Syriac Eastern w500
+  'notosanssyriacwestern': 0.486000, // Noto Sans Syriac Western w500
+  'notosanstagalog': 0.293000, // Noto Sans Tagalog w400
+  'notosanstagbanwa': 0.293000, // Noto Sans Tagbanwa w400
+  'notosanstaile': 0.293000, // Noto Sans Tai Le w400
+  'notosanstaitham': 0.520000, // Noto Sans Tai Tham w500
+  'notosanstaiviet': 0.293000, // Noto Sans Tai Viet w400
+  'notosanstakri': 0.307000, // Noto Sans Takri w400
+  'notosanstamil': 0.370000, // Noto Sans Tamil w500
+  'notosanstamilsupplement': 0.370000, // Noto Sans Tamil Supplement w400
+  'notosanstangsa': 0.293000, // Noto Sans Tangsa w500
+  'notosanstc': 0.288000, // Noto Sans TC w500
+  'notosanstelugu': 0.483000, // Noto Sans Telugu w500
+  'notosansthaana': 0.424000, // Noto Sans Thaana w500
+  'notosansthai': 0.450000, // Noto Sans Thai w500
+  'notosansthailooped': 0.350000, // Noto Sans Thai Looped w500
+  'notosanstifinagh': 0.293000, // Noto Sans Tifinagh w400
+  'notosanstirhuta': 0.519000, // Noto Sans Tirhuta w400
+  'notosansugaritic': 0.381000, // Noto Sans Ugaritic w400
+  'notosansvai': 0.293000, // Noto Sans Vai w400
+  'notosansvithkuqi': 0.293000, // Noto Sans Vithkuqi w500
+  'notosanswancho': 0.161000, // Noto Sans Wancho w400
+  'notosanswarangciti': 0.100000, // Noto Sans Warang Citi w400
+  'notosansyi': 0.293000, // Noto Sans Yi w400
+  'notosanszanabazarsquare': 0.821000, // Noto Sans Zanabazar Square w400
+  'notoserif': 0.293000, // Noto Serif w500
+  'notoserifahom': 0.675000, // Noto Serif Ahom w400
+  'notoserifarmenian': 0.292000, // Noto Serif Armenian w500
+  'notoserifbalinese': 0.726000, // Noto Serif Balinese w400
+  'notoserifbengali': 0.502000, // Noto Serif Bengali w500
+  'notoserifdevanagari': 0.625000, // Noto Serif Devanagari w500
+  'notoserifdisplay': 0.293000, // Noto Serif Display w500
+  'notoserifdivesakuru': 0.710000, // Noto Serif Dives Akuru w400
+  'notoserifdogra': 0.364000, // Noto Serif Dogra w400
+  'notoserifethiopic': 0.293000, // Noto Serif Ethiopic w500
+  'notoserifgeorgian': 0.292000, // Noto Serif Georgian w500
+  'notoserifgrantha': 0.534000, // Noto Serif Grantha w400
+  'notoserifgujarati': 0.450000, // Noto Serif Gujarati w500
+  'notoserifgurmukhi': 0.428000, // Noto Serif Gurmukhi w500
+  'notoserifhebrew': 0.290000, // Noto Serif Hebrew w500
+  'notoserifhentaigana': 0.286000, // Noto Serif Hentaigana w500
+  'notoserifhk': 0.286000, // Noto Serif HK w500
+  'notoserifjp': 0.286000, // Noto Serif JP w500
+  'notoserifkannada': 0.710000, // Noto Serif Kannada w500
+  'notoserifkhitansmallscript': 1.700000, // Noto Serif Khitan Small Script w400
+  'notoserifkhmer': 0.293000, // Noto Serif Khmer w500
+  'notoserifkhojki': 0.447000, // Noto Serif Khojki w500
+  'notoserifkr': 0.286000, // Noto Serif KR w500
+  'notoseriflao': 0.482000, // Noto Serif Lao w500
+  'notoserifmakasar': 0.293000, // Noto Serif Makasar w400
+  'notoserifmalayalam': 0.383000, // Noto Serif Malayalam w500
+  'notoserifmyanmar': 1.260000, // Noto Serif Myanmar w500
+  'notoserifnphmong': 0.292000, // Noto Serif NP Hmong w500
+  'notoserifolduyghur': 0.313000, // Noto Serif Old Uyghur w400
+  'notoseriforiya': 0.492000, // Noto Serif Oriya w500
+  'notoserifottomansiyaq': 0.634000, // Noto Serif Ottoman Siyaq w400
+  'notoserifsc': 0.286000, // Noto Serif SC w500
+  'notoserifsinhala': 0.307000, // Noto Serif Sinhala w500
+  'notoseriftamil': 0.492000, // Noto Serif Tamil w500
+  'notoseriftangut': 0.150000, // Noto Serif Tangut w400
+  'notoseriftc': 0.286000, // Noto Serif TC w500
+  'notoseriftelugu': 0.483000, // Noto Serif Telugu w500
+  'notoserifthai': 0.534000, // Noto Serif Thai w500
+  'notoseriftibetan': 1.349000, // Noto Serif Tibetan w500
+  'notoseriftodhri': 0.286133, // Noto Serif Todhri w400
+  'notoseriftoto': 0.378000, // Noto Serif Toto w500
+  'notoserifvithkuqi': 0.293000, // Noto Serif Vithkuqi w500
+  'notoserifyezidi': 0.292000, // Noto Serif Yezidi w500
+  'nototraditionalnushu': 0.117000, // Noto Traditional Nushu w500
+  'notoznamennymusicalnotation':
+      0.292000, // Noto Znamenny Musical Notation w400
+  'novacut': 0.247070, // Nova Cut w400
+  'novaflat': 0.247070, // Nova Flat w400
+  'novamono': 0.312012, // Nova Mono w400
+  'novaoval': 0.247070, // Nova Oval w400
+  'novaround': 0.247070, // Nova Round w400
+  'novascript': 0.247070, // Nova Script w400
+  'novaslim': 0.247070, // Nova Slim w400
+  'novasquare': 0.247070, // Nova Square w400
+  'ntr': 0.856445, // NTR w400
+  'numans': 0.270020, // Numans w400
+  'nunito': 0.353000, // Nunito w500
+  'nunitosans': 0.353000, // Nunito Sans w500
+  'nuosusil': 0.244141, // Nuosu SIL w400
+  'odibeesans': 0.250000, // Odibee Sans w400
+  'odormeanchey': 0.585938, // Odor Mean Chey w400
+  'offside': 0.265000, // Offside w400
+  'oi': 0.510000, // Oi w400
+  'ojuju': 0.276000, // Ojuju w500
+  'oldenburg': 0.263672, // Oldenburg w400
+  'oldstandardtt': 0.238000, // Old Standard TT w400
+  'ole': 0.380000, // Ole w400
+  'oleoscript': 0.379000, // Oleo Script w400
+  'oleoscriptswashcaps': 0.379000, // Oleo Script Swash Caps w400
+  'onest': 0.305000, // Onest w500
+  'ooohbaby': 0.325000, // Oooh Baby w400
+  'opensans': 0.292969, // Open Sans w500
+  'oranienbaum': 0.260000, // Oranienbaum w400
+  'orbit': 0.288000, // Orbit w400
+  'orbitron': 0.243000, // Orbitron w500
+  'oregano': 0.326660, // Oregano w400
+  'orelegaone': 0.195557, // Orelega One w400
+  'orienta': 0.235000, // Orienta w400
+  'originalsurfer': 0.256836, // Original Surfer w400
+  'oswald': 0.289000, // Oswald w500
+  'outfit': 0.260000, // Outfit w500
+  'overlock': 0.254000, // Overlock w400
+  'overlocksc': 0.254000, // Overlock SC w400
+  'overpass': 0.383000, // Overpass w500
+  'overpassmono': 0.383000, // Overpass Mono w500
+  'overtherainbow': 0.661133, // Over the Rainbow w400
+  'ovo': 0.260742, // Ovo w400
+  'oxanium': 0.210000, // Oxanium w500
+  'oxygen': 0.235840, // Oxygen w400
+  'oxygenmono': 0.328125, // Oxygen Mono w400
+  'pacifico': 0.453000, // Pacifico w400
+  'padauk': 0.488281, // Padauk w400
+  'padyakkeexpandedone': 0.628000, // Padyakke Expanded One w400
+  'palanquin': 0.491000, // Palanquin w500
+  'palanquindark': 0.491000, // Palanquin Dark w500
+  'palettemosaic': 0.288000, // Palette Mosaic w400
+  'pangolin': 0.312000, // Pangolin w400
+  'paprika': 0.274000, // Paprika w400
+  'parastoo': 0.440044, // Parastoo w500
+  'parisienne': 0.446777, // Parisienne w400
+  'parkinsans': 0.350000, // Parkinsans w500
+  'passeroone': 0.301758, // Passero One w400
+  'passionone': 0.266000, // Passion One w400
+  'passionsconflict': 0.350000, // Passions Conflict w400
+  'pathwayextreme': 0.286000, // Pathway Extreme w500
+  'pathwaygothicone': 0.198000, // Pathway Gothic One w400
+  'patrickhand': 0.312000, // Patrick Hand w400
+  'patrickhandsc': 0.312000, // Patrick Hand SC w400
+  'pattaya': 0.379395, // Pattaya w400
+  'patuaone': 0.247000, // Patua One w400
+  'pavanam': 0.339000, // Pavanam w400
+  'paytoneone': 0.283000, // Paytone One w400
+  'peddana': 0.690667, // Peddana w400
+  'peralta': 0.315918, // Peralta w400
+  'permanentmarker': 0.317383, // Permanent Marker w400
+  'petemoss': 0.300000, // Petemoss w400
+  'petitformalscript': 0.257324, // Petit Formal Script w400
+  'petrona': 0.270000, // Petrona w500
+  'philosopher': 0.220000, // Philosopher w400
+  'phudu': 0.200000, // Phudu w500
+  'piazzolla': 0.310000, // Piazzolla w500
+  'piedra': 0.328000, // Piedra w400
+  'pinyonscript': 0.384277, // Pinyon Script w400
+  'pirataone': 0.279000, // Pirata One w400
+  'pixelifysans': 0.280000, // Pixelify Sans w500
+  'plaster': 0.273438, // Plaster w400
+  'platypi': 0.251000, // Platypi w500
+  'play': 0.220000, // Play w400
+  'playball': 0.300000, // Playball w400
+  'playfair': 0.314516, // Playfair w500
+  'playfairdisplay': 0.251000, // Playfair Display w500
+  'playfairdisplaysc': 0.251000, // Playfair Display SC w400
+  'playpensans': 0.340000, // Playpen Sans w500
+  'playpensansarabic': 0.550000, // Playpen Sans Arabic w500
+  'playpensansdeva': 0.750000, // Playpen Sans Deva w500
+  'playpensanshebrew': 0.460000, // Playpen Sans Hebrew w500
+  'playpensansthai': 0.380000, // Playpen Sans Thai w500
+  'playwritear': 0.571000, // Playwrite AR w400
+  'playwritearguides': 0.571000, // Playwrite AR Guides w400
+  'playwriteat': 0.375000, // Playwrite AT w400
+  'playwriteatguides': 0.375000, // Playwrite AT Guides w400
+  'playwriteaunsw': 0.504000, // Playwrite AU NSW w400
+  'playwriteaunswguides': 0.504000, // Playwrite AU NSW Guides w400
+  'playwriteauqld': 0.504000, // Playwrite AU QLD w400
+  'playwriteauqldguides': 0.504000, // Playwrite AU QLD Guides w400
+  'playwriteausa': 0.492000, // Playwrite AU SA w400
+  'playwriteausaguides': 0.492000, // Playwrite AU SA Guides w400
+  'playwriteautas': 0.504000, // Playwrite AU TAS w400
+  'playwriteautasguides': 0.504000, // Playwrite AU TAS Guides w400
+  'playwriteauvic': 0.504000, // Playwrite AU VIC w400
+  'playwriteauvicguides': 0.504000, // Playwrite AU VIC Guides w400
+  'playwritebevlg': 0.504000, // Playwrite BE VLG w400
+  'playwritebevlgguides': 0.504000, // Playwrite BE VLG Guides w400
+  'playwritebewal': 0.922000, // Playwrite BE WAL w400
+  'playwritebewalguides': 0.922000, // Playwrite BE WAL Guides w400
+  'playwritebr': 0.639000, // Playwrite BR w400
+  'playwritebrguides': 0.639000, // Playwrite BR Guides w400
+  'playwriteca': 0.500000, // Playwrite CA w400
+  'playwritecaguides': 0.500000, // Playwrite CA Guides w400
+  'playwritecl': 0.641000, // Playwrite CL w400
+  'playwriteclguides': 0.641000, // Playwrite CL Guides w400
+  'playwriteco': 0.525000, // Playwrite CO w400
+  'playwritecoguides': 0.525000, // Playwrite CO Guides w400
+  'playwritecu': 0.623000, // Playwrite CU w400
+  'playwritecuguides': 0.623000, // Playwrite CU Guides w400
+  'playwritecz': 0.489000, // Playwrite CZ w400
+  'playwriteczguides': 0.489000, // Playwrite CZ Guides w400
+  'playwritedegrund': 0.421000, // Playwrite DE Grund w400
+  'playwritedegrundguides': 0.421000, // Playwrite DE Grund Guides w400
+  'playwritedela': 0.421000, // Playwrite DE LA w400
+  'playwritedelaguides': 0.421000, // Playwrite DE LA Guides w400
+  'playwritedesas': 0.388000, // Playwrite DE SAS w400
+  'playwritedesasguides': 0.388000, // Playwrite DE SAS Guides w400
+  'playwritedeva': 0.482000, // Playwrite DE VA w400
+  'playwritedevaguides': 0.482000, // Playwrite DE VA Guides w400
+  'playwritedkloopet': 0.375000, // Playwrite DK Loopet w400
+  'playwritedkloopetguides': 0.375000, // Playwrite DK Loopet Guides w400
+  'playwritedkuloopet': 0.375000, // Playwrite DK Uloopet w400
+  'playwritedkuloopetguides': 0.375000, // Playwrite DK Uloopet Guides w400
+  'playwritees': 0.504000, // Playwrite ES w400
+  'playwriteesdeco': 0.504000, // Playwrite ES Deco w400
+  'playwriteesdecoguides': 0.504000, // Playwrite ES Deco Guides w400
+  'playwriteesguides': 0.504000, // Playwrite ES Guides w400
+  'playwritefrmoderne': 0.607000, // Playwrite FR Moderne w400
+  'playwritefrmoderneguides': 0.607000, // Playwrite FR Moderne Guides w400
+  'playwritefrtrad': 0.925000, // Playwrite FR Trad w400
+  'playwritefrtradguides': 0.925000, // Playwrite FR Trad Guides w400
+  'playwritegbj': 0.375000, // Playwrite GB J w400
+  'playwritegbjguides': 0.375000, // Playwrite GB J Guides w400
+  'playwritegbs': 0.375000, // Playwrite GB S w400
+  'playwritegbsguides': 0.375000, // Playwrite GB S Guides w400
+  'playwritehr': 0.379000, // Playwrite HR w400
+  'playwritehrguides': 0.379000, // Playwrite HR Guides w400
+  'playwritehrlijeva': 0.379000, // Playwrite HR Lijeva w400
+  'playwritehrlijevaguides': 0.379000, // Playwrite HR Lijeva Guides w400
+  'playwritehu': 0.448000, // Playwrite HU w400
+  'playwritehuguides': 0.448000, // Playwrite HU Guides w400
+  'playwriteid': 0.956000, // Playwrite ID w400
+  'playwriteidguides': 0.956000, // Playwrite ID Guides w400
+  'playwriteie': 0.484000, // Playwrite IE w400
+  'playwriteieguides': 0.484000, // Playwrite IE Guides w400
+  'playwritein': 0.528000, // Playwrite IN w400
+  'playwriteinguides': 0.528000, // Playwrite IN Guides w400
+  'playwriteis': 0.375000, // Playwrite IS w400
+  'playwriteisguides': 0.375000, // Playwrite IS Guides w400
+  'playwriteitmoderna': 0.375000, // Playwrite IT Moderna w400
+  'playwriteitmodernaguides': 0.375000, // Playwrite IT Moderna Guides w400
+  'playwriteittrad': 0.462000, // Playwrite IT Trad w400
+  'playwriteittradguides': 0.462000, // Playwrite IT Trad Guides w400
+  'playwritemx': 0.504000, // Playwrite MX w400
+  'playwritemxguides': 0.504000, // Playwrite MX Guides w400
+  'playwritengmodern': 0.504000, // Playwrite NG Modern w400
+  'playwritengmodernguides': 0.504000, // Playwrite NG Modern Guides w400
+  'playwritenl': 0.786000, // Playwrite NL w400
+  'playwritenlguides': 0.786000, // Playwrite NL Guides w400
+  'playwriteno': 0.473000, // Playwrite NO w400
+  'playwritenoguides': 0.473000, // Playwrite NO Guides w400
+  'playwritenz': 0.375000, // Playwrite NZ w400
+  'playwritenzbasic': 0.375000, // Playwrite NZ Basic w400
+  'playwritenzbasicguides': 0.375000, // Playwrite NZ Basic Guides w400
+  'playwritenzguides': 0.375000, // Playwrite NZ Guides w400
+  'playwritepe': 0.504000, // Playwrite PE w400
+  'playwritepeguides': 0.504000, // Playwrite PE Guides w400
+  'playwritepl': 0.490000, // Playwrite PL w400
+  'playwriteplguides': 0.490000, // Playwrite PL Guides w400
+  'playwritept': 0.588000, // Playwrite PT w400
+  'playwriteptguides': 0.588000, // Playwrite PT Guides w400
+  'playwritero': 0.504000, // Playwrite RO w400
+  'playwriteroguides': 0.504000, // Playwrite RO Guides w400
+  'playwritesk': 0.489000, // Playwrite SK w400
+  'playwriteskguides': 0.489000, // Playwrite SK Guides w400
+  'playwritetz': 0.504000, // Playwrite TZ w400
+  'playwritetzguides': 0.504000, // Playwrite TZ Guides w400
+  'playwriteusmodern': 0.440000, // Playwrite US Modern w400
+  'playwriteusmodernguides': 0.440000, // Playwrite US Modern Guides w400
+  'playwriteustrad': 0.504000, // Playwrite US Trad w400
+  'playwriteustradguides': 0.504000, // Playwrite US Trad Guides w400
+  'playwritevn': 0.769000, // Playwrite VN w400
+  'playwritevnguides': 0.769000, // Playwrite VN Guides w400
+  'playwriteza': 0.504000, // Playwrite ZA w400
+  'playwritezaguides': 0.504000, // Playwrite ZA Guides w400
+  'pliant': 0.250000, // Pliant w500
+  'plusjakartasans': 0.222000, // Plus Jakarta Sans w500
+  'pochaevsk': 0.400000, // Pochaevsk w400
+  'podkova': 0.249000, // Podkova w500
+  'poetsenone': 0.200000, // Poetsen One w400
+  'poiretone': 0.208000, // Poiret One w400
+  'pollerone': 0.250977, // Poller One w400
+  'poltawskinowy': 0.300000, // Poltawski Nowy w500
+  'poly': 0.224000, // Poly w400
+  'pompiere': 0.265137, // Pompiere w400
+  'ponnala': 0.840820, // Ponnala w400
+  'ponomar': 0.460000, // Ponomar w400
+  'pontanosans': 0.292480, // Pontano Sans w500
+  'poorstory': 0.200195, // Poor Story w400
+  'poppins': 0.350000, // Poppins w500
+  'portlligatsans': 0.211000, // Port Lligat Sans w400
+  'portlligatslab': 0.211000, // Port Lligat Slab w400
+  'pottaone': 0.288000, // Potta One w400
+  'pragatinarrow': 0.534000, // Pragati Narrow w400
+  'praise': 0.350000, // Praise w400
+  'prata': 0.362000, // Prata w400
+  'preahvihear': 0.585938, // Preahvihear w400
+  'pressstart2p': 0.000000, // Press Start 2P w400
+  'pridi': 0.450000, // Pridi w500
+  'princesssofia': 0.560547, // Princess Sofia w400
+  'prociono': 0.212000, // Prociono w400
+  'prompt': 0.422000, // Prompt w500
+  'prostoone': 0.295000, // Prosto One w400
+  'protestguerrilla': 0.240000, // Protest Guerrilla w400
+  'protestrevolution': 0.240000, // Protest Revolution w400
+  'protestriot': 0.240000, // Protest Riot w400
+  'proteststrike': 0.240000, // Protest Strike w400
+  'prozalibre': 0.366211, // Proza Libre w500
+  'ptmono': 0.235000, // PT Mono w400
+  'ptsans': 0.276000, // PT Sans w400
+  'ptsanscaption': 0.276000, // PT Sans Caption w400
+  'ptsansnarrow': 0.276000, // PT Sans Narrow w400
+  'ptserif': 0.286000, // PT Serif w400
+  'ptserifcaption': 0.286000, // PT Serif Caption w400
+  'publicsans': 0.225000, // Public Sans w500
+  'puppiesplay': 0.250000, // Puppies Play w400
+  'puritan': 0.250000, // Puritan w400
+  'purplepurse': 0.336914, // Purple Purse w400
+  'qahiri': 0.333333, // Qahiri w400
+  'quando': 0.258789, // Quando w400
+  'quantico': 0.367000, // Quantico w400
+  'quattrocento': 0.260000, // Quattrocento w400
+  'quattrocentosans': 0.260000, // Quattrocento Sans w400
+  'questrial': 0.210000, // Questrial w400
+  'quicksand': 0.250000, // Quicksand w500
+  'quintessential': 0.390137, // Quintessential w400
+  'qwigley': 0.500000, // Qwigley w400
+  'qwitchergrypen': 0.300000, // Qwitcher Grypen w400
+  'racingsansone': 0.284000, // Racing Sans One w400
+  'radiocanada': 0.255000, // Radio Canada w500
+  'radiocanadabig': 0.305000, // Radio Canada Big w500
+  'radley': 0.300293, // Radley w400
+  'rajdhani': 0.346000, // Rajdhani w500
+  'rakkas': 0.445000, // Rakkas w400
+  'raleway': 0.234000, // Raleway w500
+  'ralewaydots': 0.213000, // Raleway Dots w400
+  'ramabhadra': 0.571084, // Ramabhadra w400
+  'ramaraja': 0.725333, // Ramaraja w400
+  'rambla': 0.295000, // Rambla w400
+  'rammettoone': 0.499023, // Rammetto One w400
+  'rampartone': 0.288000, // Rampart One w400
+  'ramsina': 0.336426, // Ramsina w400
+  'ranchers': 0.205000, // Ranchers w400
+  'rancho': 0.321289, // Rancho w400
+  'ranga': 0.463030, // Ranga w400
+  'rasa': 0.272000, // Rasa w500
+  'rationale': 0.250000, // Rationale w400
+  'raviprakash': 0.667969, // Ravi Prakash w400
+  'readexpro': 0.250000, // Readex Pro w500
+  'recursive': 0.250000, // Recursive w500
+  'redacted': 0.200000, // Redacted w400
+  'redactedscript': 0.200000, // Redacted Script w400
+  'redditmono': 0.289062, // Reddit Mono w500
+  'redditsans': 0.289062, // Reddit Sans w500
+  'redditsanscondensed': 0.289062, // Reddit Sans Condensed w500
+  'redhatdisplay': 0.305000, // Red Hat Display w500
+  'redhatmono': 0.305000, // Red Hat Mono w500
+  'redhattext': 0.305000, // Red Hat Text w500
+  'redressed': 0.241211, // Redressed w400
+  'redrose': 0.312000, // Red Rose w500
+  'reemkufi': 0.400000, // Reem Kufi w500
+  'reemkufifun': 0.400000, // Reem Kufi Fun w500
+  'reemkufiink': 0.400000, // Reem Kufi Ink w400
+  'reeniebeanie': 0.250000, // Reenie Beanie w400
+  'reggaeone': 0.288000, // Reggae One w400
+  'rem': 0.270000, // REM w500
+  'rethinksans': 0.310000, // Rethink Sans w500
+  'revalia': -0.186523, // Revalia w400
+  'rhodiumlibre': 0.610000, // Rhodium Libre w400
+  'ribeye': 0.326172, // Ribeye w400
+  'ribeyemarrow': 0.326172, // Ribeye Marrow w400
+  'righteous': 0.256836, // Righteous w400
+  'risque': 0.250977, // Risque w400
+  'roadrage': 0.250000, // Road Rage w400
+  'roboto': 0.244141, // Roboto w500
+  'robotoflex': 0.244141, // Roboto Flex w400
+  'robotomono': 0.270996, // Roboto Mono w500
+  'robotoserif': 0.244000, // Roboto Serif w500
+  'robotoslab': 0.270996, // Roboto Slab w500
+  'rochester': 0.257812, // Rochester w400
+  'rock3d': 0.288000, // Rock 3D w400
+  'rocknrollone': 0.288000, // RocknRoll One w400
+  'rocksalt': 0.769531, // Rock Salt w400
+  'rokkitt': 0.320000, // Rokkitt w500
+  'romanesco': 0.235840, // Romanesco w400
+  'ropasans': 0.231000, // Ropa Sans w400
+  'rosario': 0.235000, // Rosario w500
+  'rosarivo': 0.424000, // Rosarivo w400
+  'rougescript': 0.335200, // Rouge Script w400
+  'rowdies': 0.245000, // Rowdies w400
+  'rozhaone': 0.422000, // Rozha One w400
+  'rubik': 0.250000, // Rubik w500
+  'rubik80sfade': 0.250000, // Rubik 80s Fade w400
+  'rubikbeastly': 0.250000, // Rubik Beastly w400
+  'rubikbrokenfax': 0.250000, // Rubik Broken Fax w400
+  'rubikbubbles': 0.250000, // Rubik Bubbles w400
+  'rubikburned': 0.250000, // Rubik Burned w400
+  'rubikdirt': 0.250000, // Rubik Dirt w400
+  'rubikdistressed': 0.250000, // Rubik Distressed w400
+  'rubikdoodleshadow': 0.250000, // Rubik Doodle Shadow w400
+  'rubikdoodletriangles': 0.250000, // Rubik Doodle Triangles w400
+  'rubikgemstones': 0.250000, // Rubik Gemstones w400
+  'rubikglitch': 0.250000, // Rubik Glitch w400
+  'rubikglitchpop': 0.250000, // Rubik Glitch Pop w400
+  'rubikiso': 0.250000, // Rubik Iso w400
+  'rubiklines': 0.250000, // Rubik Lines w400
+  'rubikmaps': 0.250000, // Rubik Maps w400
+  'rubikmarkerhatch': 0.250000, // Rubik Marker Hatch w400
+  'rubikmaze': 0.250000, // Rubik Maze w400
+  'rubikmicrobe': 0.250000, // Rubik Microbe w400
+  'rubikmonoone': 0.306000, // Rubik Mono One w400
+  'rubikmoonrocks': 0.250000, // Rubik Moonrocks w400
+  'rubikpixels': 0.250000, // Rubik Pixels w400
+  'rubikpuddles': 0.250000, // Rubik Puddles w400
+  'rubikscribble': 0.250000, // Rubik Scribble w400
+  'rubikspraypaint': 0.250000, // Rubik Spray Paint w400
+  'rubikstorm': 0.250000, // Rubik Storm w400
+  'rubikvinyl': 0.250000, // Rubik Vinyl w400
+  'rubikwetpaint': 0.250000, // Rubik Wet Paint w400
+  'ruda': 0.295000, // Ruda w500
+  'rufina': 0.290000, // Rufina w400
+  'rugeboogie': 0.375000, // Ruge Boogie w400
+  'ruluko': 0.241000, // Ruluko w400
+  'rumraisin': 0.307129, // Rum Raisin w400
+  'ruslandisplay': 0.397000, // Ruslan Display w400
+  'russoone': 0.279000, // Russo One w400
+  'ruthie': 0.450000, // Ruthie w400
+  'ruwudu': 0.741000, // Ruwudu w500
+  'rye': 0.263672, // Rye w400
+  'sacramento': 0.529297, // Sacramento w400
+  'sahitya': 0.447000, // Sahitya w400
+  'sail': 0.294000, // Sail w400
+  'saira': 0.439000, // Saira w500
+  'sairastencil': 0.439000, // Saira Stencil w500
+  'salsa': 0.252000, // Salsa w400
+  'sanchez': 0.274000, // Sanchez w400
+  'sancreek': 0.360352, // Sancreek w400
+  'sankofadisplay': 0.200000, // Sankofa Display w400
+  'sansation': 0.213867, // Sansation w400
+  'sansita': 0.180000, // Sansita w400
+  'sansitaswashed': 0.180000, // Sansita Swashed w500
+  'sarabun': 0.232000, // Sarabun w500
+  'sarala': 0.459473, // Sarala w400
+  'sarina': 0.314453, // Sarina w400
+  'sarpanch': 0.350000, // Sarpanch w500
+  'sassyfrass': 0.300000, // Sassy Frass w400
+  'satisfy': 0.489258, // Satisfy w400
+  'savate': 0.285000, // Savate w500
+  'sawarabigothic': 0.272000, // Sawarabi Gothic w400
+  'sawarabimincho': 0.319000, // Sawarabi Mincho w400
+  'scada': 0.289000, // Scada w400
+  'scheherazadenew': 0.696777, // Scheherazade New w500
+  'schibstedgrotesk': 0.257812, // Schibsted Grotesk w500
+  'schoolbell': 0.374023, // Schoolbell w400
+  'sciencegothic': 0.388000, // Science Gothic w500
+  'scopeone': 0.455000, // Scope One w400
+  'seaweedscript': 0.411133, // Seaweed Script w400
+  'secularone': 0.433000, // Secular One w400
+  'sedan': 0.250000, // Sedan w400
+  'sedansc': 0.250000, // Sedan SC w400
+  'sedgwickave': 0.312000, // Sedgwick Ave w400
+  'sedgwickavedisplay': 0.312000, // Sedgwick Ave Display w400
+  'sekuya': 0.300000, // Sekuya w400
+  'sen': 0.263672, // Sen w500
+  'sendflowers': 0.350000, // Send Flowers w400
+  'sevillana': 0.350098, // Sevillana w400
+  'seymourone': 0.272949, // Seymour One w400
+  'shadowsintolight': 0.431641, // Shadows Into Light w400
+  'shadowsintolighttwo': 0.333008, // Shadows Into Light Two w400
+  'shafarik': 0.462000, // Shafarik w400
+  'shalimar': 0.420000, // Shalimar w400
+  'shantellsans': 0.320000, // Shantell Sans w500
+  'shanti': 0.292480, // Shanti w400
+  'share': 0.242000, // Share w400
+  'sharetech': 0.242000, // Share Tech w400
+  'sharetechmono': 0.242000, // Share Tech Mono w400
+  'shipporiantique': 0.288000, // Shippori Antique w400
+  'shipporiantiqueb1': 0.288000, // Shippori Antique B1 w400
+  'shipporimincho': 0.288000, // Shippori Mincho w500
+  'shipporiminchob1': 0.288000, // Shippori Mincho B1 w500
+  'shizuru': 0.288000, // Shizuru w400
+  'shojumaru': 0.337891, // Shojumaru w400
+  'shortstack': 0.297363, // Short Stack w400
+  'shrikhand': 0.432000, // Shrikhand w400
+  'siemreap': 0.585938, // Siemreap w400
+  'sigmar': 0.466000, // Sigmar w400
+  'sigmarone': 0.466000, // Sigmar One w400
+  'signika': 0.292000, // Signika w500
+  'signikanegative': 0.292000, // Signika Negative w500
+  'silkscreen': 0.250000, // Silkscreen w400
+  'simonetta': 0.290039, // Simonetta w400
+  'singleday': 0.239258, // Single Day w400
+  'sintony': 0.308000, // Sintony w400
+  'sirinstencil': 0.294922, // Sirin Stencil w400
+  'sirivennela': 0.427500, // Sirivennela w400
+  'sixcaps': 0.210938, // Six Caps w400
+  'sixtyfour': 0.125000, // Sixtyfour w400
+  'sixtyfourconvergence': 0.125000, // Sixtyfour Convergence w400
+  'skranji': 0.374023, // Skranji w400
+  'slabo13px': 0.307692, // Slabo 13px w400
+  'slabo27px': 0.296296, // Slabo 27px w400
+  'slackey': 0.342773, // Slackey w400
+  'slacksideone': 0.288000, // Slackside One w400
+  'smokum': 0.250000, // Smokum w400
+  'smooch': 0.450000, // Smooch w400
+  'smoochsans': 0.300000, // Smooch Sans w500
+  'smythe': 0.234375, // Smythe w400
+  'sniglet': 0.289000, // Sniglet w400
+  'snippet': 0.261000, // Snippet w400
+  'snowburstone': 0.221680, // Snowburst One w400
+  'snpro': 0.315000, // SN Pro w500
+  'sofadione': 0.310000, // Sofadi One w400
+  'sofia': 0.438000, // Sofia w400
+  'sofiasans': 0.300000, // Sofia Sans w500
+  'sofiasanscondensed': 0.300000, // Sofia Sans Condensed w500
+  'sofiasansextracondensed': 0.300000, // Sofia Sans Extra Condensed w500
+  'sofiasanssemicondensed': 0.300000, // Sofia Sans Semi Condensed w500
+  'solitreo': 0.550000, // Solitreo w400
+  'solway': 0.250000, // Solway w500
+  'sometypemono': 0.275000, // Sometype Mono w500
+  'songmyung': 0.152000, // Song Myung w400
+  'sono': 0.288000, // Sono w500
+  'sonsieone': 0.292969, // Sonsie One w400
+  'sora': 0.290000, // Sora w500
+  'sortsmillgoudy': 0.478000, // Sorts Mill Goudy w400
+  'sourcecodepro': 0.273000, // Source Code Pro w500
+  'sourcesans3': 0.400000, // Source Sans 3 w500
+  'sourceserif4': 0.335000, // Source Serif 4 w500
+  'sourgummy': 0.296000, // Sour Gummy w500
+  'spacegrotesk': 0.292000, // Space Grotesk w500
+  'spacemono': 0.361000, // Space Mono w400
+  'specialelite': 0.296875, // Special Elite w400
+  'specialgothic': 0.295000, // Special Gothic w500
+  'specialgothiccondensedone': 0.295000, // Special Gothic Condensed One w400
+  'specialgothicexpandedone': 0.295000, // Special Gothic Expanded One w400
+  'spectral': 0.463000, // Spectral w500
+  'spectralsc': 0.463000, // Spectral SC w500
+  'spicyrice': 0.357910, // Spicy Rice w400
+  'spinnaker': 0.237793, // Spinnaker w400
+  'spirax': 0.288000, // Spirax w400
+  'splash': 0.580000, // Splash w400
+  'splinesans': 0.236500, // Spline Sans w500
+  'splinesansmono': 0.236500, // Spline Sans Mono w500
+  'squadaone': 0.196000, // Squada One w400
+  'squarepeg': 0.400000, // Square Peg w400
+  'sreekrushnadevaraya': 0.525000, // Sree Krushnadevaraya w400
+  'sriracha': 0.550000, // Sriracha w400
+  'srisakdi': 0.250000, // Srisakdi w400
+  'staatliches': 0.300000, // Staatliches w400
+  'stacksansheadline': 0.300000, // Stack Sans Headline w500
+  'stacksansnotch': 0.300000, // Stack Sans Notch w500
+  'stacksanstext': 0.300000, // Stack Sans Text w500
+  'stalemate': 0.568848, // Stalemate w400
+  'stalinistone': 0.439000, // Stalinist One w400
+  'stardosstencil': 0.405762, // Stardos Stencil w400
+  'stick': 0.288000, // Stick w400
+  'sticknobills': 0.312000, // Stick No Bills w500
+  'stintultracondensed': 0.235840, // Stint Ultra Condensed w400
+  'stintultraexpanded': 0.235840, // Stint Ultra Expanded w400
+  'stixtwomath': 0.238000, // STIX Two Math w400
+  'stixtwotext': 0.238000, // STIX Two Text w500
+  'stoke': 0.258789, // Stoke w400
+  'storyscript': 0.340000, // Story Script w400
+  'strait': 0.194000, // Strait w400
+  'strichpunktsans': 0.300000, // Strichpunkt Sans w500
+  'stylescript': 0.520000, // Style Script w400
+  'stylish': 0.179000, // Stylish w400
+  'sueellenfrancisco': 0.619141, // Sue Ellen Francisco w400
+  'suezone': 0.319000, // Suez One w400
+  'sulphurpoint': 0.210000, // Sulphur Point w400
+  'sumana': 1.005000, // Sumana w400
+  'sunflower': 0.218000, // Sunflower w500
+  'sunshiney': 0.298828, // Sunshiney w400
+  'supermercadoone': 0.257324, // Supermercado One w400
+  'sura': 0.425781, // Sura w400
+  'suranna': 0.778205, // Suranna w400
+  'suravaram': 0.810204, // Suravaram w400
+  'suse': 0.280000, // SUSE w500
+  'susemono': 0.280000, // SUSE Mono w500
+  'suwannaphum': 0.585938, // Suwannaphum w400
+  'swankyandmoomoo': 0.495117, // Swanky and Moo Moo w400
+  'syncopate': 0.208008, // Syncopate w400
+  'syne': 0.275000, // Syne w500
+  'synemono': 0.275000, // Syne Mono w400
+  'synetactile': 0.275000, // Syne Tactile w400
+  'tacone': 0.200000, // Tac One w400
+  'tagesschrift': 0.300000, // Tagesschrift w400
+  'taiheritagepro': 0.781250, // Tai Heritage Pro w400
+  'tajawal': 0.357000, // Tajawal w500
+  'tangerine': 0.250000, // Tangerine w400
+  'tapestry': 0.300000, // Tapestry w400
+  'taprom': 0.585938, // Taprom w400
+  'tasaexplorer': 0.260000, // TASA Explorer w500
+  'tasaorbiter': 0.260000, // TASA Orbiter w500
+  'tauri': 0.253906, // Tauri w400
+  'taviraj': 0.534000, // Taviraj w500
+  'teachers': 0.260000, // Teachers w500
+  'teko': 0.475000, // Teko w500
+  'tektur': 0.300000, // Tektur w500
+  'telex': 0.260000, // Telex w400
+  'tenaliramakrishna': 0.682667, // Tenali Ramakrishna w400
+  'tenorsans': 0.250000, // Tenor Sans w400
+  'textmeone': 0.269000, // Text Me One w400
+  'texturina': 0.300000, // Texturina w500
+  'thasadith': 0.295000, // Thasadith w400
+  'thegirlnextdoor': 0.730469, // The Girl Next Door w400
+  'thenautigal': 0.330000, // The Nautigal w400
+  'tienne': 0.353516, // Tienne w400
+  'tiktoksans': 0.300000, // TikTok Sans w500
+  'tillana': 0.484000, // Tillana w500
+  'tiltneon': 0.272000, // Tilt Neon w400
+  'tiltprism': 0.272000, // Tilt Prism w400
+  'tiltwarp': 0.272000, // Tilt Warp w400
+  'timmana': 0.738667, // Timmana w400
+  'tinos': 0.216309, // Tinos w400
+  'tiny5': 0.250000, // Tiny5 w400
+  'tirobangla': 0.245000, // Tiro Bangla w400
+  'tirodevanagarihindi': 0.245000, // Tiro Devanagari Hindi w400
+  'tirodevanagarimarathi': 0.245000, // Tiro Devanagari Marathi w400
+  'tirodevanagarisanskrit': 0.245000, // Tiro Devanagari Sanskrit w400
+  'tirogurmukhi': 0.245000, // Tiro Gurmukhi w400
+  'tirokannada': 0.245000, // Tiro Kannada w400
+  'tirotamil': 0.245000, // Tiro Tamil w400
+  'tirotelugu': 0.245000, // Tiro Telugu w400
+  'tirra': 0.348145, // Tirra w500
+  'titanone': 0.175000, // Titan One w400
+  'titilliumweb': 0.388000, // Titillium Web w400
+  'tomorrow': 0.200000, // Tomorrow w500
+  'tourney': 0.200000, // Tourney w500
+  'tradewinds': 0.458008, // Trade Winds w400
+  'trainone': 0.288000, // Train One w400
+  'triodion': 0.511000, // Triodion w400
+  'trirong': 0.534000, // Trirong w500
+  'trispace': 0.215000, // Trispace w500
+  'trocchi': 0.281250, // Trocchi w400
+  'trochut': 0.210000, // Trochut w400
+  'truculenta': 0.340000, // Truculenta w500
+  'trykker': 0.262695, // Trykker w400
+  'tsukimirounded': 0.288000, // Tsukimi Rounded w500
+  'tuffy': 0.340332, // Tuffy w400
+  'tulpenone': 0.227051, // Tulpen One w400
+  'turretroad': 0.243000, // Turret Road w500
+  'twinklestar': 0.350000, // Twinkle Star w400
+  'ubuntu': 0.189000, // Ubuntu w500
+  'ubuntucondensed': 0.189000, // Ubuntu Condensed w400
+  'ubuntumono': 0.170000, // Ubuntu Mono w400
+  'ubuntusans': 0.260000, // Ubuntu Sans w500
+  'ubuntusansmono': 0.260000, // Ubuntu Sans Mono w500
+  'uchen': 0.644531, // Uchen w400
+  'ultra': 0.273926, // Ultra w400
+  'unbounded': 0.245000, // Unbounded w500
+  'uncialantiqua': 0.330078, // Uncial Antiqua w400
+  'underdog': 0.247000, // Underdog w400
+  'unicaone': 0.265000, // Unica One w400
+  'unifrakturcook': 0.278320, // UnifrakturCook w700
+  'unifrakturmaguntia': 0.250488, // UnifrakturMaguntia w400
+  'unkempt': 0.240234, // Unkempt w400
+  'unlock': 0.195000, // Unlock w400
+  'unna': 0.269000, // Unna w400
+  'uoqmunthenkhung': 0.187000, // UoqMunThenKhung w400
+  'updock': 0.350000, // Updock w400
+  'urbanist': 0.250000, // Urbanist w500
+  'vampiroone': 0.294000, // Vampiro One w400
+  'varela': 0.285000, // Varela w400
+  'varelaround': 0.286000, // Varela Round w400
+  'varta': 0.521484, // Varta w500
+  'vastshadow': 0.334473, // Vast Shadow w400
+  'vazirmatn': 0.537109, // Vazirmatn w500
+  'vendsans': 0.390000, // Vend Sans w500
+  'vesperlibre': 0.756836, // Vesper Libre w500
+  'viaodalibre': 0.360000, // Viaoda Libre w400
+  'vibes': 0.680000, // Vibes w400
+  'vibur': 0.386719, // Vibur w400
+  'victormono': 0.250000, // Victor Mono w500
+  'vidaloka': 0.273438, // Vidaloka w400
+  'viga': 0.329000, // Viga w400
+  'vinasans': 0.170000, // Vina Sans w400
+  'voces': 0.335000, // Voces w400
+  'volkhov': 0.319000, // Volkhov w400
+  'vollkorn': 0.441000, // Vollkorn w500
+  'vollkornsc': 0.441000, // Vollkorn SC w400
+  'voltaire': 0.259277, // Voltaire w400
+  'vt323': 0.200000, // VT323 w400
+  'vujahdayscript': 0.410000, // Vujahday Script w400
+  'waitingforthesunrise': 0.534180, // Waiting for the Sunrise w400
+  'wallpoet': 0.196000, // Wallpoet w400
+  'walterturncoat': 0.315430, // Walter Turncoat w400
+  'warnes': 0.310000, // Warnes w400
+  'waterbrush': 0.450000, // Water Brush w400
+  'waterfall': 0.280000, // Waterfall w400
+  'wavefont': 0.200000, // Wavefont w500
+  'wdxllubrifontjpn': 0.235000, // WDXL Lubrifont JP N w400
+  'wdxllubrifontsc': 0.235000, // WDXL Lubrifont SC w400
+  'wdxllubrifonttc': 0.235000, // WDXL Lubrifont TC w400
+  'wellfleet': 0.263672, // Wellfleet w400
+  'wendyone': 0.236000, // Wendy One w400
+  'whisper': 0.400000, // Whisper w400
+  'windsong': 0.515000, // WindSong w500
+  'winkyrough': 0.315000, // Winky Rough w500
+  'winkysans': 0.315000, // Winky Sans w500
+  'wireone': 0.210000, // Wire One w400
+  'wittgenstein': 0.435000, // Wittgenstein w500
+  'wixmadefordisplay': 0.252000, // Wix Madefor Display w500
+  'wixmadefortext': 0.252000, // Wix Madefor Text w500
+  'workbench': 0.125000, // Workbench w400
+  'worksans': 0.243000, // Work Sans w500
+  'xanhmono': 0.220000, // Xanh Mono w400
+  'yaldevi': 0.256000, // Yaldevi w500
+  'yanonekaffeesatz': 0.200000, // Yanone Kaffeesatz w500
+  'yantramanav': 0.357910, // Yantramanav w500
+  'yarndings12': 0.125000, // Yarndings 12 w400
+  'yarndings12charted': 0.125000, // Yarndings 12 Charted w400
+  'yarndings20': 0.083333, // Yarndings 20 w400
+  'yarndings20charted': 0.083333, // Yarndings 20 Charted w400
+  'yatraone': 0.487000, // Yatra One w400
+  'yellowtail': 0.301270, // Yellowtail w400
+  'yeonsung': 0.200000, // Yeon Sung w400
+  'yesevaone': 0.240000, // Yeseva One w400
+  'yesteryear': 0.490234, // Yesteryear w400
+  'yomogi': 0.288000, // Yomogi w400
+  'youngserif': 0.366000, // Young Serif w400
+  'yrsa': 0.272000, // Yrsa w500
+  'ysabeau': 0.289000, // Ysabeau w500
+  'ysabeauinfant': 0.289000, // Ysabeau Infant w500
+  'ysabeauoffice': 0.289000, // Ysabeau Office w500
+  'ysabeausc': 0.289000, // Ysabeau SC w500
+  'yujiboku': 0.288000, // Yuji Boku w400
+  'yujihentaiganaakari': 0.288000, // Yuji Hentaigana Akari w400
+  'yujihentaiganaakebono': 0.288000, // Yuji Hentaigana Akebono w400
+  'yujimai': 0.288000, // Yuji Mai w400
+  'yujisyuku': 0.288000, // Yuji Syuku w400
+  'yuseimagic': 0.288000, // Yusei Magic w400
+  'yuyu': 0.200000, // Yuyu w400
+  'yuyushort': 0.200000, // Yuyu Short w400
+  'zain': 0.573750, // Zain w400
+  'zalandosans': 0.250000, // Zalando Sans w500
+  'zalandosansexpanded': 0.250000, // Zalando Sans Expanded w500
+  'zalandosanssemiexpanded': 0.250000, // Zalando Sans SemiExpanded w500
+  'zcoolkuaile': 0.120000, // ZCOOL KuaiLe w400
+  'zcoolqingkehuangyou': 0.120000, // ZCOOL QingKe HuangYou w400
+  'zcoolxiaowei': 0.120000, // ZCOOL XiaoWei w400
+  'zenantique': 0.288000, // Zen Antique w400
+  'zenantiquesoft': 0.288000, // Zen Antique Soft w400
+  'zendots': 0.270000, // Zen Dots w400
+  'zenkakugothicantique': 0.288000, // Zen Kaku Gothic Antique w500
+  'zenkakugothicnew': 0.288000, // Zen Kaku Gothic New w500
+  'zenkurenaido': 0.288000, // Zen Kurenaido w400
+  'zenloop': 0.275000, // Zen Loop w400
+  'zenmarugothic': 0.288000, // Zen Maru Gothic w500
+  'zenoldmincho': 0.288000, // Zen Old Mincho w500
+  'zentokyozoo': 0.250000, // Zen Tokyo Zoo w400
+  'zeyada': 0.664062, // Zeyada w400
+  'zhimangxing': 0.120000, // Zhi Mang Xing w400
+  'zillaslab': 0.256000, // Zilla Slab w500
+  'zillaslabhighlight': 0.256000, // Zilla Slab Highlight w400
+};
+
 String normalizeFontFamilyForFontMetrics(String fontFamily) {
   final packageSeparator = fontFamily.lastIndexOf('/');
   final unprefixed = packageSeparator < 0
@@ -13546,6 +17406,18 @@ double? rasterCapHeightEmForFontFamily(String? fontFamily) {
   return kRasterCapHeightEmByFontFamily[normalizeFontFamilyForFontMetrics(
     fontFamily,
   )];
+}
+
+/// Ascent from the font's hhea table, in em, when known.
+double? ascentEmForFontFamily(String? fontFamily) {
+  if (fontFamily == null) return null;
+  return kAscentEmByFontFamily[normalizeFontFamilyForFontMetrics(fontFamily)];
+}
+
+/// Descent from the font's hhea table, in em, when known.
+double? descentEmForFontFamily(String? fontFamily) {
+  if (fontFamily == null) return null;
+  return kDescentEmByFontFamily[normalizeFontFamilyForFontMetrics(fontFamily)];
 }
 
 double? rasterAveragePhraseCharacterAdvanceEmForFontFamily(String? fontFamily) {

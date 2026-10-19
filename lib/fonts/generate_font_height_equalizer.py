@@ -14,6 +14,7 @@ import math
 import os
 import re
 import statistics
+import struct
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -33,7 +34,9 @@ _VISUAL_HEIGHT_PHRASES = [
 _VISUAL_HEIGHT_X_WEIGHT = 0.50
 _VISUAL_HEIGHT_ADVANCE_WEIGHT = 0.15
 
-FontMetricRow = tuple[str, str, int, float, float, float, float, float, float, float]
+FontMetricRow = tuple[
+    str, str, int, float, float, float, float, float, float, float, float, float
+]
 
 
 @dataclass(frozen=True)
@@ -255,6 +258,28 @@ class RasterMeasurer:
         return self.text_advance_em(text) / max(1, len(text))
 
 
+def hhea_ascent_descent_em(path: Path) -> tuple[float, float]:
+    """Ascent and descent from the font's hhea table, in em.
+
+    These are exact font units, not raster measurements. Flutter's line
+    metrics use them, so they give the line box that text is laid out in.
+    Descent is positive below the baseline.
+    """
+    data = path.read_bytes()
+    tables: dict[bytes, tuple[int, int]] = {}
+    (num_tables,) = struct.unpack(">H", data[4:6])
+    for i in range(num_tables):
+        tag, _, offset, length = struct.unpack(
+            ">4sIII", data[12 + 16 * i : 28 + 16 * i]
+        )
+        tables[tag] = (offset, length)
+    head, _ = tables[b"head"]
+    hhea, _ = tables[b"hhea"]
+    (units_per_em,) = struct.unpack(">H", data[head + 18 : head + 20])
+    ascent, descent = struct.unpack(">hh", data[hhea + 4 : hhea + 8])
+    return ascent / units_per_em, -descent / units_per_em
+
+
 def raster_text_height_em(path: Path, text: str, font_size: int) -> float | None:
     return RasterMeasurer(path, font_size).text_height_em(text)
 
@@ -373,6 +398,7 @@ def measure_variant(
             x_height,
             phrase_average_character_advance,
         )
+        ascent, descent = hhea_ascent_descent_em(path)
         row: FontMetricRow = (
             normalize_family(variant.family),
             variant.family,
@@ -384,6 +410,8 @@ def measure_variant(
             phrase_trimmed_mean_height,
             phrase_average_character_advance,
             visual_height,
+            ascent,
+            descent,
         )
         return MeasurementResult(variant.family, row, False, None, time.monotonic() - started)
     except Exception as error:
@@ -426,30 +454,50 @@ def write_dart(
         "",
         "const kRasterXHeightEmByFontFamily = <String, double>{",
     ]
-    for normalized, family, weight, x_height, _, _, _, _, _, _ in rows:
+    for normalized, family, weight, x_height, *_ in rows:
         lines.append(f"  {dart_string(normalized)}: {x_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterCapHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, cap_height, _, _, _, _, _ in rows:
+    for normalized, family, weight, _, cap_height, *_ in rows:
         lines.append(f"  {dart_string(normalized)}: {cap_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterLowercaseP60HeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, lowercase_p60_height, _, _, _, _ in rows:
+    for normalized, family, weight, _, _, lowercase_p60_height, *_ in rows:
         lines.append(f"  {dart_string(normalized)}: {lowercase_p60_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterUppercaseMedianHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, _, uppercase_median_height, _, _, _ in rows:
+    for normalized, family, weight, _, _, _, uppercase_median_height, *_ in rows:
         lines.append(f"  {dart_string(normalized)}: {uppercase_median_height:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterPhraseHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, _, _, phrase_height, _, _ in rows:
+    for normalized, family, weight, _, _, _, _, phrase_height, *_ in rows:
         lines.append(f"  {dart_string(normalized)}: {phrase_height:.6f}, // {family} w{weight}")
     lines.extend([
         "};",
         "",
         "const kRasterAveragePhraseCharacterAdvanceEmByFontFamily = <String, double>{",
     ])
-    for normalized, family, weight, _, _, _, _, _, average_advance, _ in rows:
+    for normalized, family, weight, _, _, _, _, _, average_advance, *_ in rows:
         lines.append(f"  {dart_string(normalized)}: {average_advance:.6f}, // {family} w{weight}")
     lines.extend(["};", "", "const kRasterVisualHeightEmByFontFamily = <String, double>{"])
-    for normalized, family, weight, _, _, _, _, _, _, visual_height in rows:
+    for normalized, family, weight, _, _, _, _, _, _, visual_height, *_ in rows:
         lines.append(f"  {dart_string(normalized)}: {visual_height:.6f}, // {family} w{weight}")
+    lines.extend(
+        [
+            "};",
+            "",
+            "/// Ascent from the font's hhea table, in em. Flutter's line metrics use it.",
+            "const kAscentEmByFontFamily = <String, double>{",
+        ]
+    )
+    for normalized, family, weight, *_, ascent, _ in rows:
+        lines.append(f"  {dart_string(normalized)}: {ascent:.6f}, // {family} w{weight}")
+    lines.extend(
+        [
+            "};",
+            "",
+            "/// Descent from the font's hhea table, in em, positive below the baseline.",
+            "const kDescentEmByFontFamily = <String, double>{",
+        ]
+    )
+    for normalized, family, weight, *_, descent in rows:
+        lines.append(f"  {dart_string(normalized)}: {descent:.6f}, // {family} w{weight}")
     lines.extend(
         [
             "};",
@@ -480,6 +528,18 @@ def write_dart(
             "double? rasterCapHeightEmForFontFamily(String? fontFamily) {",
             "  if (fontFamily == null) return null;",
             "  return kRasterCapHeightEmByFontFamily[normalizeFontFamilyForFontMetrics(fontFamily)];",
+            "}",
+            "",
+            "/// Ascent from the font's hhea table, in em, when known.",
+            "double? ascentEmForFontFamily(String? fontFamily) {",
+            "  if (fontFamily == null) return null;",
+            "  return kAscentEmByFontFamily[normalizeFontFamilyForFontMetrics(fontFamily)];",
+            "}",
+            "",
+            "/// Descent from the font's hhea table, in em, when known.",
+            "double? descentEmForFontFamily(String? fontFamily) {",
+            "  if (fontFamily == null) return null;",
+            "  return kDescentEmByFontFamily[normalizeFontFamilyForFontMetrics(fontFamily)];",
             "}",
             "",
             "double? rasterAveragePhraseCharacterAdvanceEmForFontFamily(String? fontFamily) {",

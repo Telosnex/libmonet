@@ -5,6 +5,7 @@ Generated font data for dynamic Google Fonts support.
 ## Runtime files
 
 - `font_height_equalizer.g.dart` — per-family raster metrics and `visualHeightScaleForFontFamily`.
+  It also has each font's ascent and descent from its `hhea` table, which Flutter's line metrics use.
 - `optical_font_size.dart` — `opticallyMatchedFontSize`, for sizing one font to look as large as another (e.g. monospace next to prose).
 - `google_fonts_catalog.g.dart` — picker/search metadata for every family in the resolved `google_fonts` package.
   Its variants come from the package descriptors. Its categories and language subsets come from Google Fonts metadata.
