@@ -40,3 +40,6 @@ doc/api/
 .idea/*
 .DS_Store
 .vscode/launch.json
+
+# Python bytecode caches
+__pycache__/
