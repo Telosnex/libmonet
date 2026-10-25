@@ -27,8 +27,8 @@ void main() {
         );
         expect(height, lessThan(box), reason: family);
       }
-      // I6: catches large data drift. 679 when written.
-      expect(changed, inInclusiveRange(600, 760));
+      // I6: catches large data drift. 890 when written.
+      expect(changed, inInclusiveRange(800, 980));
     });
 
     test('the clearance is relative to the requested size', () {
@@ -52,37 +52,30 @@ void main() {
         'Inter',
         'IM Fell Great Primer',
         'Lusitana',
-        'Alice',
         'Montserrat',
-        // Some Devanagari languages need more than its box.
-        'Poppins',
-        // Its heavier weights need the box.
-        'Laila',
       ]) {
         expect(lineHeightForFontFamily(family), isNull, reason: family);
       }
     });
 
-    test('I3: unmeasured scripts and squeezed scripts do not change', () {
-      // An own script without gflanguages sample text.
-      expect(
-        kLetterNeedEmByFontFamily[normalizeFontFamilyForFontMetrics(
-          'Noto Serif Khitan Small Script',
-        )],
-        isNull,
-      );
-      expect(lineHeightForFontFamily('Noto Serif Khitan Small Script'), isNull);
-      // Urdu needs more than the box.
-      expect(lineHeightForFontFamily('Noto Nastaliq Urdu'), isNull);
+    test('I3: fonts without Latin letters do not change', () {
+      // No `latin` subset.
+      expect(lineHeightForFontFamily('Chenla'), isNull);
       expect(lineHeightForFontFamily('Not A Font'), isNull);
       expect(lineHeightForFontFamily(null), isNull);
     });
 
-    test('tall-box fonts change', () {
-      expect(lineHeightForFontFamily('Mukta'), closeTo(1.39, 0.01));
+    test('tall-box fonts fit their Latin letters', () {
+      expect(lineHeightForFontFamily('Mukta'), closeTo(1.20, 0.01));
+      expect(lineHeightForFontFamily('Laila'), closeTo(1.35, 0.01));
+      // Latin only, so its Telugu (1.25 em) does not keep it tall.
       expect(
         lineHeightForFontFamily('Tenali Ramakrishna'),
-        closeTo(1.30, 0.01),
+        closeTo(0.69, 0.01),
+      );
+      expect(
+        lineHeightForFontFamily('Noto Nastaliq Urdu'),
+        closeTo(1.26, 0.01),
       );
       expect(
         lineHeightForFontFamily('Mukta_500'),

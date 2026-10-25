@@ -18,7 +18,6 @@ import re
 import statistics
 import struct
 import time
-import unicodedata
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,41 +36,16 @@ _VISUAL_HEIGHT_PHRASES = [
 _VISUAL_HEIGHT_X_WEIGHT = 0.50
 _VISUAL_HEIGHT_ADVANCE_WEIGHT = 0.15
 
-# Line height letter need (docs/design/ADR_font_line_height.md in telosnex).
+# Line height letter need (docs/design/ADR_font_line_height.md in telosnex):
+# the Latin letter ink. Other scripts keep their room through the user
+# setting that turns compact line heights off.
 #
 # Latin letter ink: A-Z, a-z, and the letters in U+00C0-U+00FF, or only
 # A-Z and a-z if the font does not have the others. U+00D7 and U+00F7 are
 # not letters.
 _LATIN_BASIC_CODEPOINTS = list(range(0x41, 0x5B)) + list(range(0x61, 0x7B))
 _LATIN_ACCENTED_CODEPOINTS = [cp for cp in range(0xC0, 0x100) if cp not in (0xD7, 0xF7)]
-# Google Fonts subsets that are not an own script of a font.
-_NOT_OWN_SCRIPT_SUBSETS = {
-    "latin",
-    "latin-ext",
-    "vietnamese",
-    "menu",
-    "math",
-    "symbols",
-    "symbols2",
-    "music",
-    "emoji",
-}
-# Subset names that are not gflanguages script names.
-_SUBSET_SCRIPT_ALIASES = {
-    "bengali": "Beng",
-    "oriya": "Orya",
-    "cyrillic-ext": "Cyrl",
-    "greek-ext": "Grek",
-    "japanese": "Jpan",
-    "korean": "Kore",
-    "chinese-simplified": "Hans",
-    "chinese-traditional": "Hant",
-    "chinese-hongkong": "Hant",
-}
-_SAMPLE_TEXT_FIELDS = ("specimen_32", "specimen_21", "tester")
-# A sample is not used if more than this fraction of its letters are not in
-# the font: a fallback font draws them, so they do not describe this font.
-_SAMPLE_UNMAPPED_LETTER_LIMIT = 0.02
+
 
 FontMetricRow = tuple[
     str, str, int, float, float, float, float, float, float, float, float, float
@@ -98,9 +72,8 @@ class MeasurementResult:
 @dataclass(frozen=True)
 class LineNeedResult:
     family: str
-    # Sum of the ink above and below the baseline of ordinary text, in em:
-    # the largest of the Latin letter ink and the script sample ink of each
-    # own script. None when [absent] is set.
+    # Sum of the Latin letter ink above and below the baseline, in em. None
+    # when [absent] is set.
     letter_need: float | None
     line_box: float
     # Why the family gets no line height, or None.
@@ -418,43 +391,9 @@ def ttf_bytes(variant: GoogleFontVariant, cache_dir: Path) -> bytes:
     return data
 
 
-_script_samples_cache: dict[str, list[tuple[str, str]]] | None = None
-_subset_scripts_cache: dict[str, str] | None = None
-
-
-def _gflanguages() -> tuple[dict[str, list[tuple[str, str]]], dict[str, str]]:
-    """(sample texts by script code, script code by subset name)."""
-    global _script_samples_cache, _subset_scripts_cache
-    if _script_samples_cache is None or _subset_scripts_cache is None:
-        from gflanguages import LoadLanguages, LoadScripts
-
-        samples: dict[str, list[tuple[str, str]]] = {}
-        for language_id, language in sorted(LoadLanguages().items()):
-            seen: set[str] = set()
-            for field in _SAMPLE_TEXT_FIELDS:
-                text = getattr(language.sample_text, field).replace("\n", " ").strip()
-                if text and text not in seen:
-                    seen.add(text)
-                    samples.setdefault(language.script, []).append(
-                        (language_id.split("_")[0], text)
-                    )
-        scripts = {
-            script.name.lower().replace(" ", "-"): code
-            for code, script in LoadScripts().items()
-        }
-        scripts.update(_SUBSET_SCRIPT_ALIASES)
-        _script_samples_cache, _subset_scripts_cache = samples, scripts
-    return _script_samples_cache, _subset_scripts_cache
-
-
-def _ink_reach_em(
-    font: ImageFont.FreeTypeFont,
-    text: str,
-    size: int,
-    language: str | None = None,
-) -> tuple[float, float] | None:
-    """How far the shaped ink of [text] reaches (above, below) the baseline."""
-    _, top, _, bottom = font.getbbox(text, anchor="ls", language=language)
+def _ink_reach_em(font: ImageFont.FreeTypeFont, text: str, size: int) -> tuple[float, float] | None:
+    """How far the ink of [text] reaches (above, below) the baseline."""
+    _, top, _, bottom = font.getbbox(text, anchor="ls")
     if bottom <= top:
         return None
     return -top / size, bottom / size
@@ -468,9 +407,7 @@ def measure_line_need(
 ) -> LineNeedResult:
     """The letter need and line box of one variant.
 
-    See docs/design/ADR_font_line_height.md in telosnex, D2, D4, D5, and D7.
-    Pillow shapes the sample texts with raqm, so conjuncts and stacked marks
-    are measured as Flutter draws them.
+    See docs/design/ADR_font_line_height.md in telosnex.
     """
     try:
         data = ttf_bytes(variant, Path(cache_dir))
@@ -484,7 +421,7 @@ def measure_line_need(
 
     if "latin" not in subsets:
         return absent("no latin subset")
-    font = ImageFont.truetype(io.BytesIO(data), font_size, layout_engine=ImageFont.Layout.RAQM)
+    font = ImageFont.truetype(io.BytesIO(data), font_size)
     mapped = cmap_codepoints(data)
     letters = list(_LATIN_BASIC_CODEPOINTS)
     if all(codepoint in mapped for codepoint in _LATIN_ACCENTED_CODEPOINTS):
@@ -498,28 +435,6 @@ def measure_line_need(
             return absent("latin letter without ink")
         above, below = max(above, reach[0]), max(below, reach[1])
     need = above + below
-
-    samples, subset_scripts = _gflanguages()
-    for subset in subsets:
-        if subset in _NOT_OWN_SCRIPT_SUBSETS:
-            continue
-        script = subset_scripts.get(subset)
-        if script is None:
-            return absent(f"unmapped subset {subset}")
-        above = below = 0.0
-        used = 0
-        for language, text in samples.get(script, []):
-            text_letters = [ch for ch in text if unicodedata.category(ch)[0] in "LM"]
-            unmapped = sum(ord(ch) not in mapped for ch in text_letters)
-            if not text_letters or unmapped > _SAMPLE_UNMAPPED_LETTER_LIMIT * len(text_letters):
-                continue
-            reach = _ink_reach_em(font, text, font_size, language)
-            if reach is not None:
-                above, below = max(above, reach[0]), max(below, reach[1])
-                used += 1
-        if used == 0:
-            return absent(f"no usable sample for {subset}")
-        need = max(need, above + below)
     return LineNeedResult(variant.family, need, line_box, None)
 
 
@@ -764,11 +679,10 @@ def write_dart(
         [
             "};",
             "",
-            "/// Height of the ink of ordinary text, in em, over every variant.",
+            "/// Height of the Latin letter ink, in em: the largest over every variant.",
             "///",
-            "/// The largest of the Latin letter ink and the shaped sample-text ink of",
-            "/// each own script (Google Fonts gflanguages). A family is absent if it has",
-            "/// no Latin letters or an own script that cannot be measured.",
+            "/// A-Z, a-z, and U+00C0-U+00FF, or only A-Z and a-z if a variant does not",
+            "/// have the others. A family is absent if it has no Latin letters.",
             "const kLetterNeedEmByFontFamily = <String, double>{",
         ]
     )
@@ -871,10 +785,6 @@ def measure_line_needs(
     variant is absent. Fails on a download or measurement error, so the
     output does not depend on the network.
     """
-    from PIL import features
-
-    if not features.check("raqm"):
-        raise RuntimeError("Pillow has no raqm: sample texts would not be shaped.")
     metadata = json.loads(Path(args.metadata).read_text())
     tasks = [
         (variant, tuple(metadata.get(family, {}).get("subsets", [])))

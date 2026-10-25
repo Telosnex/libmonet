@@ -2,10 +2,9 @@
   "version": "9.0.0",
   "descriptors": "fe538a4053f42ba6024885cf4f01e241f52200afad442414bc0778ef6afd45aa",
   "metadata": "ce1b6baa8aff9b83e2ec233132e845818505c54e342a5eaf0803712e444e0686",
-  "metrics": "b23327d9da501a338c736b8b45b333cebce2cf09927c7de39f195a733629f848",
-  "rasterizer": "efa9ce35a7a18b249219d582e7d70f7247259e3482a79f306693e621275b2806",
+  "metrics": "9efca757f2287c45e930864dff7d373a0bf61298e8220be2c509ddcaaef9508e",
+  "rasterizer": "e0e56ddada809d11c249cbad1b1309ac38911dd078f39204cfa061c2e04d1c8a",
   "pillow": "12.1.1",
-  "gflanguages": "0.7.11",
   "metricExclusions": [
     "Karla Tamil Inclined",
     "Karla Tamil Upright",

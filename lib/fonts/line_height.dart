@@ -11,9 +11,10 @@ const kLineHeightFloor = 1.0;
 
 /// TextStyle.height for [fontFamily], or null for the natural line box.
 ///
-/// The height fits the ink of ordinary text in the font: the Latin letters
-/// and sample text of each script the font is made for, over every weight
-/// and style. It adds [kLineHeightClearance], and is at least
+/// The height fits the ink of the font's Latin letters, over every weight
+/// and style. Other scripts can need more room: an app that shows them
+/// turns this off ([MonetThemeData.compactLineHeights]). The height adds
+/// [kLineHeightClearance], and is at least
 /// [kLineHeightFloor]. Both are relative to the requested size: the font
 /// size before [visualHeightScaleForFontFamily] scales it.
 ///
