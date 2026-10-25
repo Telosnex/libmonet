@@ -51,6 +51,10 @@ class MonetThemeData {
   /// line box of every font.
   final bool compactLineHeights;
 
+  /// The gap between adjacent lines with [compactLineHeights], as a fraction
+  /// of the requested font size. See [lineHeightForFontFamily].
+  final double lineHeightClearance;
+
   late final MonetShapes shapes = shapeTheme.resolve(scale);
 
   // Bound strong keys as well as weak values. Include every environmental
@@ -93,6 +97,7 @@ class MonetThemeData {
     this.shapeTheme = const MonetShapeTheme(),
     this.typography,
     this.compactLineHeights = true,
+    this.lineHeightClearance = kLineHeightClearance,
   });
 
   @override
@@ -111,7 +116,8 @@ class MonetThemeData {
           scale == other.scale &&
           shapeTheme == other.shapeTheme &&
           other.typography == typography &&
-          other.compactLineHeights == compactLineHeights;
+          other.compactLineHeights == compactLineHeights &&
+          other.lineHeightClearance == lineHeightClearance;
 
   @override
   int get hashCode => Object.hash(
@@ -128,6 +134,7 @@ class MonetThemeData {
     shapeTheme,
     typography,
     compactLineHeights,
+    lineHeightClearance,
   );
 
   /// Copies theme fields and palette values verbatim. Policy fields do not
@@ -147,6 +154,7 @@ class MonetThemeData {
     MonetShapeTheme? shapeTheme,
     Typography Function(ColorScheme)? typography,
     bool? compactLineHeights,
+    double? lineHeightClearance,
   }) {
     return MonetThemeData(
       primary: primary ?? this.primary,
@@ -161,6 +169,7 @@ class MonetThemeData {
       shapeTheme: shapeTheme ?? this.shapeTheme,
       typography: typography ?? this.typography,
       compactLineHeights: compactLineHeights ?? this.compactLineHeights,
+      lineHeightClearance: lineHeightClearance ?? this.lineHeightClearance,
     );
   }
 
@@ -175,6 +184,7 @@ class MonetThemeData {
     MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
     bool compactLineHeights = true,
+    double lineHeightClearance = kLineHeightClearance,
   }) {
     final temperatureCache = TemperatureCache(
       Hct.fromColor(color, model: colorModel),
@@ -194,6 +204,7 @@ class MonetThemeData {
       shapeTheme: shapeTheme,
       typography: typography,
       compactLineHeights: compactLineHeights,
+      lineHeightClearance: lineHeightClearance,
     );
   }
 
@@ -208,6 +219,7 @@ class MonetThemeData {
     MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
     bool compactLineHeights = true,
+    double lineHeightClearance = kLineHeightClearance,
   }) {
     final triad = ScorerTriad.threeColorsFromQuantizer(
       quantizerResult,
@@ -226,6 +238,7 @@ class MonetThemeData {
       shapeTheme: shapeTheme,
       typography: typography,
       compactLineHeights: compactLineHeights,
+      lineHeightClearance: lineHeightClearance,
     );
   }
 
@@ -242,6 +255,7 @@ class MonetThemeData {
     MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
     bool compactLineHeights = true,
+    double lineHeightClearance = kLineHeightClearance,
   }) {
     final primaryPalette = Palette.from(
       primary,
@@ -277,6 +291,7 @@ class MonetThemeData {
       shapeTheme: shapeTheme,
       typography: typography,
       compactLineHeights: compactLineHeights,
+      lineHeightClearance: lineHeightClearance,
     );
   }
 
@@ -1660,12 +1675,17 @@ class MonetThemeData {
     final txtC = primary.backgroundText;
     const h = null; // Respect font's settings, unless compactLineHeights.
 
-    // With compactLineHeights, each style gets a line height that fits the ink
-    // of its font (lineHeightForFontFamily), or keeps the natural line box.
-    // One place for every widget that takes its style from the theme.
+    // Each style gets a line height that fits the ink of its font, or the
+    // font's own line box without compactLineHeights. One place for every
+    // widget that takes its style from the theme. The letters are centred
+    // only in fonts that patchFontLineMetrics changed.
     TextStyle lineHeight(TextStyle style) {
-      if (!compactLineHeights) return style;
-      final height = lineHeightForFontFamily(style.fontFamily);
+      final height = compactLineHeights
+          ? lineHeightForFontFamily(
+              style.fontFamily,
+              clearance: lineHeightClearance,
+            )
+          : naturalLineHeightForFontFamily(style.fontFamily);
       if (height == null) return style;
       return style.copyWith(
         height: height,

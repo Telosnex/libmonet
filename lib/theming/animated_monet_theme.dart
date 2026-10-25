@@ -67,6 +67,11 @@ class InterpolatedMonetThemeData extends MonetThemeData {
          compactLineHeights: t < 1.0
              ? begin.compactLineHeights
              : end.compactLineHeights,
+         lineHeightClearance: lerpDouble(
+           begin.lineHeightClearance,
+           end.lineHeightClearance,
+           t,
+         )!,
        );
 
   @override

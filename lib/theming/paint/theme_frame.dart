@@ -25,6 +25,7 @@ class MonetThemeFrame extends MonetThemeData {
          typography: materialAnchor.typography,
          shapeTheme: materialAnchor.shapeTheme,
          compactLineHeights: materialAnchor.compactLineHeights,
+         lineHeightClearance: materialAnchor.lineHeightClearance,
        );
 
   @override

@@ -49,6 +49,7 @@ export 'effects/uv_harmony.dart';
 // Fonts
 export 'fonts/font_height_equalizer.g.dart';
 export 'fonts/google_fonts_catalog.g.dart';
+export 'fonts/font_line_metrics_patch.dart';
 export 'fonts/line_height.dart';
 export 'fonts/optical_font_size.dart';
 

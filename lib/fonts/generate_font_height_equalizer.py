@@ -72,10 +72,9 @@ class MeasurementResult:
 @dataclass(frozen=True)
 class LineNeedResult:
     family: str
-    # Sum of the Latin letter ink above and below the baseline, in em. None
-    # when [absent] is set.
-    letter_need: float | None
-    line_box: float
+    # How far the Latin letter ink reaches (above, below) the baseline, in
+    # em. None when [absent] is set.
+    ink: tuple[float, float] | None
     # Why the family gets no line height, or None.
     absent: str | None
 
@@ -412,12 +411,9 @@ def measure_line_need(
     try:
         data = ttf_bytes(variant, Path(cache_dir))
     except Exception as error:
-        return LineNeedResult(variant.family, None, 0.0, f"error: {error}")
-    ascent, descent = hhea_ascent_descent_em(data)
-    line_box = ascent + descent
-
+        return LineNeedResult(variant.family, None, f"error: {error}")
     def absent(reason: str) -> LineNeedResult:
-        return LineNeedResult(variant.family, None, line_box, reason)
+        return LineNeedResult(variant.family, None, reason)
 
     if "latin" not in subsets:
         return absent("no latin subset")
@@ -434,8 +430,7 @@ def measure_line_need(
         if reach is None:
             return absent("latin letter without ink")
         above, below = max(above, reach[0]), max(below, reach[1])
-    need = above + below
-    return LineNeedResult(variant.family, need, line_box, None)
+    return LineNeedResult(variant.family, (above, below), None)
 
 
 def hhea_ascent_descent_em(data: bytes | Path) -> tuple[float, float]:
@@ -679,28 +674,29 @@ def write_dart(
         [
             "};",
             "",
-            "/// Height of the Latin letter ink, in em: the largest over every variant.",
+            "/// How far the Latin letter ink reaches above the baseline, in em: the",
+            "/// largest over every weight and style.",
             "///",
             "/// A-Z, a-z, and U+00C0-U+00FF, or only A-Z and a-z if a variant does not",
             "/// have the others. A family is absent if it has no Latin letters.",
-            "const kLetterNeedEmByFontFamily = <String, double>{",
+            "const kLatinInkAboveEmByFontFamily = <String, double>{",
         ]
     )
     for normalized, family, *_ in need_rows:
-        need, _, count = line_needs[normalized]
-        lines.append(f"  {dart_string(normalized)}: {need:.6f}, // {family}, {count} variants")
+        above, _, count = line_needs[normalized]
+        lines.append(f"  {dart_string(normalized)}: {above:.6f}, // {family}, {count} variants")
     lines.extend(
         [
             "};",
             "",
-            "/// Smallest hhea line box (ascent + descent) over every variant, in em.",
-            "/// Same families as [kLetterNeedEmByFontFamily].",
-            "const kMinLineBoxEmByFontFamily = <String, double>{",
+            "/// How far the Latin letter ink reaches below the baseline, in em, positive",
+            "/// below it. Same families as [kLatinInkAboveEmByFontFamily].",
+            "const kLatinInkBelowEmByFontFamily = <String, double>{",
         ]
     )
     for normalized, family, *_ in need_rows:
-        _, box, count = line_needs[normalized]
-        lines.append(f"  {dart_string(normalized)}: {box:.6f}, // {family}, {count} variants")
+        _, below, count = line_needs[normalized]
+        lines.append(f"  {dart_string(normalized)}: {below:.6f}, // {family}, {count} variants")
     lines.extend(
         [
             "};",
@@ -778,11 +774,10 @@ def measure_line_needs(
     index: tuple[dict[str, str], dict[str, str], dict[str, str]],
     cache_dir: Path,
 ) -> dict[str, tuple[float, float, int]]:
-    """(letter need, line box, variant count) by normalized family.
+    """(ink above, ink below, variant count) by normalized family.
 
-    Measures every weight and style. The letter need is the largest over the
-    variants, and the line box the smallest. A family is absent if any
-    variant is absent. Fails on a download or measurement error, so the
+    Measures every weight and style, and keeps the largest reach above and
+    below over the variants. A family is absent if any variant is absent. Fails on a download or measurement error, so the
     output does not depend on the network.
     """
     metadata = json.loads(Path(args.metadata).read_text())
@@ -813,11 +808,11 @@ def measure_line_needs(
         raise RuntimeError(f"Failed to measure {len(errors)} variants, e.g. {errors[0].family}: {errors[0].absent}")
     needs: dict[str, tuple[float, float, int]] = {}
     for family, results in by_family.items():
-        if any(r.letter_need is None for r in results):
+        if any(r.ink is None for r in results):
             continue
         needs[normalize_family(family)] = (
-            max(r.letter_need for r in results),
-            min(r.line_box for r in results),
+            max(r.ink[0] for r in results),
+            max(r.ink[1] for r in results),
             len(results),
         )
     return needs
