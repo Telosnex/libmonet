@@ -9,6 +9,9 @@ import 'package:crypto/crypto.dart';
 const metadataUrl = 'https://fonts.google.com/metadata/fonts';
 const pillowVersion = '12.1.1';
 
+/// Google Fonts language data (Apache-2.0): sample texts for line heights.
+const gflanguagesVersion = '0.7.11';
+
 class FontVariant {
   const FontVariant(this.weight, this.italic, this.hash, this.length);
   final int weight;
@@ -246,6 +249,19 @@ Future<String> rasterPython(Directory root) async {
   if (probe.exitCode != 0 || probe.stdout.toString().trim() != pillowVersion) {
     await run(executable, ['-m', 'pip', 'install', 'Pillow==$pillowVersion']);
   }
+  final languages = await Process.run(executable, [
+    '-c',
+    'import importlib.metadata as m; print(m.version("gflanguages"))',
+  ]);
+  if (languages.exitCode != 0 ||
+      languages.stdout.toString().trim() != gflanguagesVersion) {
+    await run(executable, [
+      '-m',
+      'pip',
+      'install',
+      'gflanguages==$gflanguagesVersion',
+    ]);
+  }
   return executable;
 }
 
@@ -311,7 +327,8 @@ Future<void> main(List<String> args) async {
         provenance['metadata'] != fingerprint(metadataFile) ||
         provenance['metrics'] != fingerprint(metrics) ||
         provenance['rasterizer'] != fingerprint(generator) ||
-        provenance['pillow'] != pillowVersion) {
+        provenance['pillow'] != pillowVersion ||
+        provenance['gflanguages'] != gflanguagesVersion) {
       throw StateError(
         'Font data is stale. Run tool/generate_fonts.dart --write --refresh-metadata with the same package config.',
       );
@@ -365,6 +382,7 @@ Future<void> main(List<String> args) async {
     'metrics': fingerprint(metrics),
     'rasterizer': fingerprint(generator),
     'pillow': pillowVersion,
+    'gflanguages': gflanguagesVersion,
     'metricExclusions': exclusions,
   };
   manifest.writeAsStringSync(

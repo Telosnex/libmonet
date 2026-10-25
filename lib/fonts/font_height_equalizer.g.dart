@@ -17376,6 +17376,3455 @@ const kDescentEmByFontFamily = <String, double>{
   'zillaslabhighlight': 0.256000, // Zilla Slab Highlight w400
 };
 
+/// Height of the ink of ordinary text, in em, over every variant.
+///
+/// The largest of the Latin letter ink and the shaped sample-text ink of
+/// each own script (Google Fonts gflanguages). A family is absent if it has
+/// no Latin letters or an own script that cannot be measured.
+const kLetterNeedEmByFontFamily = <String, double>{
+  'abeezee': 1.167969, // ABeeZee, 2 variants
+  'abel': 1.103516, // Abel, 1 variants
+  'abhayalibre': 1.000000, // Abhaya Libre, 5 variants
+  'aboreto': 1.156250, // Aboreto, 1 variants
+  'abrilfatface': 1.167969, // Abril Fatface, 1 variants
+  'abyssinicasil': 1.220703, // Abyssinica SIL, 1 variants
+  'aclonica': 1.232422, // Aclonica, 1 variants
+  'acme': 1.181641, // Acme, 1 variants
+  'actor': 1.189453, // Actor, 1 variants
+  'adamina': 1.365234, // Adamina, 1 variants
+  'adlamdisplay': 1.246094, // ADLaM Display, 1 variants
+  'adventpro': 1.205078, // Advent Pro, 18 variants
+  'afacadflux': 1.074219, // Afacad Flux, 9 variants
+  'agdasima': 1.068359, // Agdasima, 2 variants
+  'aguafinascript': 1.546875, // Aguafina Script, 1 variants
+  'agudisplay': 1.234375, // Agu Display, 1 variants
+  'akatab': 1.167969, // Akatab, 6 variants
+  'akayakanadaka': 1.431641, // Akaya Kanadaka, 1 variants
+  'akayatelivigala': 1.621094, // Akaya Telivigala, 1 variants
+  'akronim': 1.396484, // Akronim, 1 variants
+  'akshar': 1.578125, // Akshar, 5 variants
+  'akt': 1.150391, // Akt, 9 variants
+  'aladin': 1.230469, // Aladin, 1 variants
+  'alata': 1.289062, // Alata, 1 variants
+  'albertsans': 1.259766, // Albert Sans, 18 variants
+  'aldrich': 1.171875, // Aldrich, 1 variants
+  'alef': 1.230469, // Alef, 2 variants
+  'alegreya': 1.187500, // Alegreya, 12 variants
+  'alegreyasans': 1.144531, // Alegreya Sans, 14 variants
+  'alegreyasanssc': 1.185547, // Alegreya Sans SC, 14 variants
+  'alegreyasc': 1.212891, // Alegreya SC, 10 variants
+  'aleo': 1.166016, // Aleo, 18 variants
+  'alexandria': 2.021484, // Alexandria, 9 variants
+  'alexbrush': 1.148438, // Alex Brush, 1 variants
+  'alfaslabone': 1.324219, // Alfa Slab One, 1 variants
+  'alice': 1.095703, // Alice, 1 variants
+  'alienblock': 1.085938, // Alien Block, 1 variants
+  'alike': 1.203125, // Alike, 1 variants
+  'alikeangular': 1.230469, // Alike Angular, 1 variants
+  'alkalami': 1.734375, // Alkalami, 1 variants
+  'alkatra': 1.691406, // Alkatra, 4 variants
+  'allan': 1.142578, // Allan, 2 variants
+  'allerta': 1.042969, // Allerta, 1 variants
+  'allertastencil': 1.042969, // Allerta Stencil, 1 variants
+  'allison': 1.189453, // Allison, 1 variants
+  'allura': 1.166016, // Allura, 1 variants
+  'almarai': 1.593750, // Almarai, 4 variants
+  'almendra': 1.146484, // Almendra, 4 variants
+  'almendradisplay': 1.064453, // Almendra Display, 1 variants
+  'almendrasc': 1.103516, // Almendra SC, 1 variants
+  'alumnisans': 0.949219, // Alumni Sans, 18 variants
+  'alumnisanscollegiateone': 0.957031, // Alumni Sans Collegiate One, 2 variants
+  'alumnisansinlineone': 0.955078, // Alumni Sans Inline One, 2 variants
+  'alumnisanspinstripe': 0.871094, // Alumni Sans Pinstripe, 2 variants
+  'alumnisanssc': 0.951172, // Alumni Sans SC, 18 variants
+  'alyamama': 1.578125, // Alyamama, 7 variants
+  'amarante': 1.232422, // Amarante, 1 variants
+  'amaranth': 1.212891, // Amaranth, 4 variants
+  'amarna': 1.308594, // Amarna, 14 variants
+  'amaticsc': 1.212891, // Amatic SC, 2 variants
+  'amethysta': 1.216797, // Amethysta, 1 variants
+  'amiko': 1.308594, // Amiko, 3 variants
+  'amiri': 1.904297, // Amiri, 4 variants
+  'amiriquran': 1.750000, // Amiri Quran, 1 variants
+  'amita': 1.560547, // Amita, 2 variants
+  'anaheim': 1.164062, // Anaheim, 5 variants
+  'ancizarsans': 1.105469, // Ancizar Sans, 18 variants
+  'ancizarserif': 1.109375, // Ancizar Serif, 14 variants
+  'andadapro': 1.195312, // Andada Pro, 10 variants
+  'andika': 1.250000, // Andika, 4 variants
+  'anekbangla': 1.472656, // Anek Bangla, 8 variants
+  'anekdevanagari': 1.458984, // Anek Devanagari, 8 variants
+  'anekgujarati': 1.347656, // Anek Gujarati, 8 variants
+  'anekgurmukhi': 1.328125, // Anek Gurmukhi, 8 variants
+  'anekkannada': 1.373047, // Anek Kannada, 8 variants
+  'aneklatin': 1.062500, // Anek Latin, 8 variants
+  'anekmalayalam': 1.138672, // Anek Malayalam, 8 variants
+  'anekodia': 1.748047, // Anek Odia, 8 variants
+  'anektamil': 1.410156, // Anek Tamil, 8 variants
+  'anektelugu': 1.798828, // Anek Telugu, 8 variants
+  'angkor': 1.671875, // Angkor, 1 variants
+  'annapurnasil': 1.351562, // Annapurna SIL, 2 variants
+  'annieuseyourtelescope': 1.363281, // Annie Use Your Telescope, 1 variants
+  'anonymouspro': 1.062500, // Anonymous Pro, 4 variants
+  'anta': 1.152344, // Anta, 1 variants
+  'antic': 1.193359, // Antic, 1 variants
+  'anticdidone': 1.191406, // Antic Didone, 1 variants
+  'anticslab': 1.191406, // Antic Slab, 1 variants
+  'anton': 1.537109, // Anton, 1 variants
+  'antonio': 1.460938, // Antonio, 7 variants
+  'antonsc': 1.537109, // Anton SC, 1 variants
+  'anuphan': 1.435547, // Anuphan, 7 variants
+  'anybody': 1.138672, // Anybody, 18 variants
+  'arapey': 1.093750, // Arapey, 2 variants
+  'arbutus': 1.253906, // Arbutus, 1 variants
+  'arbutusslab': 1.234375, // Arbutus Slab, 1 variants
+  'architectsdaughter': 1.304688, // Architects Daughter, 1 variants
+  'archivo': 1.156250, // Archivo, 18 variants
+  'archivoblack': 1.166016, // Archivo Black, 1 variants
+  'archivonarrow': 1.097656, // Archivo Narrow, 8 variants
+  'arefruqaa': 1.830078, // Aref Ruqaa, 2 variants
+  'arefruqaaink': 1.830078, // Aref Ruqaa Ink, 2 variants
+  'areyouserious': 1.222656, // Are You Serious, 1 variants
+  'arima': 1.292969, // Arima, 7 variants
+  'arimo': 1.115234, // Arimo, 8 variants
+  'arizonia': 1.222656, // Arizonia, 1 variants
+  'armata': 1.212891, // Armata, 1 variants
+  'aronesans': 1.138672, // AR One Sans, 4 variants
+  'arsenal': 1.173828, // Arsenal, 4 variants
+  'arsenalsc': 1.150391, // Arsenal SC, 4 variants
+  'artifika': 1.216797, // Artifika, 1 variants
+  'arvo': 1.246094, // Arvo, 4 variants
+  'arya': 1.398438, // Arya, 2 variants
+  'asap': 1.130859, // Asap, 18 variants
+  'asar': 1.505859, // Asar, 1 variants
+  'asimovian': 1.210938, // Asimovian, 1 variants
+  'assistant': 1.146484, // Assistant, 7 variants
+  'astasans': 0.951172, // Asta Sans, 6 variants
+  'astloch': 1.222656, // Astloch, 2 variants
+  'asul': 1.210938, // Asul, 2 variants
+  'athiti': 1.312500, // Athiti, 6 variants
+  'atkinsonhyperlegible': 1.105469, // Atkinson Hyperlegible, 4 variants
+  'atkinsonhyperlegiblemono':
+      1.093750, // Atkinson Hyperlegible Mono, 14 variants
+  'atkinsonhyperlegiblenext':
+      1.093750, // Atkinson Hyperlegible Next, 14 variants
+  'atma': 1.554688, // Atma, 5 variants
+  'atomicage': 1.277344, // Atomic Age, 1 variants
+  'aubrey': 1.044922, // Aubrey, 1 variants
+  'audiowide': 1.207031, // Audiowide, 1 variants
+  'autourone': 1.248047, // Autour One, 1 variants
+  'average': 1.220703, // Average, 1 variants
+  'averagesans': 1.183594, // Average Sans, 1 variants
+  'averiagruesalibre': 1.144531, // Averia Gruesa Libre, 1 variants
+  'averialibre': 1.173828, // Averia Libre, 6 variants
+  'averiasanslibre': 1.212891, // Averia Sans Libre, 6 variants
+  'averiaseriflibre': 1.152344, // Averia Serif Libre, 6 variants
+  'azeretmono': 1.195312, // Azeret Mono, 18 variants
+  'b612': 1.230469, // B612, 4 variants
+  'b612mono': 1.240234, // B612 Mono, 4 variants
+  'babylonica': 1.277344, // Babylonica, 1 variants
+  'bacasimeantique': 0.960938, // Bacasime Antique, 1 variants
+  'badeendisplay': 1.162109, // Badeen Display, 1 variants
+  'badscript': 1.716797, // Bad Script, 1 variants
+  'bagelfatone': 1.226562, // Bagel Fat One, 1 variants
+  'bahiana': 1.111328, // Bahiana, 1 variants
+  'bahianita': 1.087891, // Bahianita, 1 variants
+  'baijamjuree': 1.564453, // Bai Jamjuree, 12 variants
+  'bakbakone': 1.458984, // Bakbak One, 1 variants
+  'ballet': 1.796875, // Ballet, 1 variants
+  'baloo2': 1.457031, // Baloo 2, 5 variants
+  'baloobhai2': 1.382812, // Baloo Bhai 2, 5 variants
+  'baloobhaijaan2': 1.714844, // Baloo Bhaijaan 2, 5 variants
+  'baloobhaina2': 1.806641, // Baloo Bhaina 2, 5 variants
+  'baloochettan2': 1.125000, // Baloo Chettan 2, 5 variants
+  'balooda2': 1.406250, // Baloo Da 2, 5 variants
+  'baloopaaji2': 1.320312, // Baloo Paaji 2, 5 variants
+  'balootamma2': 1.494141, // Baloo Tamma 2, 5 variants
+  'balootammudu2': 1.769531, // Baloo Tammudu 2, 5 variants
+  'baloothambi2': 1.322266, // Baloo Thambi 2, 5 variants
+  'balsamiqsans': 1.238281, // Balsamiq Sans, 4 variants
+  'balthazar': 1.015625, // Balthazar, 1 variants
+  'bangers': 1.285156, // Bangers, 1 variants
+  'barlow': 1.205078, // Barlow, 18 variants
+  'barlowcondensed': 1.208984, // Barlow Condensed, 18 variants
+  'barlowsemicondensed': 1.205078, // Barlow Semi Condensed, 18 variants
+  'barriecito': 1.048828, // Barriecito, 1 variants
+  'barrio': 1.005859, // Barrio, 1 variants
+  'basic': 1.199219, // Basic, 1 variants
+  'baskervville': 1.240234, // Baskervville, 8 variants
+  'baskervvillesc': 1.238281, // Baskervville SC, 4 variants
+  'battambang': 1.562500, // Battambang, 5 variants
+  'baumans': 1.171875, // Baumans, 1 variants
+  'bayon': 1.734375, // Bayon, 1 variants
+  'bbhbartle': 0.732422, // BBH Bartle, 1 variants
+  'bbhbogle': 0.732422, // BBH Bogle, 1 variants
+  'bbhhegarty': 0.933594, // BBH Hegarty, 1 variants
+  'beaurivage': 1.267578, // Beau Rivage, 1 variants
+  'bebasneue': 1.060547, // Bebas Neue, 1 variants
+  'beiruti': 1.445312, // Beiruti, 8 variants
+  'belanosima': 1.242188, // Belanosima, 3 variants
+  'belgrano': 1.269531, // Belgrano, 1 variants
+  'bellefair': 1.113281, // Bellefair, 1 variants
+  'belleza': 1.146484, // Belleza, 1 variants
+  'bellota': 1.242188, // Bellota, 6 variants
+  'bellotatext': 1.232422, // Bellota Text, 6 variants
+  'benchnine': 1.281250, // BenchNine, 3 variants
+  'benne': 1.255859, // Benne, 1 variants
+  'bentham': 0.884766, // Bentham, 1 variants
+  'berkshireswash': 1.246094, // Berkshire Swash, 1 variants
+  'besley': 1.363281, // Besley, 12 variants
+  'betaniapatmos': 1.160156, // Betania Patmos, 1 variants
+  'betaniapatmosgdl': 1.156250, // Betania Patmos GDL, 1 variants
+  'betaniapatmosin': 1.160156, // Betania Patmos In, 1 variants
+  'betaniapatmosingdl': 1.156250, // Betania Patmos In GDL, 1 variants
+  'bethellen': 1.785156, // Beth Ellen, 1 variants
+  'bevan': 1.298828, // Bevan, 2 variants
+  'bevietnampro': 1.335938, // Be Vietnam Pro, 18 variants
+  'bhutukaexpandedone': 1.107422, // BhuTuka Expanded One, 1 variants
+  'bigelowrules': 1.113281, // Bigelow Rules, 1 variants
+  'bigshotone': 1.050781, // Bigshot One, 1 variants
+  'bigshoulders': 1.259766, // Big Shoulders, 9 variants
+  'bigshouldersinline': 1.324219, // Big Shoulders Inline, 9 variants
+  'bigshouldersstencil': 1.263672, // Big Shoulders Stencil, 9 variants
+  'bilbo': 1.207031, // Bilbo, 1 variants
+  'bilboswashcaps': 1.253906, // Bilbo Swash Caps, 1 variants
+  'biorhyme': 1.296875, // BioRhyme, 7 variants
+  'birthstone': 1.072266, // Birthstone, 1 variants
+  'birthstonebounce': 1.394531, // Birthstone Bounce, 2 variants
+  'biryani': 1.814453, // Biryani, 7 variants
+  'bitcount': 1.205078, // Bitcount, 9 variants
+  'bitcountgriddouble': 0.804688, // Bitcount Grid Double, 9 variants
+  'bitcountgriddoubleink': 0.804688, // Bitcount Grid Double Ink, 9 variants
+  'bitcountgridsingle': 0.804688, // Bitcount Grid Single, 9 variants
+  'bitcountgridsingleink': 0.804688, // Bitcount Grid Single Ink, 9 variants
+  'bitcountink': 1.205078, // Bitcount Ink, 9 variants
+  'bitcountpropdouble': 1.205078, // Bitcount Prop Double, 9 variants
+  'bitcountpropdoubleink': 1.205078, // Bitcount Prop Double Ink, 9 variants
+  'bitcountpropsingle': 1.205078, // Bitcount Prop Single, 9 variants
+  'bitcountpropsingleink': 1.205078, // Bitcount Prop Single Ink, 9 variants
+  'bitcountsingle': 1.205078, // Bitcount Single, 9 variants
+  'bitcountsingleink': 1.205078, // Bitcount Single Ink, 9 variants
+  'bitter': 1.300781, // Bitter, 18 variants
+  'bizudgothic': 1.027344, // BIZ UDGothic, 2 variants
+  'bizudmincho': 1.041016, // BIZ UDMincho, 2 variants
+  'bizudpgothic': 1.027344, // BIZ UDPGothic, 2 variants
+  'bizudpmincho': 1.041016, // BIZ UDPMincho, 2 variants
+  'blackandwhitepicture': 1.003906, // Black And White Picture, 1 variants
+  'blackhansans': 1.011719, // Black Han Sans, 1 variants
+  'blaka': 1.300781, // Blaka, 1 variants
+  'blakahollow': 1.300781, // Blaka Hollow, 1 variants
+  'blakaink': 1.300781, // Blaka Ink, 1 variants
+  'blinker': 1.044922, // Blinker, 8 variants
+  'bodonimoda': 1.296875, // Bodoni Moda, 12 variants
+  'bodonimodasc': 1.294922, // Bodoni Moda SC, 12 variants
+  'bokor': 1.808594, // Bokor, 1 variants
+  'boldonse': 2.060547, // Boldonse, 1 variants
+  'bonanova': 1.208984, // Bona Nova, 3 variants
+  'bonanovasc': 1.210938, // Bona Nova SC, 3 variants
+  'bonbon': 1.166016, // Bonbon, 1 variants
+  'bonheurroyale': 1.130859, // Bonheur Royale, 1 variants
+  'boogaloo': 1.187500, // Boogaloo, 1 variants
+  'borel': 1.503906, // Borel, 1 variants
+  'bowlbyone': 1.380859, // Bowlby One, 1 variants
+  'bowlbyonesc': 1.349609, // Bowlby One SC, 1 variants
+  'bpmfhuninn': 0.962891, // Bpmf Huninn, 1 variants
+  'bpmfiansui': 0.957031, // Bpmf Iansui, 1 variants
+  'bpmfzihikaistd': 1.089844, // Bpmf Zihi Kai Std, 1 variants
+  'braahone': 1.410156, // Braah One, 1 variants
+  'brawler': 1.255859, // Brawler, 2 variants
+  'breeserif': 1.150391, // Bree Serif, 1 variants
+  'bricolagegrotesque': 1.152344, // Bricolage Grotesque, 7 variants
+  'brunoace': 1.111328, // Bruno Ace, 1 variants
+  'brunoacesc': 1.070312, // Bruno Ace SC, 1 variants
+  'brygada1918': 1.142578, // Brygada 1918, 8 variants
+  'bubblegumsans': 1.162109, // Bubblegum Sans, 1 variants
+  'bubblerone': 1.164062, // Bubbler One, 1 variants
+  'buda': 1.130859, // Buda, 1 variants
+  'buenard': 1.121094, // Buenard, 4 variants
+  'bungee': 1.105469, // Bungee, 1 variants
+  'bungeehairline': 0.945312, // Bungee Hairline, 1 variants
+  'bungeeinline': 1.101562, // Bungee Inline, 1 variants
+  'bungeeoutline': 1.125000, // Bungee Outline, 1 variants
+  'bungeeshade': 1.236328, // Bungee Shade, 1 variants
+  'bungeespice': 1.105469, // Bungee Spice, 1 variants
+  'bungeetint': 1.105469, // Bungee Tint, 1 variants
+  'butcherman': 1.595703, // Butcherman, 1 variants
+  'butterflykids': 1.193359, // Butterfly Kids, 1 variants
+  'bytesized': 1.001953, // Bytesized, 1 variants
+  'cabin': 1.228516, // Cabin, 8 variants
+  'cabinsketch': 1.160156, // Cabin Sketch, 2 variants
+  'cactusclassicalserif': 1.150391, // Cactus Classical Serif, 1 variants
+  'caesardressing': 1.214844, // Caesar Dressing, 1 variants
+  'cagliostro': 1.248047, // Cagliostro, 1 variants
+  'cairo': 1.648438, // Cairo, 8 variants
+  'cairoplay': 1.648438, // Cairo Play, 8 variants
+  'caladea': 1.132812, // Caladea, 4 variants
+  'calistoga': 1.330078, // Calistoga, 1 variants
+  'calligraffitti': 1.556641, // Calligraffitti, 1 variants
+  'calsans': 1.160156, // Cal Sans, 1 variants
+  'cambay': 1.337891, // Cambay, 4 variants
+  'cambo': 1.123047, // Cambo, 1 variants
+  'candal': 1.474609, // Candal, 1 variants
+  'cantarell': 1.236328, // Cantarell, 4 variants
+  'cantataone': 1.253906, // Cantata One, 1 variants
+  'cantoraone': 1.191406, // Cantora One, 1 variants
+  'caprasimo': 1.177734, // Caprasimo, 1 variants
+  'capriola': 1.250000, // Capriola, 1 variants
+  'caramel': 0.871094, // Caramel, 1 variants
+  'carattere': 1.240234, // Carattere, 1 variants
+  'carlito': 1.029297, // Carlito, 4 variants
+  'carme': 1.000000, // Carme, 1 variants
+  'carroisgothic': 1.162109, // Carrois Gothic, 1 variants
+  'carroisgothicsc': 1.166016, // Carrois Gothic SC, 1 variants
+  'carterone': 1.396484, // Carter One, 1 variants
+  'castoro': 1.185547, // Castoro, 2 variants
+  'castorotitling': 1.109375, // Castoro Titling, 1 variants
+  'catamaran': 1.244141, // Catamaran, 9 variants
+  'caudex': 1.244141, // Caudex, 4 variants
+  'cause': 1.189453, // Cause, 9 variants
+  'caveat': 1.275391, // Caveat, 4 variants
+  'caveatbrush': 1.130859, // Caveat Brush, 1 variants
+  'cedarvillecursive': 1.855469, // Cedarville Cursive, 1 variants
+  'cevicheone': 0.890625, // Ceviche One, 1 variants
+  'chakrapetch': 1.570312, // Chakra Petch, 10 variants
+  'changa': 1.837891, // Changa, 7 variants
+  'changaone': 1.048828, // Changa One, 2 variants
+  'chango': 1.199219, // Chango, 1 variants
+  'charissil': 1.230469, // Charis SIL, 4 variants
+  'charm': 2.146484, // Charm, 2 variants
+  'charmonman': 2.320312, // Charmonman, 2 variants
+  'chathura': 0.912109, // Chathura, 5 variants
+  'chauphilomeneone': 1.310547, // Chau Philomene One, 2 variants
+  'chelaone': 1.101562, // Chela One, 1 variants
+  'chelseamarket': 1.271484, // Chelsea Market, 1 variants
+  'cherish': 1.291016, // Cherish, 1 variants
+  'cherrycreamsoda': 1.226562, // Cherry Cream Soda, 1 variants
+  'cherryswash': 1.255859, // Cherry Swash, 2 variants
+  'chewy': 1.242188, // Chewy, 1 variants
+  'chicle': 1.212891, // Chicle, 1 variants
+  'chilanka': 1.242188, // Chilanka, 1 variants
+  'chironheihk': 1.285156, // Chiron Hei HK, 16 variants
+  'chivo': 1.146484, // Chivo, 18 variants
+  'chivomono': 1.162109, // Chivo Mono, 18 variants
+  'chocolateclassicalsans': 1.238281, // Chocolate Classical Sans, 1 variants
+  'chonburi': 1.345703, // Chonburi, 1 variants
+  'cinzel': 1.283203, // Cinzel, 6 variants
+  'cinzeldecorative': 1.285156, // Cinzel Decorative, 3 variants
+  'clickerscript': 1.324219, // Clicker Script, 1 variants
+  'climatecrisis': 1.343750, // Climate Crisis, 1 variants
+  'coda': 1.388672, // Coda, 2 variants
+  'codystar': 1.181641, // Codystar, 2 variants
+  'coiny': 1.294922, // Coiny, 1 variants
+  'combo': 1.105469, // Combo, 1 variants
+  'comfortaa': 1.306641, // Comfortaa, 5 variants
+  'comforter': 1.457031, // Comforter, 1 variants
+  'comforterbrush': 1.455078, // Comforter Brush, 1 variants
+  'comicneue': 1.146484, // Comic Neue, 6 variants
+  'comicrelief': 1.359375, // Comic Relief, 2 variants
+  'comingsoon': 1.517578, // Coming Soon, 1 variants
+  'comme': 1.298828, // Comme, 9 variants
+  'commissioner': 1.244141, // Commissioner, 9 variants
+  'concertone': 1.152344, // Concert One, 1 variants
+  'condiment': 1.527344, // Condiment, 1 variants
+  'contrailone': 1.197266, // Contrail One, 1 variants
+  'convergence': 1.167969, // Convergence, 1 variants
+  'cookie': 1.111328, // Cookie, 1 variants
+  'copse': 1.187500, // Copse, 1 variants
+  'coralpixels': 1.154297, // Coral Pixels, 1 variants
+  'corben': 1.533203, // Corben, 2 variants
+  'corinthia': 1.164062, // Corinthia, 2 variants
+  'cormorant': 1.113281, // Cormorant, 10 variants
+  'cormorantgaramond': 1.113281, // Cormorant Garamond, 10 variants
+  'cormorantinfant': 1.113281, // Cormorant Infant, 10 variants
+  'cormorantsc': 1.101562, // Cormorant SC, 5 variants
+  'cormorantunicase': 1.101562, // Cormorant Unicase, 5 variants
+  'cormorantupright': 1.105469, // Cormorant Upright, 5 variants
+  'cossettetexte': 1.183594, // Cossette Texte, 2 variants
+  'cossettetitre': 1.115234, // Cossette Titre, 2 variants
+  'courgette': 1.255859, // Courgette, 1 variants
+  'courierprime': 1.125000, // Courier Prime, 4 variants
+  'cousine': 1.115234, // Cousine, 4 variants
+  'coustard': 1.287109, // Coustard, 2 variants
+  'coveredbyyourgrace': 1.345703, // Covered By Your Grace, 1 variants
+  'craftygirls': 1.425781, // Crafty Girls, 1 variants
+  'creepster': 1.173828, // Creepster, 1 variants
+  'creteround': 1.148438, // Crete Round, 2 variants
+  'crimsonpro': 1.062500, // Crimson Pro, 16 variants
+  'crimsontext': 1.070312, // Crimson Text, 6 variants
+  'croissantone': 1.255859, // Croissant One, 1 variants
+  'crushed': 1.066406, // Crushed, 1 variants
+  'cuprum': 1.115234, // Cuprum, 8 variants
+  'cutefont': 0.966797, // Cute Font, 1 variants
+  'cutive': 1.535156, // Cutive, 1 variants
+  'cutivemono': 1.023438, // Cutive Mono, 1 variants
+  'daibannasil': 1.042969, // Dai Banna SIL, 10 variants
+  'damion': 1.289062, // Damion, 1 variants
+  'dancingscript': 1.199219, // Dancing Script, 4 variants
+  'danfo': 1.107422, // Danfo, 1 variants
+  'dangrek': 1.669922, // Dangrek, 1 variants
+  'darkergrotesque': 1.035156, // Darker Grotesque, 7 variants
+  'datatype': 1.185547, // Datatype, 9 variants
+  'davidlibre': 1.113281, // David Libre, 3 variants
+  'dawningofanewday': 1.576172, // Dawning of a New Day, 1 variants
+  'daysone': 1.234375, // Days One, 1 variants
+  'dekko': 1.300781, // Dekko, 1 variants
+  'delagothicone': 1.248047, // Dela Gothic One, 1 variants
+  'delicioushandrawn': 1.404297, // Delicious Handrawn, 1 variants
+  'delius': 1.218750, // Delius, 1 variants
+  'deliusswashcaps': 1.220703, // Delius Swash Caps, 1 variants
+  'deliusunicase': 1.253906, // Delius Unicase, 2 variants
+  'dellarespira': 1.296875, // Della Respira, 1 variants
+  'devonshire': 1.410156, // Devonshire, 1 variants
+  'dhurjati': 1.207031, // Dhurjati, 1 variants
+  'didactgothic': 1.138672, // Didact Gothic, 1 variants
+  'diphylleia': 1.150391, // Diphylleia, 1 variants
+  'diplomata': 1.220703, // Diplomata, 1 variants
+  'diplomatasc': 1.152344, // Diplomata SC, 1 variants
+  'dmmono': 1.232422, // DM Mono, 6 variants
+  'dmsans': 1.267578, // DM Sans, 18 variants
+  'dmserifdisplay': 1.144531, // DM Serif Display, 2 variants
+  'dmseriftext': 1.146484, // DM Serif Text, 2 variants
+  'dohyeon': 0.855469, // Do Hyeon, 1 variants
+  'dokdo': 0.996094, // Dokdo, 1 variants
+  'domine': 1.132812, // Domine, 4 variants
+  'donegalone': 1.230469, // Donegal One, 1 variants
+  'dongle': 0.929688, // Dongle, 3 variants
+  'doppioone': 1.224609, // Doppio One, 1 variants
+  'dorsa': 1.056641, // Dorsa, 1 variants
+  'dosis': 1.265625, // Dosis, 7 variants
+  'dotgothic16': 1.001953, // DotGothic16, 1 variants
+  'doto': 0.994141, // Doto, 9 variants
+  'drsugiyama': 1.457031, // Dr Sugiyama, 1 variants
+  'durusans': 1.251953, // Duru Sans, 1 variants
+  'dynalight': 1.214844, // Dynalight, 1 variants
+  'eaglelake': 1.449219, // Eagle Lake, 1 variants
+  'eastseadokdo': 0.992188, // East Sea Dokdo, 1 variants
+  'eater': 1.664062, // Eater, 1 variants
+  'ebgaramond': 1.160156, // EB Garamond, 10 variants
+  'economica': 1.144531, // Economica, 4 variants
+  'eczar': 1.820312, // Eczar, 5 variants
+  'eduauvicwantarrows': 1.380859, // Edu AU VIC WA NT Arrows, 4 variants
+  'eduauvicwantdots': 1.382812, // Edu AU VIC WA NT Dots, 4 variants
+  'eduauvicwantguides': 1.822266, // Edu AU VIC WA NT Guides, 4 variants
+  'eduauvicwanthand': 1.820312, // Edu AU VIC WA NT Hand, 4 variants
+  'eduauvicwantpre': 1.820312, // Edu AU VIC WA NT Pre, 4 variants
+  'edunswactcursive': 1.927734, // Edu NSW ACT Cursive, 4 variants
+  'edunswactfoundation': 1.142578, // Edu NSW ACT Foundation, 4 variants
+  'edunswacthandpre': 1.923828, // Edu NSW ACT Hand Pre, 4 variants
+  'eduqldbeginner': 1.144531, // Edu QLD Beginner, 4 variants
+  'eduqldhand': 1.890625, // Edu QLD Hand, 4 variants
+  'edusabeginner': 1.140625, // Edu SA Beginner, 4 variants
+  'edusahand': 1.925781, // Edu SA Hand, 4 variants
+  'edutasbeginner': 1.136719, // Edu TAS Beginner, 4 variants
+  'eduvicwantbeginner': 1.160156, // Edu VIC WA NT Beginner, 4 variants
+  'eduvicwanthand': 1.820312, // Edu VIC WA NT Hand, 4 variants
+  'eduvicwanthandpre': 1.820312, // Edu VIC WA NT Hand Pre, 4 variants
+  'electrolize': 1.169922, // Electrolize, 1 variants
+  'elmessiri': 1.601562, // El Messiri, 4 variants
+  'elmssans': 1.191406, // Elms Sans, 18 variants
+  'elsie': 1.132812, // Elsie, 2 variants
+  'elsieswashcaps': 1.152344, // Elsie Swash Caps, 2 variants
+  'emblemaone': 1.125000, // Emblema One, 1 variants
+  'emilyscandy': 1.253906, // Emilys Candy, 1 variants
+  'encodesans': 1.244141, // Encode Sans, 9 variants
+  'encodesanssc': 1.236328, // Encode Sans SC, 9 variants
+  'engagement': 1.234375, // Engagement, 1 variants
+  'englebert': 1.238281, // Englebert, 1 variants
+  'enriqueta': 1.218750, // Enriqueta, 4 variants
+  'ephesis': 1.296875, // Ephesis, 1 variants
+  'epilogue': 1.250000, // Epilogue, 18 variants
+  'epundasans': 1.093750, // Epunda Sans, 14 variants
+  'epundaslab': 1.095703, // Epunda Slab, 14 variants
+  'ericaone': 1.142578, // Erica One, 1 variants
+  'esteban': 1.277344, // Esteban, 1 variants
+  'estedad': 1.654297, // Estedad, 9 variants
+  'estonia': 1.076172, // Estonia, 1 variants
+  'euphoriascript': 1.166016, // Euphoria Script, 1 variants
+  'ewert': 1.244141, // Ewert, 1 variants
+  'exile': 1.443359, // Exile, 1 variants
+  'exo': 1.257812, // Exo, 18 variants
+  'exo2': 1.261719, // Exo 2, 18 variants
+  'expletussans': 1.152344, // Expletus Sans, 8 variants
+  'explora': 0.994141, // Explora, 1 variants
+  'facultyglyphic': 1.287109, // Faculty Glyphic, 1 variants
+  'fahkwang': 1.539062, // Fahkwang, 12 variants
+  'familjengrotesk': 1.066406, // Familjen Grotesk, 8 variants
+  'fanwoodtext': 1.156250, // Fanwood Text, 2 variants
+  'farro': 1.232422, // Farro, 4 variants
+  'farsan': 1.095703, // Farsan, 1 variants
+  'fascinate': 1.257812, // Fascinate, 1 variants
+  'fascinateinline': 1.257812, // Fascinate Inline, 1 variants
+  'fasterone': 1.064453, // Faster One, 1 variants
+  'fasthand': 1.808594, // Fasthand, 1 variants
+  'faunaone': 1.236328, // Fauna One, 1 variants
+  'faustina': 1.058594, // Faustina, 12 variants
+  'federant': 1.175781, // Federant, 1 variants
+  'federo': 1.156250, // Federo, 1 variants
+  'felipa': 1.234375, // Felipa, 1 variants
+  'fenix': 1.121094, // Fenix, 1 variants
+  'festive': 1.373047, // Festive, 1 variants
+  'figtree': 1.193359, // Figtree, 14 variants
+  'fingerpaint': 1.443359, // Finger Paint, 1 variants
+  'finlandicaheadline': 1.246094, // Finlandica Headline, 18 variants
+  'finlandicatext': 1.250000, // Finlandica Text, 18 variants
+  'firacode': 1.253906, // Fira Code, 5 variants
+  'firamono': 1.251953, // Fira Mono, 3 variants
+  'firasans': 1.333984, // Fira Sans, 18 variants
+  'firasanscondensed': 1.326172, // Fira Sans Condensed, 18 variants
+  'firasansextracondensed': 1.328125, // Fira Sans Extra Condensed, 18 variants
+  'fjordone': 1.248047, // Fjord One, 1 variants
+  'flamenco': 1.029297, // Flamenco, 2 variants
+  'flavors': 1.283203, // Flavors, 1 variants
+  'fleurdeleah': 1.312500, // Fleur De Leah, 1 variants
+  'flowblock': 0.470703, // Flow Block, 1 variants
+  'flowcircular': 0.470703, // Flow Circular, 1 variants
+  'flowrounded': 0.470703, // Flow Rounded, 1 variants
+  'foldit': 1.207031, // Foldit, 9 variants
+  'fondamento': 1.289062, // Fondamento, 2 variants
+  'fontdinerswanky': 1.523438, // Fontdiner Swanky, 1 variants
+  'forum': 1.035156, // Forum, 1 variants
+  'francoisone': 1.332031, // Francois One, 1 variants
+  'frankruhllibre': 1.171875, // Frank Ruhl Libre, 7 variants
+  'fraunces': 1.214844, // Fraunces, 18 variants
+  'freckleface': 1.224609, // Freckle Face, 1 variants
+  'frederickathegreat': 1.228516, // Fredericka the Great, 1 variants
+  'fredoka': 1.234375, // Fredoka, 5 variants
+  'freehand': 1.808594, // Freehand, 1 variants
+  'freeman': 1.333984, // Freeman, 1 variants
+  'fresca': 1.103516, // Fresca, 1 variants
+  'frijole': 1.380859, // Frijole, 1 variants
+  'fugazone': 1.398438, // Fugaz One, 1 variants
+  'fuggles': 0.996094, // Fuggles, 1 variants
+  'funneldisplay': 1.175781, // Funnel Display, 6 variants
+  'funnelsans': 1.175781, // Funnel Sans, 12 variants
+  'fustat': 1.722656, // Fustat, 7 variants
+  'fuzzybubbles': 1.349609, // Fuzzy Bubbles, 2 variants
+  'gabarito': 1.224609, // Gabarito, 6 variants
+  'gabriela': 1.281250, // Gabriela, 1 variants
+  'gaegu': 1.003906, // Gaegu, 3 variants
+  'gafata': 1.125000, // Gafata, 1 variants
+  'gajrajone': 1.458984, // Gajraj One, 1 variants
+  'galada': 1.498047, // Galada, 1 variants
+  'galdeano': 1.048828, // Galdeano, 1 variants
+  'galindo': 1.267578, // Galindo, 1 variants
+  'gamaamli': 1.246094, // Ga Maamli, 1 variants
+  'gamjaflower': 0.966797, // Gamja Flower, 1 variants
+  'gantari': 1.140625, // Gantari, 18 variants
+  'gasoekone': 1.218750, // Gasoek One, 1 variants
+  'gayathri': 1.197266, // Gayathri, 3 variants
+  'geist': 1.210938, // Geist, 18 variants
+  'geistmono': 1.201172, // Geist Mono, 18 variants
+  'geistpixel': 1.183594, // Geist Pixel, 1 variants
+  'gelasio': 1.255859, // Gelasio, 8 variants
+  'gemunulibre': 1.103516, // Gemunu Libre, 7 variants
+  'genos': 0.863281, // Genos, 18 variants
+  'gentiumbookplus': 1.140625, // Gentium Book Plus, 4 variants
+  'gentiumplus': 1.140625, // Gentium Plus, 4 variants
+  'geo': 0.882812, // Geo, 2 variants
+  'geologica': 1.281250, // Geologica, 9 variants
+  'geom': 1.214844, // Geom, 14 variants
+  'georama': 1.173828, // Georama, 18 variants
+  'geostar': 1.148438, // Geostar, 1 variants
+  'geostarfill': 1.148438, // Geostar Fill, 1 variants
+  'germaniaone': 1.160156, // Germania One, 1 variants
+  'gfsdidot': 1.224609, // GFS Didot, 1 variants
+  'gfsneohellenic': 1.113281, // GFS Neohellenic, 4 variants
+  'gideonroman': 1.115234, // Gideon Roman, 1 variants
+  'gidole': 1.107422, // Gidole, 1 variants
+  'gidugu': 1.123047, // Gidugu, 1 variants
+  'gildadisplay': 1.173828, // Gilda Display, 1 variants
+  'girassol': 1.136719, // Girassol, 1 variants
+  'giveyouglory': 1.609375, // Give You Glory, 1 variants
+  'glassantiqua': 1.033203, // Glass Antiqua, 1 variants
+  'glegoo': 1.558594, // Glegoo, 2 variants
+  'gloriahallelujah': 1.826172, // Gloria Hallelujah, 1 variants
+  'glory': 1.126953, // Glory, 16 variants
+  'gluten': 1.115234, // Gluten, 9 variants
+  'goblinone': 1.203125, // Goblin One, 1 variants
+  'gochihand': 1.101562, // Gochi Hand, 1 variants
+  'goldman': 1.095703, // Goldman, 2 variants
+  'golostext': 1.175781, // Golos Text, 6 variants
+  'gorditas': 1.207031, // Gorditas, 2 variants
+  'gothica1': 1.373047, // Gothic A1, 9 variants
+  'gotu': 1.587891, // Gotu, 1 variants
+  'goudybookletter1911': 0.960938, // Goudy Bookletter 1911, 1 variants
+  'gowunbatang': 1.222656, // Gowun Batang, 2 variants
+  'gowundodum': 1.185547, // Gowun Dodum, 1 variants
+  'graduate': 1.103516, // Graduate, 1 variants
+  'grandhotel': 1.357422, // Grand Hotel, 1 variants
+  'grandifloraone': 1.171875, // Grandiflora One, 1 variants
+  'grandstander': 1.251953, // Grandstander, 18 variants
+  'grapenuts': 1.082031, // Grape Nuts, 1 variants
+  'gravitasone': 1.183594, // Gravitas One, 1 variants
+  'grechenfuemen': 1.146484, // Grechen Fuemen, 1 variants
+  'grenze': 1.132812, // Grenze, 18 variants
+  'grenzegotisch': 1.126953, // Grenze Gotisch, 9 variants
+  'greyqo': 1.064453, // Grey Qo, 1 variants
+  'griffy': 1.353516, // Griffy, 1 variants
+  'gruppo': 0.945312, // Gruppo, 1 variants
+  'gudea': 1.212891, // Gudea, 3 variants
+  'gugi': 0.980469, // Gugi, 1 variants
+  'gulzar': 2.392578, // Gulzar, 1 variants
+  'gupter': 1.070312, // Gupter, 3 variants
+  'gurajada': 1.269531, // Gurajada, 1 variants
+  'gveretlevin': 1.435547, // Gveret Levin, 1 variants
+  'gwendolyn': 1.164062, // Gwendolyn, 2 variants
+  'habibi': 1.250000, // Habibi, 1 variants
+  'hachimarupop': 1.072266, // Hachi Maru Pop, 1 variants
+  'hahmlet': 1.220703, // Hahmlet, 9 variants
+  'halant': 1.505859, // Halant, 5 variants
+  'hammersmithone': 1.248047, // Hammersmith One, 1 variants
+  'hanalei': 1.222656, // Hanalei, 1 variants
+  'hanaleifill': 1.222656, // Hanalei Fill, 1 variants
+  'handjet': 1.298828, // Handjet, 9 variants
+  'handlee': 1.060547, // Handlee, 1 variants
+  'hanuman': 1.484375, // Hanuman, 9 variants
+  'happymonkey': 1.208984, // Happy Monkey, 1 variants
+  'harmattan': 1.562500, // Harmattan, 4 variants
+  'headlandone': 1.250000, // Headland One, 1 variants
+  'hedvigletterssans': 1.201172, // Hedvig Letters Sans, 1 variants
+  'hedviglettersserif': 1.212891, // Hedvig Letters Serif, 1 variants
+  'heebo': 1.191406, // Heebo, 9 variants
+  'hennypenny': 1.751953, // Henny Penny, 1 variants
+  'heptaslab': 1.335938, // Hepta Slab, 9 variants
+  'herrvonmuellerhoff': 1.376953, // Herr Von Muellerhoff, 1 variants
+  'himelody': 0.980469, // Hi Melody, 1 variants
+  'hinamincho': 1.095703, // Hina Mincho, 1 variants
+  'hind': 1.623047, // Hind, 5 variants
+  'hindguntur': 1.753906, // Hind Guntur, 5 variants
+  'hindmadurai': 1.283203, // Hind Madurai, 5 variants
+  'hindmysuru': 1.511719, // Hind Mysuru, 5 variants
+  'hindsiliguri': 1.480469, // Hind Siliguri, 5 variants
+  'hindvadodara': 1.453125, // Hind Vadodara, 5 variants
+  'holtwoodonesc': 1.593750, // Holtwood One SC, 1 variants
+  'homemadeapple': 2.146484, // Homemade Apple, 1 variants
+  'homenaje': 1.052734, // Homenaje, 1 variants
+  'honk': 0.892578, // Honk, 1 variants
+  'hostgrotesk': 1.244141, // Host Grotesk, 12 variants
+  'hubballi': 1.179688, // Hubballi, 1 variants
+  'hubotsans': 1.269531, // Hubot Sans, 16 variants
+  'huninn': 1.128906, // Huninn, 1 variants
+  'hurricane': 1.164062, // Hurricane, 1 variants
+  'iansui': 1.091797, // Iansui, 1 variants
+  'ibarrarealnova': 1.185547, // Ibarra Real Nova, 8 variants
+  'ibmplexmono': 1.214844, // IBM Plex Mono, 14 variants
+  'ibmplexsans': 1.218750, // IBM Plex Sans, 14 variants
+  'ibmplexsansjp': 1.273438, // IBM Plex Sans JP, 7 variants
+  'ibmplexsanskr': 0.962891, // IBM Plex Sans KR, 7 variants
+  'ibmplexserif': 1.218750, // IBM Plex Serif, 14 variants
+  'iceberg': 1.208984, // Iceberg, 1 variants
+  'iceland': 0.929688, // Iceland, 1 variants
+  'idiqlat': 1.439453, // Idiqlat, 3 variants
+  'imbue': 1.103516, // Imbue, 9 variants
+  'imfelldoublepica': 1.255859, // IM Fell Double Pica, 2 variants
+  'imfelldoublepicasc': 1.230469, // IM Fell Double Pica SC, 1 variants
+  'imfelldwpica': 1.253906, // IM Fell DW Pica, 2 variants
+  'imfelldwpicasc': 1.191406, // IM Fell DW Pica SC, 1 variants
+  'imfellenglish': 1.271484, // IM Fell English, 2 variants
+  'imfellenglishsc': 1.193359, // IM Fell English SC, 1 variants
+  'imfellfrenchcanon': 1.173828, // IM Fell French Canon, 2 variants
+  'imfellfrenchcanonsc': 1.160156, // IM Fell French Canon SC, 1 variants
+  'imfellgreatprimer': 1.232422, // IM Fell Great Primer, 2 variants
+  'imfellgreatprimersc': 1.228516, // IM Fell Great Primer SC, 1 variants
+  'imperialscript': 1.099609, // Imperial Script, 1 variants
+  'imprima': 1.158203, // Imprima, 1 variants
+  'inclusivesans': 1.267578, // Inclusive Sans, 10 variants
+  'inconsolata': 1.042969, // Inconsolata, 8 variants
+  'inder': 1.242188, // Inder, 1 variants
+  'indieflower': 1.464844, // Indie Flower, 1 variants
+  'ingriddarling': 1.232422, // Ingrid Darling, 1 variants
+  'inika': 1.248047, // Inika, 2 variants
+  'inknutantiqua': 2.123047, // Inknut Antiqua, 7 variants
+  'inriasans': 1.164062, // Inria Sans, 6 variants
+  'inriaserif': 1.158203, // Inria Serif, 6 variants
+  'inspiration': 1.316406, // Inspiration, 1 variants
+  'instrumentsans': 1.201172, // Instrument Sans, 8 variants
+  'instrumentserif': 1.203125, // Instrument Serif, 2 variants
+  'intelonemono': 1.208984, // Intel One Mono, 10 variants
+  'inter': 1.214844, // Inter, 18 variants
+  'intertight': 1.226562, // Inter Tight, 18 variants
+  'irishgrover': 1.183594, // Irish Grover, 1 variants
+  'islandmoments': 0.986328, // Island Moments, 1 variants
+  'istokweb': 1.097656, // Istok Web, 4 variants
+  'italiana': 1.179688, // Italiana, 1 variants
+  'italianno': 1.097656, // Italianno, 1 variants
+  'itim': 1.283203, // Itim, 1 variants
+  'jacquard12': 0.906250, // Jacquard 12, 1 variants
+  'jacquard12charted': 1.003906, // Jacquard 12 Charted, 1 variants
+  'jacquard24': 0.933594, // Jacquard 24, 1 variants
+  'jacquard24charted': 1.005859, // Jacquard 24 Charted, 1 variants
+  'jacquardabastarda9': 1.232422, // Jacquarda Bastarda 9, 1 variants
+  'jacquardabastarda9charted':
+      1.316406, // Jacquarda Bastarda 9 Charted, 1 variants
+  'jacquesfrancois': 1.279297, // Jacques Francois, 1 variants
+  'jacquesfrancoisshadow': 1.322266, // Jacques Francois Shadow, 1 variants
+  'jaini': 1.068359, // Jaini, 1 variants
+  'jainipurva': 1.068359, // Jaini Purva, 1 variants
+  'jaldi': 1.314453, // Jaldi, 2 variants
+  'jaro': 0.998047, // Jaro, 1 variants
+  'jersey10': 1.021484, // Jersey 10, 1 variants
+  'jersey10charted': 1.078125, // Jersey 10 Charted, 1 variants
+  'jersey15': 0.964844, // Jersey 15, 1 variants
+  'jersey15charted': 1.003906, // Jersey 15 Charted, 1 variants
+  'jersey20': 0.972656, // Jersey 20, 1 variants
+  'jersey20charted': 1.005859, // Jersey 20 Charted, 1 variants
+  'jersey25': 1.000000, // Jersey 25, 1 variants
+  'jersey25charted': 1.001953, // Jersey 25 Charted, 1 variants
+  'jetbrainsmono': 1.234375, // JetBrains Mono, 16 variants
+  'jimnightshade': 1.416016, // Jim Nightshade, 1 variants
+  'joan': 1.277344, // Joan, 1 variants
+  'jockeyone': 1.164062, // Jockey One, 1 variants
+  'jollylodger': 1.216797, // Jolly Lodger, 1 variants
+  'jomhuria': 1.064453, // Jomhuria, 1 variants
+  'jomolhari': 1.492188, // Jomolhari, 1 variants
+  'josefinsans': 1.255859, // Josefin Sans, 14 variants
+  'josefinslab': 1.185547, // Josefin Slab, 14 variants
+  'jost': 1.359375, // Jost, 18 variants
+  'jotione': 1.136719, // Joti One, 1 variants
+  'jua': 0.964844, // Jua, 1 variants
+  'judson': 0.988281, // Judson, 3 variants
+  'julee': 1.179688, // Julee, 1 variants
+  'juliussansone': 1.093750, // Julius Sans One, 1 variants
+  'junge': 1.214844, // Junge, 1 variants
+  'jura': 1.123047, // Jura, 5 variants
+  'justanotherhand': 1.261719, // Just Another Hand, 1 variants
+  'justmeagaindownhere': 1.308594, // Just Me Again Down Here, 1 variants
+  'k2d': 1.695312, // K2D, 16 variants
+  'kablammo': 1.251953, // Kablammo, 1 variants
+  'kadwa': 1.554688, // Kadwa, 2 variants
+  'kaiseidecol': 1.300781, // Kaisei Decol, 3 variants
+  'kaiseiharunoumi': 1.300781, // Kaisei HarunoUmi, 3 variants
+  'kaiseiopti': 1.300781, // Kaisei Opti, 3 variants
+  'kaiseitokumin': 1.300781, // Kaisei Tokumin, 4 variants
+  'kalam': 1.632812, // Kalam, 3 variants
+  'kalnia': 1.173828, // Kalnia, 7 variants
+  'kalniaglaze': 1.171875, // Kalnia Glaze, 7 variants
+  'kameron': 1.128906, // Kameron, 4 variants
+  'kanchenjunga': 1.250000, // Kanchenjunga, 4 variants
+  'kanit': 1.349609, // Kanit, 18 variants
+  'kantumruypro': 1.402344, // Kantumruy Pro, 14 variants
+  'karantina': 1.011719, // Karantina, 3 variants
+  'karla': 1.253906, // Karla, 14 variants
+  'karma': 1.548828, // Karma, 5 variants
+  'katibeh': 1.382812, // Katibeh, 1 variants
+  'kaushanscript': 1.253906, // Kaushan Script, 1 variants
+  'kavivanar': 1.369141, // Kavivanar, 1 variants
+  'kavoon': 1.203125, // Kavoon, 1 variants
+  'kayphodu': 1.218750, // Kay Pho Du, 4 variants
+  'kdamthmorpro': 1.626953, // Kdam Thmor Pro, 1 variants
+  'keaniaone': 1.207031, // Keania One, 1 variants
+  'kedebideri': 1.169922, // Kedebideri, 6 variants
+  'kellyslab': 1.212891, // Kelly Slab, 1 variants
+  'kenia': 1.232422, // Kenia, 1 variants
+  'khand': 1.539062, // Khand, 5 variants
+  'khula': 1.529297, // Khula, 5 variants
+  'kings': 1.128906, // Kings, 1 variants
+  'kiranghaerang': 0.996094, // Kirang Haerang, 1 variants
+  'kiteone': 1.447266, // Kite One, 1 variants
+  'kiwimaru': 1.226562, // Kiwi Maru, 3 variants
+  'kodchasan': 1.574219, // Kodchasan, 12 variants
+  'kodemono': 1.195312, // Kode Mono, 4 variants
+  'koho': 1.486328, // KoHo, 12 variants
+  'kohsantepheap': 1.273438, // Koh Santepheap, 5 variants
+  'kolkerbrush': 0.974609, // Kolker Brush, 1 variants
+  'konkhmersleokchher': 1.783203, // Konkhmer Sleokchher, 1 variants
+  'kosugi': 0.923828, // Kosugi, 1 variants
+  'kosugimaru': 0.923828, // Kosugi Maru, 1 variants
+  'kottaone': 1.175781, // Kotta One, 1 variants
+  'koulen': 1.699219, // Koulen, 1 variants
+  'kranky': 1.246094, // Kranky, 1 variants
+  'kreon': 1.240234, // Kreon, 5 variants
+  'kristi': 1.296875, // Kristi, 1 variants
+  'kronaone': 1.251953, // Krona One, 1 variants
+  'krub': 1.574219, // Krub, 12 variants
+  'kufam': 1.968750, // Kufam, 12 variants
+  'kulimpark': 1.136719, // Kulim Park, 10 variants
+  'kumarone': 1.388672, // Kumar One, 1 variants
+  'kumaroneoutline': 1.388672, // Kumar One Outline, 1 variants
+  'kumbhsans': 1.242188, // Kumbh Sans, 9 variants
+  'kurale': 1.376953, // Kurale, 1 variants
+  'labelleaurore': 1.837891, // La Belle Aurore, 1 variants
+  'labrada': 1.140625, // Labrada, 18 variants
+  'lacquer': 1.671875, // Lacquer, 1 variants
+  'laila': 1.546875, // Laila, 5 variants
+  'lakkireddy': 1.453125, // Lakki Reddy, 1 variants
+  'lalezar': 1.453125, // Lalezar, 1 variants
+  'lancelot': 1.107422, // Lancelot, 1 variants
+  'langar': 1.439453, // Langar, 1 variants
+  'lateef': 1.341797, // Lateef, 7 variants
+  'lato': 1.132812, // Lato, 10 variants
+  'lavishlyyours': 1.519531, // Lavishly Yours, 1 variants
+  'leaguegothic': 1.121094, // League Gothic, 1 variants
+  'leaguescript': 1.111328, // League Script, 1 variants
+  'leaguespartan': 1.144531, // League Spartan, 9 variants
+  'leckerlione': 1.304688, // Leckerli One, 1 variants
+  'ledger': 1.392578, // Ledger, 1 variants
+  'lekton': 1.183594, // Lekton, 3 variants
+  'lemon': 1.306641, // Lemon, 1 variants
+  'lemonada': 1.921875, // Lemonada, 5 variants
+  'lexend': 1.212891, // Lexend, 9 variants
+  'lexenddeca': 1.212891, // Lexend Deca, 9 variants
+  'lexendexa': 1.212891, // Lexend Exa, 9 variants
+  'lexendgiga': 1.212891, // Lexend Giga, 9 variants
+  'lexendmega': 1.212891, // Lexend Mega, 9 variants
+  'lexendpeta': 1.212891, // Lexend Peta, 9 variants
+  'lexendtera': 1.212891, // Lexend Tera, 9 variants
+  'lexendzetta': 1.216797, // Lexend Zetta, 9 variants
+  'libertinuskeyboard': 0.966797, // Libertinus Keyboard, 1 variants
+  'libertinusmono': 1.056641, // Libertinus Mono, 1 variants
+  'libertinussans': 1.089844, // Libertinus Sans, 3 variants
+  'libertinusserif': 1.078125, // Libertinus Serif, 6 variants
+  'libertinusserifdisplay': 1.072266, // Libertinus Serif Display, 1 variants
+  'librebarcode128': 0.589844, // Libre Barcode 128, 1 variants
+  'librebarcode128text': 0.974609, // Libre Barcode 128 Text, 1 variants
+  'librebarcode39': 0.589844, // Libre Barcode 39, 1 variants
+  'librebarcode39extended': 0.589844, // Libre Barcode 39 Extended, 1 variants
+  'librebarcode39extendedtext':
+      0.974609, // Libre Barcode 39 Extended Text, 1 variants
+  'librebarcode39text': 0.964844, // Libre Barcode 39 Text, 1 variants
+  'librebaskerville': 1.238281, // Libre Baskerville, 8 variants
+  'librebodoni': 1.339844, // Libre Bodoni, 8 variants
+  'librecaslondisplay': 1.207031, // Libre Caslon Display, 1 variants
+  'librecaslontext': 1.232422, // Libre Caslon Text, 3 variants
+  'librefranklin': 1.234375, // Libre Franklin, 18 variants
+  'licorice': 1.291016, // Licorice, 1 variants
+  'lifesavers': 1.222656, // Life Savers, 3 variants
+  'lilex': 1.214844, // Lilex, 14 variants
+  'lilitaone': 1.109375, // Lilita One, 1 variants
+  'lilyscriptone': 1.363281, // Lily Script One, 1 variants
+  'limelight': 1.070312, // Limelight, 1 variants
+  'lindenhill': 1.152344, // Linden Hill, 2 variants
+  'liter': 1.193359, // Liter, 1 variants
+  'literata': 1.248047, // Literata, 16 variants
+  'liujianmaocao': 1.367188, // Liu Jian Mao Cao, 1 variants
+  'livvic': 1.224609, // Livvic, 16 variants
+  'lobster': 1.492188, // Lobster, 1 variants
+  'lobstertwo': 1.255859, // Lobster Two, 4 variants
+  'londrinaoutline': 1.156250, // Londrina Outline, 1 variants
+  'londrinashadow': 1.183594, // Londrina Shadow, 1 variants
+  'londrinasketch': 1.154297, // Londrina Sketch, 1 variants
+  'londrinasolid': 1.152344, // Londrina Solid, 4 variants
+  'longcang': 1.044922, // Long Cang, 1 variants
+  'lora': 1.283203, // Lora, 8 variants
+  'lovedbytheking': 1.546875, // Loved by the King, 1 variants
+  'lovelight': 1.396484, // Love Light, 1 variants
+  'loversquarrel': 1.095703, // Lovers Quarrel, 1 variants
+  'loveyalikeasister': 1.203125, // Love Ya Like A Sister, 1 variants
+  'luckiestguy': 1.228516, // Luckiest Guy, 1 variants
+  'lugrasimo': 1.367188, // Lugrasimo, 1 variants
+  'lumanosimo': 1.224609, // Lumanosimo, 1 variants
+  'lusitana': 1.226562, // Lusitana, 2 variants
+  'lustria': 1.261719, // Lustria, 1 variants
+  'luxuriousroman': 1.119141, // Luxurious Roman, 1 variants
+  'luxuriousscript': 1.083984, // Luxurious Script, 1 variants
+  'lxgwmarkergothic': 1.277344, // LXGW Marker Gothic, 1 variants
+  'macondo': 1.181641, // Macondo, 1 variants
+  'macondoswashcaps': 1.181641, // Macondo Swash Caps, 1 variants
+  'mada': 1.820312, // Mada, 8 variants
+  'madimione': 1.234375, // Madimi One, 1 variants
+  'magra': 1.169922, // Magra, 2 variants
+  'maidenorange': 1.097656, // Maiden Orange, 1 variants
+  'maitree': 1.427734, // Maitree, 6 variants
+  'majormonodisplay': 1.126953, // Major Mono Display, 1 variants
+  'mako': 1.277344, // Mako, 1 variants
+  'mali': 1.900391, // Mali, 12 variants
+  'mallanna': 1.332031, // Mallanna, 1 variants
+  'maname': 1.111328, // Maname, 1 variants
+  'mandali': 1.429688, // Mandali, 1 variants
+  'manjari': 1.390625, // Manjari, 3 variants
+  'manrope': 1.298828, // Manrope, 7 variants
+  'mansalva': 1.314453, // Mansalva, 1 variants
+  'manuale': 1.048828, // Manuale, 12 variants
+  'manufacturingconsent': 1.101562, // Manufacturing Consent, 1 variants
+  'marcellus': 1.257812, // Marcellus, 1 variants
+  'marcellussc': 1.255859, // Marcellus SC, 1 variants
+  'marckscript': 1.253906, // Marck Script, 1 variants
+  'margarine': 1.296875, // Margarine, 1 variants
+  'marhey': 1.734375, // Marhey, 5 variants
+  'markazitext': 1.333984, // Markazi Text, 4 variants
+  'markoone': 1.339844, // Marko One, 1 variants
+  'marmelad': 1.197266, // Marmelad, 1 variants
+  'martel': 1.603516, // Martel, 7 variants
+  'martelsans': 1.519531, // Martel Sans, 7 variants
+  'martianmono': 1.308594, // Martian Mono, 8 variants
+  'marvel': 0.970703, // Marvel, 4 variants
+  'mashanzheng': 1.226562, // Ma Shan Zheng, 1 variants
+  'matangi': 2.052734, // Matangi, 7 variants
+  'mate': 1.207031, // Mate, 2 variants
+  'matemasie': 1.300781, // Matemasie, 1 variants
+  'matesc': 1.169922, // Mate SC, 1 variants
+  'mavenpro': 1.132812, // Maven Pro, 6 variants
+  'mclaren': 1.287109, // McLaren, 1 variants
+  'meaculpa': 1.458984, // Mea Culpa, 1 variants
+  'meddon': 2.074219, // Meddon, 1 variants
+  'medievalsharp': 1.167969, // MedievalSharp, 1 variants
+  'medulaone': 1.009766, // Medula One, 1 variants
+  'meerainimai': 1.197266, // Meera Inimai, 1 variants
+  'megrim': 1.080078, // Megrim, 1 variants
+  'meiescript': 1.273438, // Meie Script, 1 variants
+  'menbere': 1.417969, // Menbere, 7 variants
+  'meowscript': 1.175781, // Meow Script, 1 variants
+  'merienda': 1.468750, // Merienda, 7 variants
+  'merriweather': 1.345703, // Merriweather, 14 variants
+  'metal': 2.076172, // Metal, 1 variants
+  'metalmania': 1.224609, // Metal Mania, 1 variants
+  'metamorphous': 1.251953, // Metamorphous, 1 variants
+  'metrophobic': 1.142578, // Metrophobic, 1 variants
+  'michroma': 1.423828, // Michroma, 1 variants
+  'micro5': 1.093750, // Micro 5, 1 variants
+  'micro5charted': 1.007812, // Micro 5 Charted, 1 variants
+  'milonga': 1.250000, // Milonga, 1 variants
+  'miltonian': 1.191406, // Miltonian, 1 variants
+  'miltoniantattoo': 1.191406, // Miltonian Tattoo, 1 variants
+  'mina': 1.466797, // Mina, 2 variants
+  'mingzat': 2.205078, // Mingzat, 1 variants
+  'miniver': 1.458984, // Miniver, 1 variants
+  'mirandasans': 1.238281, // Miranda Sans, 8 variants
+  'miriamlibre': 1.179688, // Miriam Libre, 4 variants
+  'mirza': 1.462891, // Mirza, 4 variants
+  'missfajardose': 1.232422, // Miss Fajardose, 1 variants
+  'mitr': 1.412109, // Mitr, 6 variants
+  'mochiypopone': 1.416016, // Mochiy Pop One, 1 variants
+  'mochiypoppone': 1.416016, // Mochiy Pop P One, 1 variants
+  'modak': 1.486328, // Modak, 1 variants
+  'modernantiqua': 1.167969, // Modern Antiqua, 1 variants
+  'moderustic': 1.171875, // Moderustic, 6 variants
+  'mogra': 1.558594, // Mogra, 1 variants
+  'mohave': 1.259766, // Mohave, 10 variants
+  'moiraione': 1.240234, // Moirai One, 1 variants
+  'molengo': 1.185547, // Molengo, 1 variants
+  'momosignature': 1.576172, // Momo Signature, 1 variants
+  'momotrustdisplay': 1.312500, // Momo Trust Display, 1 variants
+  'momotrustsans': 1.271484, // Momo Trust Sans, 7 variants
+  'monasans': 1.281250, // Mona Sans, 16 variants
+  'monda': 1.255859, // Monda, 4 variants
+  'monofett': 0.968750, // Monofett, 1 variants
+  'monomakh': 1.246094, // Monomakh, 1 variants
+  'monoton': 1.478516, // Monoton, 1 variants
+  'monsieurladoulaise': 1.556641, // Monsieur La Doulaise, 1 variants
+  'montaga': 1.226562, // Montaga, 1 variants
+  'montaguslab': 1.134766, // Montagu Slab, 7 variants
+  'montecarlo': 1.248047, // MonteCarlo, 1 variants
+  'montenegringothicone': 0.726562, // Montenegrin Gothic One, 1 variants
+  'montez': 1.308594, // Montez, 1 variants
+  'montserrat': 1.242188, // Montserrat, 18 variants
+  'montserratalternates': 1.250000, // Montserrat Alternates, 18 variants
+  'montserratunderline': 1.242188, // Montserrat Underline, 18 variants
+  'moolahlah': 1.212891, // Moo Lah Lah, 1 variants
+  'mooli': 1.251953, // Mooli, 1 variants
+  'moondance': 1.238281, // Moon Dance, 1 variants
+  'moul': 1.806641, // Moul, 1 variants
+  'moulpali': 2.197266, // Moulpali, 1 variants
+  'mountainsofchristmas': 1.380859, // Mountains of Christmas, 2 variants
+  'mousememoirs': 1.126953, // Mouse Memoirs, 1 variants
+  'mozillaheadline': 1.091797, // Mozilla Headline, 6 variants
+  'mozillatext': 1.125000, // Mozilla Text, 6 variants
+  'mplus1': 1.244141, // M PLUS 1, 9 variants
+  'mplus1code': 1.218750, // M PLUS 1 Code, 7 variants
+  'mplus1p': 1.755859, // M PLUS 1p, 7 variants
+  'mplus2': 1.244141, // M PLUS 2, 9 variants
+  'mpluscodelatin': 1.218750, // M PLUS Code Latin, 7 variants
+  'mplusrounded1c': 1.755859, // M PLUS Rounded 1c, 7 variants
+  'mplusu': 1.273438, // M PLUS U, 9 variants
+  'mrbedfort': 1.679688, // Mr Bedfort, 1 variants
+  'mrdafoe': 1.398438, // Mr Dafoe, 1 variants
+  'mrdehaviland': 1.316406, // Mr De Haviland, 1 variants
+  'mrssaintdelafield': 1.488281, // Mrs Saint Delafield, 1 variants
+  'mrssheppards': 1.339844, // Mrs Sheppards, 1 variants
+  'msmadi': 1.236328, // Ms Madi, 1 variants
+  'mukta': 1.316406, // Mukta, 7 variants
+  'muktamahee': 1.250000, // Mukta Mahee, 7 variants
+  'muktamalar': 1.152344, // Mukta Malar, 7 variants
+  'muktavaani': 1.214844, // Mukta Vaani, 7 variants
+  'mulish': 1.242188, // Mulish, 16 variants
+  'murecho': 1.164062, // Murecho, 9 variants
+  'museomoderno': 1.175781, // MuseoModerno, 18 variants
+  'mynerve': 1.304688, // Mynerve, 1 variants
+  'mysoul': 1.316406, // My Soul, 1 variants
+  'mysteryquest': 1.367188, // Mystery Quest, 1 variants
+  'namdhinggo': 1.085938, // Namdhinggo, 5 variants
+  'nanumbrushscript': 0.998047, // Nanum Brush Script, 1 variants
+  'nanumgothic': 1.009766, // Nanum Gothic, 3 variants
+  'nanumgothiccoding': 0.992188, // Nanum Gothic Coding, 2 variants
+  'nanummyeongjo': 1.044922, // Nanum Myeongjo, 3 variants
+  'nanumpenscript': 0.962891, // Nanum Pen Script, 1 variants
+  'narnoor': 1.154297, // Narnoor, 5 variants
+  'natasans': 1.162109, // Nata Sans, 9 variants
+  'nationalpark': 1.193359, // National Park, 7 variants
+  'neonderthaw': 1.304688, // Neonderthaw, 1 variants
+  'nerkoone': 1.072266, // Nerko One, 1 variants
+  'neucha': 1.138672, // Neucha, 1 variants
+  'neuton': 1.066406, // Neuton, 6 variants
+  'newamsterdam': 0.957031, // New Amsterdam, 1 variants
+  'newrocker': 1.232422, // New Rocker, 1 variants
+  'newsreader': 1.164062, // Newsreader, 14 variants
+  'newtegomin': 1.111328, // New Tegomin, 1 variants
+  'niconne': 1.183594, // Niconne, 1 variants
+  'niramit': 1.607422, // Niramit, 12 variants
+  'nixieone': 1.128906, // Nixie One, 1 variants
+  'nobile': 1.597656, // Nobile, 6 variants
+  'nokora': 1.320312, // Nokora, 9 variants
+  'norican': 1.394531, // Norican, 1 variants
+  'nosifer': 1.521484, // Nosifer, 1 variants
+  'notable': 1.119141, // Notable, 1 variants
+  'nothingyoucoulddo': 1.341797, // Nothing You Could Do, 1 variants
+  'noticiatext': 1.103516, // Noticia Text, 4 variants
+  'notokufiarabic': 1.937500, // Noto Kufi Arabic, 9 variants
+  'notomusic': 1.185547, // Noto Music, 1 variants
+  'notonaskharabic': 1.542969, // Noto Naskh Arabic, 4 variants
+  'notonastaliqurdu': 3.519531, // Noto Nastaliq Urdu, 4 variants
+  'notosans': 1.294922, // Noto Sans, 18 variants
+  'notosansadlam': 1.253906, // Noto Sans Adlam, 4 variants
+  'notosansadlamunjoined': 1.220703, // Noto Sans Adlam Unjoined, 4 variants
+  'notosansanatolianhieroglyphs':
+      1.185547, // Noto Sans Anatolian Hieroglyphs, 1 variants
+  'notosansarabic': 1.908203, // Noto Sans Arabic, 9 variants
+  'notosansarmenian': 1.199219, // Noto Sans Armenian, 9 variants
+  'notosansavestan': 1.185547, // Noto Sans Avestan, 1 variants
+  'notosansbalinese': 2.154297, // Noto Sans Balinese, 4 variants
+  'notosansbassavah': 1.185547, // Noto Sans Bassa Vah, 4 variants
+  'notosansbatak': 1.185547, // Noto Sans Batak, 1 variants
+  'notosansbengali': 1.330078, // Noto Sans Bengali, 9 variants
+  'notosansbhaiksuki': 1.423828, // Noto Sans Bhaiksuki, 1 variants
+  'notosansbrahmi': 1.332031, // Noto Sans Brahmi, 1 variants
+  'notosansbuginese': 1.185547, // Noto Sans Buginese, 1 variants
+  'notosansbuhid': 1.185547, // Noto Sans Buhid, 1 variants
+  'notosanscarian': 1.185547, // Noto Sans Carian, 1 variants
+  'notosanschakma': 1.259766, // Noto Sans Chakma, 1 variants
+  'notosanscham': 1.488281, // Noto Sans Cham, 9 variants
+  'notosanscherokee': 1.199219, // Noto Sans Cherokee, 9 variants
+  'notosanschorasmian': 1.185547, // Noto Sans Chorasmian, 1 variants
+  'notosanscoptic': 1.185547, // Noto Sans Coptic, 1 variants
+  'notosanscypriot': 1.185547, // Noto Sans Cypriot, 1 variants
+  'notosansdeseret': 1.185547, // Noto Sans Deseret, 1 variants
+  'notosansdevanagari': 1.294922, // Noto Sans Devanagari, 9 variants
+  'notosansdisplay': 1.251953, // Noto Sans Display, 18 variants
+  'notosansegyptianhieroglyphs':
+      1.304688, // Noto Sans Egyptian Hieroglyphs, 1 variants
+  'notosanselbasan': 1.185547, // Noto Sans Elbasan, 1 variants
+  'notosanselymaic': 1.185547, // Noto Sans Elymaic, 1 variants
+  'notosansethiopic': 1.199219, // Noto Sans Ethiopic, 9 variants
+  'notosansgothic': 1.185547, // Noto Sans Gothic, 1 variants
+  'notosansgrantha': 2.205078, // Noto Sans Grantha, 1 variants
+  'notosansgujarati': 1.199219, // Noto Sans Gujarati, 9 variants
+  'notosansgunjalagondi': 1.185547, // Noto Sans Gunjala Gondi, 4 variants
+  'notosansgurmukhi': 1.220703, // Noto Sans Gurmukhi, 9 variants
+  'notosanshanifirohingya': 1.330078, // Noto Sans Hanifi Rohingya, 4 variants
+  'notosanshanunoo': 1.185547, // Noto Sans Hanunoo, 1 variants
+  'notosanshatran': 1.185547, // Noto Sans Hatran, 1 variants
+  'notosanshk': 1.308594, // Noto Sans HK, 9 variants
+  'notosansimperialaramaic': 1.185547, // Noto Sans Imperial Aramaic, 1 variants
+  'notosansinscriptionalpahlavi':
+      1.185547, // Noto Sans Inscriptional Pahlavi, 1 variants
+  'notosansinscriptionalparthian':
+      1.185547, // Noto Sans Inscriptional Parthian, 1 variants
+  'notosansjavanese': 1.902344, // Noto Sans Javanese, 4 variants
+  'notosansjp': 1.308594, // Noto Sans JP, 9 variants
+  'notosanskaithi': 1.304688, // Noto Sans Kaithi, 1 variants
+  'notosanskannada': 1.341797, // Noto Sans Kannada, 9 variants
+  'notosanskawi': 2.216797, // Noto Sans Kawi, 4 variants
+  'notosanskayahli': 1.185547, // Noto Sans Kayah Li, 4 variants
+  'notosanskharoshthi': 1.507812, // Noto Sans Kharoshthi, 1 variants
+  'notosanskhmer': 1.593750, // Noto Sans Khmer, 9 variants
+  'notosanskhojki': 1.185547, // Noto Sans Khojki, 1 variants
+  'notosanskhudawadi': 1.185547, // Noto Sans Khudawadi, 1 variants
+  'notosanskr': 1.308594, // Noto Sans KR, 9 variants
+  'notosanslao': 1.503906, // Noto Sans Lao, 9 variants
+  'notosanslaolooped': 1.496094, // Noto Sans Lao Looped, 9 variants
+  'notosanslepcha': 1.257812, // Noto Sans Lepcha, 1 variants
+  'notosanslimbu': 1.185547, // Noto Sans Limbu, 1 variants
+  'notosanslinearb': 1.185547, // Noto Sans Linear B, 1 variants
+  'notosanslydian': 1.185547, // Noto Sans Lydian, 1 variants
+  'notosansmahajani': 1.185547, // Noto Sans Mahajani, 1 variants
+  'notosansmalayalam': 1.199219, // Noto Sans Malayalam, 9 variants
+  'notosansmanichaean': 1.185547, // Noto Sans Manichaean, 1 variants
+  'notosansmarchen': 2.945312, // Noto Sans Marchen, 1 variants
+  'notosansmasaramgondi': 1.185547, // Noto Sans Masaram Gondi, 1 variants
+  'notosansmedefaidrin': 1.218750, // Noto Sans Medefaidrin, 4 variants
+  'notosansmeeteimayek': 1.275391, // Noto Sans Meetei Mayek, 9 variants
+  'notosansmodi': 1.185547, // Noto Sans Modi, 1 variants
+  'notosansmongolian': 1.228516, // Noto Sans Mongolian, 1 variants
+  'notosansmono': 1.255859, // Noto Sans Mono, 9 variants
+  'notosansmro': 1.185547, // Noto Sans Mro, 1 variants
+  'notosansmultani': 1.185547, // Noto Sans Multani, 1 variants
+  'notosansmyanmar': 1.519531, // Noto Sans Myanmar, 9 variants
+  'notosansnabataean': 1.185547, // Noto Sans Nabataean, 1 variants
+  'notosansnagmundari': 1.185547, // Noto Sans Nag Mundari, 4 variants
+  'notosansnandinagari': 1.244141, // Noto Sans Nandinagari, 1 variants
+  'notosansnewa': 1.263672, // Noto Sans Newa, 1 variants
+  'notosansnewtailue': 1.462891, // Noto Sans New Tai Lue, 4 variants
+  'notosansogham': 1.185547, // Noto Sans Ogham, 1 variants
+  'notosansolchiki': 1.185547, // Noto Sans Ol Chiki, 4 variants
+  'notosansoldhungarian': 1.185547, // Noto Sans Old Hungarian, 1 variants
+  'notosansolditalic': 1.185547, // Noto Sans Old Italic, 1 variants
+  'notosansoldnortharabian':
+      1.185547, // Noto Sans Old North Arabian, 1 variants
+  'notosansoldpersian': 1.185547, // Noto Sans Old Persian, 1 variants
+  'notosansoldsogdian': 1.185547, // Noto Sans Old Sogdian, 1 variants
+  'notosansoldsoutharabian':
+      1.185547, // Noto Sans Old South Arabian, 1 variants
+  'notosansoriya': 1.466797, // Noto Sans Oriya, 9 variants
+  'notosansosage': 1.185547, // Noto Sans Osage, 1 variants
+  'notosansosmanya': 1.185547, // Noto Sans Osmanya, 1 variants
+  'notosanspahawhhmong': 1.185547, // Noto Sans Pahawh Hmong, 1 variants
+  'notosanspalmyrene': 1.185547, // Noto Sans Palmyrene, 1 variants
+  'notosansphagspa': 1.185547, // Noto Sans PhagsPa, 1 variants
+  'notosansphoenician': 1.185547, // Noto Sans Phoenician, 1 variants
+  'notosanspsalterpahlavi': 1.185547, // Noto Sans Psalter Pahlavi, 1 variants
+  'notosansrejang': 1.185547, // Noto Sans Rejang, 1 variants
+  'notosansrunic': 1.185547, // Noto Sans Runic, 1 variants
+  'notosanssamaritan': 1.185547, // Noto Sans Samaritan, 1 variants
+  'notosanssaurashtra': 1.185547, // Noto Sans Saurashtra, 1 variants
+  'notosanssc': 1.308594, // Noto Sans SC, 9 variants
+  'notosansshavian': 1.185547, // Noto Sans Shavian, 1 variants
+  'notosanssiddham': 1.384766, // Noto Sans Siddham, 1 variants
+  'notosanssinhala': 1.251953, // Noto Sans Sinhala, 9 variants
+  'notosanssogdian': 1.185547, // Noto Sans Sogdian, 1 variants
+  'notosanssorasompeng': 1.185547, // Noto Sans Sora Sompeng, 4 variants
+  'notosanssoyombo': 1.517578, // Noto Sans Soyombo, 1 variants
+  'notosanssundanese': 1.332031, // Noto Sans Sundanese, 4 variants
+  'notosanssunuwar': 1.185547, // Noto Sans Sunuwar, 1 variants
+  'notosanssylotinagri': 1.228516, // Noto Sans Syloti Nagri, 1 variants
+  'notosanssymbols': 1.199219, // Noto Sans Symbols, 9 variants
+  'notosanssyriac': 1.468750, // Noto Sans Syriac, 9 variants
+  'notosanssyriaceastern': 1.390625, // Noto Sans Syriac Eastern, 9 variants
+  'notosanssyriacwestern': 1.597656, // Noto Sans Syriac Western, 9 variants
+  'notosanstagalog': 1.185547, // Noto Sans Tagalog, 1 variants
+  'notosanstagbanwa': 1.185547, // Noto Sans Tagbanwa, 1 variants
+  'notosanstaile': 1.185547, // Noto Sans Tai Le, 1 variants
+  'notosanstaiviet': 1.351562, // Noto Sans Tai Viet, 1 variants
+  'notosanstakri': 1.365234, // Noto Sans Takri, 1 variants
+  'notosanstamil': 1.199219, // Noto Sans Tamil, 9 variants
+  'notosanstangsa': 1.185547, // Noto Sans Tangsa, 4 variants
+  'notosanstc': 1.308594, // Noto Sans TC, 9 variants
+  'notosanstelugu': 1.367188, // Noto Sans Telugu, 9 variants
+  'notosansthaana': 1.199219, // Noto Sans Thaana, 9 variants
+  'notosansthai': 1.322266, // Noto Sans Thai, 9 variants
+  'notosansthailooped': 1.517578, // Noto Sans Thai Looped, 9 variants
+  'notosanstifinagh': 1.386719, // Noto Sans Tifinagh, 1 variants
+  'notosanstirhuta': 1.437500, // Noto Sans Tirhuta, 1 variants
+  'notosansugaritic': 1.185547, // Noto Sans Ugaritic, 1 variants
+  'notosansvai': 1.185547, // Noto Sans Vai, 1 variants
+  'notosansvithkuqi': 1.275391, // Noto Sans Vithkuqi, 4 variants
+  'notosanswancho': 1.220703, // Noto Sans Wancho, 1 variants
+  'notosansyi': 1.185547, // Noto Sans Yi, 1 variants
+  'notoserif': 1.248047, // Noto Serif, 18 variants
+  'notoserifahom': 1.904297, // Noto Serif Ahom, 1 variants
+  'notoserifarmenian': 1.193359, // Noto Serif Armenian, 9 variants
+  'notoserifbalinese': 2.455078, // Noto Serif Balinese, 1 variants
+  'notoserifbengali': 1.406250, // Noto Serif Bengali, 9 variants
+  'notoserifdevanagari': 1.361328, // Noto Serif Devanagari, 9 variants
+  'notoserifdisplay': 1.250000, // Noto Serif Display, 18 variants
+  'notoserifdivesakuru': 1.980469, // Noto Serif Dives Akuru, 1 variants
+  'notoserifdogra': 1.408203, // Noto Serif Dogra, 1 variants
+  'notoserifethiopic': 1.193359, // Noto Serif Ethiopic, 9 variants
+  'notoserifgeorgian': 1.193359, // Noto Serif Georgian, 9 variants
+  'notoserifgrantha': 1.890625, // Noto Serif Grantha, 1 variants
+  'notoserifgujarati': 1.294922, // Noto Serif Gujarati, 9 variants
+  'notoserifgurmukhi': 1.398438, // Noto Serif Gurmukhi, 9 variants
+  'notoserifhebrew': 1.193359, // Noto Serif Hebrew, 9 variants
+  'notoserifhk': 1.285156, // Noto Serif HK, 8 variants
+  'notoserifjp': 1.285156, // Noto Serif JP, 8 variants
+  'notoserifkannada': 1.437500, // Noto Serif Kannada, 9 variants
+  'notoserifkhmer': 1.886719, // Noto Serif Khmer, 9 variants
+  'notoserifkhojki': 1.296875, // Noto Serif Khojki, 4 variants
+  'notoserifkr': 1.285156, // Noto Serif KR, 8 variants
+  'notoseriflao': 1.425781, // Noto Serif Lao, 9 variants
+  'notoserifmakasar': 1.173828, // Noto Serif Makasar, 1 variants
+  'notoserifmalayalam': 1.193359, // Noto Serif Malayalam, 9 variants
+  'notoserifnphmong': 1.173828, // Noto Serif NP Hmong, 4 variants
+  'notoserifolduyghur': 1.173828, // Noto Serif Old Uyghur, 1 variants
+  'notoseriforiya': 1.421875, // Noto Serif Oriya, 4 variants
+  'notoserifsc': 1.285156, // Noto Serif SC, 8 variants
+  'notoserifsinhala': 1.253906, // Noto Serif Sinhala, 9 variants
+  'notoseriftamil': 1.386719, // Noto Serif Tamil, 18 variants
+  'notoseriftangut': 1.173828, // Noto Serif Tangut, 1 variants
+  'notoseriftc': 1.285156, // Noto Serif TC, 8 variants
+  'notoseriftelugu': 1.369141, // Noto Serif Telugu, 9 variants
+  'notoserifthai': 1.351562, // Noto Serif Thai, 9 variants
+  'notoseriftibetan': 2.042969, // Noto Serif Tibetan, 9 variants
+  'notoseriftodhri': 1.144531, // Noto Serif Todhri, 1 variants
+  'notoseriftoto': 1.339844, // Noto Serif Toto, 4 variants
+  'notoserifvithkuqi': 1.275391, // Noto Serif Vithkuqi, 4 variants
+  'notoserifyezidi': 1.173828, // Noto Serif Yezidi, 4 variants
+  'novacut': 1.183594, // Nova Cut, 1 variants
+  'novaflat': 1.185547, // Nova Flat, 1 variants
+  'novamono': 1.234375, // Nova Mono, 1 variants
+  'novaoval': 1.183594, // Nova Oval, 1 variants
+  'novaround': 1.183594, // Nova Round, 1 variants
+  'novascript': 1.183594, // Nova Script, 1 variants
+  'novaslim': 1.183594, // Nova Slim, 1 variants
+  'novasquare': 1.181641, // Nova Square, 1 variants
+  'ntr': 1.361328, // NTR, 1 variants
+  'numans': 1.119141, // Numans, 1 variants
+  'nunito': 1.232422, // Nunito, 16 variants
+  'nunitosans': 1.246094, // Nunito Sans, 16 variants
+  'nuosusil': 1.169922, // Nuosu SIL, 1 variants
+  'odibeesans': 1.105469, // Odibee Sans, 1 variants
+  'odormeanchey': 1.806641, // Odor Mean Chey, 1 variants
+  'offside': 1.251953, // Offside, 1 variants
+  'oi': 1.796875, // Oi, 1 variants
+  'ojuju': 1.175781, // Ojuju, 7 variants
+  'oldenburg': 1.251953, // Oldenburg, 1 variants
+  'oldstandardtt': 1.205078, // Old Standard TT, 3 variants
+  'ole': 1.150391, // Ole, 1 variants
+  'oleoscript': 1.167969, // Oleo Script, 2 variants
+  'oleoscriptswashcaps': 1.384766, // Oleo Script Swash Caps, 2 variants
+  'onest': 1.294922, // Onest, 9 variants
+  'ooohbaby': 1.203125, // Oooh Baby, 1 variants
+  'opensans': 1.250000, // Open Sans, 12 variants
+  'oranienbaum': 1.142578, // Oranienbaum, 1 variants
+  'orbit': 1.240234, // Orbit, 1 variants
+  'orbitron': 1.011719, // Orbitron, 6 variants
+  'oregano': 1.291016, // Oregano, 2 variants
+  'orelegaone': 1.044922, // Orelega One, 1 variants
+  'orienta': 1.195312, // Orienta, 1 variants
+  'originalsurfer': 1.236328, // Original Surfer, 1 variants
+  'oswald': 1.353516, // Oswald, 6 variants
+  'outfit': 1.222656, // Outfit, 9 variants
+  'overlock': 1.218750, // Overlock, 6 variants
+  'overlocksc': 1.132812, // Overlock SC, 1 variants
+  'overpass': 1.171875, // Overpass, 18 variants
+  'overpassmono': 1.164062, // Overpass Mono, 5 variants
+  'overtherainbow': 2.044922, // Over the Rainbow, 1 variants
+  'ovo': 1.121094, // Ovo, 1 variants
+  'oxanium': 1.177734, // Oxanium, 7 variants
+  'oxygen': 1.246094, // Oxygen, 3 variants
+  'oxygenmono': 1.242188, // Oxygen Mono, 1 variants
+  'pacifico': 1.648438, // Pacifico, 1 variants
+  'padauk': 1.419922, // Padauk, 2 variants
+  'padyakkeexpandedone': 1.103516, // Padyakke Expanded One, 1 variants
+  'palanquin': 1.501953, // Palanquin, 7 variants
+  'palanquindark': 1.562500, // Palanquin Dark, 4 variants
+  'pangolin': 1.171875, // Pangolin, 1 variants
+  'paprika': 1.417969, // Paprika, 1 variants
+  'parastoo': 1.199219, // Parastoo, 4 variants
+  'parisienne': 1.351562, // Parisienne, 1 variants
+  'parkinsans': 1.269531, // Parkinsans, 6 variants
+  'passeroone': 1.160156, // Passero One, 1 variants
+  'passionone': 0.980469, // Passion One, 3 variants
+  'passionsconflict': 1.015625, // Passions Conflict, 1 variants
+  'pathwayextreme': 1.242188, // Pathway Extreme, 18 variants
+  'pathwaygothicone': 1.148438, // Pathway Gothic One, 1 variants
+  'patrickhand': 1.191406, // Patrick Hand, 1 variants
+  'patrickhandsc': 1.066406, // Patrick Hand SC, 1 variants
+  'pattaya': 1.255859, // Pattaya, 1 variants
+  'patuaone': 1.191406, // Patua One, 1 variants
+  'pavanam': 1.107422, // Pavanam, 1 variants
+  'paytoneone': 1.294922, // Paytone One, 1 variants
+  'peddana': 1.238281, // Peddana, 1 variants
+  'peralta': 1.251953, // Peralta, 1 variants
+  'permanentmarker': 1.427734, // Permanent Marker, 1 variants
+  'petemoss': 0.986328, // Petemoss, 1 variants
+  'petitformalscript': 1.250000, // Petit Formal Script, 1 variants
+  'petrona': 1.214844, // Petrona, 18 variants
+  'philosopher': 1.085938, // Philosopher, 4 variants
+  'piazzolla': 1.220703, // Piazzolla, 18 variants
+  'piedra': 1.304688, // Piedra, 1 variants
+  'pinyonscript': 1.298828, // Pinyon Script, 1 variants
+  'pirataone': 1.169922, // Pirata One, 1 variants
+  'pixelifysans': 1.121094, // Pixelify Sans, 4 variants
+  'plaster': 1.250000, // Plaster, 1 variants
+  'platypi': 1.253906, // Platypi, 12 variants
+  'play': 1.080078, // Play, 2 variants
+  'playball': 1.220703, // Playball, 1 variants
+  'playfair': 0.976562, // Playfair, 14 variants
+  'playfairdisplay': 1.164062, // Playfair Display, 12 variants
+  'playfairdisplaysc': 1.162109, // Playfair Display SC, 6 variants
+  'playpensans': 1.562500, // Playpen Sans, 8 variants
+  'playpensansarabic': 1.724609, // Playpen Sans Arabic, 8 variants
+  'playpensansdeva': 1.988281, // Playpen Sans Deva, 8 variants
+  'playpensanshebrew': 1.396484, // Playpen Sans Hebrew, 8 variants
+  'playpensansthai': 1.705078, // Playpen Sans Thai, 8 variants
+  'pliant': 1.212891, // Pliant, 18 variants
+  'pochaevsk': 1.185547, // Pochaevsk, 1 variants
+  'podkova': 1.058594, // Podkova, 5 variants
+  'poetsenone': 1.164062, // Poetsen One, 1 variants
+  'poiretone': 1.167969, // Poiret One, 1 variants
+  'pollerone': 1.189453, // Poller One, 1 variants
+  'poltawskinowy': 1.169922, // Poltawski Nowy, 8 variants
+  'poly': 1.140625, // Poly, 2 variants
+  'pompiere': 1.205078, // Pompiere, 1 variants
+  'ponomar': 1.589844, // Ponomar, 1 variants
+  'pontanosans': 1.306641, // Pontano Sans, 5 variants
+  'poorstory': 0.953125, // Poor Story, 1 variants
+  'poppins': 1.814453, // Poppins, 18 variants
+  'portlligatsans': 1.072266, // Port Lligat Sans, 1 variants
+  'portlligatslab': 1.072266, // Port Lligat Slab, 1 variants
+  'pottaone': 1.216797, // Potta One, 1 variants
+  'pragatinarrow': 1.179688, // Pragati Narrow, 2 variants
+  'praise': 1.011719, // Praise, 1 variants
+  'prata': 1.308594, // Prata, 1 variants
+  'preahvihear': 1.734375, // Preahvihear, 1 variants
+  'pressstart2p': 1.001953, // Press Start 2P, 1 variants
+  'pridi': 1.439453, // Pridi, 6 variants
+  'princesssofia': 1.548828, // Princess Sofia, 1 variants
+  'prociono': 1.007812, // Prociono, 1 variants
+  'prompt': 1.369141, // Prompt, 18 variants
+  'prostoone': 1.181641, // Prosto One, 1 variants
+  'protestguerrilla': 1.113281, // Protest Guerrilla, 1 variants
+  'protestrevolution': 1.308594, // Protest Revolution, 1 variants
+  'protestriot': 1.177734, // Protest Riot, 1 variants
+  'proteststrike': 1.117188, // Protest Strike, 1 variants
+  'prozalibre': 1.251953, // Proza Libre, 10 variants
+  'ptmono': 1.082031, // PT Mono, 1 variants
+  'ptsans': 1.085938, // PT Sans, 4 variants
+  'ptsanscaption': 1.097656, // PT Sans Caption, 2 variants
+  'ptsansnarrow': 1.091797, // PT Sans Narrow, 2 variants
+  'ptserif': 1.187500, // PT Serif, 4 variants
+  'ptserifcaption': 1.148438, // PT Serif Caption, 2 variants
+  'publicsans': 1.210938, // Public Sans, 18 variants
+  'puppiesplay': 0.916016, // Puppies Play, 1 variants
+  'puritan': 1.117188, // Puritan, 4 variants
+  'purplepurse': 1.189453, // Purple Purse, 1 variants
+  'qahiri': 1.326172, // Qahiri, 1 variants
+  'quando': 1.214844, // Quando, 1 variants
+  'quantico': 1.193359, // Quantico, 4 variants
+  'quattrocento': 1.113281, // Quattrocento, 2 variants
+  'quattrocentosans': 1.109375, // Quattrocento Sans, 4 variants
+  'questrial': 1.035156, // Questrial, 1 variants
+  'quicksand': 1.103516, // Quicksand, 5 variants
+  'quintessential': 1.341797, // Quintessential, 1 variants
+  'qwigley': 1.154297, // Qwigley, 1 variants
+  'qwitchergrypen': 1.000000, // Qwitcher Grypen, 2 variants
+  'racingsansone': 1.070312, // Racing Sans One, 1 variants
+  'radiocanadabig': 1.107422, // Radio Canada Big, 8 variants
+  'radley': 1.173828, // Radley, 2 variants
+  'rajdhani': 1.423828, // Rajdhani, 5 variants
+  'rakkas': 1.798828, // Rakkas, 1 variants
+  'raleway': 1.167969, // Raleway, 18 variants
+  'ralewaydots': 1.138672, // Raleway Dots, 1 variants
+  'ramabhadra': 1.281250, // Ramabhadra, 1 variants
+  'ramaraja': 1.164062, // Ramaraja, 1 variants
+  'rambla': 1.218750, // Rambla, 4 variants
+  'rammettoone': 1.474609, // Rammetto One, 1 variants
+  'rampartone': 1.289062, // Rampart One, 1 variants
+  'ramsina': 0.888672, // Ramsina, 1 variants
+  'ranchers': 1.251953, // Ranchers, 1 variants
+  'rancho': 1.222656, // Rancho, 1 variants
+  'ranga': 1.226562, // Ranga, 2 variants
+  'rationale': 1.152344, // Rationale, 1 variants
+  'raviprakash': 1.349609, // Ravi Prakash, 1 variants
+  'readexpro': 1.593750, // Readex Pro, 6 variants
+  'redacted': 1.001953, // Redacted, 1 variants
+  'redactedscript': 0.576172, // Redacted Script, 3 variants
+  'redditmono': 1.287109, // Reddit Mono, 8 variants
+  'redditsans': 1.287109, // Reddit Sans, 16 variants
+  'redditsanscondensed': 1.287109, // Reddit Sans Condensed, 8 variants
+  'redhatdisplay': 1.244141, // Red Hat Display, 14 variants
+  'redhatmono': 1.271484, // Red Hat Mono, 10 variants
+  'redhattext': 1.273438, // Red Hat Text, 10 variants
+  'redressed': 1.167969, // Redressed, 1 variants
+  'redrose': 1.130859, // Red Rose, 5 variants
+  'reemkufi': 1.652344, // Reem Kufi, 4 variants
+  'reemkufifun': 1.652344, // Reem Kufi Fun, 4 variants
+  'reemkufiink': 1.652344, // Reem Kufi Ink, 1 variants
+  'reeniebeanie': 1.082031, // Reenie Beanie, 1 variants
+  'reggaeone': 1.296875, // Reggae One, 1 variants
+  'rem': 1.185547, // REM, 18 variants
+  'rethinksans': 1.246094, // Rethink Sans, 10 variants
+  'revalia': 1.238281, // Revalia, 1 variants
+  'rhodiumlibre': 1.593750, // Rhodium Libre, 1 variants
+  'ribeye': 1.341797, // Ribeye, 1 variants
+  'ribeyemarrow': 1.339844, // Ribeye Marrow, 1 variants
+  'righteous': 1.181641, // Righteous, 1 variants
+  'risque': 1.125000, // Risque, 1 variants
+  'roadrage': 1.000000, // Road Rage, 1 variants
+  'roboto': 1.175781, // Roboto, 18 variants
+  'robotoflex': 1.257812, // Roboto Flex, 1 variants
+  'robotomono': 1.164062, // Roboto Mono, 14 variants
+  'robotoserif': 1.296875, // Roboto Serif, 18 variants
+  'robotoslab': 1.191406, // Roboto Slab, 9 variants
+  'rochester': 1.281250, // Rochester, 1 variants
+  'rocknrollone': 1.246094, // RocknRoll One, 1 variants
+  'rocksalt': 2.353516, // Rock Salt, 1 variants
+  'rokkitt': 1.007812, // Rokkitt, 18 variants
+  'romanesco': 1.132812, // Romanesco, 1 variants
+  'ropasans': 1.039062, // Ropa Sans, 2 variants
+  'rosario': 1.251953, // Rosario, 10 variants
+  'rosarivo': 1.371094, // Rosarivo, 2 variants
+  'rougescript': 1.179688, // Rouge Script, 1 variants
+  'rowdies': 1.240234, // Rowdies, 3 variants
+  'rozhaone': 1.400391, // Rozha One, 1 variants
+  'rubik': 1.507812, // Rubik, 14 variants
+  'rubik80sfade': 1.167969, // Rubik 80s Fade, 1 variants
+  'rubikbeastly': 1.373047, // Rubik Beastly, 1 variants
+  'rubikbrokenfax': 1.111328, // Rubik Broken Fax, 1 variants
+  'rubikbubbles': 1.218750, // Rubik Bubbles, 1 variants
+  'rubikburned': 1.248047, // Rubik Burned, 1 variants
+  'rubikdirt': 1.193359, // Rubik Dirt, 1 variants
+  'rubikdistressed': 1.214844, // Rubik Distressed, 1 variants
+  'rubikdoodleshadow': 1.205078, // Rubik Doodle Shadow, 1 variants
+  'rubikdoodletriangles': 1.189453, // Rubik Doodle Triangles, 1 variants
+  'rubikgemstones': 1.220703, // Rubik Gemstones, 1 variants
+  'rubikglitch': 1.179688, // Rubik Glitch, 1 variants
+  'rubikglitchpop': 1.148438, // Rubik Glitch Pop, 1 variants
+  'rubikiso': 1.236328, // Rubik Iso, 1 variants
+  'rubiklines': 1.162109, // Rubik Lines, 1 variants
+  'rubikmaps': 1.148438, // Rubik Maps, 1 variants
+  'rubikmarkerhatch': 1.185547, // Rubik Marker Hatch, 1 variants
+  'rubikmaze': 1.162109, // Rubik Maze, 1 variants
+  'rubikmicrobe': 1.181641, // Rubik Microbe, 1 variants
+  'rubikmonoone': 1.068359, // Rubik Mono One, 1 variants
+  'rubikmoonrocks': 1.179688, // Rubik Moonrocks, 1 variants
+  'rubikpixels': 1.152344, // Rubik Pixels, 1 variants
+  'rubikpuddles': 1.414062, // Rubik Puddles, 1 variants
+  'rubikscribble': 1.191406, // Rubik Scribble, 1 variants
+  'rubikspraypaint': 1.253906, // Rubik Spray Paint, 1 variants
+  'rubikstorm': 1.205078, // Rubik Storm, 1 variants
+  'rubikvinyl': 1.292969, // Rubik Vinyl, 1 variants
+  'rubikwetpaint': 1.394531, // Rubik Wet Paint, 1 variants
+  'ruda': 1.101562, // Ruda, 6 variants
+  'rufina': 1.212891, // Rufina, 2 variants
+  'rugeboogie': 1.263672, // Ruge Boogie, 1 variants
+  'ruluko': 1.156250, // Ruluko, 1 variants
+  'rumraisin': 1.228516, // Rum Raisin, 1 variants
+  'ruslandisplay': 1.103516, // Ruslan Display, 1 variants
+  'russoone': 1.123047, // Russo One, 1 variants
+  'ruthie': 1.367188, // Ruthie, 1 variants
+  'ruwudu': 1.541016, // Ruwudu, 4 variants
+  'rye': 1.251953, // Rye, 1 variants
+  'sacramento': 1.433594, // Sacramento, 1 variants
+  'sahitya': 1.482422, // Sahitya, 2 variants
+  'sail': 1.142578, // Sail, 1 variants
+  'saira': 1.130859, // Saira, 18 variants
+  'sairastencil': 1.255859, // Saira Stencil, 18 variants
+  'salsa': 1.220703, // Salsa, 1 variants
+  'sanchez': 1.232422, // Sanchez, 2 variants
+  'sancreek': 1.242188, // Sancreek, 1 variants
+  'sankofadisplay': 1.070312, // Sankofa Display, 1 variants
+  'sansation': 1.105469, // Sansation, 6 variants
+  'sansita': 1.191406, // Sansita, 8 variants
+  'sansitaswashed': 1.218750, // Sansita Swashed, 7 variants
+  'sarabun': 1.646484, // Sarabun, 16 variants
+  'sarala': 1.429688, // Sarala, 2 variants
+  'sarina': 1.253906, // Sarina, 1 variants
+  'sarpanch': 1.460938, // Sarpanch, 6 variants
+  'sassyfrass': 1.013672, // Sassy Frass, 1 variants
+  'satisfy': 1.427734, // Satisfy, 1 variants
+  'savate': 1.210938, // Savate, 16 variants
+  'sawarabigothic': 1.191406, // Sawarabi Gothic, 1 variants
+  'scada': 1.164062, // Scada, 4 variants
+  'scheherazadenew': 2.052734, // Scheherazade New, 4 variants
+  'schibstedgrotesk': 1.185547, // Schibsted Grotesk, 12 variants
+  'schoolbell': 1.373047, // Schoolbell, 1 variants
+  'sciencegothic': 1.193359, // Science Gothic, 9 variants
+  'scopeone': 1.126953, // Scope One, 1 variants
+  'seaweedscript': 1.353516, // Seaweed Script, 1 variants
+  'secularone': 1.216797, // Secular One, 1 variants
+  'sedan': 1.292969, // Sedan, 2 variants
+  'sedansc': 1.222656, // Sedan SC, 1 variants
+  'sedgwickave': 1.609375, // Sedgwick Ave, 1 variants
+  'sedgwickavedisplay': 1.644531, // Sedgwick Ave Display, 1 variants
+  'sekuya': 1.242188, // Sekuya, 1 variants
+  'sen': 1.126953, // Sen, 5 variants
+  'sendflowers': 1.238281, // Send Flowers, 1 variants
+  'sevillana': 1.357422, // Sevillana, 1 variants
+  'seymourone': 1.386719, // Seymour One, 1 variants
+  'shadowsintolight': 1.486328, // Shadows Into Light, 1 variants
+  'shadowsintolighttwo': 1.414062, // Shadows Into Light Two, 1 variants
+  'shafarik': 1.316406, // Shafarik, 1 variants
+  'shalimar': 1.119141, // Shalimar, 1 variants
+  'shantellsans': 1.289062, // Shantell Sans, 12 variants
+  'shanti': 1.181641, // Shanti, 1 variants
+  'share': 1.109375, // Share, 4 variants
+  'sharetech': 1.056641, // Share Tech, 1 variants
+  'sharetechmono': 1.056641, // Share Tech Mono, 1 variants
+  'shipporiantique': 1.238281, // Shippori Antique, 1 variants
+  'shipporiantiqueb1': 1.238281, // Shippori Antique B1, 1 variants
+  'shipporimincho': 1.244141, // Shippori Mincho, 5 variants
+  'shipporiminchob1': 1.242188, // Shippori Mincho B1, 5 variants
+  'shojumaru': 1.222656, // Shojumaru, 1 variants
+  'shortstack': 1.197266, // Short Stack, 1 variants
+  'shrikhand': 1.224609, // Shrikhand, 1 variants
+  'sigmar': 1.429688, // Sigmar, 1 variants
+  'sigmarone': 1.474609, // Sigmar One, 1 variants
+  'signika': 1.173828, // Signika, 5 variants
+  'signikanegative': 1.167969, // Signika Negative, 5 variants
+  'silkscreen': 1.250000, // Silkscreen, 2 variants
+  'simonetta': 1.253906, // Simonetta, 4 variants
+  'singleday': 0.968750, // Single Day, 1 variants
+  'sintony': 1.234375, // Sintony, 2 variants
+  'sirinstencil': 1.300781, // Sirin Stencil, 1 variants
+  'sirivennela': 0.976562, // Sirivennela, 1 variants
+  'sixcaps': 1.318359, // Six Caps, 1 variants
+  'sixtyfour': 0.972656, // Sixtyfour, 1 variants
+  'sixtyfourconvergence': 0.972656, // Sixtyfour Convergence, 1 variants
+  'skranji': 1.333984, // Skranji, 2 variants
+  'slabo13px': 1.154297, // Slabo 13px, 1 variants
+  'slabo27px': 1.099609, // Slabo 27px, 1 variants
+  'slackey': 1.355469, // Slackey, 1 variants
+  'smokum': 1.207031, // Smokum, 1 variants
+  'smooch': 1.232422, // Smooch, 1 variants
+  'smoochsans': 1.060547, // Smooch Sans, 9 variants
+  'smythe': 1.154297, // Smythe, 1 variants
+  'sniglet': 1.248047, // Sniglet, 2 variants
+  'snippet': 1.152344, // Snippet, 1 variants
+  'snowburstone': 1.261719, // Snowburst One, 1 variants
+  'snpro': 1.226562, // SN Pro, 16 variants
+  'sofadione': 1.169922, // Sofadi One, 1 variants
+  'sofia': 1.544922, // Sofia, 1 variants
+  'sofiasans': 1.099609, // Sofia Sans, 18 variants
+  'sofiasanscondensed': 1.085938, // Sofia Sans Condensed, 18 variants
+  'sofiasansextracondensed':
+      1.080078, // Sofia Sans Extra Condensed, 18 variants
+  'sofiasanssemicondensed': 1.091797, // Sofia Sans Semi Condensed, 18 variants
+  'solitreo': 1.408203, // Solitreo, 1 variants
+  'solway': 1.240234, // Solway, 5 variants
+  'sometypemono': 1.140625, // Sometype Mono, 8 variants
+  'songmyung': 1.019531, // Song Myung, 1 variants
+  'sono': 1.128906, // Sono, 7 variants
+  'sonsieone': 1.294922, // Sonsie One, 1 variants
+  'sora': 1.273438, // Sora, 8 variants
+  'sortsmillgoudy': 1.140625, // Sorts Mill Goudy, 2 variants
+  'sourcesans3': 1.142578, // Source Sans 3, 16 variants
+  'sourceserif4': 1.158203, // Source Serif 4, 16 variants
+  'sourgummy': 1.132812, // Sour Gummy, 18 variants
+  'spacegrotesk': 1.162109, // Space Grotesk, 5 variants
+  'spacemono': 1.199219, // Space Mono, 4 variants
+  'specialelite': 1.148438, // Special Elite, 1 variants
+  'specialgothic': 1.125000, // Special Gothic, 4 variants
+  'specialgothiccondensedone':
+      1.107422, // Special Gothic Condensed One, 1 variants
+  'specialgothicexpandedone':
+      1.132812, // Special Gothic Expanded One, 1 variants
+  'spectral': 1.125000, // Spectral, 14 variants
+  'spectralsc': 1.123047, // Spectral SC, 14 variants
+  'spicyrice': 1.259766, // Spicy Rice, 1 variants
+  'spinnaker': 1.177734, // Spinnaker, 1 variants
+  'spirax': 1.197266, // Spirax, 1 variants
+  'splash': 1.634766, // Splash, 1 variants
+  'splinesans': 1.201172, // Spline Sans, 5 variants
+  'splinesansmono': 1.244141, // Spline Sans Mono, 10 variants
+  'squadaone': 1.035156, // Squada One, 1 variants
+  'squarepeg': 1.255859, // Square Peg, 1 variants
+  'sreekrushnadevaraya': 1.197266, // Sree Krushnadevaraya, 1 variants
+  'sriracha': 1.587891, // Sriracha, 1 variants
+  'srisakdi': 1.896484, // Srisakdi, 2 variants
+  'staatliches': 1.224609, // Staatliches, 1 variants
+  'stacksansheadline': 1.154297, // Stack Sans Headline, 6 variants
+  'stacksansnotch': 1.154297, // Stack Sans Notch, 6 variants
+  'stacksanstext': 1.154297, // Stack Sans Text, 6 variants
+  'stalemate': 1.457031, // Stalemate, 1 variants
+  'stalinistone': 1.324219, // Stalinist One, 1 variants
+  'stardosstencil': 1.191406, // Stardos Stencil, 2 variants
+  'stick': 1.242188, // Stick, 1 variants
+  'sticknobills': 1.158203, // Stick No Bills, 7 variants
+  'stintultracondensed': 1.093750, // Stint Ultra Condensed, 1 variants
+  'stintultraexpanded': 1.109375, // Stint Ultra Expanded, 1 variants
+  'stixtwotext': 1.130859, // STIX Two Text, 8 variants
+  'stoke': 1.250000, // Stoke, 2 variants
+  'storyscript': 1.093750, // Story Script, 1 variants
+  'strait': 1.095703, // Strait, 1 variants
+  'strichpunktsans': 1.125000, // Strichpunkt Sans, 6 variants
+  'stylescript': 1.406250, // Style Script, 1 variants
+  'stylish': 0.976562, // Stylish, 1 variants
+  'sueellenfrancisco': 1.691406, // Sue Ellen Francisco, 1 variants
+  'suezone': 1.177734, // Suez One, 1 variants
+  'sulphurpoint': 1.109375, // Sulphur Point, 3 variants
+  'sumana': 1.375000, // Sumana, 2 variants
+  'sunflower': 1.003906, // Sunflower, 3 variants
+  'sunshiney': 1.296875, // Sunshiney, 1 variants
+  'supermercadoone': 1.173828, // Supermercado One, 1 variants
+  'sura': 1.324219, // Sura, 2 variants
+  'suranna': 1.406250, // Suranna, 1 variants
+  'suravaram': 1.308594, // Suravaram, 1 variants
+  'suse': 1.220703, // SUSE, 18 variants
+  'susemono': 1.185547, // SUSE Mono, 16 variants
+  'suwannaphum': 1.490234, // Suwannaphum, 5 variants
+  'swankyandmoomoo': 1.335938, // Swanky and Moo Moo, 1 variants
+  'syncopate': 1.214844, // Syncopate, 2 variants
+  'syne': 1.181641, // Syne, 5 variants
+  'synemono': 1.150391, // Syne Mono, 1 variants
+  'synetactile': 1.378906, // Syne Tactile, 1 variants
+  'tacone': 0.888672, // Tac One, 1 variants
+  'tagesschrift': 1.248047, // Tagesschrift, 1 variants
+  'taiheritagepro': 2.041016, // Tai Heritage Pro, 2 variants
+  'tajawal': 1.552734, // Tajawal, 7 variants
+  'tangerine': 1.007812, // Tangerine, 2 variants
+  'tapestry': 1.169922, // Tapestry, 1 variants
+  'taprom': 1.806641, // Taprom, 1 variants
+  'tasaexplorer': 1.175781, // TASA Explorer, 5 variants
+  'tasaorbiter': 1.177734, // TASA Orbiter, 5 variants
+  'tauri': 1.250000, // Tauri, 1 variants
+  'taviraj': 1.507812, // Taviraj, 18 variants
+  'teko': 1.291016, // Teko, 5 variants
+  'tektur': 1.142578, // Tektur, 6 variants
+  'telex': 1.199219, // Telex, 1 variants
+  'tenaliramakrishna': 1.246094, // Tenali Ramakrishna, 1 variants
+  'tenorsans': 1.171875, // Tenor Sans, 1 variants
+  'textmeone': 1.222656, // Text Me One, 1 variants
+  'texturina': 1.201172, // Texturina, 18 variants
+  'thasadith': 1.478516, // Thasadith, 4 variants
+  'thegirlnextdoor': 1.658203, // The Girl Next Door, 1 variants
+  'thenautigal': 1.236328, // The Nautigal, 2 variants
+  'tienne': 1.187500, // Tienne, 3 variants
+  'tiktoksans': 1.257812, // TikTok Sans, 7 variants
+  'tillana': 1.609375, // Tillana, 5 variants
+  'tiltneon': 1.210938, // Tilt Neon, 1 variants
+  'tiltprism': 1.240234, // Tilt Prism, 1 variants
+  'tiltwarp': 1.212891, // Tilt Warp, 1 variants
+  'timmana': 1.189453, // Timmana, 1 variants
+  'tinos': 1.109375, // Tinos, 4 variants
+  'tiny5': 1.376953, // Tiny5, 1 variants
+  'tirobangla': 1.279297, // Tiro Bangla, 2 variants
+  'tirodevanagarihindi': 1.412109, // Tiro Devanagari Hindi, 2 variants
+  'tirodevanagarimarathi': 1.412109, // Tiro Devanagari Marathi, 2 variants
+  'tirodevanagarisanskrit': 1.548828, // Tiro Devanagari Sanskrit, 2 variants
+  'tirogurmukhi': 1.251953, // Tiro Gurmukhi, 2 variants
+  'tirokannada': 1.398438, // Tiro Kannada, 2 variants
+  'tirotamil': 1.226562, // Tiro Tamil, 2 variants
+  'tirotelugu': 1.531250, // Tiro Telugu, 2 variants
+  'tirra': 1.167969, // Tirra, 6 variants
+  'titanone': 1.097656, // Titan One, 1 variants
+  'titilliumweb': 1.197266, // Titillium Web, 11 variants
+  'tomorrow': 1.220703, // Tomorrow, 18 variants
+  'tourney': 1.103516, // Tourney, 18 variants
+  'tradewinds': 1.455078, // Trade Winds, 1 variants
+  'trainone': 1.283203, // Train One, 1 variants
+  'triodion': 1.503906, // Triodion, 1 variants
+  'trirong': 1.527344, // Trirong, 18 variants
+  'trispace': 1.191406, // Trispace, 8 variants
+  'trocchi': 1.283203, // Trocchi, 1 variants
+  'trochut': 0.931641, // Trochut, 3 variants
+  'truculenta': 1.070312, // Truculenta, 9 variants
+  'trykker': 1.250000, // Trykker, 1 variants
+  'tulpenone': 1.091797, // Tulpen One, 1 variants
+  'turretroad': 1.171875, // Turret Road, 6 variants
+  'twinklestar': 1.255859, // Twinkle Star, 1 variants
+  'ubuntu': 1.183594, // Ubuntu, 8 variants
+  'ubuntucondensed': 1.121094, // Ubuntu Condensed, 1 variants
+  'ubuntumono': 1.003906, // Ubuntu Mono, 4 variants
+  'ubuntusans': 1.183594, // Ubuntu Sans, 16 variants
+  'ubuntusansmono': 1.125000, // Ubuntu Sans Mono, 8 variants
+  'uchen': 1.763672, // Uchen, 1 variants
+  'ultra': 1.273438, // Ultra, 1 variants
+  'unbounded': 1.347656, // Unbounded, 8 variants
+  'uncialantiqua': 1.322266, // Uncial Antiqua, 1 variants
+  'underdog': 1.126953, // Underdog, 1 variants
+  'unicaone': 1.095703, // Unica One, 1 variants
+  'unifrakturcook': 1.230469, // UnifrakturCook, 1 variants
+  'unifrakturmaguntia': 1.181641, // UnifrakturMaguntia, 1 variants
+  'unkempt': 1.197266, // Unkempt, 2 variants
+  'unlock': 1.070312, // Unlock, 1 variants
+  'unna': 1.078125, // Unna, 4 variants
+  'uoqmunthenkhung': 1.302734, // UoqMunThenKhung, 1 variants
+  'updock': 1.156250, // Updock, 1 variants
+  'urbanist': 1.175781, // Urbanist, 18 variants
+  'vampiroone': 1.248047, // Vampiro One, 1 variants
+  'varela': 1.156250, // Varela, 1 variants
+  'varelaround': 1.150391, // Varela Round, 1 variants
+  'varta': 1.101562, // Varta, 5 variants
+  'vastshadow': 1.218750, // Vast Shadow, 1 variants
+  'vazirmatn': 1.570312, // Vazirmatn, 9 variants
+  'vendsans': 1.222656, // Vend Sans, 10 variants
+  'vesperlibre': 1.378906, // Vesper Libre, 4 variants
+  'viaodalibre': 1.410156, // Viaoda Libre, 1 variants
+  'vibes': 1.785156, // Vibes, 1 variants
+  'vibur': 1.343750, // Vibur, 1 variants
+  'victormono': 1.320312, // Victor Mono, 14 variants
+  'vidaloka': 1.191406, // Vidaloka, 1 variants
+  'viga': 1.207031, // Viga, 1 variants
+  'vinasans': 1.095703, // Vina Sans, 1 variants
+  'voces': 1.156250, // Voces, 1 variants
+  'volkhov': 1.253906, // Volkhov, 4 variants
+  'vollkorn': 1.146484, // Vollkorn, 12 variants
+  'vollkornsc': 1.164062, // Vollkorn SC, 4 variants
+  'voltaire': 1.257812, // Voltaire, 1 variants
+  'vt323': 1.041016, // VT323, 1 variants
+  'vujahdayscript': 1.273438, // Vujahday Script, 1 variants
+  'waitingforthesunrise': 1.660156, // Waiting for the Sunrise, 1 variants
+  'wallpoet': 0.921875, // Wallpoet, 1 variants
+  'walterturncoat': 1.367188, // Walter Turncoat, 1 variants
+  'warnes': 1.306641, // Warnes, 1 variants
+  'waterbrush': 1.488281, // Water Brush, 1 variants
+  'waterfall': 1.044922, // Waterfall, 1 variants
+  'wdxllubrifontjpn': 1.240234, // WDXL Lubrifont JP N, 1 variants
+  'wdxllubrifontsc': 1.240234, // WDXL Lubrifont SC, 1 variants
+  'wdxllubrifonttc': 1.240234, // WDXL Lubrifont TC, 1 variants
+  'wellfleet': 1.246094, // Wellfleet, 1 variants
+  'wendyone': 0.994141, // Wendy One, 1 variants
+  'whisper': 1.169922, // Whisper, 1 variants
+  'windsong': 1.429688, // WindSong, 2 variants
+  'winkyrough': 1.179688, // Winky Rough, 14 variants
+  'winkysans': 1.183594, // Winky Sans, 14 variants
+  'wireone': 1.097656, // Wire One, 1 variants
+  'wittgenstein': 1.253906, // Wittgenstein, 12 variants
+  'wixmadefordisplay': 1.265625, // Wix Madefor Display, 5 variants
+  'workbench': 0.972656, // Workbench, 1 variants
+  'worksans': 1.119141, // Work Sans, 18 variants
+  'xanhmono': 1.175781, // Xanh Mono, 2 variants
+  'yaldevi': 1.318359, // Yaldevi, 6 variants
+  'yanonekaffeesatz': 1.158203, // Yanone Kaffeesatz, 6 variants
+  'yantramanav': 1.335938, // Yantramanav, 6 variants
+  'yarndings12': 0.750000, // Yarndings 12, 1 variants
+  'yarndings12charted': 1.007812, // Yarndings 12 Charted, 1 variants
+  'yarndings20': 0.832031, // Yarndings 20, 1 variants
+  'yarndings20charted': 1.003906, // Yarndings 20 Charted, 1 variants
+  'yatraone': 1.439453, // Yatra One, 1 variants
+  'yellowtail': 1.277344, // Yellowtail, 1 variants
+  'yeonsung': 1.029297, // Yeon Sung, 1 variants
+  'yesevaone': 1.167969, // Yeseva One, 1 variants
+  'yesteryear': 1.472656, // Yesteryear, 1 variants
+  'yomogi': 1.236328, // Yomogi, 1 variants
+  'youngserif': 1.316406, // Young Serif, 1 variants
+  'yrsa': 0.988281, // Yrsa, 10 variants
+  'ysabeau': 1.218750, // Ysabeau, 18 variants
+  'ysabeauinfant': 1.218750, // Ysabeau Infant, 18 variants
+  'ysabeauoffice': 1.218750, // Ysabeau Office, 18 variants
+  'ysabeausc': 1.201172, // Ysabeau SC, 9 variants
+  'yujiboku': 1.517578, // Yuji Boku, 1 variants
+  'yujimai': 1.517578, // Yuji Mai, 1 variants
+  'yujisyuku': 1.517578, // Yuji Syuku, 1 variants
+  'yuseimagic': 1.279297, // Yusei Magic, 1 variants
+  'yuyu': 1.138672, // Yuyu, 1 variants
+  'yuyushort': 1.117188, // Yuyu Short, 1 variants
+  'zain': 1.894531, // Zain, 8 variants
+  'zalandosans': 1.179688, // Zalando Sans, 16 variants
+  'zalandosansexpanded': 1.183594, // Zalando Sans Expanded, 16 variants
+  'zalandosanssemiexpanded': 1.179688, // Zalando Sans SemiExpanded, 16 variants
+  'zcoolkuaile': 0.945312, // ZCOOL KuaiLe, 1 variants
+  'zcoolqingkehuangyou': 0.923828, // ZCOOL QingKe HuangYou, 1 variants
+  'zcoolxiaowei': 0.992188, // ZCOOL XiaoWei, 1 variants
+  'zenantique': 1.191406, // Zen Antique, 1 variants
+  'zenantiquesoft': 1.191406, // Zen Antique Soft, 1 variants
+  'zendots': 1.183594, // Zen Dots, 1 variants
+  'zenkakugothicantique': 1.199219, // Zen Kaku Gothic Antique, 5 variants
+  'zenkakugothicnew': 1.199219, // Zen Kaku Gothic New, 5 variants
+  'zenkurenaido': 1.189453, // Zen Kurenaido, 1 variants
+  'zenloop': 1.105469, // Zen Loop, 2 variants
+  'zenmarugothic': 1.197266, // Zen Maru Gothic, 5 variants
+  'zenoldmincho': 1.191406, // Zen Old Mincho, 5 variants
+  'zentokyozoo': 1.304688, // Zen Tokyo Zoo, 1 variants
+  'zeyada': 1.505859, // Zeyada, 1 variants
+  'zhimangxing': 1.226562, // Zhi Mang Xing, 1 variants
+  'zillaslab': 1.111328, // Zilla Slab, 10 variants
+  'zillaslabhighlight': 1.134766, // Zilla Slab Highlight, 2 variants
+};
+
+/// Smallest hhea line box (ascent + descent) over every variant, in em.
+/// Same families as [kLetterNeedEmByFontFamily].
+const kMinLineBoxEmByFontFamily = <String, double>{
+  'abeezee': 1.182000, // ABeeZee, 2 variants
+  'abel': 1.274414, // Abel, 1 variants
+  'abhayalibre': 1.179688, // Abhaya Libre, 5 variants
+  'aboreto': 1.160000, // Aboreto, 1 variants
+  'abrilfatface': 1.349000, // Abril Fatface, 1 variants
+  'abyssinicasil': 1.326172, // Abyssinica SIL, 1 variants
+  'aclonica': 1.083984, // Aclonica, 1 variants
+  'acme': 1.266000, // Acme, 1 variants
+  'actor': 1.203000, // Actor, 1 variants
+  'adamina': 1.362000, // Adamina, 1 variants
+  'adlamdisplay': 1.304688, // ADLaM Display, 1 variants
+  'adventpro': 1.196000, // Advent Pro, 18 variants
+  'afacadflux': 1.333333, // Afacad Flux, 9 variants
+  'agdasima': 1.184082, // Agdasima, 2 variants
+  'aguafinascript': 1.547000, // Aguafina Script, 1 variants
+  'agudisplay': 1.500000, // Agu Display, 1 variants
+  'akatab': 1.370117, // Akatab, 6 variants
+  'akayakanadaka': 1.196000, // Akaya Kanadaka, 1 variants
+  'akayatelivigala': 1.196000, // Akaya Telivigala, 1 variants
+  'akronim': 1.099000, // Akronim, 1 variants
+  'akshar': 1.380000, // Akshar, 5 variants
+  'akt': 1.200000, // Akt, 9 variants
+  'aladin': 1.226000, // Aladin, 1 variants
+  'alata': 1.380000, // Alata, 1 variants
+  'albertsans': 1.200000, // Albert Sans, 18 variants
+  'aldrich': 0.930176, // Aldrich, 1 variants
+  'alef': 1.361816, // Alef, 2 variants
+  'alegreya': 1.361000, // Alegreya, 12 variants
+  'alegreyasans': 1.200000, // Alegreya Sans, 14 variants
+  'alegreyasanssc': 1.200000, // Alegreya Sans SC, 14 variants
+  'alegreyasc': 1.361000, // Alegreya SC, 10 variants
+  'aleo': 1.200000, // Aleo, 18 variants
+  'alexandria': 1.219000, // Alexandria, 9 variants
+  'alexbrush': 1.250000, // Alex Brush, 1 variants
+  'alfaslabone': 1.369000, // Alfa Slab One, 1 variants
+  'alice': 1.143000, // Alice, 1 variants
+  'alienblock': 1.300000, // Alien Block, 1 variants
+  'alike': 1.254000, // Alike, 1 variants
+  'alikeangular': 1.254000, // Alike Angular, 1 variants
+  'alkalami': 1.892000, // Alkalami, 1 variants
+  'alkatra': 1.684000, // Alkatra, 4 variants
+  'allan': 1.142578, // Allan, 2 variants
+  'allerta': 1.278320, // Allerta, 1 variants
+  'allertastencil': 1.278320, // Allerta Stencil, 1 variants
+  'allison': 1.270000, // Allison, 1 variants
+  'allura': 1.250000, // Allura, 1 variants
+  'almarai': 1.116000, // Almarai, 4 variants
+  'almendra': 1.296000, // Almendra, 4 variants
+  'almendradisplay': 1.296000, // Almendra Display, 1 variants
+  'almendrasc': 1.190000, // Almendra SC, 1 variants
+  'alumnisans': 1.200000, // Alumni Sans, 18 variants
+  'alumnisanscollegiateone': 1.200000, // Alumni Sans Collegiate One, 2 variants
+  'alumnisansinlineone': 1.200000, // Alumni Sans Inline One, 2 variants
+  'alumnisanspinstripe': 1.200000, // Alumni Sans Pinstripe, 2 variants
+  'alumnisanssc': 1.200000, // Alumni Sans SC, 18 variants
+  'alyamama': 1.430000, // Alyamama, 7 variants
+  'amarante': 1.250000, // Amarante, 1 variants
+  'amaranth': 1.211000, // Amaranth, 4 variants
+  'amarna': 1.375000, // Amarna, 14 variants
+  'amaticsc': 1.261000, // Amatic SC, 2 variants
+  'amethysta': 1.262207, // Amethysta, 1 variants
+  'amiko': 1.334000, // Amiko, 3 variants
+  'amiri': 1.758000, // Amiri, 4 variants
+  'amiriquran': 2.449000, // Amiri Quran, 1 variants
+  'amita': 1.942000, // Amita, 2 variants
+  'anaheim': 1.289062, // Anaheim, 5 variants
+  'ancizarsans': 1.200000, // Ancizar Sans, 18 variants
+  'ancizarserif': 1.200000, // Ancizar Serif, 14 variants
+  'andadapro': 1.177000, // Andada Pro, 10 variants
+  'andika': 1.611328, // Andika, 4 variants
+  'anekbangla': 1.866000, // Anek Bangla, 8 variants
+  'anekdevanagari': 1.705500, // Anek Devanagari, 8 variants
+  'anekgujarati': 1.519500, // Anek Gujarati, 8 variants
+  'anekgurmukhi': 1.200000, // Anek Gurmukhi, 8 variants
+  'anekkannada': 1.670000, // Anek Kannada, 8 variants
+  'aneklatin': 1.100000, // Anek Latin, 8 variants
+  'anekmalayalam': 1.432500, // Anek Malayalam, 8 variants
+  'anekodia': 1.680000, // Anek Odia, 8 variants
+  'anektamil': 1.408000, // Anek Tamil, 8 variants
+  'anektelugu': 1.500000, // Anek Telugu, 8 variants
+  'angkor': 1.806641, // Angkor, 1 variants
+  'annapurnasil': 1.427246, // Annapurna SIL, 2 variants
+  'annieuseyourtelescope': 1.433594, // Annie Use Your Telescope, 1 variants
+  'anonymouspro': 1.000000, // Anonymous Pro, 4 variants
+  'anta': 1.220703, // Anta, 1 variants
+  'antic': 1.191000, // Antic, 1 variants
+  'anticdidone': 1.190000, // Antic Didone, 1 variants
+  'anticslab': 1.190000, // Antic Slab, 1 variants
+  'anton': 1.505371, // Anton, 1 variants
+  'antonio': 1.293945, // Antonio, 7 variants
+  'antonsc': 1.505371, // Anton SC, 1 variants
+  'anuphan': 1.300000, // Anuphan, 7 variants
+  'anybody': 1.035000, // Anybody, 18 variants
+  'arapey': 1.096000, // Arapey, 2 variants
+  'arbutus': 1.250000, // Arbutus, 1 variants
+  'arbutusslab': 1.250000, // Arbutus Slab, 1 variants
+  'architectsdaughter': 1.389648, // Architects Daughter, 1 variants
+  'archivo': 1.088000, // Archivo, 18 variants
+  'archivoblack': 1.088000, // Archivo Black, 1 variants
+  'archivonarrow': 1.347000, // Archivo Narrow, 8 variants
+  'arefruqaa': 1.465000, // Aref Ruqaa, 2 variants
+  'arefruqaaink': 1.465000, // Aref Ruqaa Ink, 2 variants
+  'areyouserious': 1.200000, // Are You Serious, 1 variants
+  'arima': 1.633000, // Arima, 7 variants
+  'arimo': 1.117188, // Arimo, 8 variants
+  'arizonia': 1.250000, // Arizonia, 1 variants
+  'armata': 1.250000, // Armata, 1 variants
+  'aronesans': 1.360000, // AR One Sans, 4 variants
+  'arsenal': 1.254000, // Arsenal, 4 variants
+  'arsenalsc': 1.254000, // Arsenal SC, 4 variants
+  'artifika': 1.216797, // Artifika, 1 variants
+  'arvo': 1.208008, // Arvo, 4 variants
+  'arya': 1.809000, // Arya, 2 variants
+  'asap': 1.146000, // Asap, 18 variants
+  'asar': 1.753000, // Asar, 1 variants
+  'asimovian': 1.300000, // Asimovian, 1 variants
+  'assistant': 1.308000, // Assistant, 7 variants
+  'astasans': 1.193000, // Asta Sans, 6 variants
+  'astloch': 1.208008, // Astloch, 2 variants
+  'asul': 1.213000, // Asul, 2 variants
+  'athiti': 1.600000, // Athiti, 6 variants
+  'atkinsonhyperlegible': 1.240000, // Atkinson Hyperlegible, 4 variants
+  'atkinsonhyperlegiblemono':
+      1.300000, // Atkinson Hyperlegible Mono, 14 variants
+  'atkinsonhyperlegiblenext':
+      1.300000, // Atkinson Hyperlegible Next, 14 variants
+  'atma': 1.619000, // Atma, 5 variants
+  'atomicage': 1.341309, // Atomic Age, 1 variants
+  'aubrey': 1.042000, // Aubrey, 1 variants
+  'audiowide': 1.274902, // Audiowide, 1 variants
+  'autourone': 1.250000, // Autour One, 1 variants
+  'average': 1.216000, // Average, 1 variants
+  'averagesans': 1.296000, // Average Sans, 1 variants
+  'averiagruesalibre': 1.193359, // Averia Gruesa Libre, 1 variants
+  'averialibre': 1.193359, // Averia Libre, 6 variants
+  'averiasanslibre': 1.237305, // Averia Sans Libre, 6 variants
+  'averiaseriflibre': 1.117188, // Averia Serif Libre, 6 variants
+  'azeretmono': 1.167000, // Azeret Mono, 18 variants
+  'b612': 1.215000, // B612, 4 variants
+  'b612mono': 1.215000, // B612 Mono, 4 variants
+  'babylonica': 1.325000, // Babylonica, 1 variants
+  'bacasimeantique': 1.000000, // Bacasime Antique, 1 variants
+  'badeendisplay': 1.400000, // Badeen Display, 1 variants
+  'badscript': 1.972000, // Bad Script, 1 variants
+  'bagelfatone': 1.448000, // Bagel Fat One, 1 variants
+  'bahiana': 1.150000, // Bahiana, 1 variants
+  'bahianita': 1.200000, // Bahianita, 1 variants
+  'baijamjuree': 1.250000, // Bai Jamjuree, 12 variants
+  'bakbakone': 1.400000, // Bakbak One, 1 variants
+  'ballet': 1.900000, // Ballet, 1 variants
+  'baloo2': 1.602000, // Baloo 2, 5 variants
+  'baloobhai2': 1.622000, // Baloo Bhai 2, 5 variants
+  'baloobhaijaan2': 1.712000, // Baloo Bhaijaan 2, 5 variants
+  'baloobhaina2': 2.012000, // Baloo Bhaina 2, 5 variants
+  'baloochettan2': 1.470000, // Baloo Chettan 2, 5 variants
+  'balooda2': 1.684000, // Baloo Da 2, 5 variants
+  'baloopaaji2': 1.771000, // Baloo Paaji 2, 5 variants
+  'balootamma2': 1.751000, // Baloo Tamma 2, 5 variants
+  'balootammudu2': 2.296000, // Baloo Tammudu 2, 5 variants
+  'baloothambi2': 1.564000, // Baloo Thambi 2, 5 variants
+  'balsamiqsans': 1.200000, // Balsamiq Sans, 4 variants
+  'balthazar': 1.018000, // Balthazar, 1 variants
+  'bangers': 1.064000, // Bangers, 1 variants
+  'barlow': 1.200000, // Barlow, 18 variants
+  'barlowcondensed': 1.200000, // Barlow Condensed, 18 variants
+  'barlowsemicondensed': 1.200000, // Barlow Semi Condensed, 18 variants
+  'barriecito': 1.200000, // Barriecito, 1 variants
+  'barrio': 1.127000, // Barrio, 1 variants
+  'basic': 1.258301, // Basic, 1 variants
+  'baskervville': 1.293000, // Baskervville, 8 variants
+  'baskervvillesc': 1.293000, // Baskervville SC, 4 variants
+  'battambang': 1.806641, // Battambang, 5 variants
+  'baumans': 1.182000, // Baumans, 1 variants
+  'bayon': 1.806641, // Bayon, 1 variants
+  'bbhbartle': 1.200000, // BBH Bartle, 1 variants
+  'bbhbogle': 1.200000, // BBH Bogle, 1 variants
+  'bbhhegarty': 1.200000, // BBH Hegarty, 1 variants
+  'beaurivage': 1.340000, // Beau Rivage, 1 variants
+  'bebasneue': 1.200000, // Bebas Neue, 1 variants
+  'beiruti': 1.200000, // Beiruti, 8 variants
+  'belanosima': 1.099121, // Belanosima, 3 variants
+  'belgrano': 1.268000, // Belgrano, 1 variants
+  'bellefair': 1.146000, // Bellefair, 1 variants
+  'belleza': 1.152000, // Belleza, 1 variants
+  'bellota': 1.258000, // Bellota, 6 variants
+  'bellotatext': 1.258000, // Bellota Text, 6 variants
+  'benchnine': 1.337891, // BenchNine, 3 variants
+  'benne': 1.000000, // Benne, 1 variants
+  'bentham': 1.112305, // Bentham, 1 variants
+  'berkshireswash': 1.242188, // Berkshire Swash, 1 variants
+  'besley': 1.675000, // Besley, 12 variants
+  'betaniapatmos': 1.300000, // Betania Patmos, 1 variants
+  'betaniapatmosgdl': 1.300000, // Betania Patmos GDL, 1 variants
+  'betaniapatmosin': 1.300000, // Betania Patmos In, 1 variants
+  'betaniapatmosingdl': 1.300000, // Betania Patmos In GDL, 1 variants
+  'bethellen': 2.220000, // Beth Ellen, 1 variants
+  'bevan': 1.606934, // Bevan, 2 variants
+  'bevietnampro': 1.265000, // Be Vietnam Pro, 18 variants
+  'bhutukaexpandedone': 1.008000, // BhuTuka Expanded One, 1 variants
+  'bigelowrules': 1.158691, // Bigelow Rules, 1 variants
+  'bigshotone': 1.048000, // Bigshot One, 1 variants
+  'bigshoulders': 1.200000, // Big Shoulders, 9 variants
+  'bigshouldersinline': 1.200000, // Big Shoulders Inline, 9 variants
+  'bigshouldersstencil': 1.200000, // Big Shoulders Stencil, 9 variants
+  'bilbo': 1.250000, // Bilbo, 1 variants
+  'bilboswashcaps': 1.250000, // Bilbo Swash Caps, 1 variants
+  'biorhyme': 1.549000, // BioRhyme, 7 variants
+  'birthstone': 1.360000, // Birthstone, 1 variants
+  'birthstonebounce': 1.360000, // Birthstone Bounce, 2 variants
+  'biryani': 1.765000, // Biryani, 7 variants
+  'bitcount': 1.200000, // Bitcount, 9 variants
+  'bitcountgriddouble': 1.200000, // Bitcount Grid Double, 9 variants
+  'bitcountgriddoubleink': 1.200000, // Bitcount Grid Double Ink, 9 variants
+  'bitcountgridsingle': 1.200000, // Bitcount Grid Single, 9 variants
+  'bitcountgridsingleink': 1.200000, // Bitcount Grid Single Ink, 9 variants
+  'bitcountink': 1.200000, // Bitcount Ink, 9 variants
+  'bitcountpropdouble': 1.200000, // Bitcount Prop Double, 9 variants
+  'bitcountpropdoubleink': 1.200000, // Bitcount Prop Double Ink, 9 variants
+  'bitcountpropsingle': 1.200000, // Bitcount Prop Single, 9 variants
+  'bitcountpropsingleink': 1.200000, // Bitcount Prop Single Ink, 9 variants
+  'bitcountsingle': 1.200000, // Bitcount Single, 9 variants
+  'bitcountsingleink': 1.200000, // Bitcount Single Ink, 9 variants
+  'bitter': 1.200000, // Bitter, 18 variants
+  'bizudgothic': 1.000000, // BIZ UDGothic, 2 variants
+  'bizudmincho': 1.000000, // BIZ UDMincho, 2 variants
+  'bizudpgothic': 1.000000, // BIZ UDPGothic, 2 variants
+  'bizudpmincho': 1.000000, // BIZ UDPMincho, 2 variants
+  'blackandwhitepicture': 1.000000, // Black And White Picture, 1 variants
+  'blackhansans': 1.000000, // Black Han Sans, 1 variants
+  'blaka': 1.167000, // Blaka, 1 variants
+  'blakahollow': 1.167000, // Blaka Hollow, 1 variants
+  'blakaink': 1.167000, // Blaka Ink, 1 variants
+  'blinker': 1.200000, // Blinker, 8 variants
+  'bodonimoda': 1.525000, // Bodoni Moda, 12 variants
+  'bodonimodasc': 1.525000, // Bodoni Moda SC, 12 variants
+  'bokor': 1.806641, // Bokor, 1 variants
+  'boldonse': 1.920000, // Boldonse, 1 variants
+  'bonanova': 1.200000, // Bona Nova, 3 variants
+  'bonanovasc': 1.200000, // Bona Nova SC, 3 variants
+  'bonbon': 1.175000, // Bonbon, 1 variants
+  'bonheurroyale': 1.160000, // Bonheur Royale, 1 variants
+  'boogaloo': 1.189000, // Boogaloo, 1 variants
+  'borel': 2.000000, // Borel, 1 variants
+  'bowlbyone': 1.566406, // Bowlby One, 1 variants
+  'bowlbyonesc': 1.525391, // Bowlby One SC, 1 variants
+  'bpmfhuninn': 1.120000, // Bpmf Huninn, 1 variants
+  'bpmfiansui': 1.120000, // Bpmf Iansui, 1 variants
+  'bpmfzihikaistd': 1.120000, // Bpmf Zihi Kai Std, 1 variants
+  'braahone': 1.400000, // Braah One, 1 variants
+  'brawler': 1.219000, // Brawler, 2 variants
+  'breeserif': 1.358000, // Bree Serif, 1 variants
+  'bricolagegrotesque': 1.200000, // Bricolage Grotesque, 7 variants
+  'brunoace': 1.206000, // Bruno Ace, 1 variants
+  'brunoacesc': 1.206000, // Bruno Ace SC, 1 variants
+  'brygada1918': 1.170000, // Brygada 1918, 8 variants
+  'bubblegumsans': 1.163000, // Bubblegum Sans, 1 variants
+  'bubblerone': 1.163000, // Bubbler One, 1 variants
+  'buda': 1.250000, // Buda, 1 variants
+  'buenard': 1.301000, // Buenard, 4 variants
+  'bungee': 1.320000, // Bungee, 1 variants
+  'bungeehairline': 1.320000, // Bungee Hairline, 1 variants
+  'bungeeinline': 1.320000, // Bungee Inline, 1 variants
+  'bungeeoutline': 1.320000, // Bungee Outline, 1 variants
+  'bungeeshade': 1.320000, // Bungee Shade, 1 variants
+  'bungeespice': 1.320000, // Bungee Spice, 1 variants
+  'bungeetint': 1.320000, // Bungee Tint, 1 variants
+  'butcherman': 1.935059, // Butcherman, 1 variants
+  'butterflykids': 1.192383, // Butterfly Kids, 1 variants
+  'bytesized': 1.250000, // Bytesized, 1 variants
+  'cabin': 1.215000, // Cabin, 8 variants
+  'cabinsketch': 1.171000, // Cabin Sketch, 2 variants
+  'cactusclassicalserif': 1.224000, // Cactus Classical Serif, 1 variants
+  'caesardressing': 1.213867, // Caesar Dressing, 1 variants
+  'cagliostro': 1.353000, // Cagliostro, 1 variants
+  'cairo': 1.874000, // Cairo, 8 variants
+  'cairoplay': 1.874000, // Cairo Play, 8 variants
+  'caladea': 1.150000, // Caladea, 4 variants
+  'calistoga': 1.300000, // Calistoga, 1 variants
+  'calligraffitti': 1.555664, // Calligraffitti, 1 variants
+  'calsans': 1.300000, // Cal Sans, 1 variants
+  'cambay': 1.628750, // Cambay, 4 variants
+  'cambo': 1.122000, // Cambo, 1 variants
+  'candal': 1.297852, // Candal, 1 variants
+  'cantarell': 1.416016, // Cantarell, 4 variants
+  'cantataone': 1.269531, // Cantata One, 1 variants
+  'cantoraone': 1.250000, // Cantora One, 1 variants
+  'caprasimo': 1.146973, // Caprasimo, 1 variants
+  'capriola': 1.250000, // Capriola, 1 variants
+  'caramel': 1.200000, // Caramel, 1 variants
+  'carattere': 1.150000, // Carattere, 1 variants
+  'carlito': 1.220703, // Carlito, 4 variants
+  'carme': 1.200684, // Carme, 1 variants
+  'carroisgothic': 1.192000, // Carrois Gothic, 1 variants
+  'carroisgothicsc': 1.192000, // Carrois Gothic SC, 1 variants
+  'carterone': 1.540039, // Carter One, 1 variants
+  'castoro': 1.000000, // Castoro, 2 variants
+  'castorotitling': 1.000000, // Castoro Titling, 1 variants
+  'catamaran': 1.640000, // Catamaran, 9 variants
+  'caudex': 1.289062, // Caudex, 4 variants
+  'cause': 1.200000, // Cause, 9 variants
+  'caveat': 1.260000, // Caveat, 4 variants
+  'caveatbrush': 1.260000, // Caveat Brush, 1 variants
+  'cedarvillecursive': 1.896484, // Cedarville Cursive, 1 variants
+  'cevicheone': 1.043000, // Ceviche One, 1 variants
+  'chakrapetch': 1.300000, // Chakra Petch, 10 variants
+  'changa': 1.840000, // Changa, 7 variants
+  'changaone': 1.062000, // Changa One, 2 variants
+  'chango': 1.211000, // Chango, 1 variants
+  'charissil': 1.635742, // Charis SIL, 4 variants
+  'charm': 1.549000, // Charm, 2 variants
+  'charmonman': 1.900000, // Charmonman, 2 variants
+  'chathura': 1.622000, // Chathura, 5 variants
+  'chauphilomeneone': 1.367000, // Chau Philomene One, 2 variants
+  'chelaone': 1.177000, // Chela One, 1 variants
+  'chelseamarket': 1.272461, // Chelsea Market, 1 variants
+  'cherish': 1.170000, // Cherish, 1 variants
+  'cherrycreamsoda': 1.223633, // Cherry Cream Soda, 1 variants
+  'cherryswash': 1.326000, // Cherry Swash, 2 variants
+  'chewy': 1.282227, // Chewy, 1 variants
+  'chicle': 1.209000, // Chicle, 1 variants
+  'chilanka': 1.098633, // Chilanka, 1 variants
+  'chironheihk': 1.180000, // Chiron Hei HK, 16 variants
+  'chivo': 1.190000, // Chivo, 18 variants
+  'chivomono': 1.190000, // Chivo Mono, 18 variants
+  'chocolateclassicalsans': 1.448000, // Chocolate Classical Sans, 1 variants
+  'chonburi': 1.200000, // Chonburi, 1 variants
+  'cinzel': 1.348000, // Cinzel, 6 variants
+  'cinzeldecorative': 1.348000, // Cinzel Decorative, 3 variants
+  'clickerscript': 1.320801, // Clicker Script, 1 variants
+  'climatecrisis': 1.330000, // Climate Crisis, 1 variants
+  'coda': 1.419922, // Coda, 2 variants
+  'codystar': 1.179688, // Codystar, 2 variants
+  'coiny': 0.500000, // Coiny, 1 variants
+  'combo': 1.176000, // Combo, 1 variants
+  'comfortaa': 1.115000, // Comfortaa, 5 variants
+  'comforter': 1.410000, // Comforter, 1 variants
+  'comforterbrush': 1.410000, // Comforter Brush, 1 variants
+  'comicneue': 1.150000, // Comic Neue, 6 variants
+  'comicrelief': 1.395020, // Comic Relief, 2 variants
+  'comingsoon': 1.514648, // Coming Soon, 1 variants
+  'comme': 1.200195, // Comme, 9 variants
+  'commissioner': 1.223000, // Commissioner, 9 variants
+  'concertone': 1.179199, // Concert One, 1 variants
+  'condiment': 1.523000, // Condiment, 1 variants
+  'contrailone': 1.251953, // Contrail One, 1 variants
+  'convergence': 1.173000, // Convergence, 1 variants
+  'cookie': 1.109000, // Cookie, 1 variants
+  'copse': 1.208008, // Copse, 1 variants
+  'coralpixels': 1.385000, // Coral Pixels, 1 variants
+  'corben': 1.853027, // Corben, 2 variants
+  'corinthia': 1.200000, // Corinthia, 2 variants
+  'cormorant': 1.211000, // Cormorant, 10 variants
+  'cormorantgaramond': 1.211000, // Cormorant Garamond, 10 variants
+  'cormorantinfant': 1.211000, // Cormorant Infant, 10 variants
+  'cormorantsc': 1.211000, // Cormorant SC, 5 variants
+  'cormorantunicase': 1.211000, // Cormorant Unicase, 5 variants
+  'cormorantupright': 1.211000, // Cormorant Upright, 5 variants
+  'cossettetexte': 1.210000, // Cossette Texte, 2 variants
+  'cossettetitre': 1.210000, // Cossette Titre, 2 variants
+  'courgette': 1.250000, // Courgette, 1 variants
+  'courierprime': 1.123047, // Courier Prime, 4 variants
+  'cousine': 1.132812, // Cousine, 4 variants
+  'coustard': 1.404297, // Coustard, 2 variants
+  'coveredbyyourgrace': 1.346680, // Covered By Your Grace, 1 variants
+  'craftygirls': 1.427734, // Crafty Girls, 1 variants
+  'creepster': 1.168945, // Creepster, 1 variants
+  'creteround': 1.275000, // Crete Round, 2 variants
+  'crimsonpro': 1.111328, // Crimson Pro, 16 variants
+  'crimsontext': 1.299805, // Crimson Text, 6 variants
+  'croissantone': 1.415000, // Croissant One, 1 variants
+  'crushed': 1.124512, // Crushed, 1 variants
+  'cuprum': 1.155000, // Cuprum, 8 variants
+  'cutefont': 1.000000, // Cute Font, 1 variants
+  'cutive': 1.096680, // Cutive, 1 variants
+  'cutivemono': 1.101074, // Cutive Mono, 1 variants
+  'daibannasil': 1.134277, // Dai Banna SIL, 10 variants
+  'damion': 1.374023, // Damion, 1 variants
+  'dancingscript': 1.200000, // Dancing Script, 4 variants
+  'danfo': 1.300000, // Danfo, 1 variants
+  'dangrek': 1.806641, // Dangrek, 1 variants
+  'darkergrotesque': 1.356000, // Darker Grotesque, 7 variants
+  'datatype': 1.300000, // Datatype, 9 variants
+  'davidlibre': 1.000000, // David Libre, 3 variants
+  'dawningofanewday': 1.612305, // Dawning of a New Day, 1 variants
+  'daysone': 1.272949, // Days One, 1 variants
+  'dekko': 1.429000, // Dekko, 1 variants
+  'delagothicone': 1.448000, // Dela Gothic One, 1 variants
+  'delicioushandrawn': 1.200000, // Delicious Handrawn, 1 variants
+  'delius': 1.256000, // Delius, 1 variants
+  'deliusswashcaps': 1.256000, // Delius Swash Caps, 1 variants
+  'deliusunicase': 1.252000, // Delius Unicase, 2 variants
+  'dellarespira': 1.368652, // Della Respira, 1 variants
+  'devonshire': 1.414000, // Devonshire, 1 variants
+  'dhurjati': 1.850575, // Dhurjati, 1 variants
+  'didactgothic': 1.311000, // Didact Gothic, 1 variants
+  'diphylleia': 1.448000, // Diphylleia, 1 variants
+  'diplomata': 1.217000, // Diplomata, 1 variants
+  'diplomatasc': 1.217000, // Diplomata SC, 1 variants
+  'dmmono': 1.302000, // DM Mono, 6 variants
+  'dmsans': 1.302000, // DM Sans, 18 variants
+  'dmserifdisplay': 1.371000, // DM Serif Display, 2 variants
+  'dmseriftext': 1.371000, // DM Serif Text, 2 variants
+  'dohyeon': 1.000000, // Do Hyeon, 1 variants
+  'dokdo': 1.000000, // Dokdo, 1 variants
+  'domine': 1.140000, // Domine, 4 variants
+  'donegalone': 1.250000, // Donegal One, 1 variants
+  'dongle': 1.448000, // Dongle, 3 variants
+  'doppioone': 1.250000, // Doppio One, 1 variants
+  'dorsa': 1.057000, // Dorsa, 1 variants
+  'dosis': 1.264000, // Dosis, 7 variants
+  'dotgothic16': 1.448000, // DotGothic16, 1 variants
+  'doto': 1.200000, // Doto, 9 variants
+  'drsugiyama': 1.459000, // Dr Sugiyama, 1 variants
+  'durusans': 1.250000, // Duru Sans, 1 variants
+  'dynalight': 1.213379, // Dynalight, 1 variants
+  'eaglelake': 1.633301, // Eagle Lake, 1 variants
+  'eastseadokdo': 1.000000, // East Sea Dokdo, 1 variants
+  'eater': 1.863770, // Eater, 1 variants
+  'ebgaramond': 1.305000, // EB Garamond, 10 variants
+  'economica': 1.149000, // Economica, 4 variants
+  'eczar': 1.777000, // Eczar, 5 variants
+  'eduauvicwantarrows': 1.739500, // Edu AU VIC WA NT Arrows, 4 variants
+  'eduauvicwantdots': 1.739500, // Edu AU VIC WA NT Dots, 4 variants
+  'eduauvicwantguides': 1.739500, // Edu AU VIC WA NT Guides, 4 variants
+  'eduauvicwanthand': 1.739500, // Edu AU VIC WA NT Hand, 4 variants
+  'eduauvicwantpre': 1.739500, // Edu AU VIC WA NT Pre, 4 variants
+  'edunswactcursive': 1.784000, // Edu NSW ACT Cursive, 4 variants
+  'edunswactfoundation': 1.260000, // Edu NSW ACT Foundation, 4 variants
+  'edunswacthandpre': 1.784000, // Edu NSW ACT Hand Pre, 4 variants
+  'eduqldbeginner': 1.260000, // Edu QLD Beginner, 4 variants
+  'eduqldhand': 1.935000, // Edu QLD Hand, 4 variants
+  'edusabeginner': 1.260000, // Edu SA Beginner, 4 variants
+  'edusahand': 1.739500, // Edu SA Hand, 4 variants
+  'edutasbeginner': 1.260000, // Edu TAS Beginner, 4 variants
+  'eduvicwantbeginner': 1.260000, // Edu VIC WA NT Beginner, 4 variants
+  'eduvicwanthand': 1.739500, // Edu VIC WA NT Hand, 4 variants
+  'eduvicwanthandpre': 1.739500, // Edu VIC WA NT Hand Pre, 4 variants
+  'electrolize': 1.186000, // Electrolize, 1 variants
+  'elmessiri': 1.563000, // El Messiri, 4 variants
+  'elmssans': 1.300000, // Elms Sans, 18 variants
+  'elsie': 1.152000, // Elsie, 2 variants
+  'elsieswashcaps': 1.152000, // Elsie Swash Caps, 2 variants
+  'emblemaone': 1.193359, // Emblema One, 1 variants
+  'emilyscandy': 1.251953, // Emilys Candy, 1 variants
+  'encodesans': 1.250000, // Encode Sans, 9 variants
+  'encodesanssc': 1.250000, // Encode Sans SC, 9 variants
+  'engagement': 1.233887, // Engagement, 1 variants
+  'englebert': 1.299805, // Englebert, 1 variants
+  'enriqueta': 1.338000, // Enriqueta, 4 variants
+  'ephesis': 1.300000, // Ephesis, 1 variants
+  'epilogue': 1.025000, // Epilogue, 18 variants
+  'epundasans': 1.301000, // Epunda Sans, 14 variants
+  'epundaslab': 1.301000, // Epunda Slab, 14 variants
+  'ericaone': 1.492000, // Erica One, 1 variants
+  'esteban': 1.274000, // Esteban, 1 variants
+  'estedad': 1.450000, // Estedad, 9 variants
+  'estonia': 1.240000, // Estonia, 1 variants
+  'euphoriascript': 1.164800, // Euphoria Script, 1 variants
+  'ewert': 1.243000, // Ewert, 1 variants
+  'exile': 1.350000, // Exile, 1 variants
+  'exo': 1.329000, // Exo, 18 variants
+  'exo2': 1.200000, // Exo 2, 18 variants
+  'expletussans': 1.339000, // Expletus Sans, 8 variants
+  'explora': 1.200000, // Explora, 1 variants
+  'facultyglyphic': 1.299000, // Faculty Glyphic, 1 variants
+  'fahkwang': 1.300000, // Fahkwang, 12 variants
+  'familjengrotesk': 1.250000, // Familjen Grotesk, 8 variants
+  'fanwoodtext': 1.311035, // Fanwood Text, 2 variants
+  'farro': 1.000000, // Farro, 4 variants
+  'farsan': 1.000000, // Farsan, 1 variants
+  'fascinate': 1.326172, // Fascinate, 1 variants
+  'fascinateinline': 1.326172, // Fascinate Inline, 1 variants
+  'fasterone': 1.063000, // Faster One, 1 variants
+  'fasthand': 1.806641, // Fasthand, 1 variants
+  'faunaone': 1.230000, // Fauna One, 1 variants
+  'faustina': 1.260000, // Faustina, 12 variants
+  'federant': 1.226000, // Federant, 1 variants
+  'federo': 1.178223, // Federo, 1 variants
+  'felipa': 1.285000, // Felipa, 1 variants
+  'fenix': 1.117000, // Fenix, 1 variants
+  'festive': 1.690000, // Festive, 1 variants
+  'figtree': 1.200000, // Figtree, 14 variants
+  'fingerpaint': 1.474000, // Finger Paint, 1 variants
+  'finlandicaheadline': 1.200000, // Finlandica Headline, 18 variants
+  'finlandicatext': 1.200000, // Finlandica Text, 18 variants
+  'firacode': 1.312000, // Fira Code, 5 variants
+  'firamono': 1.200000, // Fira Mono, 3 variants
+  'firasans': 1.200000, // Fira Sans, 18 variants
+  'firasanscondensed': 1.200000, // Fira Sans Condensed, 18 variants
+  'firasansextracondensed': 1.200000, // Fira Sans Extra Condensed, 18 variants
+  'fjordone': 1.250000, // Fjord One, 1 variants
+  'flamenco': 1.031000, // Flamenco, 2 variants
+  'flavors': 1.277344, // Flavors, 1 variants
+  'fleurdeleah': 1.370000, // Fleur De Leah, 1 variants
+  'flowblock': 1.200000, // Flow Block, 1 variants
+  'flowcircular': 1.200000, // Flow Circular, 1 variants
+  'flowrounded': 1.200000, // Flow Rounded, 1 variants
+  'foldit': 1.200000, // Foldit, 9 variants
+  'fondamento': 1.383789, // Fondamento, 2 variants
+  'fontdinerswanky': 1.520508, // Fontdiner Swanky, 1 variants
+  'forum': 1.104000, // Forum, 1 variants
+  'francoisone': 1.418000, // Francois One, 1 variants
+  'frankruhllibre': 1.291000, // Frank Ruhl Libre, 7 variants
+  'fraunces': 1.233000, // Fraunces, 18 variants
+  'freckleface': 1.229004, // Freckle Face, 1 variants
+  'frederickathegreat': 1.225586, // Fredericka the Great, 1 variants
+  'fredoka': 1.210000, // Fredoka, 5 variants
+  'freehand': 1.806641, // Freehand, 1 variants
+  'freeman': 1.330000, // Freeman, 1 variants
+  'fresca': 1.154000, // Fresca, 1 variants
+  'frijole': 1.378906, // Frijole, 1 variants
+  'fugazone': 1.468000, // Fugaz One, 1 variants
+  'fuggles': 1.201000, // Fuggles, 1 variants
+  'funneldisplay': 1.250000, // Funnel Display, 6 variants
+  'funnelsans': 1.250000, // Funnel Sans, 12 variants
+  'fustat': 1.420000, // Fustat, 7 variants
+  'fuzzybubbles': 1.250000, // Fuzzy Bubbles, 2 variants
+  'gabarito': 1.200000, // Gabarito, 6 variants
+  'gabriela': 1.281000, // Gabriela, 1 variants
+  'gaegu': 1.000000, // Gaegu, 3 variants
+  'gafata': 1.123000, // Gafata, 1 variants
+  'gajrajone': 1.465000, // Gajraj One, 1 variants
+  'galada': 1.627000, // Galada, 1 variants
+  'galdeano': 1.050000, // Galdeano, 1 variants
+  'galindo': 1.414551, // Galindo, 1 variants
+  'gamaamli': 1.250000, // Ga Maamli, 1 variants
+  'gamjaflower': 1.000000, // Gamja Flower, 1 variants
+  'gantari': 1.200000, // Gantari, 18 variants
+  'gasoekone': 1.448000, // Gasoek One, 1 variants
+  'gayathri': 1.220703, // Gayathri, 3 variants
+  'geist': 1.300000, // Geist, 18 variants
+  'geistmono': 1.300000, // Geist Mono, 18 variants
+  'geistpixel': 1.300000, // Geist Pixel, 1 variants
+  'gelasio': 1.269531, // Gelasio, 8 variants
+  'gemunulibre': 1.084000, // Gemunu Libre, 7 variants
+  'genos': 1.200000, // Genos, 18 variants
+  'gentiumbookplus': 1.464844, // Gentium Book Plus, 4 variants
+  'gentiumplus': 1.464844, // Gentium Plus, 4 variants
+  'geo': 1.021484, // Geo, 2 variants
+  'geologica': 1.250000, // Geologica, 9 variants
+  'geom': 1.250000, // Geom, 14 variants
+  'georama': 1.194000, // Georama, 18 variants
+  'geostar': 1.148000, // Geostar, 1 variants
+  'geostarfill': 1.148000, // Geostar Fill, 1 variants
+  'germaniaone': 1.161000, // Germania One, 1 variants
+  'gfsdidot': 1.224000, // GFS Didot, 1 variants
+  'gfsneohellenic': 1.118000, // GFS Neohellenic, 4 variants
+  'gideonroman': 1.200000, // Gideon Roman, 1 variants
+  'gidole': 1.230469, // Gidole, 1 variants
+  'gidugu': 1.854093, // Gidugu, 1 variants
+  'gildadisplay': 1.177000, // Gilda Display, 1 variants
+  'girassol': 1.194000, // Girassol, 1 variants
+  'giveyouglory': 1.606445, // Give You Glory, 1 variants
+  'glassantiqua': 1.035000, // Glass Antiqua, 1 variants
+  'glegoo': 1.793000, // Glegoo, 2 variants
+  'gloriahallelujah': 1.982422, // Gloria Hallelujah, 1 variants
+  'glory': 1.120000, // Glory, 16 variants
+  'gluten': 0.882500, // Gluten, 9 variants
+  'goblinone': 1.250000, // Goblin One, 1 variants
+  'gochihand': 1.178711, // Gochi Hand, 1 variants
+  'goldman': 1.200000, // Goldman, 2 variants
+  'golostext': 1.200000, // Golos Text, 6 variants
+  'gorditas': 1.213000, // Gorditas, 2 variants
+  'gothica1': 1.000000, // Gothic A1, 9 variants
+  'gotu': 1.660000, // Gotu, 1 variants
+  'goudybookletter1911': 1.270508, // Goudy Bookletter 1911, 1 variants
+  'gowunbatang': 1.448000, // Gowun Batang, 2 variants
+  'gowundodum': 1.448000, // Gowun Dodum, 1 variants
+  'graduate': 1.139000, // Graduate, 1 variants
+  'grandhotel': 1.358398, // Grand Hotel, 1 variants
+  'grandifloraone': 1.448000, // Grandiflora One, 1 variants
+  'grandstander': 0.997500, // Grandstander, 18 variants
+  'grapenuts': 1.225000, // Grape Nuts, 1 variants
+  'gravitasone': 1.271973, // Gravitas One, 1 variants
+  'grechenfuemen': 1.220000, // Grechen Fuemen, 1 variants
+  'grenze': 1.480000, // Grenze, 18 variants
+  'grenzegotisch': 1.480000, // Grenze Gotisch, 9 variants
+  'greyqo': 1.260000, // Grey Qo, 1 variants
+  'griffy': 1.350586, // Griffy, 1 variants
+  'gruppo': 0.966309, // Gruppo, 1 variants
+  'gudea': 1.236000, // Gudea, 3 variants
+  'gugi': 1.000000, // Gugi, 1 variants
+  'gulzar': 2.700000, // Gulzar, 1 variants
+  'gupter': 1.150000, // Gupter, 3 variants
+  'gurajada': 1.966355, // Gurajada, 1 variants
+  'gveretlevin': 1.300000, // Gveret Levin, 1 variants
+  'gwendolyn': 1.200000, // Gwendolyn, 2 variants
+  'habibi': 1.250000, // Habibi, 1 variants
+  'hachimarupop': 1.448000, // Hachi Maru Pop, 1 variants
+  'hahmlet': 1.448000, // Hahmlet, 9 variants
+  'halant': 1.575000, // Halant, 5 variants
+  'hammersmithone': 1.250000, // Hammersmith One, 1 variants
+  'hanalei': 1.301270, // Hanalei, 1 variants
+  'hanaleifill': 1.301270, // Hanalei Fill, 1 variants
+  'handjet': 1.117647, // Handjet, 9 variants
+  'handlee': 1.335000, // Handlee, 1 variants
+  'hanuman': 1.464844, // Hanuman, 9 variants
+  'happymonkey': 1.205000, // Happy Monkey, 1 variants
+  'harmattan': 1.703613, // Harmattan, 4 variants
+  'headlandone': 1.252441, // Headland One, 1 variants
+  'hedvigletterssans': 1.340000, // Hedvig Letters Sans, 1 variants
+  'hedviglettersserif': 1.340000, // Hedvig Letters Serif, 1 variants
+  'heebo': 1.468750, // Heebo, 9 variants
+  'hennypenny': 1.771973, // Henny Penny, 1 variants
+  'heptaslab': 1.251000, // Hepta Slab, 9 variants
+  'herrvonmuellerhoff': 1.422000, // Herr Von Muellerhoff, 1 variants
+  'himelody': 1.000000, // Hi Melody, 1 variants
+  'hinamincho': 1.448000, // Hina Mincho, 1 variants
+  'hind': 1.601000, // Hind, 5 variants
+  'hindguntur': 1.888000, // Hind Guntur, 5 variants
+  'hindmadurai': 1.380000, // Hind Madurai, 5 variants
+  'hindmysuru': 1.714000, // Hind Mysuru, 5 variants
+  'hindsiliguri': 1.617000, // Hind Siliguri, 5 variants
+  'hindvadodara': 1.498000, // Hind Vadodara, 5 variants
+  'holtwoodonesc': 1.627441, // Holtwood One SC, 1 variants
+  'homemadeapple': 2.141602, // Homemade Apple, 1 variants
+  'homenaje': 1.096000, // Homenaje, 1 variants
+  'honk': 1.220000, // Honk, 1 variants
+  'hostgrotesk': 1.330000, // Host Grotesk, 12 variants
+  'hubballi': 0.956000, // Hubballi, 1 variants
+  'hubotsans': 1.410000, // Hubot Sans, 16 variants
+  'huninn': 1.120000, // Huninn, 1 variants
+  'hurricane': 1.380000, // Hurricane, 1 variants
+  'iansui': 1.120000, // Iansui, 1 variants
+  'ibarrarealnova': 1.250000, // Ibarra Real Nova, 8 variants
+  'ibmplexmono': 1.300000, // IBM Plex Mono, 14 variants
+  'ibmplexsans': 1.300000, // IBM Plex Sans, 14 variants
+  'ibmplexsansjp': 1.500000, // IBM Plex Sans JP, 7 variants
+  'ibmplexsanskr': 1.500000, // IBM Plex Sans KR, 7 variants
+  'ibmplexserif': 1.300000, // IBM Plex Serif, 14 variants
+  'iceberg': 1.220000, // Iceberg, 1 variants
+  'iceland': 0.970000, // Iceland, 1 variants
+  'idiqlat': 1.631836, // Idiqlat, 3 variants
+  'imbue': 1.200000, // Imbue, 9 variants
+  'imfelldoublepica': 1.253418, // IM Fell Double Pica, 2 variants
+  'imfelldoublepicasc': 1.253418, // IM Fell Double Pica SC, 1 variants
+  'imfelldwpica': 1.250000, // IM Fell DW Pica, 2 variants
+  'imfelldwpicasc': 1.250000, // IM Fell DW Pica SC, 1 variants
+  'imfellenglish': 1.268555, // IM Fell English, 2 variants
+  'imfellenglishsc': 1.268555, // IM Fell English SC, 1 variants
+  'imfellfrenchcanon': 1.170898, // IM Fell French Canon, 2 variants
+  'imfellfrenchcanonsc': 1.170898, // IM Fell French Canon SC, 1 variants
+  'imfellgreatprimer': 1.222656, // IM Fell Great Primer, 2 variants
+  'imfellgreatprimersc': 1.222656, // IM Fell Great Primer SC, 1 variants
+  'imperialscript': 1.210000, // Imperial Script, 1 variants
+  'imprima': 1.158000, // Imprima, 1 variants
+  'inclusivesans': 1.200000, // Inclusive Sans, 10 variants
+  'inconsolata': 1.049000, // Inconsolata, 8 variants
+  'inder': 1.250000, // Inder, 1 variants
+  'indieflower': 1.458984, // Indie Flower, 1 variants
+  'ingriddarling': 1.240000, // Ingrid Darling, 1 variants
+  'inika': 1.303000, // Inika, 2 variants
+  'inknutantiqua': 2.579000, // Inknut Antiqua, 7 variants
+  'inriasans': 1.199000, // Inria Sans, 6 variants
+  'inriaserif': 1.199000, // Inria Serif, 6 variants
+  'inspiration': 1.270000, // Inspiration, 1 variants
+  'instrumentsans': 1.220000, // Instrument Sans, 8 variants
+  'instrumentserif': 1.300000, // Instrument Serif, 2 variants
+  'intelonemono': 1.380000, // Intel One Mono, 10 variants
+  'inter': 1.209961, // Inter, 18 variants
+  'intertight': 1.209961, // Inter Tight, 18 variants
+  'irishgrover': 1.182617, // Irish Grover, 1 variants
+  'islandmoments': 1.150000, // Island Moments, 1 variants
+  'istokweb': 1.439453, // Istok Web, 4 variants
+  'italiana': 1.178000, // Italiana, 1 variants
+  'italianno': 1.250000, // Italianno, 1 variants
+  'itim': 1.200000, // Itim, 1 variants
+  'jacquard12': 1.000000, // Jacquard 12, 1 variants
+  'jacquard12charted': 1.000000, // Jacquard 12 Charted, 1 variants
+  'jacquard24': 1.000000, // Jacquard 24, 1 variants
+  'jacquard24charted': 1.000000, // Jacquard 24 Charted, 1 variants
+  'jacquardabastarda9': 1.312500, // Jacquarda Bastarda 9, 1 variants
+  'jacquardabastarda9charted':
+      1.312500, // Jacquarda Bastarda 9 Charted, 1 variants
+  'jacquesfrancois': 1.318848, // Jacques Francois, 1 variants
+  'jacquesfrancoisshadow': 1.318848, // Jacques Francois Shadow, 1 variants
+  'jaini': 1.314000, // Jaini, 1 variants
+  'jainipurva': 1.314000, // Jaini Purva, 1 variants
+  'jaldi': 1.689941, // Jaldi, 2 variants
+  'jaro': 1.250000, // Jaro, 1 variants
+  'jersey10': 1.071429, // Jersey 10, 1 variants
+  'jersey10charted': 1.071429, // Jersey 10 Charted, 1 variants
+  'jersey15': 1.000000, // Jersey 15, 1 variants
+  'jersey15charted': 1.000000, // Jersey 15 Charted, 1 variants
+  'jersey20': 1.000000, // Jersey 20, 1 variants
+  'jersey20charted': 1.000000, // Jersey 20 Charted, 1 variants
+  'jersey25': 1.000000, // Jersey 25, 1 variants
+  'jersey25charted': 1.000000, // Jersey 25 Charted, 1 variants
+  'jetbrainsmono': 1.320000, // JetBrains Mono, 16 variants
+  'jimnightshade': 1.416992, // Jim Nightshade, 1 variants
+  'joan': 1.292000, // Joan, 1 variants
+  'jockeyone': 1.398000, // Jockey One, 1 variants
+  'jollylodger': 1.215820, // Jolly Lodger, 1 variants
+  'jomhuria': 1.000000, // Jomhuria, 1 variants
+  'jomolhari': 1.601562, // Jomolhari, 1 variants
+  'josefinsans': 1.000000, // Josefin Sans, 14 variants
+  'josefinslab': 1.000000, // Josefin Slab, 14 variants
+  'jost': 1.445000, // Jost, 18 variants
+  'jotione': 1.334000, // Joti One, 1 variants
+  'jua': 1.000000, // Jua, 1 variants
+  'judson': 1.150000, // Judson, 3 variants
+  'julee': 1.178000, // Julee, 1 variants
+  'juliussansone': 1.091000, // Julius Sans One, 1 variants
+  'junge': 1.215332, // Junge, 1 variants
+  'jura': 1.183000, // Jura, 5 variants
+  'justanotherhand': 1.000000, // Just Another Hand, 1 variants
+  'justmeagaindownhere': 1.498000, // Just Me Again Down Here, 1 variants
+  'k2d': 1.300000, // K2D, 16 variants
+  'kablammo': 1.292000, // Kablammo, 1 variants
+  'kadwa': 2.007812, // Kadwa, 2 variants
+  'kaiseidecol': 1.448000, // Kaisei Decol, 3 variants
+  'kaiseiharunoumi': 1.448000, // Kaisei HarunoUmi, 3 variants
+  'kaiseiopti': 1.448000, // Kaisei Opti, 3 variants
+  'kaiseitokumin': 1.448000, // Kaisei Tokumin, 4 variants
+  'kalam': 1.594000, // Kalam, 3 variants
+  'kalnia': 1.345000, // Kalnia, 7 variants
+  'kalniaglaze': 1.345000, // Kalnia Glaze, 7 variants
+  'kameron': 1.187012, // Kameron, 4 variants
+  'kanchenjunga': 1.611328, // Kanchenjunga, 4 variants
+  'kanit': 1.495000, // Kanit, 18 variants
+  'kantumruypro': 1.180000, // Kantumruy Pro, 14 variants
+  'karantina': 1.012000, // Karantina, 3 variants
+  'karla': 1.169000, // Karla, 14 variants
+  'karma': 1.419000, // Karma, 5 variants
+  'katibeh': 1.000000, // Katibeh, 1 variants
+  'kaushanscript': 1.451000, // Kaushan Script, 1 variants
+  'kavivanar': 1.482000, // Kavivanar, 1 variants
+  'kavoon': 1.250000, // Kavoon, 1 variants
+  'kayphodu': 1.205566, // Kay Pho Du, 4 variants
+  'kdamthmorpro': 1.546000, // Kdam Thmor Pro, 1 variants
+  'keaniaone': 1.217000, // Keania One, 1 variants
+  'kedebideri': 1.250000, // Kedebideri, 6 variants
+  'kellyslab': 1.212000, // Kelly Slab, 1 variants
+  'kenia': 1.000000, // Kenia, 1 variants
+  'khand': 1.529000, // Khand, 5 variants
+  'khula': 1.605662, // Khula, 5 variants
+  'kings': 1.400000, // Kings, 1 variants
+  'kiranghaerang': 1.000000, // Kirang Haerang, 1 variants
+  'kiteone': 1.445000, // Kite One, 1 variants
+  'kiwimaru': 1.448000, // Kiwi Maru, 3 variants
+  'kodchasan': 1.300000, // Kodchasan, 12 variants
+  'kodemono': 1.280000, // Kode Mono, 4 variants
+  'koho': 1.300000, // KoHo, 12 variants
+  'kohsantepheap': 1.269531, // Koh Santepheap, 5 variants
+  'kolkerbrush': 1.100000, // Kolker Brush, 1 variants
+  'konkhmersleokchher': 1.806641, // Konkhmer Sleokchher, 1 variants
+  'kosugi': 1.000000, // Kosugi, 1 variants
+  'kosugimaru': 1.000000, // Kosugi Maru, 1 variants
+  'kottaone': 1.203000, // Kotta One, 1 variants
+  'koulen': 1.806641, // Koulen, 1 variants
+  'kranky': 1.241211, // Kranky, 1 variants
+  'kreon': 1.260000, // Kreon, 5 variants
+  'kristi': 1.250000, // Kristi, 1 variants
+  'kronaone': 1.250000, // Krona One, 1 variants
+  'krub': 1.300000, // Krub, 12 variants
+  'kufam': 1.300000, // Kufam, 12 variants
+  'kulimpark': 1.135000, // Kulim Park, 10 variants
+  'kumarone': 1.779000, // Kumar One, 1 variants
+  'kumaroneoutline': 1.779000, // Kumar One Outline, 1 variants
+  'kumbhsans': 1.240234, // Kumbh Sans, 9 variants
+  'kurale': 1.478000, // Kurale, 1 variants
+  'labelleaurore': 1.852539, // La Belle Aurore, 1 variants
+  'labrada': 1.445000, // Labrada, 18 variants
+  'lacquer': 1.200000, // Lacquer, 1 variants
+  'laila': 1.550000, // Laila, 5 variants
+  'lakkireddy': 1.663086, // Lakki Reddy, 1 variants
+  'lalezar': 1.567000, // Lalezar, 1 variants
+  'lancelot': 1.104980, // Lancelot, 1 variants
+  'langar': 0.939000, // Langar, 1 variants
+  'lateef': 1.445801, // Lateef, 7 variants
+  'lato': 1.200000, // Lato, 10 variants
+  'lavishlyyours': 1.600000, // Lavishly Yours, 1 variants
+  'leaguegothic': 1.200000, // League Gothic, 1 variants
+  'leaguescript': 1.106771, // League Script, 1 variants
+  'leaguespartan': 0.920000, // League Spartan, 9 variants
+  'leckerlione': 1.345000, // Leckerli One, 1 variants
+  'ledger': 1.391000, // Ledger, 1 variants
+  'lekton': 1.000000, // Lekton, 3 variants
+  'lemon': 1.306000, // Lemon, 1 variants
+  'lemonada': 1.998000, // Lemonada, 5 variants
+  'lexend': 1.250000, // Lexend, 9 variants
+  'lexenddeca': 1.250000, // Lexend Deca, 9 variants
+  'lexendexa': 1.250000, // Lexend Exa, 9 variants
+  'lexendgiga': 1.250000, // Lexend Giga, 9 variants
+  'lexendmega': 1.250000, // Lexend Mega, 9 variants
+  'lexendpeta': 1.250000, // Lexend Peta, 9 variants
+  'lexendtera': 1.250000, // Lexend Tera, 9 variants
+  'lexendzetta': 1.250000, // Lexend Zetta, 9 variants
+  'libertinuskeyboard': 1.140000, // Libertinus Keyboard, 1 variants
+  'libertinusmono': 1.140000, // Libertinus Mono, 1 variants
+  'libertinussans': 1.140000, // Libertinus Sans, 3 variants
+  'libertinusserif': 1.140000, // Libertinus Serif, 6 variants
+  'libertinusserifdisplay': 1.140000, // Libertinus Serif Display, 1 variants
+  'librebarcode128': 1.000000, // Libre Barcode 128, 1 variants
+  'librebarcode128text': 1.000000, // Libre Barcode 128 Text, 1 variants
+  'librebarcode39': 1.000000, // Libre Barcode 39, 1 variants
+  'librebarcode39extended': 1.000000, // Libre Barcode 39 Extended, 1 variants
+  'librebarcode39extendedtext':
+      1.000000, // Libre Barcode 39 Extended Text, 1 variants
+  'librebarcode39text': 1.000000, // Libre Barcode 39 Text, 1 variants
+  'librebaskerville': 1.240000, // Libre Baskerville, 8 variants
+  'librebodoni': 1.250000, // Libre Bodoni, 8 variants
+  'librecaslondisplay': 1.236000, // Libre Caslon Display, 1 variants
+  'librecaslontext': 1.230000, // Libre Caslon Text, 3 variants
+  'librefranklin': 1.212000, // Libre Franklin, 18 variants
+  'licorice': 1.250000, // Licorice, 1 variants
+  'lifesavers': 1.222000, // Life Savers, 3 variants
+  'lilex': 1.300000, // Lilex, 14 variants
+  'lilitaone': 1.143000, // Lilita One, 1 variants
+  'lilyscriptone': 1.376000, // Lily Script One, 1 variants
+  'limelight': 1.217285, // Limelight, 1 variants
+  'lindenhill': 1.347900, // Linden Hill, 2 variants
+  'liter': 1.426000, // Liter, 1 variants
+  'literata': 1.485000, // Literata, 16 variants
+  'liujianmaocao': 1.000000, // Liu Jian Mao Cao, 1 variants
+  'livvic': 1.255000, // Livvic, 16 variants
+  'lobster': 1.250000, // Lobster, 1 variants
+  'lobstertwo': 1.250000, // Lobster Two, 4 variants
+  'londrinaoutline': 1.183000, // Londrina Outline, 1 variants
+  'londrinashadow': 1.183000, // Londrina Shadow, 1 variants
+  'londrinasketch': 1.183000, // Londrina Sketch, 1 variants
+  'londrinasolid': 1.183000, // Londrina Solid, 4 variants
+  'longcang': 1.000000, // Long Cang, 1 variants
+  'lora': 1.280000, // Lora, 8 variants
+  'lovedbytheking': 1.726074, // Loved by the King, 1 variants
+  'lovelight': 1.400000, // Love Light, 1 variants
+  'loversquarrel': 1.127000, // Lovers Quarrel, 1 variants
+  'loveyalikeasister': 1.245117, // Love Ya Like A Sister, 1 variants
+  'luckiestguy': 1.000000, // Luckiest Guy, 1 variants
+  'lugrasimo': 1.361328, // Lugrasimo, 1 variants
+  'lumanosimo': 1.379395, // Lumanosimo, 1 variants
+  'lusitana': 1.297000, // Lusitana, 2 variants
+  'lustria': 1.282000, // Lustria, 1 variants
+  'luxuriousroman': 1.200000, // Luxurious Roman, 1 variants
+  'luxuriousscript': 1.200000, // Luxurious Script, 1 variants
+  'lxgwmarkergothic': 1.180000, // LXGW Marker Gothic, 1 variants
+  'macondo': 1.180000, // Macondo, 1 variants
+  'macondoswashcaps': 1.180000, // Macondo Swash Caps, 1 variants
+  'mada': 1.300000, // Mada, 8 variants
+  'madimione': 1.320000, // Madimi One, 1 variants
+  'magra': 1.215000, // Magra, 2 variants
+  'maidenorange': 1.000000, // Maiden Orange, 1 variants
+  'maitree': 1.650000, // Maitree, 6 variants
+  'majormonodisplay': 1.000000, // Major Mono Display, 1 variants
+  'mako': 1.308105, // Mako, 1 variants
+  'mali': 1.300000, // Mali, 12 variants
+  'mallanna': 1.849425, // Mallanna, 1 variants
+  'maname': 1.200000, // Maname, 1 variants
+  'mandali': 1.977215, // Mandali, 1 variants
+  'manjari': 1.074219, // Manjari, 3 variants
+  'manrope': 1.366000, // Manrope, 7 variants
+  'mansalva': 1.578000, // Mansalva, 1 variants
+  'manuale': 1.216000, // Manuale, 12 variants
+  'manufacturingconsent': 1.200000, // Manufacturing Consent, 1 variants
+  'marcellus': 1.253906, // Marcellus, 1 variants
+  'marcellussc': 1.253906, // Marcellus SC, 1 variants
+  'marckscript': 1.249000, // Marck Script, 1 variants
+  'margarine': 1.344238, // Margarine, 1 variants
+  'marhey': 1.740000, // Marhey, 5 variants
+  'markazitext': 1.200195, // Markazi Text, 4 variants
+  'markoone': 1.340820, // Marko One, 1 variants
+  'marmelad': 1.193000, // Marmelad, 1 variants
+  'martel': 1.687000, // Martel, 7 variants
+  'martelsans': 1.824000, // Martel Sans, 7 variants
+  'martianmono': 1.200000, // Martian Mono, 8 variants
+  'marvel': 1.210000, // Marvel, 4 variants
+  'mashanzheng': 1.000000, // Ma Shan Zheng, 1 variants
+  'matangi': 1.560000, // Matangi, 7 variants
+  'mate': 1.220000, // Mate, 2 variants
+  'matemasie': 1.480000, // Matemasie, 1 variants
+  'matesc': 1.220000, // Mate SC, 1 variants
+  'mavenpro': 1.175000, // Maven Pro, 6 variants
+  'mclaren': 1.434570, // McLaren, 1 variants
+  'meaculpa': 1.400000, // Mea Culpa, 1 variants
+  'meddon': 2.107910, // Meddon, 1 variants
+  'medievalsharp': 1.129883, // MedievalSharp, 1 variants
+  'medulaone': 1.008000, // Medula One, 1 variants
+  'meerainimai': 1.555664, // Meera Inimai, 1 variants
+  'megrim': 1.080000, // Megrim, 1 variants
+  'meiescript': 1.266602, // Meie Script, 1 variants
+  'menbere': 1.567000, // Menbere, 7 variants
+  'meowscript': 1.200000, // Meow Script, 1 variants
+  'merienda': 1.444000, // Merienda, 7 variants
+  'merriweather': 1.257000, // Merriweather, 14 variants
+  'metal': 2.050781, // Metal, 1 variants
+  'metalmania': 1.238281, // Metal Mania, 1 variants
+  'metamorphous': 1.250000, // Metamorphous, 1 variants
+  'metrophobic': 1.232910, // Metrophobic, 1 variants
+  'michroma': 1.421875, // Michroma, 1 variants
+  'micro5': 1.000000, // Micro 5, 1 variants
+  'micro5charted': 1.000000, // Micro 5 Charted, 1 variants
+  'milonga': 1.250000, // Milonga, 1 variants
+  'miltonian': 1.192000, // Miltonian, 1 variants
+  'miltoniantattoo': 1.192000, // Miltonian Tattoo, 1 variants
+  'mina': 1.590000, // Mina, 2 variants
+  'mingzat': 2.097000, // Mingzat, 1 variants
+  'miniver': 1.458008, // Miniver, 1 variants
+  'mirandasans': 1.230000, // Miranda Sans, 8 variants
+  'miriamlibre': 1.313000, // Miriam Libre, 4 variants
+  'mirza': 1.000000, // Mirza, 4 variants
+  'missfajardose': 1.248000, // Miss Fajardose, 1 variants
+  'mitr': 1.570000, // Mitr, 6 variants
+  'mochiypopone': 1.448000, // Mochiy Pop One, 1 variants
+  'mochiypoppone': 1.448000, // Mochiy Pop P One, 1 variants
+  'modak': 1.505859, // Modak, 1 variants
+  'modernantiqua': 1.134277, // Modern Antiqua, 1 variants
+  'moderustic': 1.250000, // Moderustic, 6 variants
+  'mogra': 1.000000, // Mogra, 1 variants
+  'mohave': 1.393000, // Mohave, 10 variants
+  'moiraione': 1.448000, // Moirai One, 1 variants
+  'molengo': 1.196289, // Molengo, 1 variants
+  'momosignature': 1.430000, // Momo Signature, 1 variants
+  'momotrustdisplay': 1.300000, // Momo Trust Display, 1 variants
+  'momotrustsans': 1.300000, // Momo Trust Sans, 7 variants
+  'monasans': 1.410000, // Mona Sans, 16 variants
+  'monda': 1.628906, // Monda, 4 variants
+  'monofett': 1.130859, // Monofett, 1 variants
+  'monomakh': 1.273000, // Monomakh, 1 variants
+  'monoton': 1.556641, // Monoton, 1 variants
+  'monsieurladoulaise': 1.561000, // Monsieur La Doulaise, 1 variants
+  'montaga': 1.232000, // Montaga, 1 variants
+  'montaguslab': 1.282000, // Montagu Slab, 7 variants
+  'montecarlo': 1.700000, // MonteCarlo, 1 variants
+  'montenegringothicone': 1.300000, // Montenegrin Gothic One, 1 variants
+  'montez': 1.308105, // Montez, 1 variants
+  'montserrat': 1.219000, // Montserrat, 18 variants
+  'montserratalternates': 1.219000, // Montserrat Alternates, 18 variants
+  'montserratunderline': 1.219000, // Montserrat Underline, 18 variants
+  'moolahlah': 1.220000, // Moo Lah Lah, 1 variants
+  'mooli': 1.200000, // Mooli, 1 variants
+  'moondance': 1.340000, // Moon Dance, 1 variants
+  'moul': 1.806641, // Moul, 1 variants
+  'moulpali': 2.197266, // Moulpali, 1 variants
+  'mountainsofchristmas': 1.386719, // Mountains of Christmas, 2 variants
+  'mousememoirs': 1.145020, // Mouse Memoirs, 1 variants
+  'mozillaheadline': 1.200000, // Mozilla Headline, 6 variants
+  'mozillatext': 1.200000, // Mozilla Text, 6 variants
+  'mplus1': 1.448000, // M PLUS 1, 9 variants
+  'mplus1code': 1.235000, // M PLUS 1 Code, 7 variants
+  'mplus1p': 1.395000, // M PLUS 1p, 7 variants
+  'mplus2': 1.448000, // M PLUS 2, 9 variants
+  'mpluscodelatin': 1.235000, // M PLUS Code Latin, 7 variants
+  'mplusrounded1c': 1.395000, // M PLUS Rounded 1c, 7 variants
+  'mplusu': 1.448000, // M PLUS U, 9 variants
+  'mrbedfort': 1.676000, // Mr Bedfort, 1 variants
+  'mrdafoe': 1.397000, // Mr Dafoe, 1 variants
+  'mrdehaviland': 1.317000, // Mr De Haviland, 1 variants
+  'mrssaintdelafield': 1.525000, // Mrs Saint Delafield, 1 variants
+  'mrssheppards': 1.337000, // Mrs Sheppards, 1 variants
+  'msmadi': 1.320000, // Ms Madi, 1 variants
+  'mukta': 1.662000, // Mukta, 7 variants
+  'muktamahee': 1.662000, // Mukta Mahee, 7 variants
+  'muktamalar': 1.662000, // Mukta Malar, 7 variants
+  'muktavaani': 1.662000, // Mukta Vaani, 7 variants
+  'mulish': 1.255000, // Mulish, 16 variants
+  'murecho': 1.448000, // Murecho, 9 variants
+  'museomoderno': 1.590000, // MuseoModerno, 18 variants
+  'mynerve': 1.310000, // Mynerve, 1 variants
+  'mysoul': 1.325000, // My Soul, 1 variants
+  'mysteryquest': 1.365234, // Mystery Quest, 1 variants
+  'namdhinggo': 1.049805, // Namdhinggo, 5 variants
+  'nanumbrushscript': 1.000000, // Nanum Brush Script, 1 variants
+  'nanumgothic': 0.990000, // Nanum Gothic, 3 variants
+  'nanumgothiccoding': 1.000000, // Nanum Gothic Coding, 2 variants
+  'nanummyeongjo': 1.000000, // Nanum Myeongjo, 3 variants
+  'nanumpenscript': 1.000000, // Nanum Pen Script, 1 variants
+  'narnoor': 1.551000, // Narnoor, 5 variants
+  'natasans': 1.300000, // Nata Sans, 9 variants
+  'nationalpark': 1.330000, // National Park, 7 variants
+  'neonderthaw': 1.350000, // Neonderthaw, 1 variants
+  'nerkoone': 1.211000, // Nerko One, 1 variants
+  'neucha': 1.053711, // Neucha, 1 variants
+  'neuton': 1.265137, // Neuton, 6 variants
+  'newamsterdam': 1.200000, // New Amsterdam, 1 variants
+  'newrocker': 1.229000, // New Rocker, 1 variants
+  'newsreader': 1.000000, // Newsreader, 14 variants
+  'newtegomin': 1.448000, // New Tegomin, 1 variants
+  'niconne': 1.212402, // Niconne, 1 variants
+  'niramit': 1.300000, // Niramit, 12 variants
+  'nixieone': 1.136000, // Nixie One, 1 variants
+  'nobile': 1.127441, // Nobile, 6 variants
+  'nokora': 1.321777, // Nokora, 9 variants
+  'norican': 1.409180, // Norican, 1 variants
+  'nosifer': 1.740234, // Nosifer, 1 variants
+  'notable': 1.300000, // Notable, 1 variants
+  'nothingyoucoulddo': 1.333984, // Nothing You Could Do, 1 variants
+  'noticiatext': 1.364746, // Noticia Text, 4 variants
+  'notokufiarabic': 1.897000, // Noto Kufi Arabic, 9 variants
+  'notomusic': 1.787000, // Noto Music, 1 variants
+  'notonaskharabic': 1.703000, // Noto Naskh Arabic, 4 variants
+  'notonastaliqurdu': 2.500000, // Noto Nastaliq Urdu, 4 variants
+  'notosans': 1.362000, // Noto Sans, 18 variants
+  'notosansadlam': 1.362000, // Noto Sans Adlam, 4 variants
+  'notosansadlamunjoined': 1.362000, // Noto Sans Adlam Unjoined, 4 variants
+  'notosansanatolianhieroglyphs':
+      1.406000, // Noto Sans Anatolian Hieroglyphs, 1 variants
+  'notosansarabic': 2.112000, // Noto Sans Arabic, 9 variants
+  'notosansarmenian': 1.360000, // Noto Sans Armenian, 9 variants
+  'notosansavestan': 1.362000, // Noto Sans Avestan, 1 variants
+  'notosansbalinese': 2.201000, // Noto Sans Balinese, 4 variants
+  'notosansbassavah': 1.362000, // Noto Sans Bassa Vah, 4 variants
+  'notosansbatak': 1.362000, // Noto Sans Batak, 1 variants
+  'notosansbengali': 1.325000, // Noto Sans Bengali, 9 variants
+  'notosansbhaiksuki': 1.420000, // Noto Sans Bhaiksuki, 1 variants
+  'notosansbrahmi': 1.375000, // Noto Sans Brahmi, 1 variants
+  'notosansbuginese': 1.362000, // Noto Sans Buginese, 1 variants
+  'notosansbuhid': 1.362000, // Noto Sans Buhid, 1 variants
+  'notosanscarian': 1.362000, // Noto Sans Carian, 1 variants
+  'notosanschakma': 1.460000, // Noto Sans Chakma, 1 variants
+  'notosanscham': 1.468000, // Noto Sans Cham, 9 variants
+  'notosanscherokee': 1.362000, // Noto Sans Cherokee, 9 variants
+  'notosanschorasmian': 1.362000, // Noto Sans Chorasmian, 1 variants
+  'notosanscoptic': 1.362000, // Noto Sans Coptic, 1 variants
+  'notosanscypriot': 1.362000, // Noto Sans Cypriot, 1 variants
+  'notosansdeseret': 1.362000, // Noto Sans Deseret, 1 variants
+  'notosansdevanagari': 1.304000, // Noto Sans Devanagari, 9 variants
+  'notosansdisplay': 1.362000, // Noto Sans Display, 18 variants
+  'notosansegyptianhieroglyphs':
+      1.650000, // Noto Sans Egyptian Hieroglyphs, 1 variants
+  'notosanselbasan': 1.117000, // Noto Sans Elbasan, 1 variants
+  'notosanselymaic': 1.200000, // Noto Sans Elymaic, 1 variants
+  'notosansethiopic': 1.362000, // Noto Sans Ethiopic, 9 variants
+  'notosansgothic': 1.362000, // Noto Sans Gothic, 1 variants
+  'notosansgrantha': 1.824000, // Noto Sans Grantha, 1 variants
+  'notosansgujarati': 1.304000, // Noto Sans Gujarati, 9 variants
+  'notosansgunjalagondi': 1.266000, // Noto Sans Gunjala Gondi, 4 variants
+  'notosansgurmukhi': 1.304000, // Noto Sans Gurmukhi, 9 variants
+  'notosanshanifirohingya': 1.362000, // Noto Sans Hanifi Rohingya, 4 variants
+  'notosanshanunoo': 1.362000, // Noto Sans Hanunoo, 1 variants
+  'notosanshatran': 1.362000, // Noto Sans Hatran, 1 variants
+  'notosanshk': 1.448000, // Noto Sans HK, 9 variants
+  'notosansimperialaramaic': 1.362000, // Noto Sans Imperial Aramaic, 1 variants
+  'notosansinscriptionalpahlavi':
+      1.421000, // Noto Sans Inscriptional Pahlavi, 1 variants
+  'notosansinscriptionalparthian':
+      1.370000, // Noto Sans Inscriptional Parthian, 1 variants
+  'notosansjavanese': 2.036000, // Noto Sans Javanese, 4 variants
+  'notosansjp': 1.448000, // Noto Sans JP, 9 variants
+  'notosanskaithi': 1.502000, // Noto Sans Kaithi, 1 variants
+  'notosanskannada': 1.349000, // Noto Sans Kannada, 9 variants
+  'notosanskawi': 2.000000, // Noto Sans Kawi, 4 variants
+  'notosanskayahli': 1.362000, // Noto Sans Kayah Li, 4 variants
+  'notosanskharoshthi': 1.370000, // Noto Sans Kharoshthi, 1 variants
+  'notosanskhmer': 1.362000, // Noto Sans Khmer, 9 variants
+  'notosanskhojki': 1.856000, // Noto Sans Khojki, 1 variants
+  'notosanskhudawadi': 1.317000, // Noto Sans Khudawadi, 1 variants
+  'notosanskr': 1.448000, // Noto Sans KR, 9 variants
+  'notosanslao': 1.645000, // Noto Sans Lao, 9 variants
+  'notosanslaolooped': 1.600000, // Noto Sans Lao Looped, 9 variants
+  'notosanslepcha': 1.519000, // Noto Sans Lepcha, 1 variants
+  'notosanslimbu': 1.362000, // Noto Sans Limbu, 1 variants
+  'notosanslinearb': 1.362000, // Noto Sans Linear B, 1 variants
+  'notosanslydian': 1.362000, // Noto Sans Lydian, 1 variants
+  'notosansmahajani': 1.000000, // Noto Sans Mahajani, 1 variants
+  'notosansmalayalam': 1.247000, // Noto Sans Malayalam, 9 variants
+  'notosansmanichaean': 1.130000, // Noto Sans Manichaean, 1 variants
+  'notosansmarchen': 1.641000, // Noto Sans Marchen, 1 variants
+  'notosansmasaramgondi': 1.200000, // Noto Sans Masaram Gondi, 1 variants
+  'notosansmedefaidrin': 1.362000, // Noto Sans Medefaidrin, 4 variants
+  'notosansmeeteimayek': 1.390000, // Noto Sans Meetei Mayek, 9 variants
+  'notosansmodi': 1.354000, // Noto Sans Modi, 1 variants
+  'notosansmongolian': 1.750000, // Noto Sans Mongolian, 1 variants
+  'notosansmono': 1.362000, // Noto Sans Mono, 9 variants
+  'notosansmro': 1.362000, // Noto Sans Mro, 1 variants
+  'notosansmultani': 1.362000, // Noto Sans Multani, 1 variants
+  'notosansmyanmar': 2.184000, // Noto Sans Myanmar, 9 variants
+  'notosansnabataean': 1.362000, // Noto Sans Nabataean, 1 variants
+  'notosansnagmundari': 1.362000, // Noto Sans Nag Mundari, 4 variants
+  'notosansnandinagari': 1.460000, // Noto Sans Nandinagari, 1 variants
+  'notosansnewa': 1.432000, // Noto Sans Newa, 1 variants
+  'notosansnewtailue': 1.362000, // Noto Sans New Tai Lue, 4 variants
+  'notosansogham': 1.362000, // Noto Sans Ogham, 1 variants
+  'notosansolchiki': 1.362000, // Noto Sans Ol Chiki, 4 variants
+  'notosansoldhungarian': 1.036000, // Noto Sans Old Hungarian, 1 variants
+  'notosansolditalic': 1.362000, // Noto Sans Old Italic, 1 variants
+  'notosansoldnortharabian':
+      1.362000, // Noto Sans Old North Arabian, 1 variants
+  'notosansoldpersian': 1.362000, // Noto Sans Old Persian, 1 variants
+  'notosansoldsogdian': 1.362000, // Noto Sans Old Sogdian, 1 variants
+  'notosansoldsoutharabian':
+      1.362000, // Noto Sans Old South Arabian, 1 variants
+  'notosansoriya': 1.362000, // Noto Sans Oriya, 9 variants
+  'notosansosage': 1.362000, // Noto Sans Osage, 1 variants
+  'notosansosmanya': 1.362000, // Noto Sans Osmanya, 1 variants
+  'notosanspahawhhmong': 1.362000, // Noto Sans Pahawh Hmong, 1 variants
+  'notosanspalmyrene': 1.362000, // Noto Sans Palmyrene, 1 variants
+  'notosansphagspa': 1.362000, // Noto Sans PhagsPa, 1 variants
+  'notosansphoenician': 1.362000, // Noto Sans Phoenician, 1 variants
+  'notosanspsalterpahlavi': 1.291000, // Noto Sans Psalter Pahlavi, 1 variants
+  'notosansrejang': 1.362000, // Noto Sans Rejang, 1 variants
+  'notosansrunic': 1.362000, // Noto Sans Runic, 1 variants
+  'notosanssamaritan': 1.362000, // Noto Sans Samaritan, 1 variants
+  'notosanssaurashtra': 1.362000, // Noto Sans Saurashtra, 1 variants
+  'notosanssc': 1.448000, // Noto Sans SC, 9 variants
+  'notosansshavian': 1.362000, // Noto Sans Shavian, 1 variants
+  'notosanssiddham': 2.030000, // Noto Sans Siddham, 1 variants
+  'notosanssinhala': 1.304000, // Noto Sans Sinhala, 9 variants
+  'notosanssogdian': 1.382000, // Noto Sans Sogdian, 1 variants
+  'notosanssorasompeng': 1.362000, // Noto Sans Sora Sompeng, 4 variants
+  'notosanssoyombo': 1.596000, // Noto Sans Soyombo, 1 variants
+  'notosanssundanese': 1.437000, // Noto Sans Sundanese, 4 variants
+  'notosanssunuwar': 1.362000, // Noto Sans Sunuwar, 1 variants
+  'notosanssylotinagri': 1.362000, // Noto Sans Syloti Nagri, 1 variants
+  'notosanssymbols': 2.050000, // Noto Sans Symbols, 9 variants
+  'notosanssyriac': 1.412000, // Noto Sans Syriac, 9 variants
+  'notosanssyriaceastern': 1.412000, // Noto Sans Syriac Eastern, 9 variants
+  'notosanssyriacwestern': 1.412000, // Noto Sans Syriac Western, 9 variants
+  'notosanstagalog': 1.362000, // Noto Sans Tagalog, 1 variants
+  'notosanstagbanwa': 1.362000, // Noto Sans Tagbanwa, 1 variants
+  'notosanstaile': 1.362000, // Noto Sans Tai Le, 1 variants
+  'notosanstaiviet': 1.362000, // Noto Sans Tai Viet, 1 variants
+  'notosanstakri': 1.262000, // Noto Sans Takri, 1 variants
+  'notosanstamil': 1.240000, // Noto Sans Tamil, 9 variants
+  'notosanstangsa': 1.362000, // Noto Sans Tangsa, 4 variants
+  'notosanstc': 1.448000, // Noto Sans TC, 9 variants
+  'notosanstelugu': 1.352000, // Noto Sans Telugu, 9 variants
+  'notosansthaana': 1.493000, // Noto Sans Thaana, 9 variants
+  'notosansthai': 1.511000, // Noto Sans Thai, 9 variants
+  'notosansthailooped': 1.600000, // Noto Sans Thai Looped, 9 variants
+  'notosanstifinagh': 1.362000, // Noto Sans Tifinagh, 1 variants
+  'notosanstirhuta': 1.545000, // Noto Sans Tirhuta, 1 variants
+  'notosansugaritic': 1.124000, // Noto Sans Ugaritic, 1 variants
+  'notosansvai': 1.362000, // Noto Sans Vai, 1 variants
+  'notosansvithkuqi': 1.362000, // Noto Sans Vithkuqi, 4 variants
+  'notosanswancho': 1.257000, // Noto Sans Wancho, 1 variants
+  'notosansyi': 1.362000, // Noto Sans Yi, 1 variants
+  'notoserif': 1.362000, // Noto Serif, 18 variants
+  'notoserifahom': 1.655000, // Noto Serif Ahom, 1 variants
+  'notoserifarmenian': 1.360000, // Noto Serif Armenian, 9 variants
+  'notoserifbalinese': 1.795000, // Noto Serif Balinese, 1 variants
+  'notoserifbengali': 1.594000, // Noto Serif Bengali, 9 variants
+  'notoserifdevanagari': 1.555000, // Noto Serif Devanagari, 9 variants
+  'notoserifdisplay': 1.362000, // Noto Serif Display, 18 variants
+  'notoserifdivesakuru': 1.779000, // Noto Serif Dives Akuru, 1 variants
+  'notoserifdogra': 1.494000, // Noto Serif Dogra, 1 variants
+  'notoserifethiopic': 1.362000, // Noto Serif Ethiopic, 9 variants
+  'notoserifgeorgian': 1.360000, // Noto Serif Georgian, 9 variants
+  'notoserifgrantha': 1.824000, // Noto Serif Grantha, 1 variants
+  'notoserifgujarati': 1.447000, // Noto Serif Gujarati, 9 variants
+  'notoserifgurmukhi': 1.434000, // Noto Serif Gurmukhi, 9 variants
+  'notoserifhebrew': 1.186000, // Noto Serif Hebrew, 9 variants
+  'notoserifhk': 1.437000, // Noto Serif HK, 8 variants
+  'notoserifjp': 1.437000, // Noto Serif JP, 8 variants
+  'notoserifkannada': 1.620000, // Noto Serif Kannada, 9 variants
+  'notoserifkhmer': 1.362000, // Noto Serif Khmer, 9 variants
+  'notoserifkhojki': 1.856000, // Noto Serif Khojki, 4 variants
+  'notoserifkr': 1.437000, // Noto Serif KR, 8 variants
+  'notoseriflao': 1.656000, // Noto Serif Lao, 9 variants
+  'notoserifmakasar': 1.362000, // Noto Serif Makasar, 1 variants
+  'notoserifmalayalam': 1.247000, // Noto Serif Malayalam, 9 variants
+  'notoserifnphmong': 1.360000, // Noto Serif NP Hmong, 4 variants
+  'notoserifolduyghur': 1.382000, // Noto Serif Old Uyghur, 1 variants
+  'notoseriforiya': 1.409000, // Noto Serif Oriya, 4 variants
+  'notoserifsc': 1.437000, // Noto Serif SC, 8 variants
+  'notoserifsinhala': 1.304000, // Noto Serif Sinhala, 9 variants
+  'notoseriftamil': 1.561000, // Noto Serif Tamil, 18 variants
+  'notoseriftangut': 1.006000, // Noto Serif Tangut, 1 variants
+  'notoseriftc': 1.437000, // Noto Serif TC, 8 variants
+  'notoseriftelugu': 1.352000, // Noto Serif Telugu, 9 variants
+  'notoserifthai': 1.598000, // Noto Serif Thai, 9 variants
+  'notoseriftibetan': 2.815000, // Noto Serif Tibetan, 9 variants
+  'notoseriftodhri': 1.330078, // Noto Serif Todhri, 1 variants
+  'notoseriftoto': 1.303000, // Noto Serif Toto, 4 variants
+  'notoserifvithkuqi': 1.362000, // Noto Serif Vithkuqi, 4 variants
+  'notoserifyezidi': 1.360000, // Noto Serif Yezidi, 4 variants
+  'novacut': 1.207031, // Nova Cut, 1 variants
+  'novaflat': 1.207031, // Nova Flat, 1 variants
+  'novamono': 1.393555, // Nova Mono, 1 variants
+  'novaoval': 1.207031, // Nova Oval, 1 variants
+  'novaround': 1.207031, // Nova Round, 1 variants
+  'novascript': 1.207031, // Nova Script, 1 variants
+  'novaslim': 1.207031, // Nova Slim, 1 variants
+  'novasquare': 1.207031, // Nova Square, 1 variants
+  'ntr': 2.120117, // NTR, 1 variants
+  'numans': 1.174805, // Numans, 1 variants
+  'nunito': 1.364000, // Nunito, 16 variants
+  'nunitosans': 1.364000, // Nunito Sans, 16 variants
+  'nuosusil': 1.318359, // Nuosu SIL, 1 variants
+  'odibeesans': 1.108000, // Odibee Sans, 1 variants
+  'odormeanchey': 1.806641, // Odor Mean Chey, 1 variants
+  'offside': 1.261000, // Offside, 1 variants
+  'oi': 1.580000, // Oi, 1 variants
+  'ojuju': 1.406000, // Ojuju, 7 variants
+  'oldenburg': 1.250000, // Oldenburg, 1 variants
+  'oldstandardtt': 1.000000, // Old Standard TT, 3 variants
+  'ole': 1.260000, // Ole, 1 variants
+  'oleoscript': 1.383000, // Oleo Script, 2 variants
+  'oleoscriptswashcaps': 1.383000, // Oleo Script Swash Caps, 2 variants
+  'onest': 1.275000, // Onest, 9 variants
+  'ooohbaby': 1.225000, // Oooh Baby, 1 variants
+  'opensans': 1.361816, // Open Sans, 12 variants
+  'oranienbaum': 1.155000, // Oranienbaum, 1 variants
+  'orbit': 1.448000, // Orbit, 1 variants
+  'orbitron': 1.254000, // Orbitron, 6 variants
+  'oregano': 1.290039, // Oregano, 2 variants
+  'orelegaone': 1.000244, // Orelega One, 1 variants
+  'orienta': 1.195000, // Orienta, 1 variants
+  'originalsurfer': 1.250977, // Original Surfer, 1 variants
+  'oswald': 1.482000, // Oswald, 6 variants
+  'outfit': 1.260000, // Outfit, 9 variants
+  'overlock': 1.220000, // Overlock, 6 variants
+  'overlocksc': 1.220000, // Overlock SC, 1 variants
+  'overpass': 1.266000, // Overpass, 18 variants
+  'overpassmono': 1.266000, // Overpass Mono, 5 variants
+  'overtherainbow': 2.040039, // Over the Rainbow, 1 variants
+  'ovo': 1.125000, // Ovo, 1 variants
+  'oxanium': 1.000000, // Oxanium, 7 variants
+  'oxygen': 1.262695, // Oxygen, 3 variants
+  'oxygenmono': 1.312012, // Oxygen Mono, 1 variants
+  'pacifico': 1.756000, // Pacifico, 1 variants
+  'padauk': 1.474609, // Padauk, 2 variants
+  'padyakkeexpandedone': 1.441000, // Padyakke Expanded One, 1 variants
+  'palanquin': 1.811000, // Palanquin, 7 variants
+  'palanquindark': 1.811000, // Palanquin Dark, 4 variants
+  'pangolin': 1.249000, // Pangolin, 1 variants
+  'paprika': 1.419000, // Paprika, 1 variants
+  'parastoo': 1.406307, // Parastoo, 4 variants
+  'parisienne': 1.362305, // Parisienne, 1 variants
+  'parkinsans': 1.400000, // Parkinsans, 6 variants
+  'passeroone': 1.190430, // Passero One, 1 variants
+  'passionone': 1.101000, // Passion One, 3 variants
+  'passionsconflict': 1.100000, // Passions Conflict, 1 variants
+  'pathwayextreme': 1.356000, // Pathway Extreme, 18 variants
+  'pathwaygothicone': 1.152000, // Pathway Gothic One, 1 variants
+  'patrickhand': 1.354000, // Patrick Hand, 1 variants
+  'patrickhandsc': 1.354000, // Patrick Hand SC, 1 variants
+  'pattaya': 1.387695, // Pattaya, 1 variants
+  'patuaone': 1.219000, // Patua One, 1 variants
+  'pavanam': 1.291000, // Pavanam, 1 variants
+  'paytoneone': 1.396000, // Paytone One, 1 variants
+  'peddana': 1.628000, // Peddana, 1 variants
+  'peralta': 1.294434, // Peralta, 1 variants
+  'permanentmarker': 1.426758, // Permanent Marker, 1 variants
+  'petemoss': 1.100000, // Petemoss, 1 variants
+  'petitformalscript': 1.250000, // Petit Formal Script, 1 variants
+  'petrona': 1.128000, // Petrona, 18 variants
+  'philosopher': 1.120000, // Philosopher, 4 variants
+  'piazzolla': 1.420000, // Piazzolla, 18 variants
+  'piedra': 1.301000, // Piedra, 1 variants
+  'pinyonscript': 1.247559, // Pinyon Script, 1 variants
+  'pirataone': 1.285000, // Pirata One, 1 variants
+  'pixelifysans': 1.200000, // Pixelify Sans, 4 variants
+  'plaster': 1.250000, // Plaster, 1 variants
+  'platypi': 1.376000, // Platypi, 12 variants
+  'play': 1.157000, // Play, 2 variants
+  'playball': 1.250000, // Playball, 1 variants
+  'playfair': 1.200000, // Playfair, 14 variants
+  'playfairdisplay': 1.333000, // Playfair Display, 12 variants
+  'playfairdisplaysc': 1.333000, // Playfair Display SC, 6 variants
+  'playpensans': 1.510000, // Playpen Sans, 8 variants
+  'playpensansarabic': 1.650000, // Playpen Sans Arabic, 8 variants
+  'playpensansdeva': 2.030000, // Playpen Sans Deva, 8 variants
+  'playpensanshebrew': 1.530000, // Playpen Sans Hebrew, 8 variants
+  'playpensansthai': 1.743000, // Playpen Sans Thai, 8 variants
+  'pliant': 1.200000, // Pliant, 18 variants
+  'pochaevsk': 1.451000, // Pochaevsk, 1 variants
+  'podkova': 1.108000, // Podkova, 5 variants
+  'poetsenone': 1.200000, // Poetsen One, 1 variants
+  'poiretone': 1.170000, // Poiret One, 1 variants
+  'pollerone': 1.188477, // Poller One, 1 variants
+  'poltawskinowy': 1.300000, // Poltawski Nowy, 8 variants
+  'poly': 1.188000, // Poly, 2 variants
+  'pompiere': 1.201660, // Pompiere, 1 variants
+  'ponomar': 1.610000, // Ponomar, 1 variants
+  'pontanosans': 1.281250, // Pontano Sans, 5 variants
+  'poorstory': 1.000000, // Poor Story, 1 variants
+  'poppins': 1.400000, // Poppins, 18 variants
+  'portlligatsans': 1.071000, // Port Lligat Sans, 1 variants
+  'portlligatslab': 1.071000, // Port Lligat Slab, 1 variants
+  'pottaone': 1.448000, // Potta One, 1 variants
+  'pragatinarrow': 1.692000, // Pragati Narrow, 2 variants
+  'praise': 1.200000, // Praise, 1 variants
+  'prata': 1.355000, // Prata, 1 variants
+  'preahvihear': 1.806641, // Preahvihear, 1 variants
+  'pressstart2p': 1.000000, // Press Start 2P, 1 variants
+  'pridi': 1.550000, // Pridi, 6 variants
+  'princesssofia': 1.546875, // Princess Sofia, 1 variants
+  'prociono': 1.220000, // Prociono, 1 variants
+  'prompt': 1.512000, // Prompt, 18 variants
+  'prostoone': 1.235000, // Prosto One, 1 variants
+  'protestguerrilla': 1.200000, // Protest Guerrilla, 1 variants
+  'protestrevolution': 1.200000, // Protest Revolution, 1 variants
+  'protestriot': 1.200000, // Protest Riot, 1 variants
+  'proteststrike': 1.200000, // Protest Strike, 1 variants
+  'prozalibre': 1.357422, // Proza Libre, 10 variants
+  'ptmono': 1.120000, // PT Mono, 1 variants
+  'ptsans': 1.294000, // PT Sans, 4 variants
+  'ptsanscaption': 1.294000, // PT Sans Caption, 2 variants
+  'ptsansnarrow': 1.294000, // PT Sans Narrow, 2 variants
+  'ptserif': 1.325000, // PT Serif, 4 variants
+  'ptserifcaption': 1.325000, // PT Serif Caption, 2 variants
+  'publicsans': 1.175000, // Public Sans, 18 variants
+  'puppiesplay': 1.000000, // Puppies Play, 1 variants
+  'puritan': 1.109375, // Puritan, 4 variants
+  'purplepurse': 1.250000, // Purple Purse, 1 variants
+  'qahiri': 1.133333, // Qahiri, 1 variants
+  'quando': 1.250000, // Quando, 1 variants
+  'quantico': 1.430000, // Quantico, 4 variants
+  'quattrocento': 1.108000, // Quattrocento, 2 variants
+  'quattrocentosans': 1.108000, // Quattrocento Sans, 4 variants
+  'questrial': 1.030000, // Questrial, 1 variants
+  'quicksand': 1.250000, // Quicksand, 5 variants
+  'quintessential': 1.533203, // Quintessential, 1 variants
+  'qwigley': 1.250000, // Qwigley, 1 variants
+  'qwitchergrypen': 1.100000, // Qwitcher Grypen, 2 variants
+  'racingsansone': 1.260000, // Racing Sans One, 1 variants
+  'radiocanadabig': 1.300000, // Radio Canada Big, 8 variants
+  'radley': 1.263672, // Radley, 2 variants
+  'rajdhani': 1.276000, // Rajdhani, 5 variants
+  'rakkas': 1.491000, // Rakkas, 1 variants
+  'raleway': 1.174000, // Raleway, 18 variants
+  'ralewaydots': 1.131000, // Raleway Dots, 1 variants
+  'ramabhadra': 1.897590, // Ramabhadra, 1 variants
+  'ramaraja': 1.713333, // Ramaraja, 1 variants
+  'rambla': 1.224000, // Rambla, 4 variants
+  'rammettoone': 1.688965, // Rammetto One, 1 variants
+  'rampartone': 1.448000, // Rampart One, 1 variants
+  'ramsina': 1.098145, // Ramsina, 1 variants
+  'ranchers': 1.250000, // Ranchers, 1 variants
+  'rancho': 1.218750, // Rancho, 1 variants
+  'ranga': 1.463030, // Ranga, 2 variants
+  'rationale': 1.153000, // Rationale, 1 variants
+  'raviprakash': 1.583984, // Ravi Prakash, 1 variants
+  'readexpro': 1.250000, // Readex Pro, 6 variants
+  'redacted': 1.000000, // Redacted, 1 variants
+  'redactedscript': 1.000000, // Redacted Script, 3 variants
+  'redditmono': 1.298828, // Reddit Mono, 8 variants
+  'redditsans': 1.298828, // Reddit Sans, 16 variants
+  'redditsanscondensed': 1.298828, // Reddit Sans Condensed, 8 variants
+  'redhatdisplay': 1.323000, // Red Hat Display, 14 variants
+  'redhatmono': 1.323000, // Red Hat Mono, 10 variants
+  'redhattext': 1.323000, // Red Hat Text, 10 variants
+  'redressed': 1.172363, // Redressed, 1 variants
+  'redrose': 1.249000, // Red Rose, 5 variants
+  'reemkufi': 1.500000, // Reem Kufi, 4 variants
+  'reemkufifun': 1.500000, // Reem Kufi Fun, 4 variants
+  'reemkufiink': 1.500000, // Reem Kufi Ink, 1 variants
+  'reeniebeanie': 1.000000, // Reenie Beanie, 1 variants
+  'reggaeone': 1.448000, // Reggae One, 1 variants
+  'rem': 1.250000, // REM, 18 variants
+  'rethinksans': 1.302000, // Rethink Sans, 10 variants
+  'revalia': 0.861328, // Revalia, 1 variants
+  'rhodiumlibre': 1.710000, // Rhodium Libre, 1 variants
+  'ribeye': 1.366211, // Ribeye, 1 variants
+  'ribeyemarrow': 1.366211, // Ribeye Marrow, 1 variants
+  'righteous': 1.241699, // Righteous, 1 variants
+  'risque': 1.155762, // Risque, 1 variants
+  'roadrage': 1.100000, // Road Rage, 1 variants
+  'roboto': 1.171875, // Roboto, 18 variants
+  'robotoflex': 1.171875, // Roboto Flex, 1 variants
+  'robotomono': 1.318848, // Roboto Mono, 14 variants
+  'robotoserif': 1.171000, // Roboto Serif, 18 variants
+  'robotoslab': 1.318848, // Roboto Slab, 9 variants
+  'rochester': 1.287598, // Rochester, 1 variants
+  'rocknrollone': 1.448000, // RocknRoll One, 1 variants
+  'rocksalt': 2.354492, // Rock Salt, 1 variants
+  'rokkitt': 1.137000, // Rokkitt, 18 variants
+  'romanesco': 1.146973, // Romanesco, 1 variants
+  'ropasans': 1.072000, // Ropa Sans, 2 variants
+  'rosario': 1.212000, // Rosario, 10 variants
+  'rosarivo': 1.403000, // Rosarivo, 2 variants
+  'rougescript': 1.175200, // Rouge Script, 1 variants
+  'rowdies': 1.242000, // Rowdies, 3 variants
+  'rozhaone': 1.420000, // Rozha One, 1 variants
+  'rubik': 1.185000, // Rubik, 14 variants
+  'rubik80sfade': 1.185000, // Rubik 80s Fade, 1 variants
+  'rubikbeastly': 1.185000, // Rubik Beastly, 1 variants
+  'rubikbrokenfax': 1.185000, // Rubik Broken Fax, 1 variants
+  'rubikbubbles': 1.185000, // Rubik Bubbles, 1 variants
+  'rubikburned': 1.185000, // Rubik Burned, 1 variants
+  'rubikdirt': 1.185000, // Rubik Dirt, 1 variants
+  'rubikdistressed': 1.185000, // Rubik Distressed, 1 variants
+  'rubikdoodleshadow': 1.185000, // Rubik Doodle Shadow, 1 variants
+  'rubikdoodletriangles': 1.185000, // Rubik Doodle Triangles, 1 variants
+  'rubikgemstones': 1.185000, // Rubik Gemstones, 1 variants
+  'rubikglitch': 1.185000, // Rubik Glitch, 1 variants
+  'rubikglitchpop': 1.185000, // Rubik Glitch Pop, 1 variants
+  'rubikiso': 1.185000, // Rubik Iso, 1 variants
+  'rubiklines': 1.185000, // Rubik Lines, 1 variants
+  'rubikmaps': 1.185000, // Rubik Maps, 1 variants
+  'rubikmarkerhatch': 1.185000, // Rubik Marker Hatch, 1 variants
+  'rubikmaze': 1.185000, // Rubik Maze, 1 variants
+  'rubikmicrobe': 1.185000, // Rubik Microbe, 1 variants
+  'rubikmonoone': 1.238000, // Rubik Mono One, 1 variants
+  'rubikmoonrocks': 1.185000, // Rubik Moonrocks, 1 variants
+  'rubikpixels': 1.185000, // Rubik Pixels, 1 variants
+  'rubikpuddles': 1.185000, // Rubik Puddles, 1 variants
+  'rubikscribble': 1.185000, // Rubik Scribble, 1 variants
+  'rubikspraypaint': 1.185000, // Rubik Spray Paint, 1 variants
+  'rubikstorm': 1.185000, // Rubik Storm, 1 variants
+  'rubikvinyl': 1.185000, // Rubik Vinyl, 1 variants
+  'rubikwetpaint': 1.185000, // Rubik Wet Paint, 1 variants
+  'ruda': 1.217000, // Ruda, 6 variants
+  'rufina': 1.235000, // Rufina, 2 variants
+  'rugeboogie': 1.250000, // Ruge Boogie, 1 variants
+  'ruluko': 1.155000, // Ruluko, 1 variants
+  'rumraisin': 1.290039, // Rum Raisin, 1 variants
+  'ruslandisplay': 1.085000, // Ruslan Display, 1 variants
+  'russoone': 1.205000, // Russo One, 1 variants
+  'ruthie': 1.250000, // Ruthie, 1 variants
+  'ruwudu': 1.608000, // Ruwudu, 4 variants
+  'rye': 1.250000, // Rye, 1 variants
+  'sacramento': 1.459473, // Sacramento, 1 variants
+  'sahitya': 1.553000, // Sahitya, 2 variants
+  'sail': 1.154000, // Sail, 1 variants
+  'saira': 1.574000, // Saira, 18 variants
+  'sairastencil': 1.574000, // Saira Stencil, 18 variants
+  'salsa': 1.226000, // Salsa, 1 variants
+  'sanchez': 1.278000, // Sanchez, 2 variants
+  'sancreek': 1.387695, // Sancreek, 1 variants
+  'sankofadisplay': 1.200000, // Sankofa Display, 1 variants
+  'sansation': 1.119141, // Sansation, 6 variants
+  'sansita': 1.200000, // Sansita, 8 variants
+  'sansitaswashed': 1.200000, // Sansita Swashed, 7 variants
+  'sarabun': 1.300000, // Sarabun, 16 variants
+  'sarala': 1.630371, // Sarala, 2 variants
+  'sarina': 1.250000, // Sarina, 1 variants
+  'sarpanch': 1.400000, // Sarpanch, 6 variants
+  'sassyfrass': 1.100000, // Sassy Frass, 1 variants
+  'satisfy': 1.423828, // Satisfy, 1 variants
+  'savate': 1.300000, // Savate, 16 variants
+  'sawarabigothic': 1.382000, // Sawarabi Gothic, 1 variants
+  'scada': 1.244000, // Scada, 4 variants
+  'scheherazadenew': 2.039551, // Scheherazade New, 4 variants
+  'schibstedgrotesk': 1.234375, // Schibsted Grotesk, 12 variants
+  'schoolbell': 1.369141, // Schoolbell, 1 variants
+  'sciencegothic': 1.476000, // Science Gothic, 9 variants
+  'scopeone': 1.383000, // Scope One, 1 variants
+  'seaweedscript': 1.357422, // Seaweed Script, 1 variants
+  'secularone': 1.455000, // Secular One, 1 variants
+  'sedan': 1.200000, // Sedan, 2 variants
+  'sedansc': 1.200000, // Sedan SC, 1 variants
+  'sedgwickave': 1.249000, // Sedgwick Ave, 1 variants
+  'sedgwickavedisplay': 1.249000, // Sedgwick Ave Display, 1 variants
+  'sekuya': 1.300000, // Sekuya, 1 variants
+  'sen': 1.203125, // Sen, 5 variants
+  'sendflowers': 1.325000, // Send Flowers, 1 variants
+  'sevillana': 1.356934, // Sevillana, 1 variants
+  'seymourone': 1.256836, // Seymour One, 1 variants
+  'shadowsintolight': 1.606445, // Shadows Into Light, 1 variants
+  'shadowsintolighttwo': 1.451172, // Shadows Into Light Two, 1 variants
+  'shafarik': 1.542000, // Shafarik, 1 variants
+  'shalimar': 1.220000, // Shalimar, 1 variants
+  'shantellsans': 1.340000, // Shantell Sans, 12 variants
+  'shanti': 1.274902, // Shanti, 1 variants
+  'share': 1.127000, // Share, 4 variants
+  'sharetech': 1.127000, // Share Tech, 1 variants
+  'sharetechmono': 1.127000, // Share Tech Mono, 1 variants
+  'shipporiantique': 1.448000, // Shippori Antique, 1 variants
+  'shipporiantiqueb1': 1.448000, // Shippori Antique B1, 1 variants
+  'shipporimincho': 1.448000, // Shippori Mincho, 5 variants
+  'shipporiminchob1': 1.448000, // Shippori Mincho B1, 5 variants
+  'shojumaru': 1.324219, // Shojumaru, 1 variants
+  'shortstack': 1.231445, // Short Stack, 1 variants
+  'shrikhand': 1.458000, // Shrikhand, 1 variants
+  'sigmar': 1.638000, // Sigmar, 1 variants
+  'sigmarone': 1.638000, // Sigmar One, 1 variants
+  'signika': 1.232000, // Signika, 5 variants
+  'signikanegative': 1.232000, // Signika Negative, 5 variants
+  'silkscreen': 1.280000, // Silkscreen, 2 variants
+  'simonetta': 1.251953, // Simonetta, 4 variants
+  'singleday': 1.000000, // Single Day, 1 variants
+  'sintony': 1.303000, // Sintony, 2 variants
+  'sirinstencil': 1.457031, // Sirin Stencil, 1 variants
+  'sirivennela': 1.200000, // Sirivennela, 1 variants
+  'sixcaps': 1.315918, // Six Caps, 1 variants
+  'sixtyfour': 1.000000, // Sixtyfour, 1 variants
+  'sixtyfourconvergence': 1.000000, // Sixtyfour Convergence, 1 variants
+  'skranji': 1.358398, // Skranji, 2 variants
+  'slabo13px': 1.230769, // Slabo 13px, 1 variants
+  'slabo27px': 1.222222, // Slabo 27px, 1 variants
+  'slackey': 1.395508, // Slackey, 1 variants
+  'smokum': 1.219727, // Smokum, 1 variants
+  'smooch': 1.400000, // Smooch, 1 variants
+  'smoochsans': 1.200000, // Smooch Sans, 9 variants
+  'smythe': 1.153809, // Smythe, 1 variants
+  'sniglet': 1.245000, // Sniglet, 2 variants
+  'snippet': 1.151000, // Snippet, 1 variants
+  'snowburstone': 1.263672, // Snowburst One, 1 variants
+  'snpro': 1.300000, // SN Pro, 16 variants
+  'sofadione': 1.166000, // Sofadi One, 1 variants
+  'sofia': 1.576000, // Sofia, 1 variants
+  'sofiasans': 1.200000, // Sofia Sans, 18 variants
+  'sofiasanscondensed': 1.200000, // Sofia Sans Condensed, 18 variants
+  'sofiasansextracondensed':
+      1.200000, // Sofia Sans Extra Condensed, 18 variants
+  'sofiasanssemicondensed': 1.200000, // Sofia Sans Semi Condensed, 18 variants
+  'solitreo': 1.430000, // Solitreo, 1 variants
+  'solway': 1.200000, // Solway, 5 variants
+  'sometypemono': 1.200000, // Sometype Mono, 8 variants
+  'songmyung': 1.000000, // Song Myung, 1 variants
+  'sono': 1.200000, // Sono, 7 variants
+  'sonsieone': 1.293945, // Sonsie One, 1 variants
+  'sora': 1.260000, // Sora, 8 variants
+  'sortsmillgoudy': 1.438000, // Sorts Mill Goudy, 2 variants
+  'sourcesans3': 1.424000, // Source Sans 3, 16 variants
+  'sourceserif4': 1.371000, // Source Serif 4, 16 variants
+  'sourgummy': 1.292000, // Sour Gummy, 18 variants
+  'spacegrotesk': 1.276000, // Space Grotesk, 5 variants
+  'spacemono': 1.481000, // Space Mono, 4 variants
+  'specialelite': 1.000000, // Special Elite, 1 variants
+  'specialgothic': 1.300000, // Special Gothic, 4 variants
+  'specialgothiccondensedone':
+      1.300000, // Special Gothic Condensed One, 1 variants
+  'specialgothicexpandedone':
+      1.300000, // Special Gothic Expanded One, 1 variants
+  'spectral': 1.522000, // Spectral, 14 variants
+  'spectralsc': 1.522000, // Spectral SC, 14 variants
+  'spicyrice': 1.378906, // Spicy Rice, 1 variants
+  'spinnaker': 1.175293, // Spinnaker, 1 variants
+  'spirax': 1.235000, // Spirax, 1 variants
+  'splash': 1.630000, // Splash, 1 variants
+  'splinesans': 1.200000, // Spline Sans, 5 variants
+  'splinesansmono': 1.200000, // Spline Sans Mono, 10 variants
+  'squadaone': 1.057000, // Squada One, 1 variants
+  'squarepeg': 1.320000, // Square Peg, 1 variants
+  'sreekrushnadevaraya': 2.059722, // Sree Krushnadevaraya, 1 variants
+  'sriracha': 1.770000, // Sriracha, 1 variants
+  'srisakdi': 1.200000, // Srisakdi, 2 variants
+  'staatliches': 1.250000, // Staatliches, 1 variants
+  'stacksansheadline': 1.300000, // Stack Sans Headline, 6 variants
+  'stacksansnotch': 1.300000, // Stack Sans Notch, 6 variants
+  'stacksanstext': 1.300000, // Stack Sans Text, 6 variants
+  'stalemate': 1.465820, // Stalemate, 1 variants
+  'stalinistone': 1.476000, // Stalinist One, 1 variants
+  'stardosstencil': 1.379395, // Stardos Stencil, 2 variants
+  'stick': 1.448000, // Stick, 1 variants
+  'sticknobills': 1.252000, // Stick No Bills, 7 variants
+  'stintultracondensed': 1.128906, // Stint Ultra Condensed, 1 variants
+  'stintultraexpanded': 1.140625, // Stint Ultra Expanded, 1 variants
+  'stixtwotext': 1.000000, // STIX Two Text, 8 variants
+  'stoke': 1.250000, // Stoke, 2 variants
+  'storyscript': 1.299000, // Story Script, 1 variants
+  'strait': 1.095000, // Strait, 1 variants
+  'strichpunktsans': 1.300000, // Strichpunkt Sans, 6 variants
+  'stylescript': 1.520000, // Style Script, 1 variants
+  'stylish': 1.000000, // Stylish, 1 variants
+  'sueellenfrancisco': 1.949219, // Sue Ellen Francisco, 1 variants
+  'suezone': 1.306000, // Suez One, 1 variants
+  'sulphurpoint': 1.000000, // Sulphur Point, 3 variants
+  'sumana': 2.927000, // Sumana, 2 variants
+  'sunflower': 1.000000, // Sunflower, 3 variants
+  'sunshiney': 1.293945, // Sunshiney, 1 variants
+  'supermercadoone': 1.197266, // Supermercado One, 1 variants
+  'sura': 1.577637, // Sura, 2 variants
+  'suranna': 2.189744, // Suranna, 1 variants
+  'suravaram': 2.131633, // Suravaram, 1 variants
+  'suse': 1.260000, // SUSE, 18 variants
+  'susemono': 1.260000, // SUSE Mono, 16 variants
+  'suwannaphum': 1.806641, // Suwannaphum, 5 variants
+  'swankyandmoomoo': 1.466797, // Swanky and Moo Moo, 1 variants
+  'syncopate': 0.967773, // Syncopate, 2 variants
+  'syne': 1.200000, // Syne, 5 variants
+  'synemono': 1.200000, // Syne Mono, 1 variants
+  'synetactile': 1.200000, // Syne Tactile, 1 variants
+  'tacone': 1.030000, // Tac One, 1 variants
+  'tagesschrift': 1.300000, // Tagesschrift, 1 variants
+  'taiheritagepro': 2.099609, // Tai Heritage Pro, 2 variants
+  'tajawal': 1.000000, // Tajawal, 7 variants
+  'tangerine': 1.000000, // Tangerine, 2 variants
+  'tapestry': 1.250000, // Tapestry, 1 variants
+  'taprom': 1.806641, // Taprom, 1 variants
+  'tasaexplorer': 1.200000, // TASA Explorer, 5 variants
+  'tasaorbiter': 1.200000, // TASA Orbiter, 5 variants
+  'tauri': 1.250000, // Tauri, 1 variants
+  'taviraj': 1.706000, // Taviraj, 18 variants
+  'teko': 1.433000, // Teko, 5 variants
+  'tektur': 1.300000, // Tektur, 6 variants
+  'telex': 1.205000, // Telex, 1 variants
+  'tenaliramakrishna': 1.564000, // Tenali Ramakrishna, 1 variants
+  'tenorsans': 1.170000, // Tenor Sans, 1 variants
+  'textmeone': 1.221000, // Text Me One, 1 variants
+  'texturina': 1.560000, // Texturina, 18 variants
+  'thasadith': 1.300000, // Thasadith, 4 variants
+  'thegirlnextdoor': 1.842773, // The Girl Next Door, 1 variants
+  'thenautigal': 1.200000, // The Nautigal, 2 variants
+  'tienne': 1.344727, // Tienne, 3 variants
+  'tiktoksans': 1.300000, // TikTok Sans, 7 variants
+  'tillana': 1.642000, // Tillana, 5 variants
+  'tiltneon': 1.262000, // Tilt Neon, 1 variants
+  'tiltprism': 1.262000, // Tilt Prism, 1 variants
+  'tiltwarp': 1.262000, // Tilt Warp, 1 variants
+  'timmana': 1.629333, // Timmana, 1 variants
+  'tinos': 1.107422, // Tinos, 4 variants
+  'tiny5': 1.125000, // Tiny5, 1 variants
+  'tirobangla': 1.000000, // Tiro Bangla, 2 variants
+  'tirodevanagarihindi': 1.000000, // Tiro Devanagari Hindi, 2 variants
+  'tirodevanagarimarathi': 1.000000, // Tiro Devanagari Marathi, 2 variants
+  'tirodevanagarisanskrit': 1.000000, // Tiro Devanagari Sanskrit, 2 variants
+  'tirogurmukhi': 1.000000, // Tiro Gurmukhi, 2 variants
+  'tirokannada': 1.000000, // Tiro Kannada, 2 variants
+  'tirotamil': 1.000000, // Tiro Tamil, 2 variants
+  'tirotelugu': 1.000000, // Tiro Telugu, 2 variants
+  'tirra': 1.370117, // Tirra, 6 variants
+  'titanone': 1.145000, // Titan One, 1 variants
+  'titilliumweb': 1.521000, // Titillium Web, 11 variants
+  'tomorrow': 1.200000, // Tomorrow, 18 variants
+  'tourney': 1.100000, // Tourney, 18 variants
+  'tradewinds': 1.453125, // Trade Winds, 1 variants
+  'trainone': 1.448000, // Train One, 1 variants
+  'triodion': 1.637000, // Triodion, 1 variants
+  'trirong': 1.734000, // Trirong, 18 variants
+  'trispace': 1.130000, // Trispace, 8 variants
+  'trocchi': 1.299316, // Trocchi, 1 variants
+  'trochut': 1.177000, // Trochut, 3 variants
+  'truculenta': 1.390000, // Truculenta, 9 variants
+  'trykker': 1.250000, // Trykker, 1 variants
+  'tulpenone': 1.089844, // Tulpen One, 1 variants
+  'turretroad': 1.093000, // Turret Road, 6 variants
+  'twinklestar': 1.280000, // Twinkle Star, 1 variants
+  'ubuntu': 1.121000, // Ubuntu, 8 variants
+  'ubuntucondensed': 1.121000, // Ubuntu Condensed, 1 variants
+  'ubuntumono': 1.000000, // Ubuntu Mono, 4 variants
+  'ubuntusans': 1.200000, // Ubuntu Sans, 16 variants
+  'ubuntusansmono': 1.200000, // Ubuntu Sans Mono, 8 variants
+  'uchen': 1.863281, // Uchen, 1 variants
+  'ultra': 1.282715, // Ultra, 1 variants
+  'unbounded': 1.240000, // Unbounded, 8 variants
+  'uncialantiqua': 1.315918, // Uncial Antiqua, 1 variants
+  'underdog': 1.156000, // Underdog, 1 variants
+  'unicaone': 1.182000, // Unica One, 1 variants
+  'unifrakturcook': 1.308594, // UnifrakturCook, 1 variants
+  'unifrakturmaguntia': 1.035156, // UnifrakturMaguntia, 1 variants
+  'unkempt': 1.194336, // Unkempt, 2 variants
+  'unlock': 1.068000, // Unlock, 1 variants
+  'unna': 1.152000, // Unna, 4 variants
+  'uoqmunthenkhung': 1.128000, // UoqMunThenKhung, 1 variants
+  'updock': 1.250000, // Updock, 1 variants
+  'urbanist': 1.200000, // Urbanist, 18 variants
+  'vampiroone': 1.250000, // Vampiro One, 1 variants
+  'varela': 1.300000, // Varela, 1 variants
+  'varelaround': 1.204000, // Varela Round, 1 variants
+  'varta': 1.450195, // Varta, 5 variants
+  'vastshadow': 1.250000, // Vast Shadow, 1 variants
+  'vazirmatn': 1.562500, // Vazirmatn, 9 variants
+  'vendsans': 1.480000, // Vend Sans, 10 variants
+  'vesperlibre': 1.894531, // Vesper Libre, 4 variants
+  'viaodalibre': 1.411000, // Viaoda Libre, 1 variants
+  'vibes': 1.785000, // Vibes, 1 variants
+  'vibur': 1.343750, // Vibur, 1 variants
+  'victormono': 1.350000, // Victor Mono, 14 variants
+  'vidaloka': 1.214355, // Vidaloka, 1 variants
+  'viga': 1.344000, // Viga, 1 variants
+  'vinasans': 1.215000, // Vina Sans, 1 variants
+  'voces': 1.349000, // Voces, 1 variants
+  'volkhov': 1.290000, // Volkhov, 4 variants
+  'vollkorn': 1.393000, // Vollkorn, 12 variants
+  'vollkornsc': 1.393000, // Vollkorn SC, 4 variants
+  'voltaire': 1.245605, // Voltaire, 1 variants
+  'vt323': 1.000000, // VT323, 1 variants
+  'vujahdayscript': 1.360000, // Vujahday Script, 1 variants
+  'waitingforthesunrise': 1.653320, // Waiting for the Sunrise, 1 variants
+  'wallpoet': 1.002000, // Wallpoet, 1 variants
+  'walterturncoat': 1.368164, // Walter Turncoat, 1 variants
+  'warnes': 1.304000, // Warnes, 1 variants
+  'waterbrush': 1.450000, // Water Brush, 1 variants
+  'waterfall': 1.160000, // Waterfall, 1 variants
+  'wdxllubrifontjpn': 1.180000, // WDXL Lubrifont JP N, 1 variants
+  'wdxllubrifontsc': 1.180000, // WDXL Lubrifont SC, 1 variants
+  'wdxllubrifonttc': 1.180000, // WDXL Lubrifont TC, 1 variants
+  'wellfleet': 1.250000, // Wellfleet, 1 variants
+  'wendyone': 1.055000, // Wendy One, 1 variants
+  'whisper': 1.280000, // Whisper, 1 variants
+  'windsong': 1.405000, // WindSong, 2 variants
+  'winkyrough': 1.330000, // Winky Rough, 14 variants
+  'winkysans': 1.330000, // Winky Sans, 14 variants
+  'wireone': 1.100000, // Wire One, 1 variants
+  'wittgenstein': 1.500000, // Wittgenstein, 12 variants
+  'wixmadefordisplay': 1.260000, // Wix Madefor Display, 5 variants
+  'workbench': 1.000000, // Workbench, 1 variants
+  'worksans': 1.173000, // Work Sans, 18 variants
+  'xanhmono': 1.190000, // Xanh Mono, 2 variants
+  'yaldevi': 1.316000, // Yaldevi, 6 variants
+  'yanonekaffeesatz': 0.935000, // Yanone Kaffeesatz, 6 variants
+  'yantramanav': 1.296875, // Yantramanav, 6 variants
+  'yarndings12': 1.000000, // Yarndings 12, 1 variants
+  'yarndings12charted': 1.000000, // Yarndings 12 Charted, 1 variants
+  'yarndings20': 1.000000, // Yarndings 20, 1 variants
+  'yarndings20charted': 1.000000, // Yarndings 20 Charted, 1 variants
+  'yatraone': 1.478000, // Yatra One, 1 variants
+  'yellowtail': 1.272949, // Yellowtail, 1 variants
+  'yeonsung': 1.000000, // Yeon Sung, 1 variants
+  'yesevaone': 1.155000, // Yeseva One, 1 variants
+  'yesteryear': 1.467285, // Yesteryear, 1 variants
+  'yomogi': 1.448000, // Yomogi, 1 variants
+  'youngserif': 1.412000, // Young Serif, 1 variants
+  'yrsa': 1.000000, // Yrsa, 10 variants
+  'ysabeau': 1.343000, // Ysabeau, 18 variants
+  'ysabeauinfant': 1.343000, // Ysabeau Infant, 18 variants
+  'ysabeauoffice': 1.343000, // Ysabeau Office, 18 variants
+  'ysabeausc': 1.343000, // Ysabeau SC, 9 variants
+  'yujiboku': 1.448000, // Yuji Boku, 1 variants
+  'yujimai': 1.448000, // Yuji Mai, 1 variants
+  'yujisyuku': 1.448000, // Yuji Syuku, 1 variants
+  'yuseimagic': 1.448000, // Yusei Magic, 1 variants
+  'yuyu': 1.130000, // Yuyu, 1 variants
+  'yuyushort': 1.130000, // Yuyu Short, 1 variants
+  'zain': 1.660000, // Zain, 8 variants
+  'zalandosans': 1.214000, // Zalando Sans, 16 variants
+  'zalandosansexpanded': 1.214000, // Zalando Sans Expanded, 16 variants
+  'zalandosanssemiexpanded': 1.214000, // Zalando Sans SemiExpanded, 16 variants
+  'zcoolkuaile': 1.000000, // ZCOOL KuaiLe, 1 variants
+  'zcoolqingkehuangyou': 1.000000, // ZCOOL QingKe HuangYou, 1 variants
+  'zcoolxiaowei': 1.000000, // ZCOOL XiaoWei, 1 variants
+  'zenantique': 1.448000, // Zen Antique, 1 variants
+  'zenantiquesoft': 1.448000, // Zen Antique Soft, 1 variants
+  'zendots': 1.200000, // Zen Dots, 1 variants
+  'zenkakugothicantique': 1.448000, // Zen Kaku Gothic Antique, 5 variants
+  'zenkakugothicnew': 1.448000, // Zen Kaku Gothic New, 5 variants
+  'zenkurenaido': 1.448000, // Zen Kurenaido, 1 variants
+  'zenloop': 1.125000, // Zen Loop, 2 variants
+  'zenmarugothic': 1.448000, // Zen Maru Gothic, 5 variants
+  'zenoldmincho': 1.448000, // Zen Old Mincho, 5 variants
+  'zentokyozoo': 1.200000, // Zen Tokyo Zoo, 1 variants
+  'zeyada': 1.576172, // Zeyada, 1 variants
+  'zhimangxing': 1.000000, // Zhi Mang Xing, 1 variants
+  'zillaslab': 1.200000, // Zilla Slab, 10 variants
+  'zillaslabhighlight': 1.200000, // Zilla Slab Highlight, 2 variants
+};
+
 String normalizeFontFamilyForFontMetrics(String fontFamily) {
   final packageSeparator = fontFamily.lastIndexOf('/');
   final unprefixed = packageSeparator < 0

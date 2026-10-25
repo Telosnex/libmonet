@@ -64,6 +64,9 @@ class InterpolatedMonetThemeData extends MonetThemeData {
          scale: lerpDouble(begin.scale, end.scale, t) ?? end.scale,
          shapeTheme: t < 1.0 ? begin.shapeTheme : end.shapeTheme,
          typography: t < 1.0 ? begin.typography : end.typography,
+         compactLineHeights: t < 1.0
+             ? begin.compactLineHeights
+             : end.compactLineHeights,
        );
 
   @override

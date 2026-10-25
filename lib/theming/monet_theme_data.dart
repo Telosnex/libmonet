@@ -46,6 +46,11 @@ class MonetThemeData {
   final MonetShapeTheme shapeTheme;
   final Typography Function(ColorScheme)? typography;
 
+  /// Fit each text style's line height to the ink of its font, with
+  /// [lineHeightForFontFamily]. Defaults to true. False keeps the natural
+  /// line box of every font.
+  final bool compactLineHeights;
+
   late final MonetShapes shapes = shapeTheme.resolve(scale);
 
   // Bound strong keys as well as weak values. Include every environmental
@@ -87,6 +92,7 @@ class MonetThemeData {
     this.scale = 1.0,
     this.shapeTheme = const MonetShapeTheme(),
     this.typography,
+    this.compactLineHeights = true,
   });
 
   @override
@@ -104,7 +110,8 @@ class MonetThemeData {
           contrast == other.contrast &&
           scale == other.scale &&
           shapeTheme == other.shapeTheme &&
-          other.typography == typography;
+          other.typography == typography &&
+          other.compactLineHeights == compactLineHeights;
 
   @override
   int get hashCode => Object.hash(
@@ -120,6 +127,7 @@ class MonetThemeData {
     scale,
     shapeTheme,
     typography,
+    compactLineHeights,
   );
 
   /// Copies theme fields and palette values verbatim. Policy fields do not
@@ -138,6 +146,7 @@ class MonetThemeData {
     double? scale,
     MonetShapeTheme? shapeTheme,
     Typography Function(ColorScheme)? typography,
+    bool? compactLineHeights,
   }) {
     return MonetThemeData(
       primary: primary ?? this.primary,
@@ -151,6 +160,7 @@ class MonetThemeData {
       scale: scale ?? this.scale,
       shapeTheme: shapeTheme ?? this.shapeTheme,
       typography: typography ?? this.typography,
+      compactLineHeights: compactLineHeights ?? this.compactLineHeights,
     );
   }
 
@@ -164,6 +174,7 @@ class MonetThemeData {
     double scale = 1.0,
     MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
+    bool compactLineHeights = true,
   }) {
     final temperatureCache = TemperatureCache(
       Hct.fromColor(color, model: colorModel),
@@ -182,6 +193,7 @@ class MonetThemeData {
       scale: scale,
       shapeTheme: shapeTheme,
       typography: typography,
+      compactLineHeights: compactLineHeights,
     );
   }
 
@@ -195,6 +207,7 @@ class MonetThemeData {
     double scale = 1.0,
     MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
+    bool compactLineHeights = true,
   }) {
     final triad = ScorerTriad.threeColorsFromQuantizer(
       quantizerResult,
@@ -212,6 +225,7 @@ class MonetThemeData {
       scale: scale,
       shapeTheme: shapeTheme,
       typography: typography,
+      compactLineHeights: compactLineHeights,
     );
   }
 
@@ -227,6 +241,7 @@ class MonetThemeData {
     ColorModel colorModel = ColorModel.kDefault,
     MonetShapeTheme shapeTheme = const MonetShapeTheme(),
     Typography Function(ColorScheme)? typography,
+    bool compactLineHeights = true,
   }) {
     final primaryPalette = Palette.from(
       primary,
@@ -261,6 +276,7 @@ class MonetThemeData {
       scale: scale,
       shapeTheme: shapeTheme,
       typography: typography,
+      compactLineHeights: compactLineHeights,
     );
   }
 
@@ -1642,9 +1658,20 @@ class MonetThemeData {
     };
     scale = scale.sizeScale;
     final txtC = primary.backgroundText;
-    const h = null; // Respect font's settings. This is much better than setting
-    // it, it feels like playing whack-a-mole even with one font to tune it for
-    // all the components.
+    const h = null; // Respect font's settings, unless compactLineHeights.
+
+    // With compactLineHeights, each style gets a line height that fits the ink
+    // of its font (lineHeightForFontFamily), or keeps the natural line box.
+    // One place for every widget that takes its style from the theme.
+    TextStyle lineHeight(TextStyle style) {
+      if (!compactLineHeights) return style;
+      final height = lineHeightForFontFamily(style.fontFamily);
+      if (height == null) return style;
+      return style.copyWith(
+        height: height,
+        leadingDistribution: TextLeadingDistribution.even,
+      );
+    }
 
     // Normalize apparent text size across fonts. The table is generated
     // offline by rasterizing a small body/UI phrase corpus for each Google
@@ -1676,95 +1703,125 @@ class MonetThemeData {
     // labelSmall stays at 14 until its uses are reviewed.
 
     final textTheme = tt.copyWith(
-      displayLarge: tt.displayLarge!.copyWith(
-        fontSize: 32 * scale * displayScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.displayLarge),
-        height: h,
+      displayLarge: lineHeight(
+        tt.displayLarge!.copyWith(
+          fontSize: 32 * scale * displayScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.displayLarge),
+          height: h,
+        ),
       ),
-      displayMedium: tt.displayMedium!.copyWith(
-        fontSize: 29 * scale * displayScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.displayMedium),
-        height: h,
+      displayMedium: lineHeight(
+        tt.displayMedium!.copyWith(
+          fontSize: 29 * scale * displayScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.displayMedium),
+          height: h,
+        ),
       ),
-      displaySmall: tt.displaySmall!.copyWith(
-        fontSize: 27 * scale * displayScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.displaySmall),
-        height: h,
+      displaySmall: lineHeight(
+        tt.displaySmall!.copyWith(
+          fontSize: 27 * scale * displayScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.displaySmall),
+          height: h,
+        ),
       ),
-      titleLarge: tt.headlineLarge!.copyWith(
-        fontSize: 29 * scale * titleScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineLarge),
-        height: h,
+      titleLarge: lineHeight(
+        tt.headlineLarge!.copyWith(
+          fontSize: 29 * scale * titleScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineLarge),
+          height: h,
+        ),
       ),
-      titleMedium: tt.headlineMedium!.copyWith(
-        fontSize: 27 * scale * titleScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineMedium),
-        height: h,
+      titleMedium: lineHeight(
+        tt.headlineMedium!.copyWith(
+          fontSize: 27 * scale * titleScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineMedium),
+          height: h,
+        ),
       ),
-      titleSmall: tt.headlineSmall!.copyWith(
-        fontSize: 24 * scale * titleScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineSmall),
-        height: h,
+      titleSmall: lineHeight(
+        tt.headlineSmall!.copyWith(
+          fontSize: 24 * scale * titleScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineSmall),
+          height: h,
+        ),
       ),
-      headlineLarge: tt.headlineLarge!.copyWith(
-        fontSize: 29 * scale * headlineScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineLarge),
-        height: h,
+      headlineLarge: lineHeight(
+        tt.headlineLarge!.copyWith(
+          fontSize: 29 * scale * headlineScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineLarge),
+          height: h,
+        ),
       ),
-      headlineMedium: tt.headlineMedium!.copyWith(
-        fontSize: 27 * scale * headlineScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineMedium),
-        height: h,
+      headlineMedium: lineHeight(
+        tt.headlineMedium!.copyWith(
+          fontSize: 27 * scale * headlineScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineMedium),
+          height: h,
+        ),
       ),
-      headlineSmall: tt.headlineSmall!.copyWith(
-        fontSize: 24 * scale * headlineScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineSmall),
-        height: h,
+      headlineSmall: lineHeight(
+        tt.headlineSmall!.copyWith(
+          fontSize: 24 * scale * headlineScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.headlineSmall),
+          height: h,
+        ),
       ),
-      bodyLarge: tt.bodyLarge!.copyWith(
-        fontSize: 19 * scale * bodyScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.bodyLarge),
-        height: h,
+      bodyLarge: lineHeight(
+        tt.bodyLarge!.copyWith(
+          fontSize: 19 * scale * bodyScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.bodyLarge),
+          height: h,
+        ),
       ),
-      bodyMedium: tt.bodyMedium!.copyWith(
-        fontSize: 17 * scale * bodyScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.bodyMedium),
-        height: h,
+      bodyMedium: lineHeight(
+        tt.bodyMedium!.copyWith(
+          fontSize: 17 * scale * bodyScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.bodyMedium),
+          height: h,
+        ),
       ),
-      bodySmall: tt.bodySmall!.copyWith(
-        fontSize: 15 * scale * bodyScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.bodySmall),
-        height: h,
+      bodySmall: lineHeight(
+        tt.bodySmall!.copyWith(
+          fontSize: 15 * scale * bodyScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.bodySmall),
+          height: h,
+        ),
       ),
-      labelLarge: tt.labelLarge!.copyWith(
-        fontSize: 17 * scale * labelScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.labelLarge),
-        height: h,
+      labelLarge: lineHeight(
+        tt.labelLarge!.copyWith(
+          fontSize: 17 * scale * labelScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.labelLarge),
+          height: h,
+        ),
       ),
-      labelMedium: tt.labelMedium!.copyWith(
-        fontSize: 15 * scale * labelScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.labelMedium),
-        height: h,
+      labelMedium: lineHeight(
+        tt.labelMedium!.copyWith(
+          fontSize: 15 * scale * labelScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.labelMedium),
+          height: h,
+        ),
       ),
-      labelSmall: tt.labelSmall!.copyWith(
-        fontSize: 14 * scale * labelScale,
-        color: txtC,
-        fontFamilyFallback: _mergedFontFamilyFallback(tt.labelSmall),
-        height: h,
+      labelSmall: lineHeight(
+        tt.labelSmall!.copyWith(
+          fontSize: 14 * scale * labelScale,
+          color: txtC,
+          fontFamilyFallback: _mergedFontFamilyFallback(tt.labelSmall),
+          height: h,
+        ),
       ),
     );
     return textTheme;

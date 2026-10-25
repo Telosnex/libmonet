@@ -10,12 +10,15 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
+import json
 import math
 import os
 import re
 import statistics
 import struct
 import time
+import unicodedata
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,6 +36,42 @@ _VISUAL_HEIGHT_PHRASES = [
 ]
 _VISUAL_HEIGHT_X_WEIGHT = 0.50
 _VISUAL_HEIGHT_ADVANCE_WEIGHT = 0.15
+
+# Line height letter need (docs/design/ADR_font_line_height.md in telosnex).
+#
+# Latin letter ink: A-Z, a-z, and the letters in U+00C0-U+00FF, or only
+# A-Z and a-z if the font does not have the others. U+00D7 and U+00F7 are
+# not letters.
+_LATIN_BASIC_CODEPOINTS = list(range(0x41, 0x5B)) + list(range(0x61, 0x7B))
+_LATIN_ACCENTED_CODEPOINTS = [cp for cp in range(0xC0, 0x100) if cp not in (0xD7, 0xF7)]
+# Google Fonts subsets that are not an own script of a font.
+_NOT_OWN_SCRIPT_SUBSETS = {
+    "latin",
+    "latin-ext",
+    "vietnamese",
+    "menu",
+    "math",
+    "symbols",
+    "symbols2",
+    "music",
+    "emoji",
+}
+# Subset names that are not gflanguages script names.
+_SUBSET_SCRIPT_ALIASES = {
+    "bengali": "Beng",
+    "oriya": "Orya",
+    "cyrillic-ext": "Cyrl",
+    "greek-ext": "Grek",
+    "japanese": "Jpan",
+    "korean": "Kore",
+    "chinese-simplified": "Hans",
+    "chinese-traditional": "Hant",
+    "chinese-hongkong": "Hant",
+}
+_SAMPLE_TEXT_FIELDS = ("specimen_32", "specimen_21", "tester")
+# A sample is not used if more than this fraction of its letters are not in
+# the font: a fallback font draws them, so they do not describe this font.
+_SAMPLE_UNMAPPED_LETTER_LIMIT = 0.02
 
 FontMetricRow = tuple[
     str, str, int, float, float, float, float, float, float, float, float, float
@@ -54,6 +93,18 @@ class MeasurementResult:
     skipped_uncached: bool
     error: str | None
     elapsed_seconds: float
+
+
+@dataclass(frozen=True)
+class LineNeedResult:
+    family: str
+    # Sum of the ink above and below the baseline of ordinary text, in em:
+    # the largest of the Latin letter ink and the script sample ink of each
+    # own script. None when [absent] is set.
+    letter_need: float | None
+    line_box: float
+    # Why the family gets no line height, or None.
+    absent: str | None
 
 
 def parse_args() -> argparse.Namespace:
@@ -94,6 +145,11 @@ def parse_args() -> argparse.Namespace:
         "--cached-only",
         action="store_true",
         help="Skip fonts whose TTF is not already present in --cache-dir.",
+    )
+    parser.add_argument(
+        "--metadata",
+        default="tool/data/google_fonts_metadata.json",
+        help="Google Fonts metadata with the subsets of each family.",
     )
     parser.add_argument(
         "--reference-family",
@@ -168,6 +224,7 @@ def google_fonts_index(
 def variants_for_family(
     family: str,
     index: tuple[dict[str, str], dict[str, str], dict[str, str]],
+    include_italic: bool = False,
 ) -> list[GoogleFontVariant]:
     family_to_method, method_to_file, file_texts = index
     method = family_to_method[family]
@@ -177,9 +234,10 @@ def variants_for_family(
     end = text.find("return googleFontsTextStyle", start)
     block = text[start:end]
     variants: list[GoogleFontVariant] = []
+    style = r"(?:normal|italic)" if include_italic else r"normal"
     for match in re.finditer(
         r"fontWeight: FontWeight\.w(\d+),\s*"
-        r"fontStyle: FontStyle\.normal,\s*"
+        rf"fontStyle: FontStyle\.{style},\s*"
         r"\): (?:const )?GoogleFontsFile\(\s*'([0-9a-f]+)',\s*(\d+),",
         block,
         re.S,
@@ -258,14 +316,7 @@ class RasterMeasurer:
         return self.text_advance_em(text) / max(1, len(text))
 
 
-def hhea_ascent_descent_em(path: Path) -> tuple[float, float]:
-    """Ascent and descent from the font's hhea table, in em.
-
-    These are exact font units, not raster measurements. Flutter's line
-    metrics use them, so they give the line box that text is laid out in.
-    Descent is positive below the baseline.
-    """
-    data = path.read_bytes()
+def table_directory(data: bytes) -> dict[bytes, tuple[int, int]]:
     tables: dict[bytes, tuple[int, int]] = {}
     (num_tables,) = struct.unpack(">H", data[4:6])
     for i in range(num_tables):
@@ -273,6 +324,215 @@ def hhea_ascent_descent_em(path: Path) -> tuple[float, float]:
             ">4sIII", data[12 + 16 * i : 28 + 16 * i]
         )
         tables[tag] = (offset, length)
+    return tables
+
+
+def _cmap_format_4(data: bytes, offset: int) -> set[int]:
+    (seg_x2,) = struct.unpack(">H", data[offset + 6 : offset + 8])
+    segments = seg_x2 // 2
+    ends = struct.unpack(f">{segments}H", data[offset + 14 : offset + 14 + seg_x2])
+    starts_at = offset + 16 + seg_x2
+    starts = struct.unpack(f">{segments}H", data[starts_at : starts_at + seg_x2])
+    deltas_at = starts_at + seg_x2
+    deltas = struct.unpack(f">{segments}h", data[deltas_at : deltas_at + seg_x2])
+    range_offsets_at = deltas_at + seg_x2
+    range_offsets = struct.unpack(
+        f">{segments}H", data[range_offsets_at : range_offsets_at + seg_x2]
+    )
+    mapped: set[int] = set()
+    for i in range(segments):
+        for codepoint in range(starts[i], ends[i] + 1):
+            if codepoint == 0xFFFF:
+                continue
+            if range_offsets[i] == 0:
+                glyph = (codepoint + deltas[i]) & 0xFFFF
+            else:
+                at = range_offsets_at + 2 * i + range_offsets[i] + 2 * (codepoint - starts[i])
+                (glyph,) = struct.unpack(">H", data[at : at + 2])
+                if glyph:
+                    glyph = (glyph + deltas[i]) & 0xFFFF
+            if glyph:
+                mapped.add(codepoint)
+    return mapped
+
+
+def _cmap_format_12(data: bytes, offset: int) -> set[int]:
+    (groups,) = struct.unpack(">I", data[offset + 12 : offset + 16])
+    mapped: set[int] = set()
+    for i in range(groups):
+        start, end, start_glyph = struct.unpack(
+            ">III", data[offset + 16 + 12 * i : offset + 28 + 12 * i]
+        )
+        mapped.update(range(start + (1 if start_glyph == 0 else 0), end + 1))
+    return mapped
+
+
+def cmap_codepoints(data: bytes) -> set[int]:
+    """Code points that the Unicode cmap subtables map to a glyph other than 0.
+
+    Reads formats 4 and 12. A font with only other formats gives an empty set.
+    """
+    tables = table_directory(data)
+    if b"cmap" not in tables:
+        return set()
+    base, _ = tables[b"cmap"]
+    (_, count) = struct.unpack(">HH", data[base : base + 4])
+    mapped: set[int] = set()
+    for i in range(count):
+        platform, encoding, offset = struct.unpack(
+            ">HHI", data[base + 4 + 8 * i : base + 12 + 8 * i]
+        )
+        if not (platform == 0 or (platform == 3 and encoding in (1, 10))):
+            continue
+        subtable = base + offset
+        (format_,) = struct.unpack(">H", data[subtable : subtable + 2])
+        if format_ == 4:
+            mapped |= _cmap_format_4(data, subtable)
+        elif format_ == 12:
+            mapped |= _cmap_format_12(data, subtable)
+    return mapped
+
+
+def ttf_bytes(variant: GoogleFontVariant, cache_dir: Path) -> bytes:
+    """The verified TTF of [variant], from the cache or downloaded into memory.
+
+    A download is not written to the cache: every variant of every family is
+    about 3 GB.
+    """
+    path = cache_dir / f"{variant.hash}.ttf"
+    if path.exists() and path.stat().st_size == variant.expected_length:
+        data = path.read_bytes()
+    else:
+        for attempt in range(3):
+            try:
+                with urlopen(f"https://fonts.gstatic.com/s/a/{variant.hash}.ttf", timeout=60) as response:
+                    data = response.read()
+                break
+            except OSError:
+                if attempt == 2:
+                    raise
+                time.sleep(2 * (attempt + 1))
+    actual_hash = hashlib.sha256(data).hexdigest()
+    if actual_hash != variant.hash:
+        raise RuntimeError(f"Hash mismatch for {variant.family}: expected {variant.hash}, got {actual_hash}")
+    return data
+
+
+_script_samples_cache: dict[str, list[tuple[str, str]]] | None = None
+_subset_scripts_cache: dict[str, str] | None = None
+
+
+def _gflanguages() -> tuple[dict[str, list[tuple[str, str]]], dict[str, str]]:
+    """(sample texts by script code, script code by subset name)."""
+    global _script_samples_cache, _subset_scripts_cache
+    if _script_samples_cache is None or _subset_scripts_cache is None:
+        from gflanguages import LoadLanguages, LoadScripts
+
+        samples: dict[str, list[tuple[str, str]]] = {}
+        for language_id, language in sorted(LoadLanguages().items()):
+            seen: set[str] = set()
+            for field in _SAMPLE_TEXT_FIELDS:
+                text = getattr(language.sample_text, field).replace("\n", " ").strip()
+                if text and text not in seen:
+                    seen.add(text)
+                    samples.setdefault(language.script, []).append(
+                        (language_id.split("_")[0], text)
+                    )
+        scripts = {
+            script.name.lower().replace(" ", "-"): code
+            for code, script in LoadScripts().items()
+        }
+        scripts.update(_SUBSET_SCRIPT_ALIASES)
+        _script_samples_cache, _subset_scripts_cache = samples, scripts
+    return _script_samples_cache, _subset_scripts_cache
+
+
+def _ink_reach_em(
+    font: ImageFont.FreeTypeFont,
+    text: str,
+    size: int,
+    language: str | None = None,
+) -> tuple[float, float] | None:
+    """How far the shaped ink of [text] reaches (above, below) the baseline."""
+    _, top, _, bottom = font.getbbox(text, anchor="ls", language=language)
+    if bottom <= top:
+        return None
+    return -top / size, bottom / size
+
+
+def measure_line_need(
+    variant: GoogleFontVariant,
+    subsets: tuple[str, ...],
+    cache_dir: str,
+    font_size: int,
+) -> LineNeedResult:
+    """The letter need and line box of one variant.
+
+    See docs/design/ADR_font_line_height.md in telosnex, D2, D4, D5, and D7.
+    Pillow shapes the sample texts with raqm, so conjuncts and stacked marks
+    are measured as Flutter draws them.
+    """
+    try:
+        data = ttf_bytes(variant, Path(cache_dir))
+    except Exception as error:
+        return LineNeedResult(variant.family, None, 0.0, f"error: {error}")
+    ascent, descent = hhea_ascent_descent_em(data)
+    line_box = ascent + descent
+
+    def absent(reason: str) -> LineNeedResult:
+        return LineNeedResult(variant.family, None, line_box, reason)
+
+    if "latin" not in subsets:
+        return absent("no latin subset")
+    font = ImageFont.truetype(io.BytesIO(data), font_size, layout_engine=ImageFont.Layout.RAQM)
+    mapped = cmap_codepoints(data)
+    letters = list(_LATIN_BASIC_CODEPOINTS)
+    if all(codepoint in mapped for codepoint in _LATIN_ACCENTED_CODEPOINTS):
+        letters += _LATIN_ACCENTED_CODEPOINTS
+    if not all(codepoint in mapped for codepoint in letters):
+        return absent("no latin letters")
+    above = below = 0.0
+    for codepoint in letters:
+        reach = _ink_reach_em(font, chr(codepoint), font_size)
+        if reach is None:
+            return absent("latin letter without ink")
+        above, below = max(above, reach[0]), max(below, reach[1])
+    need = above + below
+
+    samples, subset_scripts = _gflanguages()
+    for subset in subsets:
+        if subset in _NOT_OWN_SCRIPT_SUBSETS:
+            continue
+        script = subset_scripts.get(subset)
+        if script is None:
+            return absent(f"unmapped subset {subset}")
+        above = below = 0.0
+        used = 0
+        for language, text in samples.get(script, []):
+            text_letters = [ch for ch in text if unicodedata.category(ch)[0] in "LM"]
+            unmapped = sum(ord(ch) not in mapped for ch in text_letters)
+            if not text_letters or unmapped > _SAMPLE_UNMAPPED_LETTER_LIMIT * len(text_letters):
+                continue
+            reach = _ink_reach_em(font, text, font_size, language)
+            if reach is not None:
+                above, below = max(above, reach[0]), max(below, reach[1])
+                used += 1
+        if used == 0:
+            return absent(f"no usable sample for {subset}")
+        need = max(need, above + below)
+    return LineNeedResult(variant.family, need, line_box, None)
+
+
+def hhea_ascent_descent_em(data: bytes | Path) -> tuple[float, float]:
+    """Ascent and descent from the font's hhea table, in em.
+
+    These are exact font units, not raster measurements. Flutter's line
+    metrics use them, so they give the line box that text is laid out in.
+    Descent is positive below the baseline.
+    """
+    if isinstance(data, Path):
+        data = data.read_bytes()
+    tables = table_directory(data)
     head, _ = tables[b"head"]
     hhea, _ = tables[b"hhea"]
     (units_per_em,) = struct.unpack(">H", data[head + 18 : head + 20])
@@ -430,6 +690,7 @@ def write_dart(
     reference_phrase_average_character_advance: float,
     reference_visual_height: float,
     rows: list[FontMetricRow],
+    line_needs: dict[str, tuple[float, float, int]],
 ) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     package_version = re.search(
@@ -498,6 +759,34 @@ def write_dart(
     )
     for normalized, family, weight, *_, descent in rows:
         lines.append(f"  {dart_string(normalized)}: {descent:.6f}, // {family} w{weight}")
+    need_rows = [row for row in rows if row[0] in line_needs]
+    lines.extend(
+        [
+            "};",
+            "",
+            "/// Height of the ink of ordinary text, in em, over every variant.",
+            "///",
+            "/// The largest of the Latin letter ink and the shaped sample-text ink of",
+            "/// each own script (Google Fonts gflanguages). A family is absent if it has",
+            "/// no Latin letters or an own script that cannot be measured.",
+            "const kLetterNeedEmByFontFamily = <String, double>{",
+        ]
+    )
+    for normalized, family, *_ in need_rows:
+        need, _, count = line_needs[normalized]
+        lines.append(f"  {dart_string(normalized)}: {need:.6f}, // {family}, {count} variants")
+    lines.extend(
+        [
+            "};",
+            "",
+            "/// Smallest hhea line box (ascent + descent) over every variant, in em.",
+            "/// Same families as [kLetterNeedEmByFontFamily].",
+            "const kMinLineBoxEmByFontFamily = <String, double>{",
+        ]
+    )
+    for normalized, family, *_ in need_rows:
+        _, box, count = line_needs[normalized]
+        lines.append(f"  {dart_string(normalized)}: {box:.6f}, // {family}, {count} variants")
     lines.extend(
         [
             "};",
@@ -568,6 +857,60 @@ def write_dart(
         ]
     )
     output.write_text("\n".join(lines) + "\n")
+
+
+def measure_line_needs(
+    args: argparse.Namespace,
+    index: tuple[dict[str, str], dict[str, str], dict[str, str]],
+    cache_dir: Path,
+) -> dict[str, tuple[float, float, int]]:
+    """(letter need, line box, variant count) by normalized family.
+
+    Measures every weight and style. The letter need is the largest over the
+    variants, and the line box the smallest. A family is absent if any
+    variant is absent. Fails on a download or measurement error, so the
+    output does not depend on the network.
+    """
+    from PIL import features
+
+    if not features.check("raqm"):
+        raise RuntimeError("Pillow has no raqm: sample texts would not be shaped.")
+    metadata = json.loads(Path(args.metadata).read_text())
+    tasks = [
+        (variant, tuple(metadata.get(family, {}).get("subsets", [])))
+        for family in sorted(index[0])
+        for variant in variants_for_family(family, index, include_italic=True)
+    ]
+    print(f"measuring line needs of {len(tasks)} variants", flush=True)
+    started = time.monotonic()
+    by_family: dict[str, list[LineNeedResult]] = {}
+    with ProcessPoolExecutor(max_workers=max(1, args.workers)) as executor:
+        futures = [
+            executor.submit(measure_line_need, variant, subsets, str(cache_dir), args.font_size)
+            for variant, subsets in tasks
+        ]
+        for completed, future in enumerate(as_completed(futures), start=1):
+            result = future.result()
+            by_family.setdefault(result.family, []).append(result)
+            if completed % 500 == 0 or completed == len(futures):
+                print(
+                    f"  line needs: {completed}/{len(futures)} "
+                    f"elapsed={time.monotonic() - started:.1f}s",
+                    flush=True,
+                )
+    errors = [r for results in by_family.values() for r in results if r.absent and r.absent.startswith("error")]
+    if errors:
+        raise RuntimeError(f"Failed to measure {len(errors)} variants, e.g. {errors[0].family}: {errors[0].absent}")
+    needs: dict[str, tuple[float, float, int]] = {}
+    for family, results in by_family.items():
+        if any(r.letter_need is None for r in results):
+            continue
+        needs[normalize_family(family)] = (
+            max(r.letter_need for r in results),
+            min(r.line_box for r in results),
+            len(results),
+        )
+    return needs
 
 
 def main() -> None:
@@ -660,6 +1003,7 @@ def main() -> None:
         raise RuntimeError(f"Reference family {args.reference_family!r} was not measured.")
 
     rows.sort(key=lambda row: row[0])
+    line_needs = measure_line_needs(args, index, cache_dir)
     write_dart(
         Path(args.output),
         package_dir,
@@ -672,8 +1016,10 @@ def main() -> None:
         reference[8],
         reference[9],
         rows,
+        line_needs,
     )
     print(f"wrote {args.output} with {len(rows)} visual-height entries", flush=True)
+    print(f"{len(line_needs)} families have a letter need", flush=True)
     print(f"{args.reference_family} x-height: {reference[3]:.6f}em", flush=True)
     print(f"{args.reference_family} cap-height: {reference[4]:.6f}em", flush=True)
     print(f"{args.reference_family} lowercase-p60-height: {reference[5]:.6f}em", flush=True)

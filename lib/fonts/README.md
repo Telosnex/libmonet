@@ -6,6 +6,9 @@ Generated font data for dynamic Google Fonts support.
 
 - `font_height_equalizer.g.dart` — per-family raster metrics and `visualHeightScaleForFontFamily`.
   It also has each font's ascent and descent from its `hhea` table, which Flutter's line metrics use.
+  It also has each font's letter need and smallest line box, for `line_height.dart`.
+- `line_height.dart` — `lineHeightForFontFamily`, a `TextStyle.height` that fits the ink of a font.
+  `MonetThemeData.compactLineHeights` (default true) applies it to every text style in `createTextTheme`.
 - `optical_font_size.dart` — `opticallyMatchedFontSize`, for sizing one font to look as large as another (e.g. monospace next to prose).
 - `google_fonts_catalog.g.dart` — picker/search metadata for every family in the resolved `google_fonts` package.
   Its variants come from the package descriptors. Its categories and language subsets come from Google Fonts metadata.
@@ -69,6 +72,36 @@ Tenor Sans             moderate baseline sanity check
 Roboto                 reference font
 ```
 
+## Line height
+
+Some fonts have a line box (`hhea` ascent + descent) much taller than their
+letters need. Most are made for another script, and some give more room than
+that script needs. The design is in `docs/design/ADR_font_line_height.md` in
+telosnex.
+
+```text
+letterNeed(font) = max over every weight and style of
+                   max(Latin letter ink, shaped sample-text ink of each own script)
+height(font)     = max(letterNeed + 0.08 / scale, 1.0 / scale)
+lineHeight(font) = height if height < smallest line box, else null
+```
+
+- Latin letter ink: A–Z, a–z, and the letters in U+00C0–U+00FF, or only A–Z
+  and a–z if the font does not have the others.
+- Own scripts: the non-Latin Google Fonts subsets of the font. The sample
+  texts are `specimen_32`, `specimen_21`, and `tester` of every language of
+  the script in `gflanguages`, shaped by Pillow with raqm. A sample is not
+  used if more than 2% of its letters are not in the font.
+- A family has no letter need, and does not change, if it has no Latin
+  letters, or an own script without sample text (for example `japanese`).
+- `scale` is `visualHeightScaleForFontFamily`, so the clearance and the floor
+  are relative to the requested size.
+- The constants are in `line_height.dart`, so a change does not need a
+  regeneration.
+
+The generator measures every variant (about 7,600 files). Files that are
+not in the cache are downloaded into memory, not written to disk.
+
 ## Matching one font to another
 
 To size text in one font so it looks as large as text in another font, use
@@ -119,7 +152,8 @@ dart tool/generate_fonts.dart --write --refresh-metadata \
   --package-config=../telosnex/.dart_tool/package_config.json
 ```
 
-The workflow creates a local Python environment with pinned Pillow for the existing offline rasterizer.
+The workflow creates a local Python environment with pinned Pillow and `gflanguages` (Apache-2.0).
+Pillow must have raqm, for shaped sample texts.
 Python 3 must be installed. Font downloads and the environment stay in `.dart_tool/font_generation/`.
 The workflow verifies downloaded font hashes. Download failures stop publication of the runtime files.
 Families without measurable Latin text remain selectable. Their visual-height scale defaults to `1.0`.
