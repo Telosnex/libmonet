@@ -1,3 +1,4 @@
+import 'package:flutter/painting.dart' show TextStyle;
 import 'package:libmonet/fonts/font_height_equalizer.g.dart';
 
 /// Font size at which [fontFamily] looks as large as [referenceFontFamily]
@@ -23,3 +24,17 @@ double opticallyMatchedFontSize({
       visualHeightScaleForFontFamily(referenceFontFamily) *
       visualHeightScaleForFontFamily(fontFamily);
 }
+
+/// The font size of [style] before libmonet's size equalizer scaled it.
+///
+/// createTextTheme multiplies each role's size by
+/// [visualHeightScaleForFontFamily], so that letters look the same size in
+/// every font. Thus the letter ink is proportional to this size, not to
+/// [TextStyle.fontSize]. Size things that sit next to text by it, so they
+/// match the letters in every font.
+double requestedFontSize(TextStyle style) =>
+    style.fontSize! / visualHeightScaleForFontFamily(style.fontFamily);
+
+/// Icon size that matches the letters of [style] in every font: the
+/// [requestedFontSize] of [style].
+double iconSizeFor(TextStyle style) => requestedFontSize(style);
