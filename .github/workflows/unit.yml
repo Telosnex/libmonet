@@ -32,7 +32,12 @@ jobs:
       - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@cba77fc0d4330f1bef81193c53cd7dd976f0ebcf # v0.5.3
       - uses: Telosnex/telosnex_ci_tools/actions/lint@cba77fc0d4330f1bef81193c53cd7dd976f0ebcf # v0.5.3
       - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed lib test tool example/lib example/test
+      # Generated files (first line "// GENERATED ...") keep their generator's
+      # layout: tool/generate_fonts.dart --check compares their text.
+      - run: |
+          git ls-files '*.dart' |
+            while read -r f; do head -1 "$f" | grep -qiE '^// *generated' || echo "$f"; done |
+            xargs dart format --output=none --set-exit-if-changed
       - run: flutter analyze --fatal-infos
       - run: flutter test -r expanded
       - run: flutter analyze --fatal-infos
