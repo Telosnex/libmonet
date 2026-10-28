@@ -2,6 +2,7 @@
 // opacity 0..255, black or white scrim) small — and does solving with only
 // winners exactly match solving with every pixel?
 // Run: dart tool/probe_winner_list.dart
+// ignore_for_file: avoid_print
 import 'dart:math';
 
 final rng = Random(42);

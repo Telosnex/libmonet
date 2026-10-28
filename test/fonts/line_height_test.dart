@@ -229,21 +229,3 @@ void main() {
     });
   });
 }
-
-List<TextStyle> _styles(TextTheme t) => [
-  t.displayLarge!,
-  t.displayMedium!,
-  t.displaySmall!,
-  t.headlineLarge!,
-  t.headlineMedium!,
-  t.headlineSmall!,
-  t.titleLarge!,
-  t.titleMedium!,
-  t.titleSmall!,
-  t.bodyLarge!,
-  t.bodyMedium!,
-  t.bodySmall!,
-  t.labelLarge!,
-  t.labelMedium!,
-  t.labelSmall!,
-];
