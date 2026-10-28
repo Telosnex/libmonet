@@ -1,4 +1,4 @@
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 
 /// Names for the fork’s Material catalog; no geometry is duplicated here.
 enum MaterialExpressiveShape {
@@ -44,7 +44,7 @@ enum MaterialExpressiveShape {
 
   /// The package’s normalized polygon, including features needed for morphing.
   RoundedPolygon get polygon => switch (this) {
-    circle => MaterialShapes.circle,
+    circle => _normalizedCircle,
     square => MaterialShapes.square,
     slanted => MaterialShapes.slanted,
     arch => MaterialShapes.arch,
@@ -81,3 +81,8 @@ enum MaterialExpressiveShape {
     heart => MaterialShapes.heart,
   };
 }
+
+// androidx_graphics_shapes 2.0.0 follows material_ui, whose circle is not
+// normalized: its 10-gon approximation reaches past [0, 1] by about 0.008.
+// AndroidX (and the safe-area data) normalize it, like every other shape.
+final RoundedPolygon _normalizedCircle = MaterialShapes.circle.normalized();

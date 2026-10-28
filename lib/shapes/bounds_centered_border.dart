@@ -1,4 +1,4 @@
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:flutter/painting.dart';
 
 /// Applies Compose's path-bounds centering after the fork's unit-space scaling.

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 
 /// How a catalog shape's optical center was selected.
 enum OpticalCenterMethod {
@@ -26,7 +26,7 @@ class OpticalCenterResult {
 }
 
 List<Offset> _sampleOutline(
-  List<Cubic> cubics, {
+  List<CubicBezier> cubics, {
   int subdivisionsPerCubic = 200,
 }) {
   if (cubics.isEmpty || subdivisionsPerCubic <= 0) {
@@ -41,7 +41,7 @@ List<Offset> _sampleOutline(
   ];
 }
 
-Offset _cubicPoint(Cubic cubic, double t) {
+Offset _cubicPoint(CubicBezier cubic, double t) {
   final u = 1 - t;
   return Offset(
     u * u * u * cubic.anchor0X +
@@ -67,7 +67,7 @@ Offset _cubicPoint(Cubic cubic, double t) {
 /// point is only an anchor; safe rectangles centered there are separately
 /// certified against the original cubics.
 OpticalCenterResult findOpticalCenter({
-  required List<Cubic> cubics,
+  required List<CubicBezier> cubics,
   required Path path,
   required Offset areaCentroid,
 }) {

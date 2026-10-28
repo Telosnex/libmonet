@@ -12,7 +12,7 @@ import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 /// This handles concavities without flattening or checking only four corners.
 /// Floating-point arithmetic is guarded, not an exact-arithmetic proof.
 class SafeInteriorOutline {
-  SafeInteriorOutline(Iterable<Cubic> cubics, {this.maxDepth = 24}) {
+  SafeInteriorOutline(Iterable<CubicBezier> cubics, {this.maxDepth = 24}) {
     if (maxDepth < 0 || maxDepth > 30) {
       throw ArgumentError.value(maxDepth, 'maxDepth', 'Must be in 0..30');
     }
@@ -523,7 +523,7 @@ class _MaxCellHeap {
   }
 }
 
-Offset? _computeAreaCentroid(List<Cubic> cubics) {
+Offset? _computeAreaCentroid(List<CubicBezier> cubics) {
   var crossIntegral = 0.0;
   var xMoment = 0.0;
   var yMoment = 0.0;
@@ -581,7 +581,7 @@ double _integral(List<double> polynomial) {
   return result;
 }
 
-List<double> _coordinates(Cubic c) => [
+List<double> _coordinates(CubicBezier c) => [
   c.anchor0X,
   c.anchor0Y,
   c.control0X,
@@ -614,7 +614,7 @@ class _CurveNode {
     );
   }
 
-  final Cubic cubic;
+  final CubicBezier cubic;
   late final Rect bounds;
   (_CurveNode, _CurveNode)? _children;
 

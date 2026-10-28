@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/shapes/material_expressive_shape.dart';
 import 'package:libmonet/shapes/src/material_shape_safe_area_data.dart';
@@ -10,14 +10,9 @@ import 'package:libmonet/shapes/src/material_shape_safe_area_data.dart';
 import '../../tool/src/optical_center.dart';
 import '../../tool/src/safe_interior.dart';
 
-List<Cubic> lines(List<Offset> points) => [
+List<CubicBezier> lines(List<Offset> points) => [
   for (var i = 0; i < points.length; i++)
-    Cubic.straightLine(
-      points[i].dx,
-      points[i].dy,
-      points[(i + 1) % points.length].dx,
-      points[(i + 1) % points.length].dy,
-    ),
+    CubicBezier.straightLine(points[i], points[(i + 1) % points.length]),
 ];
 
 void main() {
@@ -211,10 +206,30 @@ void main() {
       // and normalization (the catalog circle is not an exact unit circle).
       const k = 0.2761423749153967;
       final circle = [
-        Cubic.from(1, .5, 1, .5 + k, .5 + k, 1, .5, 1),
-        Cubic.from(.5, 1, .5 - k, 1, 0, .5 + k, 0, .5),
-        Cubic.from(0, .5, 0, .5 - k, .5 - k, 0, .5, 0),
-        Cubic.from(.5, 0, .5 + k, 0, 1, .5 - k, 1, .5),
+        CubicBezier(
+          Offset(1, .5),
+          Offset(1, .5 + k),
+          Offset(.5 + k, 1),
+          Offset(.5, 1),
+        ),
+        CubicBezier(
+          Offset(.5, 1),
+          Offset(.5 - k, 1),
+          Offset(0, .5 + k),
+          Offset(0, .5),
+        ),
+        CubicBezier(
+          Offset(0, .5),
+          Offset(0, .5 - k),
+          Offset(.5 - k, 0),
+          Offset(.5, 0),
+        ),
+        CubicBezier(
+          Offset(.5, 0),
+          Offset(.5 + k, 0),
+          Offset(1, .5 - k),
+          Offset(1, .5),
+        ),
       ];
       final fine = SafeInteriorOutline(circle);
       final coarse = SafeInteriorOutline(circle, maxDepth: 0);
@@ -250,7 +265,14 @@ void main() {
       throwsArgumentError,
     );
     expect(
-      () => SafeInteriorOutline([Cubic.from(double.nan, 0, 0, 0, 0, 0, 0, 0)]),
+      () => SafeInteriorOutline([
+        CubicBezier(
+          Offset(double.nan, 0),
+          Offset(0, 0),
+          Offset(0, 0),
+          Offset(0, 0),
+        ),
+      ]),
       throwsArgumentError,
     );
   });

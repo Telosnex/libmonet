@@ -1,4 +1,4 @@
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/shapes/expressive_button.dart';
 import 'package:libmonet/theming/monet_clip.dart';

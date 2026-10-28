@@ -96,7 +96,7 @@ The dependency also exports `Morph`, `RoundedPolygonBorder`, and `MorphBorder`
 for direct use:
 
 ```dart
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 
 // Create one Morph for each pair of endpoints. Do not create one for each frame.
 final morph = Morph(MaterialShapes.circle, MaterialShapes.cookie7Sided);

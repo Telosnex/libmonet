@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:flutter/painting.dart';
 
 import 'bounds_centered_border.dart';
@@ -34,7 +34,7 @@ class ExpressiveShapeGeometry {
   // the previous alignment at t=0, relaxing the correction to zero at t=1.
   late final Offset _startCorrection = _snapshotCenter == null
       ? Offset.zero
-      : _morph!.toPath(progress: 0).getBounds().center - _snapshotCenter;
+      : _morph!.toPath(0).getBounds().center - _snapshotCenter;
 
   final MaterialExpressiveShape to;
   final MaterialExpressiveShape? from;
@@ -65,30 +65,26 @@ class ExpressiveShapeGeometry {
     if (progress == 0 && _snapshot == null) {
       return ExpressiveShapeGeometry(from: from, to: target);
     }
-    final cubics = _morph.asCubics(progress);
+    final cubics = _morph.toCubics(progress);
     // Morph's matching tolerances can leave tiny gaps after repeated cuts.
     // Match Path.cubicTo's behavior: each segment starts at the previous end,
     // not its independently stored anchor0. This keeps the captured path closed.
     final connected = [
       for (var i = 0; i < cubics.length; i++)
-        Cubic.from(
-          cubics[(i + cubics.length - 1) % cubics.length].anchor1X,
-          cubics[(i + cubics.length - 1) % cubics.length].anchor1Y,
-          cubics[i].control0X,
-          cubics[i].control0Y,
-          cubics[i].control1X,
-          cubics[i].control1Y,
-          cubics[i].anchor1X,
-          cubics[i].anchor1Y,
+        CubicBezier(
+          cubics[(i + cubics.length - 1) % cubics.length].anchor1,
+          cubics[i].control0,
+          cubics[i].control1,
+          cubics[i].anchor1,
         ),
     ];
     return ExpressiveShapeGeometry._retarget(
       to: target,
       snapshot: RoundedPolygon.fromFeatures(
-        features: connected.map(Feature.edge).toList(),
+        connected.map(PolygonFeature.edge).toList(),
       ),
       snapshotCenter:
-          _morph.toPath(progress: progress).getBounds().center -
+          _morph.toPath(progress).getBounds().center -
           _startCorrection * (1 - progress),
     );
   }
@@ -104,17 +100,11 @@ class ExpressiveShapeGeometry {
   late final Offset preferredCenter = from == null
       ? _translatedPoint(
           to,
-          _morph?.toPath(progress: 1).getBounds().center ??
+          _morph?.toPath(1).getBounds().center ??
               to.polygon.toPath().getBounds().center,
         )
-      : (_translatedPoint(
-                  from!,
-                  _morph!.toPath(progress: 0).getBounds().center,
-                ) +
-                _translatedPoint(
-                  to,
-                  _morph.toPath(progress: 1).getBounds().center,
-                )) /
+      : (_translatedPoint(from!, _morph!.toPath(0).getBounds().center) +
+                _translatedPoint(to, _morph.toPath(1).getBounds().center)) /
             2;
 
   /// Rectangles safe at catalog endpoints, not necessarily during transitions.
@@ -124,13 +114,13 @@ class ExpressiveShapeGeometry {
     if (from == null)
       ..._translatedRects(
         to,
-        _morph?.toPath(progress: 1).getBounds().center ??
+        _morph?.toPath(1).getBounds().center ??
             to.polygon.toPath().getBounds().center,
       )
     else
       ..._centeredIntersections(
-        _translatedRects(from!, _morph!.toPath(progress: 0).getBounds().center),
-        _translatedRects(to, _morph.toPath(progress: 1).getBounds().center),
+        _translatedRects(from!, _morph!.toPath(0).getBounds().center),
+        _translatedRects(to, _morph.toPath(1).getBounds().center),
       ),
   });
 

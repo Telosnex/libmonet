@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:androidx_graphics_shapes/material_shapes.dart';
+import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:material_ui/material_ui.dart' hide Cubic;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/shapes/expressive_button.dart';
@@ -15,7 +15,7 @@ const _panelWidth = 700.0;
 const _cellSize = 100.0;
 const _shapeSize = 80.0;
 
-Offset _point(Cubic cubic, double t) {
+Offset _point(CubicBezier cubic, double t) {
   final u = 1 - t;
   return Offset(
     u * u * u * cubic.anchor0X +
