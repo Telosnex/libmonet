@@ -1,25 +1,23 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/effects/protection.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:monet_studio/halo_text.dart';
 
 void main() {
   testWidgets('HaloText renders underlay + text without asserts',
       (tester) async {
-    final halo = getHalo(
-      foregroundArgb: 0xFFFFFFFF,
-      backgroundArgbs: const [0xFF000000, 0xFFFFFFFF],
+    final stroked = AnyBackground(
+      const [0xFF000000, 0xFFFFFFFF],
       contrast: 0.5,
       algo: Algo.apca,
-    );
-    expect(halo.meetsTarget, isTrue);
+    ).scrimFor(0xFFFFFFFF).shadowsWithStroke();
+    expect(stroked.scrim.meetsTarget, isTrue);
 
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(
         body: HaloText(
           text: 'Ground Control',
-          halo: halo,
+          stroked: stroked,
           // Style WITH a color set: exercises the copyWith(foreground:)
           // path, which must drop color rather than trip TextStyle's
           // color/foreground exclusivity assert.
@@ -34,7 +32,7 @@ void main() {
     expect(underlay.color, isNull);
     expect(underlay.foreground, isNotNull);
     expect(underlay.foreground!.style, PaintingStyle.stroke);
-    expect(underlay.foreground!.strokeWidth, 2 * halo.spread);
+    expect(underlay.foreground!.strokeWidth, 2 * stroked.stroke);
     expect(texts.last.style!.color, Colors.white);
   });
 }

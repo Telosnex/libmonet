@@ -109,7 +109,7 @@ double apcaYFromArgb(int argb) {
       sBco * simpleExp(blueFromArgb(argb));
 }
 
-enum Polarity {
+enum _ApcaPolarity {
   blackOnWhite,
   whiteOnBlack,
 }
@@ -135,7 +135,7 @@ double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
   // Rational for ignore; crucial property of algorithm, present in original
   // implementation, and signals the code was ported correctly.
   // ignore: unused_local_variable
-  var polarity = Polarity.blackOnWhite;
+  var polarity = _ApcaPolarity.blackOnWhite;
 
   // Soft clamps Y for either color if it is near black.
   textApcaY = _fixupForBlackThreshold(textApcaY);
@@ -159,7 +159,7 @@ double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
     outputContrast = (sapc < loClip) ? 0.0 : sapc - loBoWOffset;
   } else {
     // background < text
-    polarity = Polarity.whiteOnBlack;
+    polarity = _ApcaPolarity.whiteOnBlack;
     sapc = (math.pow(backgroundApcaY, revBg) - math.pow(textApcaY, revText)) *
         scaleWoB;
     outputContrast = (sapc > (-1.0 * loClip)) ? 0.0 : sapc + loWoBOffset;

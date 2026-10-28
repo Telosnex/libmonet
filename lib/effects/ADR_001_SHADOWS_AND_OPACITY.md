@@ -1,6 +1,6 @@
 # ADR-001: Contrast Protection — Replace Luma-Extrema Opacity Solver and Stacked-Shadow Delivery with Exact Per-Color Solver and Dilated Halo
 
-**Status:** Accepted, implemented (see §7 “As built” for deltas from the proposal)
+**Status:** Accepted, implemented (see §7 “As built” for deltas from the proposal; §8 for the 2026-10 rename to `over_image.dart`)
 **Date:** 2026-07-10 (proposed) / 2026-07-11 (implemented)
 **Scope:** `lib/effects/protection.dart` (new), `lib/effects/shadows.dart`, `lib/effects/opacity.dart` (deleted), JS parity port
 **Deciders:** libmonet maintainers
@@ -185,3 +185,14 @@ What shipped differs from §2–§5 in these ways. The guarantees are unchanged 
 - **D-5 edge model upgraded.** “Kernel entries adjacent to the edge” was built, measured 0.04 optimistic on thin content against rendered Skia pixels, and rejected. Shipped: continuous Gaussian edge profile (Φ via erf, A&S 7.1.26, bit-identical across ports), with Skia’s own radius→sigma mapping. Layer cap is a `maxLayers` parameter (default 8).
 - **Calibration lives in the library repo**, not the example app: `test/effects/shadow_pixel_calibration_test.dart` renders real pixels and gates edge-coverage (±0.01) and delivered-vs-required opacity (−0.03) per §5.
 - **Translucent inputs are composited as opaque** (alpha bits ignored) — the “documented alpha-stripping” option from D-6, documented in the input contract, not an `ArgumentError`.
+
+## 8. Renamed: `over_image.dart` (2026-10)
+
+Behavior unchanged: the old and new solvers were compared bit for bit on 3,000 random scrims and 60,000 shadow stacks, and the JS parity fixtures carry the same values under new keys. Names above §8 are historical.
+
+- **One object per image.** `protection.dart` and `shadows.dart` became `lib/effects/over_image.dart` (JS: `over-image.ts`). Pixels and the contrast policy go in once: `AnyBackground(argbs, algo:, contrast:)`. Answers are cached, 64 per method.
+- **One solve, two ways to draw it.** `getProtectionOpacity` → `background.scrimFor(argb)` returning a `Scrim`. The halo is `scrim.shadowsWithStroke(stroke:, blurRadius:)` (`spread` → `stroke`); the stacked fallback is `scrim.shadows(blurRadius:, …)`. Neither re-solves. `HaloResult`, `StackedShadowSpec`, `ShadowResult` and `getShadowOpacitiesForBackgrounds` are gone; Flutter types live in `theming/over_image_flutter.dart`.
+- **Field names.** `protectionArgb`/`argb`/`shadowArgb` → `scrimArgb`; `achievedContrast` → `worstContrast`; `ClearedSide.low/high` → `Polarity.lightOnDark/darkOnLight`; `straddleCollapsed` → `mixedPolarityRejected`; `needsProtection` → `isNeeded`; `requiredOpacity` → `shadows.scrim.opacity`. `blendArgb` and `gauss1d` are private.
+- **“Background” freed up.** `backgroundArgbs` collided with the palette's `background` role; pixels now only enter through `AnyBackground`.
+- **Unknown is a real case.** `AnyBackground.unknown` (or an empty list) stands for any pixel. The scrim solves against black and white: blending is monotone per channel and contrast depends only on luminance, so every pixel's blend lies between theirs. Mixed polarity is not reported for unknown, since some pixel always sits at the content's luminance.
+- **New: `sharedBorder`.** One border tone for surfaces drawn together over the image, so they read at one elevation; documented on the method. Takes resting colors only: a pressed surface briefly meeting its border reads as the same elevation.

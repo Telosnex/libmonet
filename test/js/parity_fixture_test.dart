@@ -207,9 +207,9 @@ Map<String, Object?> _lumaCase(double luma, {int? argb, double? lstar}) {
   final result = <String, Object?>{
     'luma': luma,
     'grayscale': _hex(Color(grayscaleArgbFromLuma(luma))),
-    'boundaryArgbs': findBoundaryArgbsForLuma(
-      luma,
-    ).map((argb) => _hex(Color(argb))).toList(),
+    'boundaryArgbs': findBoundaryArgbsForLuma(luma)
+        .map((argb) => _hex(Color(argb)))
+        .toList(),
     'lstarRange': lumaToLstarRange(luma),
   };
   if (argb != null) {
@@ -272,14 +272,9 @@ Map<String, Object?> _shadowCase({
   required double blurRadius,
   double contentRadius = -1.0,
 }) {
-  final result = getShadowOpacitiesForBackgrounds(
-    foreground: Color(foreground),
-    backgrounds: backgrounds.map(Color.new).toList(),
-    contrast: contrast,
-    algo: algo,
-    blurRadius: blurRadius,
-    contentRadius: contentRadius,
-  );
+  final result = AnyBackground(backgrounds, algo: algo, contrast: contrast)
+      .scrimFor(foreground)
+      .shadows(blurRadius: blurRadius, contentRadius: contentRadius);
   return {
     'name': name,
     'foreground': _hex(Color(foreground)),
@@ -289,40 +284,65 @@ Map<String, Object?> _shadowCase({
     'blurRadius': blurRadius,
     'contentRadius': contentRadius,
     'resultBlurRadius': result.blurRadius,
-    'shadowArgb': _hex(Color(result.shadowArgb)),
-    'opacities': result.opacities,
+    'scrimArgb': _hex(Color(result.scrim.scrimArgb)),
+    'layerOpacities': result.layerOpacities,
     'meetsTarget': result.meetsTarget,
+    'edgeCoverage': result.edgeCoverage,
   };
 }
 
-Map<String, Object?> _protectionCase({
+Map<String, Object?> _scrimCase({
   required String name,
   required int foreground,
   required List<int> backgrounds,
   required double contrast,
   required Algo algo,
-  int? protectionArgb,
+  int? scrimArgb,
 }) {
-  final result = getProtectionOpacity(
-    foregroundArgb: foreground,
-    backgroundArgbs: backgrounds,
-    contrast: contrast,
+  final result = AnyBackground(
+    backgrounds,
     algo: algo,
-    protectionArgb: protectionArgb,
-  );
+    contrast: contrast,
+  ).scrimFor(foreground, scrimArgb: scrimArgb);
   return {
     'name': name,
     'foreground': _hex(Color(foreground)),
     'backgrounds': backgrounds.map((e) => _hex(Color(e))).toList(),
     'contrast': contrast,
     'algo': algo.name,
-    if (protectionArgb != null) 'fixedScrim': _hex(Color(protectionArgb)),
-    'protectionArgb': _hex(Color(result.protectionArgb)),
+    if (scrimArgb != null) 'fixedScrim': _hex(Color(scrimArgb)),
+    'scrimArgb': _hex(Color(result.scrimArgb)),
     'opacity': result.opacity,
     'meetsTarget': result.meetsTarget,
-    'achievedContrast': result.achievedContrast,
-    'clearedSide': result.clearedSide.name,
-    'straddleCollapsed': result.straddleCollapsed,
+    'worstContrast': result.worstContrast,
+    'polarity': result.polarity.name,
+    'mixedPolarityRejected': result.mixedPolarityRejected,
+  };
+}
+
+Map<String, Object?> _sharedBorderCase({
+  required String name,
+  required List<int> surfaces,
+  required List<int> backgrounds,
+  required double contrast,
+  required Algo algo,
+}) {
+  final result = AnyBackground(
+    backgrounds,
+    algo: algo,
+    contrast: contrast,
+  ).sharedBorder(surfaces);
+  return {
+    'name': name,
+    'surfaces': [for (final s in surfaces) _hex(Color(s))],
+    'backgrounds': backgrounds.map((e) => _hex(Color(e))).toList(),
+    'contrast': contrast,
+    'algo': algo.name,
+    'tone': result.tone,
+    'borderArgbs': [for (final a in result.borderArgbs) _hex(Color(a))],
+    'clearsBackground': result.clearsBackground,
+    'meetsTarget': result.meetsTarget,
+    'worstContrast': result.worstContrast,
   };
 }
 
@@ -537,108 +557,91 @@ Map<String, Object?> _scorerCase({
 List<Map<String, Object?>> _wallpaperGoldenCases() => [
   {
     'name': 'aaron-burden-OA6OuqfSWew-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6912 top=#DA9677:410,#A1A36B:401,#A7965B:368,#C0A278:342,#B6AD7B:332,#908F50:331,#BB9762:330,#D6A287:320',
+    'quantizerFingerprint': 'colors=32 total=6912 top=#DA9677:410,#A1A36B:401,#A7965B:368,#C0A278:342,#B6AD7B:332,#908F50:331,#BB9762:330,#D6A287:320',
     'triadHexes': ['#A6A26A', '#C0A278', '#C93916'],
   },
   {
     'name': 'allec-gomes-cb2WKRZA9i8-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#ED3303:639,#E40B03:484,#EB0A03:379,#DD1003:370,#522201:327,#461B01:304,#E36605:264,#351301:251',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#ED3303:639,#E40B03:484,#EB0A03:379,#DD1003:370,#522201:327,#461B01:304,#E36605:264,#351301:251',
     'triadHexes': ['#EC3500', '#E52725', '#522201'],
   },
   {
     'name': 'curated-lifestyle-7lQlYxH0Ljs-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#CDCEC8:1110,#CACBC5:720,#12130D:462,#0E0F0A:444,#D1D2CC:421,#C7C8C2:357,#151610:323,#161811:272',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#CDCEC8:1110,#CACBC5:720,#12130D:462,#0E0F0A:444,#D1D2CC:421,#C7C8C2:357,#151610:323,#161811:272',
     'triadHexes': ['#CDCEC8', '#CCCECA', '#CFCEC6'],
   },
   {
     'name': 'hanna-lazar-CXT0TZcpyyE-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#151218:558,#1A191D:403,#1A211A:278,#222025:267,#8E9E68:245,#A1B179:240,#2C581B:226,#306619:221',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#151218:558,#1A191D:403,#1A211A:278,#222025:267,#8E9E68:245,#A1B179:240,#2C581B:226,#306619:221',
     'triadHexes': ['#859F72', '#C5D7BD', '#A1B179'],
   },
   {
     'name': 'hans-isaacson-VrP25Libv-E-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6048 top=#638C8B:373,#3B6469:371,#5B8584:361,#426D71:359,#6B9390:338,#537E7D:321,#759A97:306,#457172:304',
+    'quantizerFingerprint': 'colors=32 total=6048 top=#638C8B:373,#3B6469:371,#5B8584:361,#426D71:359,#6B9390:338,#537E7D:321,#759A97:306,#457172:304',
     'triadHexes': ['#628C8C', '#B7D3CB', '#C3DECD'],
   },
   {
     'name': 'henrique-ferreira-lneox9o1MjU-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#EDE7E3:1285,#F1E7DE:639,#E4E4E4:389,#9AA3AB:238,#D4D4D2:235,#BEBFBF:230,#F4E2D4:230,#ACAEB0:203',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#EDE7E3:1285,#F1E7DE:639,#E4E4E4:389,#9AA3AB:238,#D4D4D2:235,#BEBFBF:230,#F4E2D4:230,#ACAEB0:203',
     'triadHexes': ['#F7CF99', '#E4AF9D', '#668593'],
   },
   {
     'name': 'ingmar-E_PKxMtARbw-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#D7BBDB:935,#D1B1DB:737,#CBABDA:495,#C5A2D8:442,#DCC4DD:430,#E0CCDE:396,#BF9BD6:387,#C8A6D7:378',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#D7BBDB:935,#D1B1DB:737,#CBABDA:495,#C5A2D8:442,#DCC4DD:430,#E0CCDE:396,#BF9BD6:387,#C8A6D7:378',
     'triadHexes': ['#D6BBDB', '#4E3349', '#47272E'],
   },
   {
     'name': 'ingmar-_KZW2oCkRIQ-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6816 top=#FD964C:2111,#FD9A48:944,#FD994B:569,#FC9845:513,#FD924C:440,#F8963C:297,#FB6346:159,#FA5E41:154',
+    'quantizerFingerprint': 'colors=32 total=6816 top=#FD964C:2111,#FD9A48:944,#FD994B:569,#FC9845:513,#FD924C:440,#F8963C:297,#FB6346:159,#FA5E41:154',
     'triadHexes': ['#FD964C', '#F9B964', '#FB6346'],
   },
   {
     'name': 'lorin-both-2ScC2nkYYDk-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=7104 top=#B032ED:708,#A41DE3:618,#6C039D:495,#A926E9:468,#7403A9:458,#9C16DB:458,#BA44F3:445,#B63BF2:427',
+    'quantizerFingerprint': 'colors=32 total=7104 top=#B032ED:708,#A41DE3:618,#6C039D:495,#A926E9:468,#7403A9:458,#9C16DB:458,#BA44F3:445,#B63BF2:427',
     'triadHexes': ['#AA38F0', '#A849CA', '#51682C'],
   },
   {
     'name': 'lorin-both-C7X5ijG_-uM-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#F5C51F:735,#F1BC1C:571,#D78C0A:537,#DC930D:490,#CA7100:464,#E29F12:444,#ECB41A:439,#E9AC17:350',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#F5C51F:735,#F1BC1C:571,#D78C0A:537,#DC930D:490,#CA7100:464,#E29F12:444,#ECB41A:439,#E9AC17:350',
     'triadHexes': ['#FDC12E', '#CA7101', '#426103'],
   },
   {
     'name': 'nick-fancher-BDr0sOaODXc-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#02050C:771,#01219B:382,#020C1B:321,#020E29:303,#010F36:298,#011457:298,#0237CC:296,#011E8F:276',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#02050C:771,#01219B:382,#020C1B:321,#020E29:303,#010F36:298,#011457:298,#0237CC:296,#011E8F:276',
     'triadHexes': ['#002C83', '#015997', '#299DD4'],
   },
   {
     'name': 'solen-feyissa-u-VOCC2yg9s-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#FA8203:539,#FA8E03:474,#FB7603:451,#FA6803:392,#BE0201:360,#970201:351,#FB9B03:316,#8B0202:293',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#FA8203:539,#FA8E03:474,#FB7603:451,#FA6803:392,#BE0201:360,#970201:351,#FB9B03:316,#8B0202:293',
     'triadHexes': ['#BD0B00', '#FA6800', '#FA8E06'],
   },
   {
     'name': 'zhenyu-luo-0MM2JsXz2aI-unsplash.jpg',
-    'quantizerFingerprint':
-        'colors=32 total=6144 top=#021C32:708,#062738:520,#052942:513,#020D15:481,#0A3549:481,#031523:461,#13445A:406,#0C3A56:362',
+    'quantizerFingerprint': 'colors=32 total=6144 top=#021C32:708,#062738:520,#052942:513,#020D15:481,#0A3549:481,#031523:461,#13445A:406,#0C3A56:362',
     'triadHexes': ['#092738', '#764037', '#F7DCC8'],
   },
   {
     'name': 'aaron-burden-OA6OuqfSWew-unsplash.jpg',
     'maxColors': 256,
-    'quantizerFingerprint':
-        'colors=256 total=6912 top=#ADAD7B:81,#AAAD73:77,#DEB198:76,#DC9D7A:65,#D29173:65,#A5A471:64,#CF9578:62,#D4A179:61',
+    'quantizerFingerprint': 'colors=256 total=6912 top=#ADAD7B:81,#AAAD73:77,#DEB198:76,#DC9D7A:65,#D29173:65,#A5A471:64,#CF9578:62,#D4A179:61',
     'triadHexes': ['#ADAD7B', '#3D5C48', '#DFB09A'],
   },
   {
     'name': 'curated-lifestyle-7lQlYxH0Ljs-unsplash.jpg',
     'maxColors': 256,
-    'quantizerFingerprint':
-        'colors=236 total=6144 top=#CCCDC7:555,#CBCCC6:456,#CECFC9:434,#12130E:291,#D0D1CB:255,#0F110B:213,#C9CAC4:179,#C7C8C2:170',
+    'quantizerFingerprint': 'colors=236 total=6144 top=#CCCDC7:555,#CBCCC6:456,#CECFC9:434,#12130E:291,#D0D1CB:255,#0F110B:213,#C9CAC4:179,#C7C8C2:170',
     'triadHexes': ['#CCCDC7', '#CBCDC9', '#CECDC5'],
   },
   {
     'name': 'lorin-both-2ScC2nkYYDk-unsplash.jpg',
     'maxColors': 256,
-    'quantizerFingerprint':
-        'colors=256 total=7104 top=#B740F3:263,#A31CE2:229,#AD2FEB:221,#AB27EA:219,#7202A6:219,#A61FE5:215,#69029A:213,#B236F0:209',
+    'quantizerFingerprint': 'colors=256 total=7104 top=#B740F3:263,#A31CE2:229,#AD2FEB:221,#AB27EA:219,#7202A6:219,#A61FE5:215,#69029A:213,#B236F0:209',
     'triadHexes': ['#B83FF2', '#302E05', '#303F17'],
   },
   {
     'name': 'zhenyu-luo-0MM2JsXz2aI-unsplash.jpg',
     'maxColors': 256,
-    'quantizerFingerprint':
-        'colors=256 total=6144 top=#000B10:157,#010D16:155,#021D32:143,#011321:139,#022134:125,#011B2D:124,#05283A:116,#011C34:115',
+    'quantizerFingerprint': 'colors=256 total=6144 top=#000B10:157,#010D16:155,#021D32:143,#011321:139,#022134:125,#011B2D:124,#05283A:116,#011C34:115',
     'triadHexes': ['#002134', '#4B8582', '#D39A8C'],
   },
 ];
@@ -757,52 +760,52 @@ void main() {
         _apcaInverseCase(name: 'near-black-lc110', lstar: 3, apca: 110),
         _apcaInverseCase(name: 'near-white-lc110', lstar: 97, apca: 110),
       ],
-      'protectionCases': [
-        _protectionCase(
+      'scrimCases': [
+        _scrimCase(
           name: 'd1-white-on-black-apca',
           foreground: 0xffffffff,
           backgrounds: const [0xff000000],
           contrast: 0.5,
           algo: Algo.apca,
         ),
-        _protectionCase(
+        _scrimCase(
           name: 'd2-mid-luma-chromatic-wcag',
           foreground: 0xffaa98f4,
           backgrounds: const [0xff7f4f5e, 0xff1f9f39],
           contrast: 0.2,
           algo: Algo.wcag21,
         ),
-        _protectionCase(
+        _scrimCase(
           name: 'straddle-777-over-poles-wcag',
           foreground: 0xff777777,
           backgrounds: const [0xff000000, 0xffffffff],
           contrast: 0.2857,
           algo: Algo.wcag21,
         ),
-        _protectionCase(
+        _scrimCase(
           name: 'brown-scrim-feasible-wcag',
           foreground: 0xffffffff,
           backgrounds: const [0xff123456, 0xff999999, 0xffe0e0b0],
           contrast: 0.5,
           algo: Algo.wcag21,
-          protectionArgb: 0xff8b4513,
+          scrimArgb: 0xff8b4513,
         ),
-        _protectionCase(
+        _scrimCase(
           name: 'brown-scrim-infeasible-wcag',
           foreground: 0xff777777,
           backgrounds: const [0xff000000, 0xffffffff],
           contrast: 0.5,
           algo: Algo.wcag21,
-          protectionArgb: 0xff8b4513,
+          scrimArgb: 0xff8b4513,
         ),
-        _protectionCase(
+        _scrimCase(
           name: 'multi-color-apca',
           foreground: 0xff1177aa,
           backgrounds: const [0xff202020, 0xffeeeeee, 0xff7f4f5e, 0xff1f9f39],
           contrast: 0.5,
           algo: Algo.apca,
         ),
-        _protectionCase(
+        _scrimCase(
           name: 'multi-color-wcag-high-contrast',
           foreground: 0xffe0e0e0,
           backgrounds: const [0xff445566, 0xff99aa77, 0xffc0ffee],
@@ -810,7 +813,88 @@ void main() {
           algo: Algo.wcag21,
         ),
       ],
-      'shadowCases': [
+      'sharedBorderCases': [
+        _sharedBorderCase(
+          name: 'lorin-like-triad-light-wallpaper-apca',
+          surfaces: const [0xffb431ed, 0xff4d394f, 0xff536d2d],
+          backgrounds: const [0xffd8e4ee, 0xffc9d6e2, 0xffe9eef2],
+          contrast: 0.5,
+          algo: Algo.apca,
+        ),
+        _sharedBorderCase(
+          name: 'busy-wallpaper-falls-back-apca',
+          surfaces: const [0xffb431ed, 0xff4d394f],
+          backgrounds: const [
+            0xff0a0a0a,
+            0xff303030,
+            0xff606060,
+            0xff909090,
+            0xffc0c0c0,
+            0xfff4f4f4,
+            0xff3a5f2b,
+            0xff8aa0c8,
+          ],
+          contrast: 0.5,
+          algo: Algo.apca,
+        ),
+        _sharedBorderCase(
+          name: 'unknown-wcag',
+          surfaces: const [0xff1177aa, 0xffc40308],
+          backgrounds: const [],
+          contrast: 0.5,
+          algo: Algo.wcag21,
+        ),
+        _sharedBorderCase(
+          name: 'solid-dark-wcag',
+          surfaces: const [0xff1177aa, 0xff009e60],
+          backgrounds: const [0xff101418],
+          contrast: 0.7,
+          algo: Algo.wcag21,
+        ),
+        _sharedBorderCase(
+          name: 'solid-red-dark-chips-apca',
+          surfaces: const [0xff1a3a6a, 0xff3a1a4a, 0xff1f3f2a],
+          backgrounds: const [0xffff0000],
+          contrast: 0.5,
+          algo: Algo.apca,
+        ),
+        _sharedBorderCase(
+          name: 'solid-red-dark-chips-wcag21',
+          surfaces: const [0xff1a3a6a, 0xff3a1a4a, 0xff1f3f2a],
+          backgrounds: const [0xffff0000],
+          contrast: 0.5,
+          algo: Algo.wcag21,
+        ),
+        _sharedBorderCase(
+          name: 'solid-red-light-chips-apca',
+          surfaces: const [0xffb0d0f0, 0xfff0c0b0, 0xffc8e8c0],
+          backgrounds: const [0xffff0000],
+          contrast: 0.5,
+          algo: Algo.apca,
+        ),
+        _sharedBorderCase(
+          name: 'solid-red-light-chips-wcag21',
+          surfaces: const [0xffb0d0f0, 0xfff0c0b0, 0xffc8e8c0],
+          backgrounds: const [0xffff0000],
+          contrast: 0.5,
+          algo: Algo.wcag21,
+        ),
+        _sharedBorderCase(
+          name: 'solid-red-mid-chips-apca',
+          surfaces: const [0xff4477aa, 0xffaa4444, 0xff44aa66],
+          backgrounds: const [0xffff0000],
+          contrast: 0.5,
+          algo: Algo.apca,
+        ),
+        _sharedBorderCase(
+          name: 'solid-red-mid-chips-wcag21',
+          surfaces: const [0xff4477aa, 0xffaa4444, 0xff44aa66],
+          backgrounds: const [0xffff0000],
+          contrast: 0.5,
+          algo: Algo.wcag21,
+        ),
+      ],
+      'shadowsCases': [
         _shadowCase(
           name: 'no-shadow-needed-apca',
           foreground: 0xffffffff,

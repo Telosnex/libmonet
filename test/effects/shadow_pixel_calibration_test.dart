@@ -1,6 +1,6 @@
 // ADR-001 golden calibration: render REAL stacked shadows via Skia and
 // measure net alpha at the first pixel outside the content edge, comparing
-// against the closed-form model in getStackedShadowSpec.
+// against the closed-form model in Scrim.shadows.
 //
 // Geometry: a tall black bar with its right edge on an integer pixel
 // boundary at x=edgeX, over a white background. The pixel column at index
@@ -15,7 +15,7 @@ import 'dart:ui' as ui;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/effects/protection.dart';
+import 'package:libmonet/effects/over_image.dart';
 
 const _edgeX = 96;
 const _imgW = 160;
@@ -33,7 +33,8 @@ Future<List<double>> renderEdgeAlphas({
     Rect.fromLTWH(0, 0, _imgW.toDouble(), _imgH.toDouble()),
     Paint()..color = const Color(0xFFFFFFFF),
   );
-  final sigma = convertRadiusToSigma(blurRadius.toDouble());
+  // Skia's SkBlurMask::ConvertRadiusToSigma, as over_image.dart models it.
+  final sigma = blurRadius > 0 ? blurRadius * 0.57735 + 0.5 : 0.0;
   // Bar much taller than the image: middle row sees a pure vertical edge.
   final bar = Rect.fromLTRB(
     (_edgeX - 2 * contentHalfWidth).toDouble(),
@@ -64,13 +65,11 @@ void main() {
   // rendered profile for wide content (measured basis for the erf model).
   test('single full layer: modeled e matches rendered pixels', () async {
     for (final r in [4, 10, 16]) {
-      final spec = getStackedShadowSpec(
-        foregroundArgb: 0xFF777777,
-        backgroundArgbs: const [0xFF777777],
-        contrast: 0.5,
+      final spec = AnyBackground(
+        const [0xFF777777],
         algo: Algo.wcag21,
-        blurRadius: r.toDouble(),
-      );
+        contrast: 0.5,
+      ).scrimFor(0xFF777777).shadows(blurRadius: r.toDouble());
       final measured = await renderEdgeAlphas(
         layers: 1,
         perLayerAlpha: 1.0,
@@ -78,10 +77,15 @@ void main() {
         contentHalfWidth: r, // default cr: content wider than kernel reach
       );
       // ignore: avoid_print
-      print('r=$r modeled e=${spec.edgeCoverage.toStringAsFixed(4)} '
-          'measured A(d=1..4)=${measured.take(4).map((a) => a.toStringAsFixed(4)).join(", ")}');
-      expect(measured.first, closeTo(spec.edgeCoverage, 0.01),
-          reason: 'erf edge model must match rendered coverage at r=$r');
+      print(
+        'r=$r modeled e=${spec.edgeCoverage.toStringAsFixed(4)} '
+        'measured A(d=1..4)=${measured.take(4).map((a) => a.toStringAsFixed(4)).join(", ")}',
+      );
+      expect(
+        measured.first,
+        closeTo(spec.edgeCoverage, 0.01),
+        reason: 'erf edge model must match rendered coverage at r=$r',
+      );
     }
   });
 
@@ -99,40 +103,53 @@ void main() {
       ('r=10 thin cr=2 LOW contrast', 10, 2.0),
       ('r=4 thin cr=1 LOW contrast', 4, 1.0),
     ]) {
-      final spec = getStackedShadowSpec(
-        foregroundArgb: 0xFF777777,
-        backgroundArgbs: const [0xFF777777],
-        contrast: name.contains('LOW') ? 0.25 : 0.5,
-        algo: Algo.wcag21,
-        blurRadius: r.toDouble(),
-        contentRadius: cr,
-      );
-      if (spec.opacities.isEmpty) continue;
+      final spec =
+          AnyBackground(
+                const [0xFF777777],
+                algo: Algo.wcag21,
+                contrast: name.contains('LOW') ? 0.25 : 0.5,
+              )
+              .scrimFor(0xFF777777)
+              .shadows(blurRadius: r.toDouble(), contentRadius: cr);
+      if (spec.layerOpacities.isEmpty) continue;
       final chw = cr < 0 ? r : cr.round();
       final measured = await renderEdgeAlphas(
-        layers: spec.opacities.length,
-        perLayerAlpha: spec.opacities.first,
+        layers: spec.layerOpacities.length,
+        perLayerAlpha: spec.layerOpacities.first,
         blurRadius: r,
         contentHalfWidth: chw,
       );
-      final modeled = 1 -
-          List.filled(spec.opacities.length, 0).fold<double>(
-              1.0, (acc, _) => acc * (1 - spec.opacities.first * spec.edgeCoverage));
+      final modeled =
+          1 -
+          List.filled(spec.layerOpacities.length, 0).fold<double>(
+            1.0,
+            (acc, _) =>
+                acc * (1 - spec.layerOpacities.first * spec.edgeCoverage),
+          );
       // ignore: avoid_print
-      print('$name: meets=${spec.meetsTarget} n=${spec.opacities.length} p=${spec.opacities.first.toStringAsFixed(4)} '
-          'required=${spec.requiredOpacity.toStringAsFixed(4)} '
-          'modeledNet=${modeled.toStringAsFixed(4)} '
-          'measuredNet(d=1)=${measured.first.toStringAsFixed(4)} '
-          'delta=${(measured.first - spec.requiredOpacity).toStringAsFixed(4)}');
+      print(
+        '$name: meets=${spec.meetsTarget} n=${spec.layerOpacities.length} p=${spec.layerOpacities.first.toStringAsFixed(4)} '
+        'required=${spec.scrim.opacity.toStringAsFixed(4)} '
+        'modeledNet=${modeled.toStringAsFixed(4)} '
+        'measuredNet(d=1)=${measured.first.toStringAsFixed(4)} '
+        'delta=${(measured.first - spec.scrim.opacity).toStringAsFixed(4)}',
+      );
       if (spec.meetsTarget) {
-        expect(measured.first,
-            greaterThanOrEqualTo(spec.requiredOpacity - 0.03),
-            reason: '$name: claimed meetsTarget but rendered pixels fall '
-                'more than 0.03 short (current worst measured: -0.008)');
+        expect(
+          measured.first,
+          greaterThanOrEqualTo(spec.scrim.opacity - 0.03),
+          reason:
+              '$name: claimed meetsTarget but rendered pixels fall '
+              'more than 0.03 short (current worst measured: -0.008)',
+        );
       } else {
-        expect(measured.first, lessThan(spec.requiredOpacity),
-            reason: '$name: flagged meetsTarget=false but the render '
-                'actually reaches the target — flag is lying pessimistic');
+        expect(
+          measured.first,
+          lessThan(spec.scrim.opacity),
+          reason:
+              '$name: flagged meetsTarget=false but the render '
+              'actually reaches the target — flag is lying pessimistic',
+        );
       }
     }
   });

@@ -1,12 +1,9 @@
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/protection.dart';
-import 'package:libmonet/effects/shadows.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/halo_text.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/theming/monet_theme.dart';
 
 class ScrimExpansionTile extends ConsumerWidget {
   final double contrast;
@@ -18,46 +15,31 @@ class ScrimExpansionTile extends ConsumerWidget {
     final monetTheme = MonetTheme.of(context);
     final primaryColors = monetTheme.primary;
     final fgArgb = primaryColors.backgroundText.argb;
-    final scrimOpacity = getProtectionOpacity(
-      foregroundArgb: fgArgb,
-      backgroundArgbs: const [0xFF000000, 0xFFFFFFFF],
+    final scrim = AnyBackground.unknown(
       algo: monetTheme.algo,
       contrast: contrast,
-    );
-    final shadows = getShadowOpacitiesForBackgrounds(
-      foreground: Color(fgArgb),
-      backgrounds: const [Color(0xFF000000), Color(0xFFFFFFFF)],
-      algo: monetTheme.algo,
-      contrast: contrast,
-      blurRadius: 5,
-      contentRadius: 3,
-    );
-    final halo = getHalo(
-      foregroundArgb: fgArgb,
-      backgroundArgbs: const [0xFF000000, 0xFFFFFFFF],
-      algo: monetTheme.algo,
-      contrast: contrast,
-    );
+    ).scrimFor(fgArgb);
+    final shadows = scrim.shadows(blurRadius: 5, contentRadius: 3);
+    final stroked = scrim.shadowsWithStroke();
     final shadowString = StringBuffer();
-    if (shadows.opacities.isEmpty) {
+    if (shadows.layerOpacities.isEmpty) {
       shadowString.write('none');
     } else {
-      final oneHundredPercent = shadows.opacities.where((o) => o == 1.0);
+      final oneHundredPercent = shadows.layerOpacities.where((o) => o == 1.0);
       if (oneHundredPercent.isNotEmpty) {
         shadowString.write('${oneHundredPercent.length} @ 100%, 1 @ ');
       }
       shadowString.write(
-          '${(shadows.opacities.last * 100).round()}% of ${hexFromArgb(shadows.shadowArgb)}');
+          '${(shadows.layerOpacities.last * 100).round()}% of ${hexFromArgb(shadows.scrim.scrimArgb)}');
     }
 
     final scrimString = StringBuffer();
-    final scrimPercentageInt =
-        (scrimOpacity.opacity * 100).ceil().clamp(0, 100);
+    final scrimPercentageInt = (scrim.opacity * 100).ceil().clamp(0, 100);
     if (scrimPercentageInt == 0) {
       scrimString.write('none');
     } else {
       scrimString.write(
-          '${(scrimOpacity.opacity * 100).ceil()}% of ${hexFromArgb(scrimOpacity.protectionArgb)}');
+          '${(scrim.opacity * 100).ceil()}% of ${hexFromArgb(scrim.scrimArgb)}');
     }
 
     final inputsText = 'Inputs\n'
@@ -67,14 +49,14 @@ class ScrimExpansionTile extends ConsumerWidget {
         '  Algorithm: ${monetTheme.algo.name}\n'
         '\n'
         'Results\n'
-        '  Scrim: $scrimString\n'
-        '  Meets target: ${scrimOpacity.meetsTarget ? 'yes' : 'NO — best effort'}\n'
-        '  Achieved contrast: ${scrimOpacity.achievedContrast.toStringAsFixed(2)}\n'
-        '  Cleared side: ${scrimOpacity.clearedSide.name}'
-        '${scrimOpacity.straddleCollapsed ? '\n  Straddle collapsed: background passed per-pixel on both sides; pushed to one side for legibility' : ''}\n'
-        '  Halo: ${(halo.opacity * 100).round()}% of ${hexFromArgb(halo.argb)}, '
-        '1 layer, spread ${halo.spread}, blur ${halo.blurRadius}\n'
-        '  Shadows (legacy, ${shadows.opacities.length} layers): $shadowString';
+        '  scrimFor: $scrimString\n'
+        '  Meets target: ${scrim.meetsTarget ? 'yes' : 'NO — best effort'}\n'
+        '  Worst contrast: ${scrim.worstContrast.toStringAsFixed(2)}\n'
+        '  Polarity: ${scrim.polarity.name}'
+        '${scrim.mixedPolarityRejected ? '\n  Mixed polarity rejected: background passed per-pixel on both sides; pushed to one side for legibility' : ''}\n'
+        '  shadowsWithStroke: ${(stroked.scrim.opacity * 100).round()}% of ${hexFromArgb(stroked.scrim.scrimArgb)}, '
+        '1 layer, stroke ${stroked.stroke}, blur ${stroked.blurRadius}\n'
+        '  shadows (${shadows.layerOpacities.length} layers): $shadowString';
 
     return ExpansionTile(
       title: Text(
@@ -97,7 +79,7 @@ class ScrimExpansionTile extends ConsumerWidget {
           ),
         ),
         const VerticalPadding(),
-        _label(context, 'With scrim', primaryColors),
+        _label(context, 'scrim (rect)', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -107,14 +89,13 @@ class ScrimExpansionTile extends ConsumerWidget {
             ),
             Positioned.fill(
                 child: Container(
-              color: Color(scrimOpacity.protectionArgb)
-                  .withValues(alpha: scrimOpacity.opacity),
+              color: Color(scrim.scrimArgb).withValues(alpha: scrim.opacity),
             )),
             _sampleText(context, primaryColors),
           ],
         ),
         const VerticalPadding(),
-        _label(context, 'No protection', primaryColors),
+        _label(context, 'No scrim', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -126,7 +107,8 @@ class ScrimExpansionTile extends ConsumerWidget {
           ],
         ),
         const VerticalPadding(),
-        _label(context, 'With halo (1 layer, dilate + blur)', primaryColors),
+        _label(
+            context, 'scrim.shadowsWithStroke (stroke + blur)', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -138,7 +120,7 @@ class ScrimExpansionTile extends ConsumerWidget {
               padding: const EdgeInsets.all(8.0),
               child: HaloText(
                 text: _sampleString,
-                halo: halo,
+                stroked: stroked,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium!
@@ -148,7 +130,7 @@ class ScrimExpansionTile extends ConsumerWidget {
           ],
         ),
         const VerticalPadding(),
-        _label(context, 'With shadows (legacy, stacked)', primaryColors),
+        _label(context, 'scrim.shadows (stacked, approximate)', primaryColors),
         Stack(
           children: [
             Positioned.fill(
@@ -162,7 +144,7 @@ class ScrimExpansionTile extends ConsumerWidget {
                 _sampleString,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: primaryColors.backgroundText,
-                    shadows: shadows.shadows),
+                    shadows: shadows.textShadows),
               ),
             ),
           ],

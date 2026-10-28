@@ -1,15 +1,9 @@
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/protection.dart';
-import 'package:libmonet/effects/shadows.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:monet_studio/hue_tone_picker.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/slider_flat.dart';
-import 'package:libmonet/theming/slider_flat_thumb.dart';
 import 'package:squadron/squadron.dart';
 
 class CustomBgExpansionTile extends HookConsumerWidget {
@@ -31,8 +25,7 @@ class CustomBgExpansionTile extends HookConsumerWidget {
     final bgArgb = bgColor.argb;
     final fgArgb = primaryColors.backgroundText.argb;
 
-    final hexController = useTextEditingController(
-        text: bgArgb.hex);
+    final hexController = useTextEditingController(text: bgArgb.hex);
     final hueController =
         useTextEditingController(text: bgHue.value.round().toString());
     final chromaController =
@@ -49,40 +42,31 @@ class CustomBgExpansionTile extends HookConsumerWidget {
       return null;
     }, [bgHue.value, bgChroma.value, bgTone.value]);
 
-    final scrimOpacity = getProtectionOpacity(
-      foregroundArgb: fgArgb,
-      backgroundArgbs: [bgArgb],
+    final scrim = AnyBackground(
+      [bgArgb],
       algo: monetTheme.algo,
       contrast: contrast,
-    );
-    final shadows = getShadowOpacitiesForBackgrounds(
-      foreground: Color(fgArgb),
-      backgrounds: [Color(bgArgb)],
-      algo: monetTheme.algo,
-      contrast: contrast,
-      blurRadius: 5,
-      contentRadius: 3,
-    );
+    ).scrimFor(fgArgb);
+    final shadows = scrim.shadows(blurRadius: 5, contentRadius: 3);
 
     final shadowString = StringBuffer();
-    if (shadows.opacities.isEmpty) {
+    if (shadows.layerOpacities.isEmpty) {
       shadowString.write('none');
     } else {
-      final full = shadows.opacities.where((o) => o == 1.0);
-      if (full.isNotEmpty && full.length < shadows.opacities.length) {
+      final full = shadows.layerOpacities.where((o) => o == 1.0);
+      if (full.isNotEmpty && full.length < shadows.layerOpacities.length) {
         shadowString.write('${full.length} @ 100%, 1 @ ');
       }
       shadowString.write(
-          '${(shadows.opacities.last * 100).round()}% of ${hexFromArgb(shadows.shadowArgb)}');
+          '${(shadows.layerOpacities.last * 100).round()}% of ${hexFromArgb(shadows.scrim.scrimArgb)}');
     }
 
     final scrimString = StringBuffer();
-    final scrimPct = (scrimOpacity.opacity * 100).ceil().clamp(0, 100);
+    final scrimPct = (scrim.opacity * 100).ceil().clamp(0, 100);
     if (scrimPct == 0) {
       scrimString.write('none');
     } else {
-      scrimString.write(
-          '$scrimPct% of ${hexFromArgb(scrimOpacity.protectionArgb)}');
+      scrimString.write('$scrimPct% of ${hexFromArgb(scrim.scrimArgb)}');
     }
 
     final inputsText = 'Inputs\n'
@@ -92,15 +76,16 @@ class CustomBgExpansionTile extends HookConsumerWidget {
         '  Algorithm: ${monetTheme.algo.name}\n'
         '\n'
         'Results\n'
-        '  Scrim: $scrimString\n'
-        '  Meets target: ${scrimOpacity.meetsTarget ? 'yes' : 'NO — best effort'}\n'
-        '  Achieved contrast: ${scrimOpacity.achievedContrast.toStringAsFixed(2)}\n'
+        '  scrimFor: $scrimString\n'
+        '  Meets target: ${scrim.meetsTarget ? 'yes' : 'NO — best effort'}\n'
+        '  Worst contrast: ${scrim.worstContrast.toStringAsFixed(2)}\n'
         '  Shadows: $shadowString\n'
-        '  Shadow layers: ${shadows.opacities.length}';
+        '  Shadow layers: ${shadows.layerOpacities.length}';
 
-    final letterTextStyle = Theme.of(context).textTheme.headlineLarge!.copyWith(
-        fontWeight: FontWeight.w500,
-        color: primaryColors.colorIcon);
+    final letterTextStyle = Theme.of(context)
+        .textTheme
+        .headlineLarge!
+        .copyWith(fontWeight: FontWeight.w500, color: primaryColors.colorIcon);
 
     return ExpansionTile(
       title: Text(
@@ -128,8 +113,7 @@ class CustomBgExpansionTile extends HookConsumerWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         color: bgColor,
-                        border:
-                            Border.all(color: primaryColors.colorBorder),
+                        border: Border.all(color: primaryColors.colorBorder),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -345,19 +329,19 @@ class CustomBgExpansionTile extends HookConsumerWidget {
         ),
         const VerticalPadding(),
         // Previews
-        _label(context, 'With scrim', primaryColors),
+        _label(context, 'scrim (rect)', primaryColors),
         Stack(
           children: [
             Positioned.fill(child: Container(color: bgColor)),
             Positioned.fill(
                 child: Container(
-                    color: Color(scrimOpacity.protectionArgb).withValues(
-                        alpha: scrimOpacity.opacity))),
+                    color: Color(scrim.scrimArgb)
+                        .withValues(alpha: scrim.opacity))),
             _sampleText(context, primaryColors),
           ],
         ),
         const VerticalPadding(),
-        _label(context, 'No protection', primaryColors),
+        _label(context, 'No scrim', primaryColors),
         Stack(
           children: [
             Positioned.fill(child: Container(color: bgColor)),
@@ -365,7 +349,7 @@ class CustomBgExpansionTile extends HookConsumerWidget {
           ],
         ),
         const VerticalPadding(),
-        _label(context, 'With shadows', primaryColors),
+        _label(context, 'scrim.shadows', primaryColors),
         Stack(
           children: [
             Positioned.fill(child: Container(color: bgColor)),
@@ -377,7 +361,7 @@ class CustomBgExpansionTile extends HookConsumerWidget {
                 "stars look very different today",
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: primaryColors.backgroundText,
-                    shadows: shadows.shadows),
+                    shadows: shadows.textShadows),
               ),
             ),
           ],

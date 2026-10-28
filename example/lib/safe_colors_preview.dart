@@ -1,12 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/protection.dart';
-import 'package:libmonet/effects/shadows.dart';
-import 'package:libmonet/theming/button_style.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/theming/palette.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:monet_studio/padding.dart';
 
 class SafeColorsPreview extends StatelessWidget {
@@ -18,8 +12,8 @@ class SafeColorsPreview extends StatelessWidget {
   });
 
   final Map<ColorModel, MonetThemeData> themeDataByModel;
-  final ProtectionResult? scrim;
-  final ShadowResult? shadows;
+  final Scrim? scrim;
+  final Shadows? shadows;
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +44,8 @@ class _ColorModelPreview extends StatelessWidget {
 
   final MonetThemeData themeData;
   final ColorModel colorModel;
-  final ProtectionResult? scrim;
-  final ShadowResult? shadows;
+  final Scrim? scrim;
+  final Shadows? shadows;
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +105,8 @@ class _RolePreview extends StatelessWidget {
   final String name;
   final Color sourceColor;
   final Palette palette;
-  final ProtectionResult? scrim;
-  final ShadowResult? shadows;
+  final Scrim? scrim;
+  final Shadows? shadows;
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +150,8 @@ class _SourceColorSwatch extends StatelessWidget {
 
 class PalettePreviewRow extends StatelessWidget {
   final Palette palette;
-  final ProtectionResult? scrim;
-  final ShadowResult? shadows;
+  final Scrim? scrim;
+  final Shadows? shadows;
 
   const PalettePreviewRow({
     required this.palette,
@@ -181,7 +175,7 @@ class PalettePreviewRow extends StatelessWidget {
         return base;
       }
       return base?.copyWith(
-        shadows: shadows!.shadows,
+        shadows: shadows!.textShadows,
       );
     }));
     return Column(

@@ -2,11 +2,7 @@ import 'dart:io';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/protection.dart';
-import 'package:libmonet/effects/shadows.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:libmonet/libmonet.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/brightness_setting.dart';
 import 'package:monet_studio/chart_colors_expansion_tile.dart';
@@ -32,7 +28,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:libmonet/theming/monet_theme.dart';
 
 class _QuantizerColorCountToggle extends StatelessWidget {
   const _QuantizerColorCountToggle({
@@ -304,22 +299,12 @@ class Home extends HookConsumerWidget {
     final themeData = themeDataByModel[ColorModel.kDefault]!;
     final primaryColors = monetTheme.primary;
     final fgArgb = primaryColors.backgroundText.argb;
-    final protection = getProtectionOpacity(
-      foregroundArgb: fgArgb,
-      backgroundArgbs: const [0xFF000000, 0xFFFFFFFF],
+    final scrim = AnyBackground.unknown(
       algo: monetTheme.algo,
       contrast: themeData.contrast,
-    );
-    final scrimOpacity = protection;
-    final shadows = getShadowOpacitiesForBackgrounds(
-      foreground: Color(fgArgb),
-      backgrounds: const [Color(0xFF000000), Color(0xFFFFFFFF)],
-      algo: monetTheme.algo,
-      contrast: themeData.contrast,
-      blurRadius: 5,
-      contentRadius: 3,
-    );
-    final previewRowScrim = images.value.isEmpty ? null : scrimOpacity;
+    ).scrimFor(fgArgb);
+    final shadows = scrim.shadows(blurRadius: 5, contentRadius: 3);
+    final previewRowScrim = images.value.isEmpty ? null : scrim;
     final previewRowShadows = images.value.isEmpty ? null : shadows;
 
     return Stack(
@@ -338,8 +323,7 @@ class Home extends HookConsumerWidget {
               ],
             ),
             const HorizontalPadding(),
-            buildScrimShadows(
-                context, themeData.contrast, scrimOpacity, shadows),
+            buildScrimShadows(context, themeData.contrast, scrim, shadows),
           ],
         ),
       ],
@@ -349,32 +333,31 @@ class Home extends HookConsumerWidget {
   Widget buildScrimShadows(
     BuildContext context,
     double contrast,
-    ProtectionResult scrimOpacity,
-    ShadowResult shadows,
+    Scrim scrim,
+    Shadows shadows,
   ) {
     final primaryColors = MonetTheme.of(context).primary;
     final shadowString = StringBuffer();
     shadowString.write('Shadows: ');
-    if (shadows.opacities.isEmpty) {
+    if (shadows.layerOpacities.isEmpty) {
       shadowString.write('none');
     } else {
-      final oneHundredPercent = shadows.opacities.where((o) => o == 1.0);
+      final oneHundredPercent = shadows.layerOpacities.where((o) => o == 1.0);
       if (oneHundredPercent.isNotEmpty) {
         shadowString.write('${oneHundredPercent.length} @ 100%\n1 @ ');
       }
       shadowString.write(
-          '${(shadows.opacities.last * 100).round()}% of ${hexFromArgb(shadows.shadowArgb)}');
+          '${(shadows.layerOpacities.last * 100).round()}% of ${hexFromArgb(shadows.scrim.scrimArgb)}');
     }
 
     final scrimString = StringBuffer();
     scrimString.write('Scrim: ');
-    final scrimPercentageInt =
-        (scrimOpacity.opacity * 100).ceil().clamp(0, 100);
+    final scrimPercentageInt = (scrim.opacity * 100).ceil().clamp(0, 100);
     if (scrimPercentageInt == 0) {
       scrimString.write('none');
     } else {
       scrimString.write(
-          '${(scrimOpacity.opacity * 100).ceil()}% ${hexFromArgb(scrimOpacity.protectionArgb)}');
+          '${(scrim.opacity * 100).ceil()}% ${hexFromArgb(scrim.scrimArgb)}');
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,8 +375,8 @@ class Home extends HookConsumerWidget {
                   children: [
                     Positioned.fill(
                         child: Container(
-                      color: Color(scrimOpacity.protectionArgb)
-                          .withValues(alpha: scrimOpacity.opacity),
+                      color: Color(scrim.scrimArgb)
+                          .withValues(alpha: scrim.opacity),
                     )),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -413,7 +396,7 @@ class Home extends HookConsumerWidget {
                     shadowString.toString(),
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: primaryColors.backgroundText,
-                        shadows: shadows.shadows),
+                        shadows: shadows.textShadows),
                   ),
                 ),
               ],

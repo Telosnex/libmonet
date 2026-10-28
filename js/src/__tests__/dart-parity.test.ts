@@ -20,8 +20,7 @@ import {
   lumaFromArgb,
   lumaFromLstar,
   lumaToLstarRange,
-  getProtectionOpacity,
-  getShadowOpacitiesForBackgrounds,
+  AnyBackground,
   lstarToApcaY,
   lighterBackgroundApcaY,
   darkerBackgroundApcaY,
@@ -187,7 +186,7 @@ interface ApcaInverseCaseFixture {
   boundaryArgbs: string[];
 }
 
-interface ShadowCaseFixture {
+interface ShadowsCaseFixture {
   name: string;
   foreground: string;
   backgrounds: string[];
@@ -196,9 +195,23 @@ interface ShadowCaseFixture {
   blurRadius: number;
   contentRadius: number;
   resultBlurRadius: number;
-  shadowArgb: string;
-  opacities: number[];
+  scrimArgb: string;
+  layerOpacities: number[];
   meetsTarget: boolean;
+  edgeCoverage: number;
+}
+
+interface SharedBorderCaseFixture {
+  name: string;
+  surfaces: string[];
+  backgrounds: string[];
+  contrast: number;
+  algo: 'apca' | 'wcag21';
+  tone: number;
+  borderArgbs: string[];
+  clearsBackground: boolean;
+  meetsTarget: boolean;
+  worstContrast: number;
 }
 
 interface WallpaperGoldenCaseFixture {
@@ -219,8 +232,9 @@ interface Fixture {
   temperatureCases: TemperatureCaseFixture[];
   lumaCases: LumaCaseFixture[];
   apcaInverseCases: ApcaInverseCaseFixture[];
-  protectionCases: ProtectionCaseFixture[];
-  shadowCases: ShadowCaseFixture[];
+  scrimCases: ScrimCaseFixture[];
+  sharedBorderCases: SharedBorderCaseFixture[];
+  shadowsCases: ShadowsCaseFixture[];
   quantizerCases: QuantizerCaseFixture[];
   paletteCases: PaletteCaseFixture[];
   paletteSweepCases: PaletteCaseFixture[];
@@ -232,19 +246,19 @@ interface Fixture {
   wallpaperGoldenCases: WallpaperGoldenCaseFixture[];
 }
 
-interface ProtectionCaseFixture {
+interface ScrimCaseFixture {
   name: string;
   foreground: string;
   backgrounds: string[];
   contrast: number;
   algo: string;
   fixedScrim?: string;
-  protectionArgb: string;
+  scrimArgb: string;
   opacity: number;
   meetsTarget: boolean;
-  achievedContrast: number;
-  clearedSide: string;
-  straddleCollapsed: boolean;
+  worstContrast: number;
+  polarity: string;
+  mixedPolarityRejected: boolean;
 }
 
 const fixture = JSON.parse(readFileSync('fixtures/libmonet_parity.json', 'utf8')) as Fixture;
@@ -387,41 +401,51 @@ describe('Dart libmonet parity fixtures', () => {
     });
   }
 
-  for (const c of fixture.protectionCases) {
-    test(`Protection parity: ${c.name}`, () => {
-      const result = getProtectionOpacity({
-        foregroundArgb: argbFromHex(c.foreground),
-        backgroundArgbs: c.backgrounds.map(argbFromHex),
+  const algoOf = (a: string) => (a === 'wcag21' ? Algo.wcag21 : Algo.apca);
+
+  for (const c of fixture.scrimCases) {
+    test(`Scrim parity: ${c.name}`, () => {
+      const result = new AnyBackground(c.backgrounds.map(argbFromHex), {
+        algo: algoOf(c.algo),
         contrast: c.contrast,
-        algo: c.algo === 'wcag21' ? Algo.wcag21 : Algo.apca,
-        ...(c.fixedScrim === undefined ? {} : {protectionArgb: argbFromHex(c.fixedScrim)}),
-      });
-      expect(hexFromArgb(result.protectionArgb)).toBe(c.protectionArgb);
+      }).scrimFor(argbFromHex(c.foreground), c.fixedScrim === undefined ? {} : {scrimArgb: argbFromHex(c.fixedScrim)});
+      expect(hexFromArgb(result.scrimArgb)).toBe(c.scrimArgb);
       // Opacity is quantized to 1/255 in both ports: exact, not close-to.
       expect(result.opacity).toBe(c.opacity);
       expect(result.meetsTarget).toBe(c.meetsTarget);
-      expect(result.achievedContrast).toBeCloseTo(c.achievedContrast, 12);
-      expect(result.clearedSide).toBe(c.clearedSide);
-      expect(result.straddleCollapsed).toBe(c.straddleCollapsed);
+      expect(result.worstContrast).toBeCloseTo(c.worstContrast, 12);
+      expect(result.polarity).toBe(c.polarity);
+      expect(result.mixedPolarityRejected).toBe(c.mixedPolarityRejected);
     });
   }
 
-  for (const c of fixture.shadowCases) {
-    test(`Shadow parity: ${c.name}`, () => {
-      const result = getShadowOpacitiesForBackgrounds({
-        foreground: argbFromHex(c.foreground),
-        backgrounds: c.backgrounds.map(argbFromHex),
+  for (const c of fixture.shadowsCases) {
+    test(`Shadows parity: ${c.name}`, () => {
+      const result = new AnyBackground(c.backgrounds.map(argbFromHex), {
+        algo: algoOf(c.algo),
         contrast: c.contrast,
-        algo: c.algo === 'wcag21' ? Algo.wcag21 : Algo.apca,
-        blurRadius: c.blurRadius,
-        contentRadius: c.contentRadius,
-      });
+      }).scrimFor(argbFromHex(c.foreground)).shadows({blurRadius: c.blurRadius, contentRadius: c.contentRadius});
       expect(result.blurRadius).toBeCloseTo(c.resultBlurRadius, 12);
-      expect(hexFromArgb(result.shadowArgb)).toBe(c.shadowArgb);
+      expect(hexFromArgb(result.scrim.scrimArgb)).toBe(c.scrimArgb);
       expect(result.meetsTarget).toBe(c.meetsTarget);
-      expect(result.opacities).toHaveLength(c.opacities.length);
+      expect(result.edgeCoverage).toBeCloseTo(c.edgeCoverage, 12);
+      expect(result.layerOpacities).toHaveLength(c.layerOpacities.length);
       // Per-layer alphas are 1/255-quantized in both ports: exact equality.
-      for (let i = 0; i < c.opacities.length; i++) expect(result.opacities[i]).toBe(c.opacities[i]!);
+      for (let i = 0; i < c.layerOpacities.length; i++) expect(result.layerOpacities[i]).toBe(c.layerOpacities[i]!);
+    });
+  }
+
+  for (const c of fixture.sharedBorderCases) {
+    test(`SharedBorder parity: ${c.name}`, () => {
+      const result = new AnyBackground(c.backgrounds.map(argbFromHex), {
+        algo: algoOf(c.algo),
+        contrast: c.contrast,
+      }).sharedBorder(c.surfaces.map(argbFromHex));
+      expect(result.tone).toBe(c.tone);
+      expect(result.borderArgbs.map(a => hexFromArgb(a))).toEqual(c.borderArgbs);
+      expect(result.clearsBackground).toBe(c.clearsBackground);
+      expect(result.meetsTarget).toBe(c.meetsTarget);
+      expect(result.worstContrast).toBeCloseTo(c.worstContrast, 9);
     });
   }
 

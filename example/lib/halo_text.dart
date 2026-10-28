@@ -1,15 +1,15 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/effects/protection.dart';
+import 'package:libmonet/libmonet.dart';
 
-/// Renders text with a single dilated-then-blurred halo underlay — i.e. a 
+/// Renders text with a single dilated-then-blurred halo underlay — i.e. a
 /// stroke / spread radius, then, a blur.
 ///
 /// Two paint passes:
-///  1. Underlay: the same glyphs stroked at width `2 * spread` with
+///  1. Underlay: the same glyphs stroked at width `2 * stroke` with
 ///     `MaskFilter.blur(BlurStyle.solid, sigma)`. `BlurStyle.solid` keeps the
 ///     stroke band itself at full paint alpha and blurs only beyond it, so
 ///     coverage at the glyph edge is exactly 1.0 — which is what makes
-///     [HaloResult.opacity] the paint alpha with no kernel model, no layer
+///     [Scrim.opacity] the paint alpha with no kernel model, no layer
 ///     stack, no calibration constant.
 ///  2. The text itself, unchanged, on top.
 ///
@@ -19,27 +19,18 @@ import 'package:libmonet/effects/protection.dart';
 class HaloText extends StatelessWidget {
   final String text;
   final TextStyle style;
-  final HaloResult halo;
+  final ShadowsWithStroke stroked;
 
   const HaloText({
     super.key,
     required this.text,
     required this.style,
-    required this.halo,
+    required this.stroked,
   });
 
   @override
   Widget build(BuildContext context) {
-    final underlayPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2 * halo.spread
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.round
-      ..color = Color(halo.argb).withValues(alpha: halo.opacity)
-      ..maskFilter = MaskFilter.blur(
-        BlurStyle.solid,
-        convertRadiusToSigma(halo.blurRadius),
-      );
+    final underlayPaint = stroked.strokePaint;
     // Identical Text widgets under identical constraints wrap identically,
     // so the two passes stay glyph-aligned.
     return Stack(

@@ -9371,7 +9371,7 @@
       ]
     }
   ],
-  "protectionCases": [
+  "scrimCases": [
     {
       "name": "d1-white-on-black-apca",
       "foreground": "#FFFFFF",
@@ -9380,12 +9380,12 @@
       ],
       "contrast": 0.5,
       "algo": "apca",
-      "protectionArgb": "#000000",
+      "scrimArgb": "#000000",
       "opacity": 0.0,
       "meetsTarget": true,
-      "achievedContrast": 107.88473318309848,
-      "clearedSide": "low",
-      "straddleCollapsed": false
+      "worstContrast": 107.88473318309848,
+      "polarity": "lightOnDark",
+      "mixedPolarityRejected": false
     },
     {
       "name": "d2-mid-luma-chromatic-wcag",
@@ -9396,12 +9396,12 @@
       ],
       "contrast": 0.2,
       "algo": "wcag21",
-      "protectionArgb": "#000000",
+      "scrimArgb": "#000000",
       "opacity": 0.27450980392156865,
       "meetsTarget": true,
-      "achievedContrast": 2.417794742196562,
-      "clearedSide": "low",
-      "straddleCollapsed": false
+      "worstContrast": 2.417794742196562,
+      "polarity": "lightOnDark",
+      "mixedPolarityRejected": false
     },
     {
       "name": "straddle-777-over-poles-wcag",
@@ -9412,12 +9412,12 @@
       ],
       "contrast": 0.2857,
       "algo": "wcag21",
-      "protectionArgb": "#000000",
+      "scrimArgb": "#000000",
       "opacity": 0.8196078431372549,
       "meetsTarget": true,
-      "achievedContrast": 3.0324921186235607,
-      "clearedSide": "low",
-      "straddleCollapsed": true
+      "worstContrast": 3.0324921186235607,
+      "polarity": "lightOnDark",
+      "mixedPolarityRejected": true
     },
     {
       "name": "brown-scrim-feasible-wcag",
@@ -9430,12 +9430,12 @@
       "contrast": 0.5,
       "algo": "wcag21",
       "fixedScrim": "#8B4513",
-      "protectionArgb": "#8B4513",
+      "scrimArgb": "#8B4513",
       "opacity": 0.7529411764705882,
       "meetsTarget": true,
-      "achievedContrast": 4.507509210923878,
-      "clearedSide": "low",
-      "straddleCollapsed": false
+      "worstContrast": 4.507509210923878,
+      "polarity": "lightOnDark",
+      "mixedPolarityRejected": false
     },
     {
       "name": "brown-scrim-infeasible-wcag",
@@ -9447,12 +9447,12 @@
       "contrast": 0.5,
       "algo": "wcag21",
       "fixedScrim": "#8B4513",
-      "protectionArgb": "#8B4513",
+      "scrimArgb": "#8B4513",
       "opacity": 1.0,
       "meetsTarget": false,
-      "achievedContrast": 1.5851228533139077,
-      "clearedSide": "low",
-      "straddleCollapsed": false
+      "worstContrast": 1.5851228533139077,
+      "polarity": "lightOnDark",
+      "mixedPolarityRejected": false
     },
     {
       "name": "multi-color-apca",
@@ -9465,12 +9465,12 @@
       ],
       "contrast": 0.5,
       "algo": "apca",
-      "protectionArgb": "#FFFFFF",
+      "scrimArgb": "#FFFFFF",
       "opacity": 0.8980392156862745,
       "meetsTarget": true,
-      "achievedContrast": 60.16481278933252,
-      "clearedSide": "high",
-      "straddleCollapsed": false
+      "worstContrast": 60.16481278933252,
+      "polarity": "darkOnLight",
+      "mixedPolarityRejected": false
     },
     {
       "name": "multi-color-wcag-high-contrast",
@@ -9482,15 +9482,238 @@
       ],
       "contrast": 0.7,
       "algo": "wcag21",
-      "protectionArgb": "#000000",
+      "scrimArgb": "#000000",
       "opacity": 0.8352941176470589,
       "meetsTarget": true,
-      "achievedContrast": 11.187924885548721,
-      "clearedSide": "low",
-      "straddleCollapsed": false
+      "worstContrast": 11.187924885548721,
+      "polarity": "lightOnDark",
+      "mixedPolarityRejected": false
     }
   ],
-  "shadowCases": [
+  "sharedBorderCases": [
+    {
+      "name": "lorin-like-triad-light-wallpaper-apca",
+      "surfaces": [
+        "#B431ED",
+        "#4D394F",
+        "#536D2D"
+      ],
+      "backgrounds": [
+        "#D8E4EE",
+        "#C9D6E2",
+        "#E9EEF2"
+      ],
+      "contrast": 0.5,
+      "algo": "apca",
+      "tone": 26.0,
+      "borderArgbs": [
+        "#66008D",
+        "#4B374D",
+        "#2B4500"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 69.7605156914567
+    },
+    {
+      "name": "busy-wallpaper-falls-back-apca",
+      "surfaces": [
+        "#B431ED",
+        "#4D394F"
+      ],
+      "backgrounds": [
+        "#0A0A0A",
+        "#303030",
+        "#606060",
+        "#909090",
+        "#C0C0C0",
+        "#F4F4F4",
+        "#3A5F2B",
+        "#8AA0C8"
+      ],
+      "contrast": 0.5,
+      "algo": "apca",
+      "tone": 63.0,
+      "borderArgbs": [
+        "#D26CFF",
+        "#A892A8"
+      ],
+      "clearsBackground": false,
+      "meetsTarget": true,
+      "worstContrast": 15.428087759799153
+    },
+    {
+      "name": "unknown-wcag",
+      "surfaces": [
+        "#1177AA",
+        "#C40308"
+      ],
+      "backgrounds": [],
+      "contrast": 0.5,
+      "algo": "wcag21",
+      "tone": 30.0,
+      "borderArgbs": [
+        "#004B6F",
+        "#930004"
+      ],
+      "clearsBackground": false,
+      "meetsTarget": true,
+      "worstContrast": 1.5000627956328618
+    },
+    {
+      "name": "solid-dark-wcag",
+      "surfaces": [
+        "#1177AA",
+        "#009E60"
+      ],
+      "backgrounds": [
+        "#101418"
+      ],
+      "contrast": 0.7,
+      "algo": "wcag21",
+      "tone": 75.0,
+      "borderArgbs": [
+        "#78C0F3",
+        "#5FCD8F"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 9.350738979184479
+    },
+    {
+      "name": "solid-red-dark-chips-apca",
+      "surfaces": [
+        "#1A3A6A",
+        "#3A1A4A",
+        "#1F3F2A"
+      ],
+      "backgrounds": [
+        "#FF0000"
+      ],
+      "contrast": 0.5,
+      "algo": "apca",
+      "tone": 16.0,
+      "borderArgbs": [
+        "#002756",
+        "#3A1A4A",
+        "#092E19"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 35.02445014485519
+    },
+    {
+      "name": "solid-red-dark-chips-wcag21",
+      "surfaces": [
+        "#1A3A6A",
+        "#3A1A4A",
+        "#1F3F2A"
+      ],
+      "backgrounds": [
+        "#FF0000"
+      ],
+      "contrast": 0.5,
+      "algo": "wcag21",
+      "tone": 16.0,
+      "borderArgbs": [
+        "#002756",
+        "#3A1A4A",
+        "#092E19"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 3.681613648389933
+    },
+    {
+      "name": "solid-red-light-chips-apca",
+      "surfaces": [
+        "#B0D0F0",
+        "#F0C0B0",
+        "#C8E8C0"
+      ],
+      "backgrounds": [
+        "#FF0000"
+      ],
+      "contrast": 0.5,
+      "algo": "apca",
+      "tone": 81.0,
+      "borderArgbs": [
+        "#ADCDED",
+        "#EFBFAF",
+        "#B2D2AA"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 35.706616362019204
+    },
+    {
+      "name": "solid-red-light-chips-wcag21",
+      "surfaces": [
+        "#B0D0F0",
+        "#F0C0B0",
+        "#C8E8C0"
+      ],
+      "backgrounds": [
+        "#FF0000"
+      ],
+      "contrast": 0.5,
+      "algo": "wcag21",
+      "tone": 81.0,
+      "borderArgbs": [
+        "#ADCDED",
+        "#EFBFAF",
+        "#B2D2AA"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 2.416620099784444
+    },
+    {
+      "name": "solid-red-mid-chips-apca",
+      "surfaces": [
+        "#4477AA",
+        "#AA4444",
+        "#44AA66"
+      ],
+      "backgrounds": [
+        "#FF0000"
+      ],
+      "contrast": 0.5,
+      "algo": "apca",
+      "tone": 41.0,
+      "borderArgbs": [
+        "#2C6497",
+        "#A53F3F",
+        "#007038"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 15.061433279025952
+    },
+    {
+      "name": "solid-red-mid-chips-wcag21",
+      "surfaces": [
+        "#4477AA",
+        "#AA4444",
+        "#44AA66"
+      ],
+      "backgrounds": [
+        "#FF0000"
+      ],
+      "contrast": 0.5,
+      "algo": "wcag21",
+      "tone": 41.0,
+      "borderArgbs": [
+        "#2C6497",
+        "#A53F3F",
+        "#007038"
+      ],
+      "clearsBackground": true,
+      "meetsTarget": true,
+      "worstContrast": 1.5526308995006113
+    }
+  ],
+  "shadowsCases": [
     {
       "name": "no-shadow-needed-apca",
       "foreground": "#FFFFFF",
@@ -9503,9 +9726,10 @@
       "blurRadius": 4.0,
       "contentRadius": -1.0,
       "resultBlurRadius": 0.0,
-      "shadowArgb": "#000000",
-      "opacities": [],
-      "meetsTarget": true
+      "scrimArgb": "#000000",
+      "layerOpacities": [],
+      "meetsTarget": true,
+      "edgeCoverage": 0.0
     },
     {
       "name": "brand-wide-apca-blur4",
@@ -9519,15 +9743,16 @@
       "blurRadius": 4.0,
       "contentRadius": -1.0,
       "resultBlurRadius": 4.0,
-      "shadowArgb": "#FFFFFF",
-      "opacities": [
+      "scrimArgb": "#FFFFFF",
+      "layerOpacities": [
         0.8549019607843137,
         0.8549019607843137,
         0.8549019607843137,
         0.8549019607843137,
         0.8549019607843137
       ],
-      "meetsTarget": true
+      "meetsTarget": true,
+      "edgeCoverage": 0.4293717262887855
     },
     {
       "name": "brand-wide-wcag-blur6-content3",
@@ -9541,8 +9766,8 @@
       "blurRadius": 6.0,
       "contentRadius": 3.0,
       "resultBlurRadius": 6.0,
-      "shadowArgb": "#FFFFFF",
-      "opacities": [
+      "scrimArgb": "#FFFFFF",
+      "layerOpacities": [
         1.0,
         1.0,
         1.0,
@@ -9552,7 +9777,8 @@
         1.0,
         1.0
       ],
-      "meetsTarget": false
+      "meetsTarget": false,
+      "edgeCoverage": 0.39928161139654716
     },
     {
       "name": "brand-three-backgrounds-wcag-blur10",
@@ -9567,15 +9793,16 @@
       "blurRadius": 10.0,
       "contentRadius": -1.0,
       "resultBlurRadius": 10.0,
-      "shadowArgb": "#FFFFFF",
-      "opacities": [
+      "scrimArgb": "#FFFFFF",
+      "layerOpacities": [
         0.9803921568627451,
         0.9803921568627451,
         0.9803921568627451,
         0.9803921568627451,
         0.9803921568627451
       ],
-      "meetsTarget": true
+      "meetsTarget": true,
+      "edgeCoverage": 0.46823773281716885
     }
   ],
   "quantizerCases": [

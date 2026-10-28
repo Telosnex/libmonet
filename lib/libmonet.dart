@@ -42,8 +42,7 @@ export 'extract/service/quantize_service.dart';
 
 // Visual effects
 export 'effects/afterimage.dart';
-export 'effects/protection.dart';
-export 'effects/shadows.dart';
+export 'effects/over_image.dart';
 export 'effects/temperature.dart';
 export 'effects/uv_harmony.dart';
 
@@ -69,6 +68,7 @@ export 'theming/monet_theme.dart';
 export 'theming/monet_theme_crossfade.dart';
 export 'theming/monet_theme_data.dart';
 export 'theming/monet_paint_colors.dart';
+export 'theming/over_image_flutter.dart';
 export 'theming/palette.dart';
 export 'theming/palette_roles.dart';
 export 'theming/palette_recipe.dart';
