@@ -17,14 +17,18 @@ void main() {
     });
 
     test('min-mid for text', () {
-      final ratio =
-          contrastRatioInterpolation(percent: 0.25, usage: Usage.text);
+      final ratio = contrastRatioInterpolation(
+        percent: 0.25,
+        usage: Usage.text,
+      );
       expect(ratio, 2.75);
     });
 
     test('min-mid for fill', () {
-      final ratio =
-          contrastRatioInterpolation(percent: 0.25, usage: Usage.fill);
+      final ratio = contrastRatioInterpolation(
+        percent: 0.25,
+        usage: Usage.fill,
+      );
       expect(ratio, 2.0);
     });
 
@@ -39,14 +43,18 @@ void main() {
     });
 
     test('mid-max for text', () {
-      final ratio =
-          contrastRatioInterpolation(percent: 0.75, usage: Usage.text);
+      final ratio = contrastRatioInterpolation(
+        percent: 0.75,
+        usage: Usage.text,
+      );
       expect(ratio, 12.75);
     });
 
     test('mid-max for fill', () {
-      final ratio =
-          contrastRatioInterpolation(percent: 0.75, usage: Usage.fill);
+      final ratio = contrastRatioInterpolation(
+        percent: 0.75,
+        usage: Usage.fill,
+      );
       expect(ratio, 12.0);
     });
 

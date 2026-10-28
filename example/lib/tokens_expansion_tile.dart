@@ -155,7 +155,6 @@ class TokensExpansionTile extends ConsumerWidget {
     final hct = Hct.fromColor(color);
     final colorHeight = DataTableTheme.of(context).dataRowMinHeight! - 8.0;
     return [
-
       DataCell(
         Text(
           name,

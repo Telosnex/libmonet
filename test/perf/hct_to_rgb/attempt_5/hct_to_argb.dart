@@ -31,8 +31,10 @@ double _fastLog(double x) {
   final u = (m - 1.0) / (m + 1.0);
   final u2 = u * u;
   // ln(m) = 2*u*(1 + u²/3 + u⁴/5 + u⁶/7)  — 4 terms of odd series
-  final logM = 2.0 * u * (1.0 + u2 * (0.3333333333333333 +
-      u2 * (0.2 + u2 * 0.14285714285714285)));
+  final logM =
+      2.0 *
+      u *
+      (1.0 + u2 * (0.3333333333333333 + u2 * (0.2 + u2 * 0.14285714285714285)));
   return logM + e * _ln2;
 }
 
@@ -42,8 +44,17 @@ double _fastExp(double x) {
   final n = nf.floor();
   final f = x - n * _ln2;
   // Degree-5 Taylor on [0, ln2): exp(f) ≈ 1+f+f²/2+f³/6+f⁴/24+f⁵/120
-  final expF = 1.0 + f * (1.0 + f * (0.5 + f * (0.16666666666666666 +
-      f * (0.041666666666666664 + f * 0.008333333333333333))));
+  final expF =
+      1.0 +
+      f *
+          (1.0 +
+              f *
+                  (0.5 +
+                      f *
+                          (0.16666666666666666 +
+                              f *
+                                  (0.041666666666666664 +
+                                      f * 0.008333333333333333))));
   // 2^n via bit set
   _i64[0] = (1023 + n) << 52;
   return _f64[0] * expF;
@@ -89,13 +100,28 @@ class _SolverConst {
     required this.invCZ,
     required this.tInnerCoeff,
     required this.p1Coeff,
-    required this.m00, required this.m01, required this.m02,
-    required this.m10, required this.m11, required this.m12,
-    required this.m20, required this.m21, required this.m22,
-    required this.sd00, required this.sd01, required this.sd02,
-    required this.sd10, required this.sd11, required this.sd12,
-    required this.sd20, required this.sd21, required this.sd22,
-    required this.kR, required this.kG, required this.kB, required this.kSum,
+    required this.m00,
+    required this.m01,
+    required this.m02,
+    required this.m10,
+    required this.m11,
+    required this.m12,
+    required this.m20,
+    required this.m21,
+    required this.m22,
+    required this.sd00,
+    required this.sd01,
+    required this.sd02,
+    required this.sd10,
+    required this.sd11,
+    required this.sd12,
+    required this.sd20,
+    required this.sd21,
+    required this.sd22,
+    required this.kR,
+    required this.kG,
+    required this.kB,
+    required this.kSum,
     required this.criticalPlanes,
   });
 
@@ -106,8 +132,7 @@ class _SolverConst {
     final sd = g.scaledDiscountFromLinrgb;
 
     // tInnerCoeff = 1 / pow(1.64 - pow(0.29, n), 0.73)
-    final inner =
-        1.64 - math.exp(vc.backgroundYToWhitePointY * math.log(0.29));
+    final inner = 1.64 - math.exp(vc.backgroundYToWhitePointY * math.log(0.29));
     final tIC = 1.0 / math.exp(0.73 * math.log(inner));
 
     return _SolverConst._(
@@ -116,12 +141,24 @@ class _SolverConst {
       invCZ: 1.0 / (vc.c * vc.z),
       tInnerCoeff: tIC,
       p1Coeff: (50000.0 / 13.0) * vc.nC * vc.ncb,
-      m00: m[0][0], m01: m[0][1], m02: m[0][2],
-      m10: m[1][0], m11: m[1][1], m12: m[1][2],
-      m20: m[2][0], m21: m[2][1], m22: m[2][2],
-      sd00: sd[0][0], sd01: sd[0][1], sd02: sd[0][2],
-      sd10: sd[1][0], sd11: sd[1][1], sd12: sd[1][2],
-      sd20: sd[2][0], sd21: sd[2][1], sd22: sd[2][2],
+      m00: m[0][0],
+      m01: m[0][1],
+      m02: m[0][2],
+      m10: m[1][0],
+      m11: m[1][1],
+      m12: m[1][2],
+      m20: m[2][0],
+      m21: m[2][1],
+      m22: m[2][2],
+      sd00: sd[0][0],
+      sd01: sd[0][1],
+      sd02: sd[0][2],
+      sd10: sd[1][0],
+      sd11: sd[1][1],
+      sd12: sd[1][2],
+      sd20: sd[2][0],
+      sd21: sd[2][1],
+      sd22: sd[2][2],
       kR: g.yFromLinrgb[0],
       kG: g.yFromLinrgb[1],
       kB: g.yFromLinrgb[2],
@@ -200,7 +237,10 @@ double _trueDelinearize(double lin) {
 
 /// Finds linRGB with given hueRadians, chroma, y. Returns null if out of gamut.
 (double, double, double)? _findResultByJ(
-    double hueRadians, double chroma, double y) {
+  double hueRadians,
+  double chroma,
+  double y,
+) {
   final sc = _sc;
   var j = math.sqrt(y) * 11.0;
 
@@ -222,7 +262,8 @@ double _trueDelinearize(double lin) {
     // t = (chroma * tIC)^(1/0.9) * jN^(-0.5/0.9)
     final t = _fastExp(_inv0_9 * logCT + tJNCoeff * logJN);
     final p2 = ac / sc.nbb;
-    final gamma = 23.0 *
+    final gamma =
+        23.0 *
         (p2 + 0.305) *
         t /
         (23.0 * p1 + 11.0 * t * hCos + 108.0 * t * hSin);
@@ -237,7 +278,9 @@ double _trueDelinearize(double lin) {
     {
       final a1 = rA < 0.0 ? -rA : rA;
       final d1 = 400.0 - a1;
-      if (d1 <= 0.0) { rCS = 0.0; } else {
+      if (d1 <= 0.0) {
+        rCS = 0.0;
+      } else {
         final b1 = 27.13 * a1 / d1;
         rCS = b1 <= 0.0 ? 0.0 : _fastExp(_inv0_42 * _fastLog(b1));
         if (rA < 0.0) rCS = -rCS;
@@ -246,7 +289,9 @@ double _trueDelinearize(double lin) {
     {
       final a1 = gA < 0.0 ? -gA : gA;
       final d1 = 400.0 - a1;
-      if (d1 <= 0.0) { gCS = 0.0; } else {
+      if (d1 <= 0.0) {
+        gCS = 0.0;
+      } else {
         final b1 = 27.13 * a1 / d1;
         gCS = b1 <= 0.0 ? 0.0 : _fastExp(_inv0_42 * _fastLog(b1));
         if (gA < 0.0) gCS = -gCS;
@@ -255,7 +300,9 @@ double _trueDelinearize(double lin) {
     {
       final a1 = bA < 0.0 ? -bA : bA;
       final d1 = 400.0 - a1;
-      if (d1 <= 0.0) { bCS = 0.0; } else {
+      if (d1 <= 0.0) {
+        bCS = 0.0;
+      } else {
         final b1 = 27.13 * a1 / d1;
         bCS = b1 <= 0.0 ? 0.0 : _fastExp(_inv0_42 * _fastLog(b1));
         if (bA < 0.0) bCS = -bCS;
@@ -311,31 +358,60 @@ bool _areInCyclicOrder(double a, double b, double c) {
     if (n < 4) {
       final g = coordA, b = coordB;
       final r = (y - g * sc.kG - b * sc.kB) / sc.kR;
-      if (r >= 0.0 && r <= 100.0) { mR = r; mG = g; mB = b; } else { mR = -1.0; }
+      if (r >= 0.0 && r <= 100.0) {
+        mR = r;
+        mG = g;
+        mB = b;
+      } else {
+        mR = -1.0;
+      }
     } else if (n < 8) {
       final b = coordA, r = coordB;
       final g = (y - r * sc.kR - b * sc.kB) / sc.kG;
-      if (g >= 0.0 && g <= 100.0) { mR = r; mG = g; mB = b; } else { mR = -1.0; }
+      if (g >= 0.0 && g <= 100.0) {
+        mR = r;
+        mG = g;
+        mB = b;
+      } else {
+        mR = -1.0;
+      }
     } else {
       final r = coordA, g = coordB;
       final b = (y - r * sc.kR - g * sc.kG) / sc.kB;
-      if (b >= 0.0 && b <= 100.0) { mR = r; mG = g; mB = b; } else { mR = -1.0; }
+      if (b >= 0.0 && b <= 100.0) {
+        mR = r;
+        mG = g;
+        mB = b;
+      } else {
+        mR = -1.0;
+      }
     }
     if (mR < 0.0) continue;
     final midHue = _hueOf(mR, mG, mB);
     if (!initialized) {
-      lR = mR; lG = mG; lB = mB;
-      rR = mR; rG = mG; rB = mB;
-      leftHue = midHue; rightHue = midHue;
+      lR = mR;
+      lG = mG;
+      lB = mB;
+      rR = mR;
+      rG = mG;
+      rB = mB;
+      leftHue = midHue;
+      rightHue = midHue;
       initialized = true;
       continue;
     }
     if (uncut || _areInCyclicOrder(leftHue, midHue, rightHue)) {
       uncut = false;
       if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
-        rR = mR; rG = mG; rB = mB; rightHue = midHue;
+        rR = mR;
+        rG = mG;
+        rB = mB;
+        rightHue = midHue;
       } else {
-        lR = mR; lG = mG; lB = mB; leftHue = midHue;
+        lR = mR;
+        lG = mG;
+        lB = mB;
+        leftHue = midHue;
       }
     }
   }
@@ -367,9 +443,16 @@ bool _areInCyclicOrder(double a, double b, double c) {
       mB = lB + (rB - lB) * t;
       final midHue = _hueOf(mR, mG, mB);
       if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
-        rR = mR; rG = mG; rB = mB; rPlane = mPlane;
+        rR = mR;
+        rG = mG;
+        rB = mB;
+        rPlane = mPlane;
       } else {
-        lR = mR; lG = mG; lB = mB; leftHue = midHue; lPlane = mPlane;
+        lR = mR;
+        lG = mG;
+        lB = mB;
+        leftHue = midHue;
+        lPlane = mPlane;
       }
     }
   }

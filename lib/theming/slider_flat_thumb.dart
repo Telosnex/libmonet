@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
+
 import 'package:material_ui/material_ui.dart';
 
 class SliderFlatThumb extends SliderComponentShape {
@@ -27,26 +28,33 @@ class SliderFlatThumb extends SliderComponentShape {
   }
 
   @override
-  void paint(PaintingContext context, Offset center,
-      {required Animation<double> activationAnimation,
-      required Animation<double> enableAnimation,
-      bool? isDiscrete,
-      TextPainter? labelPainter,
-      RenderBox? parentBox,
-      required SliderThemeData sliderTheme,
-      TextDirection? textDirection,
-      double? value,
-      double? textScaleFactor,
-      Size? sizeWithOverflow}) {
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    bool? isDiscrete,
+    TextPainter? labelPainter,
+    RenderBox? parentBox,
+    required SliderThemeData sliderTheme,
+    TextDirection? textDirection,
+    double? value,
+    double? textScaleFactor,
+    Size? sizeWithOverflow,
+  }) {
     final Canvas canvas = context.canvas;
     final ColorTween colorTween = ColorTween(
-        begin: sliderTheme.disabledThumbColor, end: sliderTheme.thumbColor);
+      begin: sliderTheme.disabledThumbColor,
+      end: sliderTheme.thumbColor,
+    );
     final paint = Paint()..color = colorTween.evaluate(enableAnimation)!;
     canvas.drawCircle(center, thumbRadius, paint);
     canvas.drawArc(
       Rect.fromCenter(
-              center: center, width: 2 * thumbRadius, height: 2 * thumbRadius)
-          .deflate(borderWidth / 2),
+        center: center,
+        width: 2 * thumbRadius,
+        height: 2 * thumbRadius,
+      ).deflate(borderWidth / 2),
       math.pi / 2,
       -math.pi,
       false,
@@ -68,27 +76,31 @@ class SliderFlatThumb extends SliderComponentShape {
     final double iconSize = thumbRadius * 2 - 16;
     final ui.ParagraphBuilder builder;
     if (paintIcon) {
-      builder = ui.ParagraphBuilder(ui.ParagraphStyle(
-        fontFamily: concreteIconData.fontFamily,
-        fontSize: iconSize,
-      ))
-        ..pushStyle(ui.TextStyle(
-          color: iconColor,
-          fontSize: iconSize,
-        ))
-        ..addText(String.fromCharCode(concreteIconData.codePoint));
-
+      builder =
+          ui.ParagraphBuilder(
+              ui.ParagraphStyle(
+                fontFamily: concreteIconData.fontFamily,
+                fontSize: iconSize,
+              ),
+            )
+            ..pushStyle(ui.TextStyle(color: iconColor, fontSize: iconSize))
+            ..addText(String.fromCharCode(concreteIconData.codePoint));
     } else if (paintLetter) {
-      builder = ui.ParagraphBuilder(ui.ParagraphStyle(
-        fontFamily: concreteTextStyle.fontFamily,
-        fontSize: iconSize,
-      ))
-        ..pushStyle(ui.TextStyle(
-          color: concreteTextStyle.color,
-          fontSize: iconSize,
-          fontWeight: concreteTextStyle.fontWeight,
-        ))
-        ..addText(concreteLetter);
+      builder =
+          ui.ParagraphBuilder(
+              ui.ParagraphStyle(
+                fontFamily: concreteTextStyle.fontFamily,
+                fontSize: iconSize,
+              ),
+            )
+            ..pushStyle(
+              ui.TextStyle(
+                color: concreteTextStyle.color,
+                fontSize: iconSize,
+                fontWeight: concreteTextStyle.fontWeight,
+              ),
+            )
+            ..addText(concreteLetter);
     } else {
       throw Exception('Should not be here');
     }
@@ -96,8 +108,10 @@ class SliderFlatThumb extends SliderComponentShape {
       ..layout(ui.ParagraphConstraints(width: iconSize));
     final double iconHeight = paragraph.height;
     final double iconWidth = paragraph.minIntrinsicWidth;
-    iconCanvas.drawParagraph(paragraph,
-        Offset(center.dx - iconWidth / 2, center.dy - iconHeight / 2));
+    iconCanvas.drawParagraph(
+      paragraph,
+      Offset(center.dx - iconWidth / 2, center.dy - iconHeight / 2),
+    );
     final ui.Picture p = pictureRecorder.endRecording();
     canvas.drawPicture(p);
   }

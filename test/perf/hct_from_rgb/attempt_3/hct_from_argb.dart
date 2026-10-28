@@ -18,13 +18,15 @@ import 'dart:typed_data';
 // ═══════════════════════════════════════════════════════════════════
 // LUT: sRGB byte [0..255] → linearized×100 [0..100]
 // ═══════════════════════════════════════════════════════════════════
-final _lut = Float64List.fromList(List<double>.generate(256, (i) {
-  final s = i / 255.0;
-  return (s <= 0.040449936
-          ? s / 12.92
-          : math.pow((s + 0.055) / 1.055, 2.4).toDouble()) *
-      100.0;
-}));
+final _lut = Float64List.fromList(
+  List<double>.generate(256, (i) {
+    final s = i / 255.0;
+    return (s <= 0.040449936
+            ? s / 12.92
+            : math.pow((s + 0.055) / 1.055, 2.4).toDouble()) *
+        100.0;
+  }),
+);
 
 // ═══════════════════════════════════════════════════════════════════
 // Fused sRGB_linear → Cone = M_HPE × M_sRGBtoXYZ
@@ -157,11 +159,16 @@ double _atan2Deg(double y, double x) {
   // Minimax polynomial: atan(t) ≈ t * (c0 + t² * (c1 + t² * (c2 + t² * c3)))
   // Coefficients from Remez algorithm for atan on [0,1].
   final t2 = t * t;
-  final p = t * (0.9998660373390498 +
-      t2 * (-0.3302994853598744 +
-          t2 * (0.18014100558784592 +
-              t2 * (-0.08513091091949968 +
-                  t2 * 0.020835795246366796))));
+  final p =
+      t *
+      (0.9998660373390498 +
+          t2 *
+              (-0.3302994853598744 +
+                  t2 *
+                      (0.18014100558784592 +
+                          t2 *
+                              (-0.08513091091949968 +
+                                  t2 * 0.020835795246366796))));
 
   // Undo range reduction: if swapped, atan(t) → π/2 - atan(t)
   double r = swapped ? 1.5707963267948966 - p : p;
@@ -225,7 +232,8 @@ const _deg2rad = math.pi / 180.0;
   final eHue = 0.25 * (math.cos(huePrime * _deg2rad + 2.0) + 3.8);
   final t = vc.p1k * eHue * math.sqrt(a * a + b * b) / (u + 0.305);
   final chroma =
-      vc.alphaK * math.exp(0.9 * math.log(t) + vc.halfCz * math.log(ac * vc.invAw));
+      vc.alphaK *
+      math.exp(0.9 * math.log(t) + vc.halfCz * math.log(ac * vc.invAw));
 
   return (hue, chroma, tone);
 }

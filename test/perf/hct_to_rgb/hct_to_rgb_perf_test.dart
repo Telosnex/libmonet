@@ -11,8 +11,8 @@ import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import '../perf_tester.dart';
 
 import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'attempt_3/hct_to_argb.dart' as attempt;
 
+import 'attempt_3/hct_to_argb.dart' as attempt;
 
 void main() async {
   // ── Generate test cases: valid HCT triples from real sRGB colors ──

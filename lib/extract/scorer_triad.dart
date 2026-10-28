@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:libmonet/colorspaces/color_model.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/effects/temperature.dart';
@@ -68,45 +69,58 @@ class ScorerTriad {
         'H${hct.hue.toStringAsFixed(2)} C${hct.chroma.toStringAsFixed(2)} T${hct.tone.toStringAsFixed(2)}';
     String describeCandidates(List<Hct> hcts, {int limit = 8}) {
       final sorted = hcts.toList()
-        ..sort((a, b) =>
-            (scorer.hctToCount[b] ?? 0).compareTo(scorer.hctToCount[a] ?? 0));
-      return sorted.take(limit).map((hct) {
-        final count = scorer.hctToCount[hct] ?? 0;
-        return '${describeHct(hct)} count=$count';
-      }).join('; ');
+        ..sort(
+          (a, b) =>
+              (scorer.hctToCount[b] ?? 0).compareTo(scorer.hctToCount[a] ?? 0),
+        );
+      return sorted
+          .take(limit)
+          .map((hct) {
+            final count = scorer.hctToCount[hct] ?? 0;
+            return '${describeHct(hct)} count=$count';
+          })
+          .join('; ');
     }
 
     final filteredHues = scorer.hcts.map((hct) => hct.hue.round()).toSet()
       ..removeWhere((hue) => hue < 0 || hue > 360);
     log(() => 'filtered candidates: ${scorer.hcts.length}');
     log(() => 'filtered hues: ${filteredHues.toList()..sort()}');
-    log(() => 'top primary hue without chroma filter: '
-        '${scorer.primaryHueToSmearedPercent.indexOf(scorer.primaryHueToSmearedPercent.reduce(math.max))}');
-    log(() => 'top filtered hue with chroma filter: '
-        '${scorer.hueToSmearedPercent.indexOf(scorer.hueToSmearedPercent.reduce(math.max))}');
+    log(
+      () =>
+          'top primary hue without chroma filter: '
+          '${scorer.primaryHueToSmearedPercent.indexOf(scorer.primaryHueToSmearedPercent.reduce(math.max))}',
+    );
+    log(
+      () =>
+          'top filtered hue with chroma filter: '
+          '${scorer.hueToSmearedPercent.indexOf(scorer.hueToSmearedPercent.reduce(math.max))}',
+    );
 
     final colorToCountKeys = result.argbToCount.keys.toList();
     // Sort the keys so the color with the top count is first.
     colorToCountKeys.sort(
-        (a, b) => result.argbToCount[b]!.compareTo(result.argbToCount[a]!));
-    final topFilteredColor = colorToCountKeys.reduce(
-      (incumbentKey, contenderKey) {
-        final incumbentHct = Hct.fromInt(incumbentKey, model: colorModel);
-        final contenderHct = Hct.fromInt(contenderKey, model: colorModel);
-        if (toneTooLow != null && contenderHct.tone <= toneTooLow) {
-          return incumbentKey;
-        }
-        if (toneTooHigh != null && contenderHct.tone >= toneTooHigh) {
-          return incumbentKey;
-        }
-        if (scorer.primaryHuePercent(contenderHct.hue.round()) >
-            scorer.primaryHuePercent(incumbentHct.hue.round())) {
-          return contenderKey;
-        } else {
-          return incumbentKey;
-        }
-      },
+      (a, b) => result.argbToCount[b]!.compareTo(result.argbToCount[a]!),
     );
+    final topFilteredColor = colorToCountKeys.reduce((
+      incumbentKey,
+      contenderKey,
+    ) {
+      final incumbentHct = Hct.fromInt(incumbentKey, model: colorModel);
+      final contenderHct = Hct.fromInt(contenderKey, model: colorModel);
+      if (toneTooLow != null && contenderHct.tone <= toneTooLow) {
+        return incumbentKey;
+      }
+      if (toneTooHigh != null && contenderHct.tone >= toneTooHigh) {
+        return incumbentKey;
+      }
+      if (scorer.primaryHuePercent(contenderHct.hue.round()) >
+          scorer.primaryHuePercent(incumbentHct.hue.round())) {
+        return contenderKey;
+      } else {
+        return incumbentKey;
+      }
+    });
     final backupHct = Hct.fromInt(topFilteredColor, model: colorModel);
     final double topPrimaryHue;
     final double topPrimaryChroma;
@@ -124,21 +138,31 @@ class ScorerTriad {
             .toDouble();
 
         if (debugLog) {
-          log(() =>
-              '[ScorerTriad] topPrimaryHue from hueToSmearedPercent: $topPrimaryHue');
+          log(
+            () =>
+                '[ScorerTriad] topPrimaryHue from hueToSmearedPercent: $topPrimaryHue',
+          );
         }
 
         final Hct primary;
         if (primaryIsAverageOfNearby) {
           primary = scorer.averagedHctNearHue(
-              hue: topPrimaryHue, backupTone: backupHct.tone);
-          log(() =>
-              'Selected primary using averaged HCT near hue. Primary HCT: $primary');
+            hue: topPrimaryHue,
+            backupTone: backupHct.tone,
+          );
+          log(
+            () =>
+                'Selected primary using averaged HCT near hue. Primary HCT: $primary',
+          );
         } else {
           primary = scorer.topHctNearHue(
-              hue: topPrimaryHue, backupTone: backupHct.tone);
-          log(() =>
-              'Selected primary using top HCT near hue. Primary HCT: $primary');
+            hue: topPrimaryHue,
+            backupTone: backupHct.tone,
+          );
+          log(
+            () =>
+                'Selected primary using top HCT near hue. Primary HCT: $primary',
+          );
         }
         topPrimaryChroma = primary.chroma;
         topPrimaryTone = primary.tone;
@@ -157,8 +181,10 @@ class ScorerTriad {
     {
       if (scorer.hcts.isEmpty) {
         topSecondaryHue = TemperatureCache(primary).analogous()[1].hue;
-        log(() =>
-            'secondary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}');
+        log(
+          () =>
+              'secondary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}',
+        );
         topSecondaryChroma = backupHct.chroma;
         topSecondaryTone = backupHct.tone;
       } else {
@@ -169,26 +195,42 @@ class ScorerTriad {
         final secondaryHcts = secondarySelection.candidates;
         if (secondaryHcts.isEmpty) {
           topSecondaryHue = TemperatureCache(primary).analogous()[1].hue;
-          log(() =>
-              'secondary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}');
+          log(
+            () =>
+                'secondary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}',
+          );
           topSecondaryChroma = backupHct.chroma;
           topSecondaryTone = backupHct.tone;
         } else {
-          log(() =>
-              'secondary has ${secondaryHcts.length} candidates using ${secondarySelection.label}');
-          log(() =>
-              'secondary top candidates: ${describeCandidates(secondaryHcts)}');
+          log(
+            () =>
+                'secondary has ${secondaryHcts.length} candidates using ${secondarySelection.label}',
+          );
+          log(
+            () =>
+                'secondary top candidates: ${describeCandidates(secondaryHcts)}',
+          );
           final secondaryHuesSmeared = Scorer.createHueToPercentage(
-              secondaryHcts, scorer.hueToPercent, 0);
-          final topHueIndex = secondaryHuesSmeared
-              .indexOf(secondaryHuesSmeared.reduce(math.max));
+            secondaryHcts,
+            scorer.hueToPercent,
+            0,
+          );
+          final topHueIndex = secondaryHuesSmeared.indexOf(
+            secondaryHuesSmeared.reduce(math.max),
+          );
           topSecondaryHue = topHueIndex.toDouble();
-          log(() =>
-              'topSecondaryHue from secondary candidates: $topSecondaryHue');
-          final secondary = scorer.topHctNearHueFrom(secondaryHcts,
-              hue: topSecondaryHue, backupTone: backupHct.tone);
-          log(() =>
-              'secondary representative from rolePool: ${describeHct(secondary)}');
+          log(
+            () => 'topSecondaryHue from secondary candidates: $topSecondaryHue',
+          );
+          final secondary = scorer.topHctNearHueFrom(
+            secondaryHcts,
+            hue: topSecondaryHue,
+            backupTone: backupHct.tone,
+          );
+          log(
+            () =>
+                'secondary representative from rolePool: ${describeHct(secondary)}',
+          );
           topSecondaryChroma = secondary.chroma;
           topSecondaryTone = secondary.tone;
         }
@@ -213,8 +255,10 @@ class ScorerTriad {
       const tertiaryHueAvoidsSecondaryHue = true;
       if (scorer.hcts.isEmpty) {
         topTertiaryHue = TemperatureCache(primary).analogous()[3].hue;
-        log(() =>
-            'tertiary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}');
+        log(
+          () =>
+              'tertiary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topSecondaryHue.round()}',
+        );
         topTertiaryChroma = backupHct.chroma;
         topTertiaryTone = backupHct.tone;
       } else {
@@ -237,26 +281,42 @@ class ScorerTriad {
 
         if (tertiaryHcts.isEmpty) {
           topTertiaryHue = TemperatureCache(primary).analogous()[3].hue;
-          log(() =>
-              'tertiary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topTertiaryHue.round()}');
+          log(
+            () =>
+                'tertiary has 0 candidates, going with analogous hue to primary hue ${primary.hue.round()}: ${topTertiaryHue.round()}',
+          );
           topTertiaryChroma = backupHct.chroma;
           topTertiaryTone = backupHct.tone;
         } else {
-          log(() =>
-              'tertiary has ${tertiaryHcts.length} candidates using ${tertiarySelection.label}');
-          log(() =>
-              'tertiary top candidates: ${describeCandidates(tertiaryHcts)}');
+          log(
+            () =>
+                'tertiary has ${tertiaryHcts.length} candidates using ${tertiarySelection.label}',
+          );
+          log(
+            () =>
+                'tertiary top candidates: ${describeCandidates(tertiaryHcts)}',
+          );
           final tertiaryHuesSmeared = Scorer.createHueToPercentage(
-              tertiaryHcts, scorer.hueToPercent, 0);
+            tertiaryHcts,
+            scorer.hueToPercent,
+            0,
+          );
           topTertiaryHue = tertiaryHuesSmeared
               .indexOf(tertiaryHuesSmeared.reduce(math.max))
               .toDouble();
-          log(() =>
-              'topTertiaryHue for ${tertiaryHcts.length} candidates: $topTertiaryHue');
-          final tertiary = scorer.topHctNearHueFrom(tertiaryHcts,
-              hue: topTertiaryHue, backupTone: backupHct.tone);
-          log(() =>
-              'tertiary representative from rolePool: ${describeHct(tertiary)}');
+          log(
+            () =>
+                'topTertiaryHue for ${tertiaryHcts.length} candidates: $topTertiaryHue',
+          );
+          final tertiary = scorer.topHctNearHueFrom(
+            tertiaryHcts,
+            hue: topTertiaryHue,
+            backupTone: backupHct.tone,
+          );
+          log(
+            () =>
+                'tertiary representative from rolePool: ${describeHct(tertiary)}',
+          );
           topTertiaryChroma = tertiary.chroma;
           topTertiaryTone = tertiary.tone;
         }
@@ -268,8 +328,10 @@ class ScorerTriad {
       topTertiaryTone,
       model: colorModel,
     );
-    log(() =>
-        'threeColorsFromQuantizer done. Primary: $primary, Secondary: $secondary, Tertiary: $tertiary');
+    log(
+      () =>
+          'threeColorsFromQuantizer done. Primary: $primary, Secondary: $secondary, Tertiary: $tertiary',
+    );
     // Motivating examples for ensureClosestPairPrimary:
     // 1. A blue and green flower on a blue background.
     // Unsplash photo by Saffu.
@@ -306,19 +368,28 @@ class ScorerTriad {
         debugLog: debugLog,
         traceLog: traceLog,
       );
-      log(() => 'threeColorsFromQuantizer final returned roles. '
-          'Primary: ${reordered[0]}, Secondary: ${reordered[1]}, '
-          'Tertiary: ${reordered[2]}');
+      log(
+        () =>
+            'threeColorsFromQuantizer final returned roles. '
+            'Primary: ${reordered[0]}, Secondary: ${reordered[1]}, '
+            'Tertiary: ${reordered[2]}',
+      );
       return reordered;
     } else {
-      log(() => 'threeColorsFromQuantizer final returned roles. '
-          'Primary: $primary, Secondary: $secondary, Tertiary: $tertiary');
+      log(
+        () =>
+            'threeColorsFromQuantizer final returned roles. '
+            'Primary: $primary, Secondary: $secondary, Tertiary: $tertiary',
+      );
       return [primary, secondary, tertiary];
     }
   }
 
-  static List<Hct> _ensureClosestPairPrimary(List<Hct> candidates,
-      {bool debugLog = false, List<String>? traceLog}) {
+  static List<Hct> _ensureClosestPairPrimary(
+    List<Hct> candidates, {
+    bool debugLog = false,
+    List<String>? traceLog,
+  }) {
     void log(String Function() message) {
       if (debugLog || traceLog != null) {
         final line = message();
@@ -333,32 +404,48 @@ class ScorerTriad {
 
     if (candidates.length != 3) {
       throw ArgumentError(
-          'The list must contain exactly three Hct candidates.');
+        'The list must contain exactly three Hct candidates.',
+      );
     }
 
-    final primarySecondaryDistance =
-        differenceDegrees(candidates[0].hue, candidates[1].hue);
-    final secondaryTertiaryDistance =
-        differenceDegrees(candidates[1].hue, candidates[2].hue);
-    final tertiaryPrimaryDistance =
-        differenceDegrees(candidates[2].hue, candidates[0].hue);
-    log(() => 'pairwise distances before closest-pair reorder: '
-        'primary-secondary=${primarySecondaryDistance.toStringAsFixed(2)}, '
-        'secondary-tertiary=${secondaryTertiaryDistance.toStringAsFixed(2)}, '
-        'tertiary-primary=${tertiaryPrimaryDistance.toStringAsFixed(2)}');
+    final primarySecondaryDistance = differenceDegrees(
+      candidates[0].hue,
+      candidates[1].hue,
+    );
+    final secondaryTertiaryDistance = differenceDegrees(
+      candidates[1].hue,
+      candidates[2].hue,
+    );
+    final tertiaryPrimaryDistance = differenceDegrees(
+      candidates[2].hue,
+      candidates[0].hue,
+    );
+    log(
+      () =>
+          'pairwise distances before closest-pair reorder: '
+          'primary-secondary=${primarySecondaryDistance.toStringAsFixed(2)}, '
+          'secondary-tertiary=${secondaryTertiaryDistance.toStringAsFixed(2)}, '
+          'tertiary-primary=${tertiaryPrimaryDistance.toStringAsFixed(2)}',
+    );
 
     if (primarySecondaryDistance <= tertiaryPrimaryDistance) {
-      log(() => 'selected primary is anchored; secondary is already closer. '
-          'primary: ${candidates[0].hue.round()} '
-          'secondary: ${candidates[1].hue.round()} '
-          'tertiary: ${candidates[2].hue.round()}');
+      log(
+        () =>
+            'selected primary is anchored; secondary is already closer. '
+            'primary: ${candidates[0].hue.round()} '
+            'secondary: ${candidates[1].hue.round()} '
+            'tertiary: ${candidates[2].hue.round()}',
+      );
       return [candidates[0], candidates[1], candidates[2]];
     }
 
-    log(() => 'selected primary is anchored; tertiary is closer, swapping '
-        'secondary/tertiary. primary: ${candidates[0].hue.round()} '
-        'secondary: ${candidates[1].hue.round()} '
-        'tertiary: ${candidates[2].hue.round()}');
+    log(
+      () =>
+          'selected primary is anchored; tertiary is closer, swapping '
+          'secondary/tertiary. primary: ${candidates[0].hue.round()} '
+          'secondary: ${candidates[1].hue.round()} '
+          'tertiary: ${candidates[2].hue.round()}',
+    );
     return [candidates[0], candidates[2], candidates[1]];
   }
 
@@ -396,15 +483,19 @@ class ScorerTriad {
   }) {
     for (final threshold in [45.0, 30.0, 15.0]) {
       final matching = candidates.where((hct) {
-        final farEnoughFromPrimary = !avoidsPrimary ||
+        final farEnoughFromPrimary =
+            !avoidsPrimary ||
             differenceDegrees(hct.hue, primary.hue) >= threshold;
-        final farEnoughFromSecondary = !avoidsSecondary ||
+        final farEnoughFromSecondary =
+            !avoidsSecondary ||
             differenceDegrees(hct.hue, secondary.hue) >= threshold;
         return farEnoughFromPrimary && farEnoughFromSecondary;
       }).toList();
       if (matching.isNotEmpty) {
         return _CandidateSelection(
-            '>=${threshold.round()}deg from primary/secondary', matching);
+          '>=${threshold.round()}deg from primary/secondary',
+          matching,
+        );
       }
     }
 

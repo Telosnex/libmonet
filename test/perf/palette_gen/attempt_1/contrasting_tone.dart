@@ -14,7 +14,6 @@
 /// searching, widening to full range if the seed was off.
 library;
 
-
 import 'package:libmonet/colorspaces/hct_solver.dart';
 import 'package:libmonet/contrast/apca.dart';
 import 'package:libmonet/contrast/apca_contrast.dart';
@@ -73,10 +72,12 @@ double contrastingToneApca({
           : 100.0;
     }
     final seed = lstarSeed();
-    double lo =
-        seed != null ? (seed - kSeedMargin).clamp(refTone, 100.0) : refTone;
-    double hi =
-        seed != null ? (seed + kSeedMargin).clamp(refTone, 100.0) : 100.0;
+    double lo = seed != null
+        ? (seed - kSeedMargin).clamp(refTone, 100.0)
+        : refTone;
+    double hi = seed != null
+        ? (seed + kSeedMargin).clamp(refTone, 100.0)
+        : 100.0;
     // Verify bracket: hi must meet contrast, lo must not.
     // If bracket is broken, widen to full range.
     if (lcAt(hi) < requiredLc) hi = 100.0;
@@ -101,8 +102,9 @@ double contrastingToneApca({
     }
     final seed = lstarSeed();
     double lo = seed != null ? (seed - kSeedMargin).clamp(0.0, refTone) : 0.0;
-    double hi =
-        seed != null ? (seed + kSeedMargin).clamp(0.0, refTone) : refTone;
+    double hi = seed != null
+        ? (seed + kSeedMargin).clamp(0.0, refTone)
+        : refTone;
     // Verify bracket: lo must meet contrast.
     if (lcAt(lo) < requiredLc) lo = 0.0;
     for (int i = 0; i < kIter; i++) {

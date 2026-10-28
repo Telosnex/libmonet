@@ -11,13 +11,15 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 /// Precomputed sRGB byte [0..255] → linearized [0..100].
-final _linearLut = Float64List.fromList(List<double>.generate(256, (i) {
-  final s = i / 255.0;
-  return (s <= 0.040449936
-          ? s / 12.92
-          : math.pow((s + 0.055) / 1.055, 2.4).toDouble()) *
-      100.0;
-}));
+final _linearLut = Float64List.fromList(
+  List<double>.generate(256, (i) {
+    final s = i / 255.0;
+    return (s <= 0.040449936
+            ? s / 12.92
+            : math.pow((s + 0.055) / 1.055, 2.4).toDouble()) *
+        100.0;
+  }),
+);
 
 /// All sRGB viewing condition constants, computed once.
 final _vc = _Vc._compute();
@@ -65,8 +67,7 @@ class _Vc {
     final k = 1.0 / (5.0 * aL + 1.0);
     final k4 = k * k * k * k;
     final k4F = 1.0 - k4;
-    final fl = (k4 * aL +
-            0.1 * k4F * k4F * math.pow(5.0 * aL, 1.0 / 3.0))
+    final fl = (k4 * aL + 0.1 * k4F * k4F * math.pow(5.0 * aL, 1.0 / 3.0))
         .toDouble();
 
     final n = 18.418651851244416 / wp[1];
@@ -152,8 +153,8 @@ class _Vc {
   final hue = atanDeg < 0
       ? atanDeg + 360.0
       : atanDeg >= 360.0
-          ? atanDeg - 360.0
-          : atanDeg;
+      ? atanDeg - 360.0
+      : atanDeg;
 
   // ── J (lightness) ──
   final p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0;

@@ -10,19 +10,23 @@ import 'package:libmonet/contrast/luma_contrast.dart';
 import '../utils/color_matcher.dart';
 
 void main() {
-  test('all RGBs are in range of L* produced from their APCA Y', skip: 'long running validator', () {
-    for (int r = 0; r <= 255; r += 1) {
-      for (int g = 0; g <= 255; g += 1) {
-        for (int b = 0; b <= 255; b += 1) {
-          final argb = argbFromRgb(r, g, b);
-          final lstar = lstarFromArgb(argb);
-          final luma = lumaFromArgb(argb);
-          final lstarRange = lumaToLstarRange(luma);
-          expect(lstar, inInclusiveRange(lstarRange[0], lstarRange[1]));
+  test(
+    'all RGBs are in range of L* produced from their APCA Y',
+    skip: 'long running validator',
+    () {
+      for (int r = 0; r <= 255; r += 1) {
+        for (int g = 0; g <= 255; g += 1) {
+          for (int b = 0; b <= 255; b += 1) {
+            final argb = argbFromRgb(r, g, b);
+            final lstar = lstarFromArgb(argb);
+            final luma = lumaFromArgb(argb);
+            final lstarRange = lumaToLstarRange(luma);
+            expect(lstar, inInclusiveRange(lstarRange[0], lstarRange[1]));
+          }
         }
       }
-    }
-  });
+    },
+  );
 
   test('verify highest diff. between grayscale L* and L* from luma', () {
     final color = argbFromRgb(255, 0, 3);
@@ -65,10 +69,7 @@ void main() {
     print(tsv.toString());
   });
 
-  test('Full RGB Explorer',
-      skip:
-          'important diagnostic code for producing error tolerances needed due to RGB being whole numbers, but not a test',
-      () {
+  test('Full RGB Explorer', skip: 'important diagnostic code for producing error tolerances needed due to RGB being whole numbers, but not a test', () {
     var maxLumaToGrayscaleToLumaError = -1.0;
     var maxOverallDiff = -1.0;
     var maxOverallDiffRgbTriple = <int>[];
@@ -95,8 +96,10 @@ void main() {
             final grayscaleArgbMatchingLuma = grayscaleArgbFromLuma(luma);
             final verifyGrayscaleLuma = lumaFromArgb(grayscaleArgbMatchingLuma);
             final error = (luma - verifyGrayscaleLuma).abs();
-            maxLumaToGrayscaleToLumaError =
-                math.max(maxLumaToGrayscaleToLumaError, error);
+            maxLumaToGrayscaleToLumaError = math.max(
+              maxLumaToGrayscaleToLumaError,
+              error,
+            );
           }
 
           // This verifies that when we go from luma => ARGBs, the ARGBs
@@ -110,12 +113,15 @@ void main() {
           if (false) {
             final luma = lumaFromArgb(argbFromRgb(r, g, b));
             final boundaryArgbs = findBoundaryArgbsForLuma(luma);
-            final boundaryArgbsLumas =
-                boundaryArgbs.map((e) => lumaFromArgb(e)).toList();
+            final boundaryArgbsLumas = boundaryArgbs
+                .map((e) => lumaFromArgb(e))
+                .toList();
             for (final boundaryArgbLuma in boundaryArgbsLumas) {
               final diffFromTrueLuma = (boundaryArgbLuma - luma).abs();
-              argbToLumaToArgbsToLumasMaxError =
-                  math.max(argbToLumaToArgbsToLumasMaxError, diffFromTrueLuma);
+              argbToLumaToArgbsToLumasMaxError = math.max(
+                argbToLumaToArgbsToLumasMaxError,
+                diffFromTrueLuma,
+              );
             }
           }
 
@@ -136,24 +142,32 @@ void main() {
             final trueLstar = lstarFromArgb(argbFromRgb(r, g, b));
             final boundaryArgbsForTrueLuma = findBoundaryArgbsForLuma(trueLuma);
 
-            final boundaryLstars =
-                boundaryArgbsForTrueLuma.map((e) => lstarFromArgb(e)).toList();
+            final boundaryLstars = boundaryArgbsForTrueLuma
+                .map((e) => lstarFromArgb(e))
+                .toList();
             final maxBoundaryLstar = boundaryLstars.reduce(math.max);
             final minBoundaryLstar = boundaryLstars.reduce(math.min);
 
             expect(
-                trueLstar,
-                inInclusiveRange(minBoundaryLstar - 0.24766520401936987,
-                    maxBoundaryLstar + 0.008416650634032408),
-                reason: 'tried $r, $g, $b');
+              trueLstar,
+              inInclusiveRange(
+                minBoundaryLstar - 0.24766520401936987,
+                maxBoundaryLstar + 0.008416650634032408,
+              ),
+              reason: 'tried $r, $g, $b',
+            );
             if (trueLstar < minBoundaryLstar) {
               minBoundaryErrors++;
               minBoundaryErrorLstar = math.max(
-                  minBoundaryErrorLstar, (minBoundaryLstar - trueLstar).abs());
+                minBoundaryErrorLstar,
+                (minBoundaryLstar - trueLstar).abs(),
+              );
             } else if (trueLstar > maxBoundaryLstar) {
               maxBoundaryErrors++;
               maxBoundaryErrorLstar = math.max(
-                  maxBoundaryErrorLstar, (maxBoundaryLstar - trueLstar).abs());
+                maxBoundaryErrorLstar,
+                (maxBoundaryLstar - trueLstar).abs(),
+              );
             }
           }
 
@@ -163,7 +177,8 @@ void main() {
           // maxOverallDiff: 30.62477937847987. @ 255, 0, 3
           if (false) {
             final yDiff = _findDiffBetweenTrueLstarAndLstarRangeFromLuma(
-                argbFromRgb(r, g, b));
+              argbFromRgb(r, g, b),
+            );
             if (yDiff > maxOverallDiff) {
               maxOverallDiff = yDiff;
               maxOverallDiffRgbTriple = [r, g, b];
@@ -178,21 +193,26 @@ void main() {
     }
     if (argbToLumaToArgbsToLumasMaxError > -1) {
       print(
-          'maxArgbToApcaToApcsToArgbsApcaError: $argbToLumaToArgbsToLumasMaxError');
+        'maxArgbToApcaToApcsToArgbsApcaError: $argbToLumaToArgbsToLumasMaxError',
+      );
     }
     if (maxOverallDiff > -1) {
       print(
-          'maxOverallDiff: $maxOverallDiff. @ ${maxOverallDiffRgbTriple[0]}, ${maxOverallDiffRgbTriple[1]}, ${maxOverallDiffRgbTriple[2]}');
+        'maxOverallDiff: $maxOverallDiff. @ ${maxOverallDiffRgbTriple[0]}, ${maxOverallDiffRgbTriple[1]}, ${maxOverallDiffRgbTriple[2]}',
+      );
     }
     if (minBoundaryErrorLstar > -1) {
       print(
-          'minBoundaryError: $minBoundaryErrorLstar. total errors: $minBoundaryErrors');
+        'minBoundaryError: $minBoundaryErrorLstar. total errors: $minBoundaryErrors',
+      );
       print(
-          'maxBoundaryError: $maxBoundaryErrorLstar. total errors: $maxBoundaryErrors');
+        'maxBoundaryError: $maxBoundaryErrorLstar. total errors: $maxBoundaryErrors',
+      );
     }
     if (maxError > -1) {
       print(
-          'maxError: $maxError. @ ${maxErrorRgbTriple[0]}, ${maxErrorRgbTriple[1]}, ${maxErrorRgbTriple[2]}');
+        'maxError: $maxError. @ ${maxErrorRgbTriple[0]}, ${maxErrorRgbTriple[1]}, ${maxErrorRgbTriple[2]}',
+      );
     }
   });
 }

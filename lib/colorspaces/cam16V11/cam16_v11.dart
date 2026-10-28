@@ -147,7 +147,9 @@ class Cam16V11 {
 
   /// Given [viewingConditions], convert [argb] to CAM16 v11.
   static Cam16V11 fromIntInViewingConditions(
-      int argb, Cam16V11ViewingConditions viewingConditions) {
+    int argb,
+    Cam16V11ViewingConditions viewingConditions,
+  ) {
     final r = linear(redFromArgb(argb));
     final g = linear(greenFromArgb(argb));
     final b = linear(blueFromArgb(argb));
@@ -160,8 +162,12 @@ class Cam16V11 {
 
   /// Given color expressed in XYZ and viewed in [viewingConditions], convert to
   /// CAM16 v11.
-  static Cam16V11 fromXyzInViewingConditions(double x, double y, double z,
-      Cam16V11ViewingConditions viewingConditions) {
+  static Cam16V11 fromXyzInViewingConditions(
+    double x,
+    double y,
+    double z,
+    Cam16V11ViewingConditions viewingConditions,
+  ) {
     // Transform XYZ to 'cone'/'rgb' responses
     final rC = 0.401288 * x + 0.650173 * y - 0.051461 * z;
     final gC = -0.250268 * x + 1.204414 * y + 0.045854 * z;
@@ -173,12 +179,15 @@ class Cam16V11 {
     final bD = viewingConditions.rgbD[2] * bC;
 
     // chromatic adaptation
-    final rAF =
-        math.pow(viewingConditions.fl * rD.abs() / 100.0, 0.42).toDouble();
-    final gAF =
-        math.pow(viewingConditions.fl * gD.abs() / 100.0, 0.42).toDouble();
-    final bAF =
-        math.pow(viewingConditions.fl * bD.abs() / 100.0, 0.42).toDouble();
+    final rAF = math
+        .pow(viewingConditions.fl * rD.abs() / 100.0, 0.42)
+        .toDouble();
+    final gAF = math
+        .pow(viewingConditions.fl * gD.abs() / 100.0, 0.42)
+        .toDouble();
+    final bAF = math
+        .pow(viewingConditions.fl * bD.abs() / 100.0, 0.42)
+        .toDouble();
     final rA = signum(rD) * 400.0 * rAF / (rAF + 27.13);
     final gA = signum(gD) * 400.0 * gAF / (gAF + 27.13);
     final bA = signum(bD) * 400.0 * bAF / (bAF + 27.13);
@@ -200,9 +209,12 @@ class Cam16V11 {
     // adapted responses offset-free, so the equivalent expression omits both.
     final ac = 2.0 * rA + gA + 0.05 * bA;
 
-    final J = 100.0 *
-        math.pow(ac / viewingConditions.aw,
-            viewingConditions.c * viewingConditions.z);
+    final J =
+        100.0 *
+        math.pow(
+          ac / viewingConditions.aw,
+          viewingConditions.c * viewingConditions.z,
+        );
     final Q = (2.0 / viewingConditions.c) * (J / 100.0) * viewingConditions.aw;
 
     // eHue scales reported C/M; it does not change the CAT16 opponent hue.
@@ -234,7 +246,10 @@ class Cam16V11 {
   }
 
   static (double, double, double) _relativeUcsFromJch(
-      double J, double C, double hueRadians) {
+    double J,
+    double C,
+    double hueRadians,
+  ) {
     final jstar = 1.7 * J / (1.0 + 0.007 * J);
     final cstar = 2.4 * math.log(1.0 + 0.098 * C) / 0.098;
     final astar = cstar * math.cos(hueRadians);
@@ -250,8 +265,12 @@ class Cam16V11 {
 
   /// Create a CAM16 v11 color from lightness [j], chroma [c], and hue [h], in
   /// [viewingConditions].
-  static Cam16V11 fromJchInViewingConditions(double J, double C, double h,
-      Cam16V11ViewingConditions viewingConditions) {
+  static Cam16V11 fromJchInViewingConditions(
+    double J,
+    double C,
+    double h,
+    Cam16V11ViewingConditions viewingConditions,
+  ) {
     final Q = (2.0 / viewingConditions.c) * (J / 100.0) * viewingConditions.aw;
     final M = C * viewingConditions.aw / 35.0;
     final s = Q == 0.0 ? 0.0 : 100.0 * M / Q;
@@ -264,16 +283,26 @@ class Cam16V11 {
   /// Create a CAM16 v11 color from relative UCS coordinates J'a'b'.
   static Cam16V11 fromUcs(double jstar, double astar, double bstar) {
     return fromUcsInViewingConditions(
-        jstar, astar, bstar, Cam16V11ViewingConditions.standard);
+      jstar,
+      astar,
+      bstar,
+      Cam16V11ViewingConditions.standard,
+    );
   }
 
   /// Create a CAM16 v11 color from relative UCS coordinates J'a'b' in
   /// [viewingConditions].
-  static Cam16V11 fromUcsInViewingConditions(double jstar, double astar,
-      double bstar, Cam16V11ViewingConditions viewingConditions) {
+  static Cam16V11 fromUcsInViewingConditions(
+    double jstar,
+    double astar,
+    double bstar,
+    Cam16V11ViewingConditions viewingConditions,
+  ) {
     final cstar = math.sqrt(astar * astar + bstar * bstar);
     final C = (math.exp(cstar * 0.098 / 2.4) - 1.0) / 0.098;
-    final h = sanitizeDegreesDouble(math.atan2(bstar, astar) * (180.0 / math.pi));
+    final h = sanitizeDegreesDouble(
+      math.atan2(bstar, astar) * (180.0 / math.pi),
+    );
     final J = jstar / (1.7 - 0.007 * jstar);
 
     return Cam16V11.fromJchInViewingConditions(J, C, h, viewingConditions);
@@ -306,8 +335,9 @@ class Cam16V11 {
 
   /// XYZ representation of CAM16 v11 seen in [viewingConditions].
   List<double> xyzInViewingConditions(
-      Cam16V11ViewingConditions viewingConditions,
-      {List<double>? array}) {
+    Cam16V11ViewingConditions viewingConditions, {
+    List<double>? array,
+  }) {
     final hRad = hue * math.pi / 180.0;
     final hSin = math.sin(hRad);
     final hCos = math.cos(hRad);
@@ -322,7 +352,8 @@ class Cam16V11 {
     final a = opponentMagnitude * hCos;
     final b = opponentMagnitude * hSin;
 
-    final ac = viewingConditions.aw *
+    final ac =
+        viewingConditions.aw *
         math.pow(j / 100.0, 1.0 / viewingConditions.c / viewingConditions.z);
     final p2 = ac;
 

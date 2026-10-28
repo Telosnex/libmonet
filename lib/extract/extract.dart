@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/util/debug_print.dart';
 import 'package:libmonet/extract/quantizer_result.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -27,8 +28,11 @@ class Extract {
     // Start initialization
     _poolInitializer = Completer<QuantizeServiceWorkerPool>();
     try {
-      const concurrency =
-          ConcurrencySettings(minWorkers: 1, maxWorkers: 4, maxParallel: 1);
+      const concurrency = ConcurrencySettings(
+        minWorkers: 1,
+        maxWorkers: 4,
+        maxParallel: 1,
+      );
       final pool = QuantizeServiceWorkerPool(concurrencySettings: concurrency);
       await pool.start();
       _quantizeServiceWorkerPool = pool;
@@ -42,15 +46,20 @@ class Extract {
   }
 
   static Future<QuantizerResult> quantize(
-      ImageProvider imageProvider, int count,
-      {bool debug = false}) async {
+    ImageProvider imageProvider,
+    int count, {
+    bool debug = false,
+  }) async {
     final sw = Stopwatch()..start();
     final byteData = await imageProviderToScaledRgba(imageProvider, 96);
     monetDebug(
-        debug, () => '[Extract] downscaled in ${sw.elapsedMilliseconds}ms');
+      debug,
+      () => '[Extract] downscaled in ${sw.elapsedMilliseconds}ms',
+    );
     if (byteData.lengthInBytes == 0) {
       return Future<QuantizerResult>.value(
-          const QuantizerResult({}, lstarToCount: {}));
+        const QuantizerResult({}, lstarToCount: {}),
+      );
     }
 
     sw.reset();
@@ -58,19 +67,25 @@ class Extract {
     monetDebug(debug, () => '[Extract] Uint32s in ${sw.elapsedMilliseconds}ms');
 
     sw.reset();
-    final argbBytes =
-        bytes.map(rgbaToArgb).where((e) => alphaFromArgb(e) == 255).toList();
+    final argbBytes = bytes
+        .map(rgbaToArgb)
+        .where((e) => alphaFromArgb(e) == 255)
+        .toList();
     monetDebug(debug, () => '[Extract] ARGB in ${sw.elapsedMilliseconds}ms');
 
     sw.reset();
     final pool = await _getQuantizeWorkerPool();
     monetDebug(
-        debug, () => '[Extract] Worker pool in ${sw.elapsedMilliseconds}ms');
+      debug,
+      () => '[Extract] Worker pool in ${sw.elapsedMilliseconds}ms',
+    );
 
     sw.reset();
     final quantizerResult = await pool.quantize(argbBytes, count);
     monetDebug(
-        debug, () => '[Extract] Quantized in ${sw.elapsedMilliseconds}ms');
+      debug,
+      () => '[Extract] Quantized in ${sw.elapsedMilliseconds}ms',
+    );
 
     return Future<QuantizerResult>.value(quantizerResult);
   }
@@ -93,9 +108,12 @@ class ImageToBytesResponse {
 }
 
 Future<ByteData> imageProviderToScaledRgba(
-    ImageProvider imageProvider, double maxDimension) {
-  final stream = imageProvider
-      .resolve(ImageConfiguration(size: Size(maxDimension, maxDimension)));
+  ImageProvider imageProvider,
+  double maxDimension,
+) {
+  final stream = imageProvider.resolve(
+    ImageConfiguration(size: Size(maxDimension, maxDimension)),
+  );
   ImageStreamListener? listener;
   final completer = Completer<ByteData>();
   listener = ImageStreamListener((frame, sync) async {
@@ -110,13 +128,16 @@ Future<ByteData> imageProviderToScaledRgba(
       var paintHeight = height.toDouble();
       final rescale = width > maxDimension || height > maxDimension;
       if (rescale) {
-        paintWidth =
-            (width > height) ? maxDimension : (maxDimension / height) * width;
-        paintHeight =
-            (height > width) ? maxDimension : (maxDimension / width) * height;
+        paintWidth = (width > height)
+            ? maxDimension
+            : (maxDimension / height) * width;
+        paintHeight = (height > width)
+            ? maxDimension
+            : (maxDimension / width) * height;
       }
-      final byteData =
-          await image.toByteData(format: ui.ImageByteFormat.rawStraightRgba);
+      final byteData = await image.toByteData(
+        format: ui.ImageByteFormat.rawStraightRgba,
+      );
       if (byteData == null) {
         completer.complete(ByteData(0));
         return;

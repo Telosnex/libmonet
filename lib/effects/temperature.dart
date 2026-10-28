@@ -97,19 +97,19 @@ class TemperatureCache {
 
   /// Warmest color with the same chroma and tone as the input.
   Hct get warmest => Hct.from(
-        warmestHue(input.colorModel),
-        input.chroma,
-        input.tone,
-        model: input.colorModel,
-      );
+    warmestHue(input.colorModel),
+    input.chroma,
+    input.tone,
+    model: input.colorModel,
+  );
 
   /// Coolest color with the same chroma and tone as the input.
   Hct get coldest => Hct.from(
-        coolestHue(input.colorModel),
-        input.chroma,
-        input.tone,
-        model: input.colorModel,
-      );
+    coolestHue(input.colorModel),
+    input.chroma,
+    input.tone,
+    model: input.colorModel,
+  );
 
   /// A set of colors neighboring the input in u'v' chromatic direction.
   ///
@@ -215,14 +215,14 @@ class TemperatureCache {
   static double rawTemperature2004(Hct color) {
     final lab = labFromArgb(color.toInt());
     final hue = sanitizeDegreesDouble(
-        math.atan2(lab[2], lab[1]) * 180.0 / math.pi);
+      math.atan2(lab[2], lab[1]) * 180.0 / math.pi,
+    );
     final chroma = math.sqrt((lab[1] * lab[1]) + (lab[2] * lab[2]));
-    final temperature = -0.5 +
+    final temperature =
+        -0.5 +
         0.02 *
             math.pow(chroma, 1.07) *
-            math.cos(
-              sanitizeDegreesDouble(hue - 50.0) * math.pi / 180.0,
-            );
+            math.cos(sanitizeDegreesDouble(hue - 50.0) * math.pi / 180.0);
     return temperature;
   }
 
@@ -236,7 +236,8 @@ class TemperatureCache {
   static double rawTemperature2018(Hct color) {
     final lab = labFromArgb(color.toInt());
     final hue = sanitizeDegreesDouble(
-        math.atan2(lab[2], lab[1]) * 180.0 / math.pi);
+      math.atan2(lab[2], lab[1]) * 180.0 / math.pi,
+    );
     final chroma = math.sqrt((lab[1] * lab[1]) + (lab[2] * lab[2]));
     final radians = math.pi / 180.0;
     return -0.89 +
@@ -245,6 +246,7 @@ class TemperatureCache {
             (math.cos(sanitizeDegreesDouble(hue - 50.0) * radians) +
                 0.16 *
                     math.cos(
-                        sanitizeDegreesDouble(2.0 * hue - 350.0) * radians));
+                      sanitizeDegreesDouble(2.0 * hue - 350.0) * radians,
+                    ));
   }
 }

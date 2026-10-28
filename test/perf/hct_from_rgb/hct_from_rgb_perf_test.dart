@@ -29,9 +29,9 @@ void main() async {
 
   // Edge cases: pure primaries, grays, near-black, near-white.
   for (var v = 0; v < 256; v++) {
-    testCases.add(0xFF000000 | (v << 16));           // reds
-    testCases.add(0xFF000000 | (v << 8));             // greens
-    testCases.add(0xFF000000 | v);                    // blues
+    testCases.add(0xFF000000 | (v << 16)); // reds
+    testCases.add(0xFF000000 | (v << 8)); // greens
+    testCases.add(0xFF000000 | v); // blues
     testCases.add(0xFF000000 | (v << 16) | (v << 8) | v); // grays
   }
 
@@ -39,7 +39,10 @@ void main() async {
   final random = math.Random(42);
   for (var i = 0; i < 50000; i++) {
     testCases.add(
-      0xFF000000 | (random.nextInt(256) << 16) | (random.nextInt(256) << 8) | random.nextInt(256),
+      0xFF000000 |
+          (random.nextInt(256) << 16) |
+          (random.nextInt(256) << 8) |
+          random.nextInt(256),
     );
   }
 

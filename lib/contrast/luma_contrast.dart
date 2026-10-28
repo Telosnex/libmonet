@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/colorspaces/luma.dart';
 
@@ -9,7 +10,7 @@ List<double> lumaToLstarRange(double luma, {bool debug = false}) {
   final maxLstar = lstars.reduce(math.max);
   return [
     (minLstar - 0.24766520401936987).clamp(0, 100),
-    (maxLstar + 0.008416650634032408).clamp(0, 100)
+    (maxLstar + 0.008416650634032408).clamp(0, 100),
   ];
 }
 
@@ -41,8 +42,8 @@ List<int> findBoundaryArgbsForLuma(double luma) {
     double thisChannelsCoefficient,
   ) {
     final lumaNeeded = lumaRequired - lumaCreatedSoFar;
-    final answer =
-        (255.0 * lumaNeeded / thisChannelsCoefficient).roundToDouble();
+    final answer = (255.0 * lumaNeeded / thisChannelsCoefficient)
+        .roundToDouble();
     return answer;
   }
 

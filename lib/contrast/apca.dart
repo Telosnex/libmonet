@@ -17,7 +17,7 @@ const double mainTrcEncode = 1.0 / 2.4;
 
 // sRGB coefficients
 //
-// n.b. These are from the canonical APCA code. They do not sum to 1.0. They are 
+// n.b. These are from the canonical APCA code. They do not sum to 1.0. They are
 // more precise, but not in a way that has impact. libmonet has dealt with this
 // fine, thus it does not seem worth deviating from the spec.
 const double sRco = 0.2126729;
@@ -109,10 +109,7 @@ double apcaYFromArgb(int argb) {
       sBco * simpleExp(blueFromArgb(argb));
 }
 
-enum _ApcaPolarity {
-  blackOnWhite,
-  whiteOnBlack,
-}
+enum _ApcaPolarity { blackOnWhite, whiteOnBlack }
 
 double _fixupForBlackThreshold(double apcaY) {
   if (apcaY > blkThrs) {
@@ -151,7 +148,8 @@ double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
     // For normal polarity, black text on white (BoW)
 
     // Calculate the SAPC contrast value and scale
-    sapc = (math.pow(backgroundApcaY, normBg) - math.pow(textApcaY, normText)) *
+    sapc =
+        (math.pow(backgroundApcaY, normBg) - math.pow(textApcaY, normText)) *
         scaleBoW;
 
     // Low Contrast smooth rollout to prevent polarity reversal and also a
@@ -160,7 +158,8 @@ double apcaContrastOfApcaY(double textApcaY, double backgroundApcaY) {
   } else {
     // background < text
     polarity = _ApcaPolarity.whiteOnBlack;
-    sapc = (math.pow(backgroundApcaY, revBg) - math.pow(textApcaY, revText)) *
+    sapc =
+        (math.pow(backgroundApcaY, revBg) - math.pow(textApcaY, revText)) *
         scaleWoB;
     outputContrast = (sapc > (-1.0 * loClip)) ? 0.0 : sapc + loWoBOffset;
   }
@@ -179,7 +178,9 @@ double apcaFromArgbs(int textArgb, int backgroundArgb) {
   );
 }
 
-double apcaFromColors(
-    {required Color textColor, required Color backgroundColor}) {
+double apcaFromColors({
+  required Color textColor,
+  required Color backgroundColor,
+}) {
   return apcaFromArgbs(textColor.argb, backgroundColor.argb);
 }

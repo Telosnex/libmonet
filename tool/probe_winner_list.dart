@@ -46,8 +46,9 @@ final algos = [
   Algo(apcaY, (yt, yb) => apcaC(yt, yb).abs(), [45, 60, 75]),
 ];
 
-List<double> blend(List<double> p, double h, double a) =>
-    [for (var i = 0; i < 3; i++) (1 - a) * p[i] + a * h];
+List<double> blend(List<double> p, double h, double a) => [
+  for (var i = 0; i < 3; i++) (1 - a) * p[i] + a * h,
+];
 
 // Forbidden band of background luminance for text yt at target t.
 List<double>? band(Algo algo, double yt, double t) {
@@ -72,15 +73,16 @@ final generators = <String, List<List<double>> Function()>{
     return List.generate(200, (i) {
       final c = i.isEven ? c1 : c2;
       return [
-        for (final v in c)
-          (v + rng.nextInt(31) - 15).clamp(0, 255).toDouble()
+        for (final v in c) (v + rng.nextInt(31) - 15).clamp(0, 255).toDouble(),
       ];
     });
   },
   'gradient': () {
     final a = [r255(), r255(), r255()], b = [r255(), r255(), r255()];
     return List.generate(
-        200, (i) => [for (var k = 0; k < 3; k++) a[k] + (b[k] - a[k]) * i / 199]);
+      200,
+      (i) => [for (var k = 0; k < 3; k++) a[k] + (b[k] - a[k]) * i / 199],
+    );
   },
   // Anti-chain: red->green hue sweep. Every pixel is a "suspect" under
   // channel-wise comparison; the old frontier statistic is maximally bad here.
@@ -119,12 +121,12 @@ List<List<double>> frontier(List<List<double>> pix, int sign, int? cap) {
       }
       final m = [
         for (var k = 0; k < 3; k++)
-          sign > 0 ? max(f[bi][k], f[bj][k]) : min(f[bi][k], f[bj][k])
+          sign > 0 ? max(f[bi][k], f[bj][k]) : min(f[bi][k], f[bj][k]),
       ];
       f = [
         for (var i = 0; i < f.length; i++)
           if (i != bi && i != bj) f[i],
-        m
+        m,
       ];
     }
   }
@@ -160,7 +162,7 @@ void main() {
     final text = [
       [255.0, 255.0, 255.0],
       [0.0, 0.0, 0.0],
-      [r255(), r255(), r255()]
+      [r255(), r255(), r255()],
     ][t % 3];
     final yt = algo.yOf(text);
     final h = yt > 0.3 ? 0.0 : 255.0; // black or white scrim
@@ -179,18 +181,24 @@ void main() {
         var loY = double.infinity, hiY = -double.infinity;
         for (var i = 0; i < pix.length; i++) {
           final y = algo.yOf(blend(pix[i], hh, a));
-          if (y < loY) { loY = y; loI = i; }
-          if (y > hiY) { hiY = y; hiI = i; }
+          if (y < loY) {
+            loY = y;
+            loI = i;
+          }
+          if (y > hiY) {
+            hiY = y;
+            hiI = i;
+          }
         }
-        winners..add(loI)..add(hiI);
+        winners
+          ..add(loI)
+          ..add(hiI);
       }
     }
     winnerSizes.putIfAbsent(gname, () => []).add(winners.length);
 
     final fHi = frontier(pix, 1, null), fLo = frontier(pix, -1, null);
-    frontierSizes
-        .putIfAbsent(gname, () => [])
-        .add(max(fHi.length, fLo.length));
+    frontierSizes.putIfAbsent(gname, () => []).add(max(fHi.length, fLo.length));
 
     final aAll = solve(algo, pix, h, bd);
     final aWin = solve(algo, [for (final i in winners) pix[i]], h, bd);
@@ -198,7 +206,11 @@ void main() {
 
     for (final k in caps) {
       final aK = solve(
-          algo, [...frontier(pix, 1, k), ...frontier(pix, -1, k)], h, bd);
+        algo,
+        [...frontier(pix, 1, k), ...frontier(pix, -1, k)],
+        h,
+        bd,
+      );
       if (aAll != null && aK != null) {
         cap12Err.putIfAbsent('$gname/$k', () => []).add(aK - aAll);
       }
@@ -210,16 +222,22 @@ void main() {
     return s[(f * (s.length - 1)).floor()];
   }
 
-  print('trials=$trials  winner-list solver vs all-pixel solver mismatches: '
-      '$mismatches (must be 0)\n');
+  print(
+    'trials=$trials  winner-list solver vs all-pixel solver mismatches: '
+    '$mismatches (must be 0)\n',
+  );
   print('winner-list size [med/p99/max] | suspect-list size [med/max]');
   for (final g in generators.keys) {
     final w = winnerSizes[g]!, fr = frontierSizes[g]!;
-    print('  ${g.padRight(9)} winners: ${q(w, .5)}/${q(w, .99)}/${w.reduce(max)}'
-        '   suspects: ${q(fr, .5)}/${fr.reduce(max)}');
+    print(
+      '  ${g.padRight(9)} winners: ${q(w, .5)}/${q(w, .99)}/${w.reduce(max)}'
+      '   suspects: ${q(fr, .5)}/${fr.reduce(max)}',
+    );
   }
-  print('\nerror in 1/255 opacity steps vs exact, by shortlist size K '
-      '[med/p99/max]:');
+  print(
+    '\nerror in 1/255 opacity steps vs exact, by shortlist size K '
+    '[med/p99/max]:',
+  );
   for (final k in caps) {
     final row = StringBuffer('  K=${k.toString().padRight(3)}');
     for (final g in generators.keys) {

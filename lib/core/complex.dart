@@ -13,13 +13,16 @@ class Complex {
       Complex(real - c.real, imaginary - c.imaginary);
 
   Complex operator *(Complex c) => Complex(
-      real * c.real - imaginary * c.imaginary,
-      imaginary * c.real + real * c.imaginary);
+    real * c.real - imaginary * c.imaginary,
+    imaginary * c.real + real * c.imaginary,
+  );
 
   Complex operator /(Complex c) {
     double denom = c.real * c.real + c.imaginary * c.imaginary;
-    return Complex((real * c.real + imaginary * c.imaginary) / denom,
-        (imaginary * c.real - real * c.imaginary) / denom);
+    return Complex(
+      (real * c.real + imaginary * c.imaginary) / denom,
+      (imaginary * c.real - real * c.imaginary) / denom,
+    );
   }
 
   Complex pow(double p) {

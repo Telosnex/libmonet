@@ -56,25 +56,27 @@ void main() {
 
       final sb = StringBuffer();
       sb.writeln(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="$svgW" height="$svgH"'
-          ' font-family="system-ui, sans-serif" font-size="11">');
+        '<svg xmlns="http://www.w3.org/2000/svg" width="$svgW" height="$svgH"'
+        ' font-family="system-ui, sans-serif" font-size="11">',
+      );
 
       // White background for the whole SVG
-      sb.writeln(
-          '<rect width="$svgW" height="$svgH" fill="white"/>');
+      sb.writeln('<rect width="$svgW" height="$svgH" fill="white"/>');
 
       // Column headers (color names)
       final colorEntries = _colors.entries.toList();
       for (var c = 0; c < cols; c++) {
         final x = labelColW + c * cellW + cellW / 2;
         sb.writeln(
-            '<text x="$x" y="${headerRowH - 8}" text-anchor="middle"'
-            ' font-size="10" fill="#333">${colorEntries[c].key}</text>');
+          '<text x="$x" y="${headerRowH - 8}" text-anchor="middle"'
+          ' font-size="10" fill="#333">${colorEntries[c].key}</text>',
+        );
         // Show hex underneath the name
         final hex = hexFromColor(colorEntries[c].value);
         sb.writeln(
-            '<text x="$x" y="${headerRowH - 0}" text-anchor="middle"'
-            ' font-size="8" fill="#999">$hex</text>');
+          '<text x="$x" y="${headerRowH - 0}" text-anchor="middle"'
+          ' font-size="8" fill="#999">$hex</text>',
+        );
       }
 
       // Row headers (bg tones) + cells
@@ -84,15 +86,19 @@ void main() {
 
         // Row label
         sb.writeln(
-            '<text x="${labelColW - 8}" y="${y + cellH / 2 + 4}"'
-            ' text-anchor="end" font-size="11" fill="#333">T$bgTone</text>');
+          '<text x="${labelColW - 8}" y="${y + cellH / 2 + 4}"'
+          ' text-anchor="end" font-size="11" fill="#333">T$bgTone</text>',
+        );
 
         for (var c = 0; c < cols; c++) {
           final color = colorEntries[c].value;
           final x = labelColW + c * cellW;
 
-          final p = Palette.from(color,
-              backgroundTone: bgTone, contrast: contrast);
+          final p = Palette.from(
+            color,
+            backgroundTone: bgTone,
+            contrast: contrast,
+          );
 
           final bgHex = hexFromColor(p.background);
           final colorHex = hexFromColor(p.color);
@@ -104,31 +110,35 @@ void main() {
 
           // Background fill
           sb.writeln(
-              '<rect x="$x" y="$y" width="$cellW" height="$cellH"'
-              ' fill="$bgHex"/>');
+            '<rect x="$x" y="$y" width="$cellW" height="$cellH"'
+            ' fill="$bgHex"/>',
+          );
 
           // Colored rectangle with border
           final rx = x + (cellW - rectW) / 2;
           final ry = y + (cellH - rectH) / 2 - 4;
           sb.writeln(
-              '<rect x="$rx" y="$ry" width="$rectW" height="$rectH"'
-              ' rx="6" fill="$colorHex"'
-              ' stroke="$borderHex" stroke-width="$borderWidth"/>');
+            '<rect x="$rx" y="$ry" width="$rectW" height="$rectH"'
+            ' rx="6" fill="$colorHex"'
+            ' stroke="$borderHex" stroke-width="$borderWidth"/>',
+          );
 
           // Text sample on the colored surface
           sb.writeln(
-              '<text x="${rx + rectW / 2}" y="${ry + rectH / 2 + 5}"'
-              ' text-anchor="middle" font-size="14" font-weight="bold"'
-              ' fill="$textHex">Aa</text>');
+            '<text x="${rx + rectW / 2}" y="${ry + rectH / 2 + 5}"'
+            ' text-anchor="middle" font-size="14" font-weight="bold"'
+            ' fill="$textHex">Aa</text>',
+          );
 
           // Tone label below the rectangle
           final labelY = ry + rectH + 11;
           sb.writeln(
-              '<text x="${x + cellW / 2}" y="$labelY" text-anchor="middle"'
-              ' font-size="8" fill="${bgTone > 50 ? '#333' : '#ccc'}">'
-              'c${colorTone.toStringAsFixed(0)}'
-              ' b${borderTone.toStringAsFixed(0)}'
-              '</text>');
+            '<text x="${x + cellW / 2}" y="$labelY" text-anchor="middle"'
+            ' font-size="8" fill="${bgTone > 50 ? '#333' : '#ccc'}">'
+            'c${colorTone.toStringAsFixed(0)}'
+            ' b${borderTone.toStringAsFixed(0)}'
+            '</text>',
+          );
         }
       }
 

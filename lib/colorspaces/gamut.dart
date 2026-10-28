@@ -132,7 +132,8 @@ class Gamut {
     if (normalized < _rec2020Beta) {
       delinearized = normalized * 4.5;
     } else {
-      delinearized = _rec2020Alpha * pow(normalized, 0.45) - (_rec2020Alpha - 1.0);
+      delinearized =
+          _rec2020Alpha * pow(normalized, 0.45) - (_rec2020Alpha - 1.0);
     }
     return delinearized * 255.0;
   }
@@ -143,7 +144,11 @@ class Gamut {
     if (normalized < _rec2020Beta * 4.5) {
       return normalized / 4.5 * 100.0;
     }
-    return pow((normalized + (_rec2020Alpha - 1.0)) / _rec2020Alpha, 1.0 / 0.45) * 100.0;
+    return pow(
+          (normalized + (_rec2020Alpha - 1.0)) / _rec2020Alpha,
+          1.0 / 0.45,
+        ) *
+        100.0;
   }
 
   // ===========================================================================

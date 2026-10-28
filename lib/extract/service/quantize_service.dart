@@ -18,9 +18,6 @@ class QuantizeService {
     Iterable<int> argbs,
     int maxColors,
   ) async {
-    return QuantizerCelebi().quantize(
-      argbs,
-      maxColors,
-    );
+    return QuantizerCelebi().quantize(argbs, maxColors);
   }
 }

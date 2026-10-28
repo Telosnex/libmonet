@@ -20,4 +20,3 @@ import 'package:libmonet/extract/quantizer_result.dart';
 abstract class Quantizer {
   Future<QuantizerResult> quantize(Iterable<int> pixels, int maxColors);
 }
-

@@ -36,21 +36,9 @@ final Float64List _linearizedByteCache = Float64List.fromList(
 );
 
 const _xyzToSrgb = [
-  [
-    3.2413774792388685,
-    -1.5376652402851851,
-    -0.49885366846268053,
-  ],
-  [
-    -0.9691452513005321,
-    1.8758853451067872,
-    0.04156585616912061,
-  ],
-  [
-    0.05562093689691305,
-    -0.20395524564742123,
-    1.0571799111220335,
-  ],
+  [3.2413774792388685, -1.5376652402851851, -0.49885366846268053],
+  [-0.9691452513005321, 1.8758853451067872, 0.04156585616912061],
+  [0.05562093689691305, -0.20395524564742123, 1.0571799111220335],
 ];
 
 /// Converts a color from RGB components to ARGB format.
@@ -93,7 +81,6 @@ double yFromArgb(int argb) {
   // final y = 0.2126 * linearR + 0.7152 * linearG + 0.0722 * linearB;
   // return y;
 }
-
 
 /// Converts a color from ARGB to XYZ.
 int argbFromXyz(double x, double y, double z) {
@@ -290,7 +277,6 @@ int sanitizeDegreesInt(int degrees) {
   }
   return degrees;
 }
-
 
 double _labF(double t) {
   const e = 216.0 / 24389.0;

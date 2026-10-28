@@ -8,20 +8,26 @@ import 'package:libmonet/contrast/apca_contrast.dart';
 import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 
 void main() {
-  test('all RGBs are in range of L* produced from their APCA Y', skip: 'long running validator', () {
-    for (int r = 0; r <= 255; r += 1) {
-      for (int g = 0; g <= 255; g += 1) {
-        for (int b = 0; b <= 255; b += 1) {
-          final argb = argbFromRgb(r, g, b);
-          final lstar = lstarFromArgb(argb);
-          final apcaY = apcaYFromArgb(argb);
-          final lstarRange = apcaYToLstarRange(apcaY);
-          expect(
-              lstar, inInclusiveRange(lstarRange.darkest, lstarRange.lightest));
+  test(
+    'all RGBs are in range of L* produced from their APCA Y',
+    skip: 'long running validator',
+    () {
+      for (int r = 0; r <= 255; r += 1) {
+        for (int g = 0; g <= 255; g += 1) {
+          for (int b = 0; b <= 255; b += 1) {
+            final argb = argbFromRgb(r, g, b);
+            final lstar = lstarFromArgb(argb);
+            final apcaY = apcaYFromArgb(argb);
+            final lstarRange = apcaYToLstarRange(apcaY);
+            expect(
+              lstar,
+              inInclusiveRange(lstarRange.darkest, lstarRange.lightest),
+            );
+          }
         }
       }
-    }
-  });
+    },
+  );
 
   test('CSV of range', skip: 'data generator', () {
     final tsv = StringBuffer();
@@ -33,10 +39,7 @@ void main() {
     print(tsv.toString());
   });
 
-  test('Full RGB Explorer',
-      skip:
-          'important diagnostic code for producing error tolerances needed due to RGB being whole numbers, but not a test',
-      () {
+  test('Full RGB Explorer', skip: 'important diagnostic code for producing error tolerances needed due to RGB being whole numbers, but not a test', () {
     var maxOverallDiff = -1.0;
     var maxOverallDiffRgbTriple = <int>[];
     var maxError = -1.0;
@@ -54,8 +57,9 @@ void main() {
           if (false) {
             final apcaY = apcaYFromArgb(argbFromRgb(r, g, b));
             final grayscaleArgbMatchingApcaY = apcaYToGrayscaleArgb(apcaY);
-            final verifyGrayscaleApcaY =
-                apcaYFromArgb(grayscaleArgbMatchingApcaY);
+            final verifyGrayscaleApcaY = apcaYFromArgb(
+              grayscaleArgbMatchingApcaY,
+            );
 
             expect(apcaY, closeTo(verifyGrayscaleApcaY, 0.005));
           }
@@ -74,12 +78,15 @@ void main() {
           if (false) {
             final trueApcaY = apcaYFromArgb(argbFromRgb(r, g, b));
             final boundaryArgbs = findBoundaryArgbsForApcaY(trueApcaY);
-            final boundaryArgbsApcaYs =
-                boundaryArgbs.map((e) => apcaYFromArgb(e)).toList();
+            final boundaryArgbsApcaYs = boundaryArgbs
+                .map((e) => apcaYFromArgb(e))
+                .toList();
             for (final boundaryArgbApcaY in boundaryArgbsApcaYs) {
               final diffFromTrueApcaY = (boundaryArgbApcaY - trueApcaY).abs();
               maxArgbToApcaToApcsToArgbsApcaError = math.max(
-                  maxArgbToApcaToApcsToArgbsApcaError, diffFromTrueApcaY);
+                maxArgbToApcaToApcsToArgbsApcaError,
+                diffFromTrueApcaY,
+              );
             }
           }
 
@@ -97,12 +104,14 @@ void main() {
           // maxBoundaryError: 0.23986207179298447. total errors: 1341645
           if (false) {
             final trueApcaY = apcaYFromArgb(argbFromRgb(r, g, b));
-            final boundaryArgbsForTrueApcaY =
-                findBoundaryArgbsForApcaY(trueApcaY);
+            final boundaryArgbsForTrueApcaY = findBoundaryArgbsForApcaY(
+              trueApcaY,
+            );
             final trueY = yFromArgb(argbFromRgb(r, g, b));
 
-            final boundaryYs =
-                boundaryArgbsForTrueApcaY.map((e) => yFromArgb(e)).toList();
+            final boundaryYs = boundaryArgbsForTrueApcaY
+                .map((e) => yFromArgb(e))
+                .toList();
             final maxBoundaryY = boundaryYs.reduce(math.max);
             final minBoundaryY = boundaryYs.reduce(math.min);
 
@@ -110,18 +119,25 @@ void main() {
             final minBoundaryLstar = lstarFromY(minBoundaryY);
             final maxBoundaryLstar = lstarFromY(maxBoundaryY);
             expect(
-                trueLstar,
-                inInclusiveRange(minBoundaryLstar - 0.08747562332222003,
-                    maxBoundaryLstar + 0.23986207179298447),
-                reason: 'tried $r, $g, $b');
+              trueLstar,
+              inInclusiveRange(
+                minBoundaryLstar - 0.08747562332222003,
+                maxBoundaryLstar + 0.23986207179298447,
+              ),
+              reason: 'tried $r, $g, $b',
+            );
             if (trueY < minBoundaryY) {
               minBoundaryErrors++;
-              minBoundaryErrorLstar = math.max(minBoundaryErrorLstar,
-                  (lstarFromY(minBoundaryY) - lstarFromY(trueY)).abs());
+              minBoundaryErrorLstar = math.max(
+                minBoundaryErrorLstar,
+                (lstarFromY(minBoundaryY) - lstarFromY(trueY)).abs(),
+              );
             } else if (trueY > maxBoundaryY) {
               maxBoundaryErrors++;
-              maxBoundaryErrorLstar = math.max(maxBoundaryErrorLstar,
-                  (lstarFromY(maxBoundaryY) - lstarFromY(trueY)).abs());
+              maxBoundaryErrorLstar = math.max(
+                maxBoundaryErrorLstar,
+                (lstarFromY(maxBoundaryY) - lstarFromY(trueY)).abs(),
+              );
             }
             final minError = (trueY - minBoundaryY).abs();
             final maxError2 = (trueY - maxBoundaryY).abs();
@@ -138,7 +154,8 @@ void main() {
           // 4.7867847389446965 @ 0, 0, 95
           if (false) {
             final yDiff = _findDiffBetweenTrueLstarAndLstarRangeFromApcaY(
-                argbFromRgb(r, g, b));
+              argbFromRgb(r, g, b),
+            );
             if (yDiff > maxOverallDiff) {
               maxOverallDiff = yDiff;
               maxOverallDiffRgbTriple = [r, g, b];
@@ -150,21 +167,26 @@ void main() {
 
     if (maxArgbToApcaToApcsToArgbsApcaError > -1) {
       print(
-          'maxArgbToApcaToApcsToArgbsApcaError: $maxArgbToApcaToApcsToArgbsApcaError');
+        'maxArgbToApcaToApcsToArgbsApcaError: $maxArgbToApcaToApcsToArgbsApcaError',
+      );
     }
     if (maxOverallDiff > -1) {
       print(
-          'maxOverallDiff: $maxOverallDiff. @ ${maxOverallDiffRgbTriple[0]}, ${maxOverallDiffRgbTriple[1]}, ${maxOverallDiffRgbTriple[2]}');
+        'maxOverallDiff: $maxOverallDiff. @ ${maxOverallDiffRgbTriple[0]}, ${maxOverallDiffRgbTriple[1]}, ${maxOverallDiffRgbTriple[2]}',
+      );
     }
     if (minBoundaryErrorLstar > -1) {
       print(
-          'minBoundaryError: $minBoundaryErrorLstar. total errors: $minBoundaryErrors');
+        'minBoundaryError: $minBoundaryErrorLstar. total errors: $minBoundaryErrors',
+      );
       print(
-          'maxBoundaryError: $maxBoundaryErrorLstar. total errors: $maxBoundaryErrors');
+        'maxBoundaryError: $maxBoundaryErrorLstar. total errors: $maxBoundaryErrors',
+      );
     }
     if (maxError > -1) {
       print(
-          'maxError: $maxError. @ ${maxErrorRgbTriple[0]}, ${maxErrorRgbTriple[1]}, ${maxErrorRgbTriple[2]}');
+        'maxError: $maxError. @ ${maxErrorRgbTriple[0]}, ${maxErrorRgbTriple[1]}, ${maxErrorRgbTriple[2]}',
+      );
     }
   });
 
@@ -181,7 +203,8 @@ void main() {
       final range = apcaYToLstarRange(apcaY);
 
       print(
-          'FG=$textLstar wants lighter BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
+        'FG=$textLstar wants lighter BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}',
+      );
 
       expect(result, equals(range.lightest));
     });
@@ -196,7 +219,8 @@ void main() {
       final range = apcaYToLstarRange(apcaY);
 
       print(
-          'BG=$backgroundLstar wants lighter text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
+        'BG=$backgroundLstar wants lighter text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}',
+      );
 
       expect(result, equals(range.lightest));
     });
@@ -211,7 +235,8 @@ void main() {
       final range = apcaYToLstarRange(apcaY);
 
       print(
-          'FG=$textLstar wants darker BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
+        'FG=$textLstar wants darker BG. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}',
+      );
 
       expect(result, equals(range.darkest));
     });
@@ -226,7 +251,8 @@ void main() {
       final range = apcaYToLstarRange(apcaY);
 
       print(
-          'BG=$backgroundLstar wants darker text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}');
+        'BG=$backgroundLstar wants darker text. Result=${result.round()}. Range=${range.darkest.round()}-${range.lightest.round()}',
+      );
 
       expect(result, equals(range.darkest));
     });
@@ -242,4 +268,3 @@ double _findDiffBetweenTrueLstarAndLstarRangeFromApcaY(int argb) {
   final lstarDiff = math.max(diffFromMin, diffFromMax);
   return lstarDiff;
 }
-

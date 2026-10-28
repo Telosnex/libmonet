@@ -93,13 +93,15 @@ class ComponentsWidget extends HookConsumerWidget {
         MaterialBanner(content: const Text('Banner'), actions: [
           TextButton.icon(
             onPressed: () {},
-            style: fillButtonStyle(monetTheme.primary, scale: MonetTheme.of(context).scale),
+            style: fillButtonStyle(monetTheme.primary,
+                scale: MonetTheme.of(context).scale),
             label: const Text('Action'),
             icon: const Icon(Icons.abc),
           ),
           TextButton.icon(
             onPressed: () {},
-            style: fillButtonStyle(monetTheme.primary, scale: MonetTheme.of(context).scale),
+            style: fillButtonStyle(monetTheme.primary,
+                scale: MonetTheme.of(context).scale),
             label: const Text('Another action'),
             icon: const Icon(Icons.ac_unit),
           ),
@@ -148,7 +150,6 @@ class ComponentsWidget extends HookConsumerWidget {
                 onChanged: (bool? value) {
                   checkboxValue.value = value ?? false;
                 }),
-
           ],
         ),
         const H3('Data Table'),
@@ -201,9 +202,9 @@ class ComponentsWidget extends HookConsumerWidget {
         TextButton(
           child: const Text('Show Date Picker'),
           onPressed: () => showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2001),
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2001),
             lastDate: DateTime(2101),
           ),
         ),
@@ -337,7 +338,6 @@ class ComponentsWidget extends HookConsumerWidget {
         ),
         const VerticalPadding(),
         const LinearProgressIndicator(),
-   
         const H3('Radio'),
         RadioGroup(
           groupValue: radioValue.value,
@@ -351,7 +351,6 @@ class ComponentsWidget extends HookConsumerWidget {
               Text('Zero'),
               Radio(
                 value: 1,
-
               ),
               Text('One'),
               Radio(
@@ -389,7 +388,6 @@ class ComponentsWidget extends HookConsumerWidget {
           child: const Text('Show Snackbar'),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-
               content: Text('Hello, Snackbar'),
             ));
           },

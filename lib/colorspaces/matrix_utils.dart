@@ -34,17 +34,17 @@ List<List<double>> invert3x3(List<List<double>> m) {
     [
       (e * i - f * h) * invDet,
       (c * h - b * i) * invDet,
-      (b * f - c * e) * invDet
+      (b * f - c * e) * invDet,
     ],
     [
       (f * g - d * i) * invDet,
       (a * i - c * g) * invDet,
-      (c * d - a * f) * invDet
+      (c * d - a * f) * invDet,
     ],
     [
       (d * h - e * g) * invDet,
       (b * g - a * h) * invDet,
-      (a * e - b * d) * invDet
+      (a * e - b * d) * invDet,
     ],
   ];
 }
@@ -67,7 +67,8 @@ const cat16 = [
 ///
 /// [rgbToXyz] is the 3x3 linear-RGB-to-XYZ matrix for the color space.
 List<List<double>> computeScaledDiscountFromLinrgb(
-    List<List<double>> rgbToXyz) {
+  List<List<double>> rgbToXyz,
+) {
   // Standard sRGB viewing conditions values (from Cam16ViewingConditions.sRgb)
   // We need rgbD and fl. These depend on the white point and adapting luminance.
   // For D65 white point, they are:
@@ -77,13 +78,16 @@ List<List<double>> computeScaledDiscountFromLinrgb(
   //
   // The CAT16 transform of the white point gives rW, gW, bW:
   const whitePoint = [95.047, 100.0, 108.883];
-  final rW = cat16[0][0] * whitePoint[0] +
+  final rW =
+      cat16[0][0] * whitePoint[0] +
       cat16[0][1] * whitePoint[1] +
       cat16[0][2] * whitePoint[2];
-  final gW = cat16[1][0] * whitePoint[0] +
+  final gW =
+      cat16[1][0] * whitePoint[0] +
       cat16[1][1] * whitePoint[1] +
       cat16[1][2] * whitePoint[2];
-  final bW = cat16[2][0] * whitePoint[0] +
+  final bW =
+      cat16[2][0] * whitePoint[0] +
       cat16[2][1] * whitePoint[1] +
       cat16[2][2] * whitePoint[2];
 
@@ -104,7 +108,8 @@ List<List<double>> computeScaledDiscountFromLinrgb(
   final k = 1.0 / (5.0 * adaptingLuminance + 1.0);
   final k4 = k * k * k * k;
   final k4F = 1.0 - k4;
-  final fl = (k4 * adaptingLuminance) +
+  final fl =
+      (k4 * adaptingLuminance) +
       (0.1 * k4F * k4F * pow(5.0 * adaptingLuminance, 1.0 / 3.0));
 
   // The composite matrix is:
@@ -134,7 +139,8 @@ List<List<double>> computeScaledDiscountFromLinrgb(
 ///
 /// [rgbToXyz] is the 3x3 linear-RGB-to-XYZ matrix for the color space.
 List<List<double>> computeLinrgbFromScaledDiscount(
-    List<List<double>> rgbToXyz) {
+  List<List<double>> rgbToXyz,
+) {
   final forward = computeScaledDiscountFromLinrgb(rgbToXyz);
   return invert3x3(forward);
 }

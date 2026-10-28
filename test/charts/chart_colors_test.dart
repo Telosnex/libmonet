@@ -8,6 +8,7 @@ import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
 import 'package:libmonet/core/hex_codes.dart';
 import 'package:libmonet/effects/uv_harmony.dart';
 import 'package:test/test.dart';
+
 import 'dart:math' as math;
 
 // ---------------------------------------------------------------------------
@@ -44,9 +45,8 @@ int _simulate(int argb, List<List<double>> m) {
 double _worstCaseDistance(Color a, Color b) {
   var result = Cam16.fromInt(a.argb).distance(Cam16.fromInt(b.argb));
   for (final m in [_protanopia, _deuteranopia, _tritanopia]) {
-    final d = Cam16.fromInt(
-      _simulate(a.argb, m),
-    ).distance(Cam16.fromInt(_simulate(b.argb, m)));
+    final d = Cam16.fromInt(_simulate(a.argb, m))
+        .distance(Cam16.fromInt(_simulate(b.argb, m)));
     if (d < result) result = d;
   }
   return result;

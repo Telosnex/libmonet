@@ -26,9 +26,9 @@ void main() {
       const BorderRadius.all(Radius.circular(36)),
     );
 
-    final input =
-        large.inputBorder(textDirection: TextDirection.ltr)
-            as OutlineInputBorder;
+    final input = large.inputBorder(
+      textDirection: TextDirection.ltr,
+    ) as OutlineInputBorder;
     expect(input.borderRadius, const BorderRadius.all(Radius.circular(36)));
     expect(input.gapPadding, 6);
   });
@@ -42,9 +42,10 @@ void main() {
     const theme = MonetShapeTheme();
     final shapes = theme.resolve(4);
 
-    final border =
-        shapes.border(borderRadius: designRadius, side: side)
-            as RoundedRectangleBorder;
+    final border = shapes.border(
+      borderRadius: designRadius,
+      side: side,
+    ) as RoundedRectangleBorder;
     expect(border.side, side);
     expect(
       border.borderRadius,
@@ -54,13 +55,11 @@ void main() {
       ),
     );
 
-    final input =
-        shapes.inputBorder(
-              borderRadius: designRadius,
-              borderSide: side,
-              textDirection: TextDirection.rtl,
-            )
-            as OutlineInputBorder;
+    final input = shapes.inputBorder(
+      borderRadius: designRadius,
+      borderSide: side,
+      textDirection: TextDirection.rtl,
+    ) as OutlineInputBorder;
     expect(input.borderSide, side);
     expect(
       input.borderRadius,

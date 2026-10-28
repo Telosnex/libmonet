@@ -56,9 +56,13 @@ void main() {
           final roundTrip = TemperatureCache(complement).complement;
           final delta = (roundTrip.hue - input.hue).abs() % 360.0;
           final wrapped = delta > 180.0 ? 360.0 - delta : delta;
-          expect(wrapped, lessThan(5.0),
-              reason: 'complement of complement of H$hue should be ~H$hue, '
-                  'was H${roundTrip.hue}');
+          expect(
+            wrapped,
+            lessThan(5.0),
+            reason:
+                'complement of complement of H$hue should be ~H$hue, '
+                'was H${roundTrip.hue}',
+          );
         }
       });
 
@@ -71,12 +75,10 @@ void main() {
         final (pu, pv) = uvOfArgb(red.toInt())!;
         final (qu, qv) = uvOfArgb(complement.toInt())!;
         final du = qu - pu, dv = qv - pv;
-        final t =
-            (((wu - pu) * du + (wv - pv) * dv) / (du * du + dv * dv))
-                .clamp(0.0, 1.0);
+        final t = (((wu - pu) * du + (wv - pv) * dv) / (du * du + dv * dv))
+            .clamp(0.0, 1.0);
         final xu = pu + t * du, xv = pv + t * dv;
-        final err = math.sqrt(
-            (wu - xu) * (wu - xu) + (wv - xv) * (wv - xv));
+        final err = math.sqrt((wu - xu) * (wu - xu) + (wv - xv) * (wv - xv));
         expect(err, lessThan(0.004));
       });
 
@@ -150,10 +152,12 @@ void main() {
       test('is continuous across the warm pole', () {
         final cache = TemperatureCache(Hct.from(0.0, 40.0, 50.0));
         final warmHue = TemperatureCache.warmestHue(ColorModel.kDefault);
-        final justBelow = cache
-            .relativeTemperature(Hct.from(warmHue - 0.5, 40.0, 50.0));
-        final justAbove = cache
-            .relativeTemperature(Hct.from(warmHue + 0.5, 40.0, 50.0));
+        final justBelow = cache.relativeTemperature(
+          Hct.from(warmHue - 0.5, 40.0, 50.0),
+        );
+        final justAbove = cache.relativeTemperature(
+          Hct.from(warmHue + 0.5, 40.0, 50.0),
+        );
         expect(justBelow, closeTo(justAbove, 0.01));
       });
     });
@@ -187,10 +191,9 @@ void main() {
         expect(analogues[2].color, red.color);
 
         expect(
-            analogues.map(
-              (e) => e.color.hex,
-            ),
-            equals(['#E201D6', '#F0059C', '#FE0005', '#B46F00', '#927E00']));
+          analogues.map((e) => e.color.hex),
+          equals(['#E201D6', '#F0059C', '#FE0005', '#B46F00', '#927E00']),
+        );
       });
 
       test('handles gray input without NaN', () {
@@ -200,10 +203,9 @@ void main() {
 
         expect(analogues.length, equals(5));
         expect(
-            analogues.map(
-              (e) => e.color.hex,
-            ),
-            equals(['#777777', '#777777', '#777777', '#777777', '#777777']));
+          analogues.map((e) => e.color.hex),
+          equals(['#777777', '#777777', '#777777', '#777777', '#777777']),
+        );
       });
 
       test('input is always at the center', () {

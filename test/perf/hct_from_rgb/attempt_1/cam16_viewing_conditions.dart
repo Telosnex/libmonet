@@ -70,13 +70,13 @@ class Cam16ViewingConditions {
     var d = discountingIlluminant
         ? 1.0
         : f *
-            (1.0 -
-                ((1.0 / 3.6) * math.exp((-adaptingLuminance - 42.0) / 92.0)));
+              (1.0 -
+                  ((1.0 / 3.6) * math.exp((-adaptingLuminance - 42.0) / 92.0)));
     d = (d > 1.0)
         ? 1.0
         : (d < 0.0)
-            ? 0.0
-            : d;
+        ? 0.0
+        : d;
     final nc = f;
 
     final rgbD = <double>[
@@ -89,7 +89,8 @@ class Cam16ViewingConditions {
     final k4 = k * k * k * k;
     final k4F = 1.0 - k4;
 
-    final fl = (k4 * adaptingLuminance) +
+    final fl =
+        (k4 * adaptingLuminance) +
         (0.1 * k4F * k4F * math.pow(5.0 * adaptingLuminance, 1.0 / 3.0));
     final n = yFromLstar(backgroundLstar) / whitePoint[1];
 
@@ -101,7 +102,7 @@ class Cam16ViewingConditions {
     final rgbAFactors = [
       math.pow(fl * rgbD[0] * rW / 100.0, 0.42),
       math.pow(fl * rgbD[1] * gW / 100.0, 0.42),
-      math.pow(fl * rgbD[2] * bW / 100.0, 0.42)
+      math.pow(fl * rgbD[2] * bW / 100.0, 0.42),
     ];
 
     final rgbA = [

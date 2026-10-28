@@ -64,8 +64,10 @@ Hct afterimageComplement(Hct input) {
   final result = exit == null
       ? Hct.from(0.0, 0.0, input.tone)
       // Clamp strength along the ray to just inside the boundary.
-      : slice.nearest(wu + math.min(1.0, exit.$1 * 0.995) * du,
-          wv + math.min(1.0, exit.$1 * 0.995) * dv);
+      : slice.nearest(
+          wu + math.min(1.0, exit.$1 * 0.995) * du,
+          wv + math.min(1.0, exit.$1 * 0.995) * dv,
+        );
   // Slice tone is quantized (0.5 steps); restore the exact input tone, and
   // re-express in the input's color model.
   final retoned = Hct.from(result.hue, result.chroma, input.tone);

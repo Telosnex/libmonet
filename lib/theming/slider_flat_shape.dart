@@ -11,7 +11,7 @@ class SliderFlatShape extends RoundedRectSliderTrackShape {
   }) {
     final double thumbWidth =
         sliderTheme.thumbShape?.getPreferredSize(isEnabled, isDiscrete).width ??
-            32;
+        32;
     final double trackHeight = sliderTheme.trackHeight ?? 32;
     final double trackLeft = offset.dx + thumbWidth / 2;
     final double trackTop =
@@ -49,11 +49,13 @@ class SliderFlatShape extends RoundedRectSliderTrackShape {
     // Assign the track segment paints, which are leading: active and
     // trailing: inactive.
     final ColorTween activeTrackColorTween = ColorTween(
-        begin: sliderTheme.disabledActiveTrackColor,
-        end: sliderTheme.activeTrackColor);
+      begin: sliderTheme.disabledActiveTrackColor,
+      end: sliderTheme.activeTrackColor,
+    );
     final ColorTween inactiveTrackColorTween = ColorTween(
-        begin: sliderTheme.disabledInactiveTrackColor,
-        end: sliderTheme.inactiveTrackColor);
+      begin: sliderTheme.disabledInactiveTrackColor,
+      end: sliderTheme.inactiveTrackColor,
+    );
     final Paint activePaint = Paint()
       ..color = activeTrackColorTween.evaluate(enableAnimation)!;
     final Paint inactivePaint = Paint()
@@ -77,8 +79,9 @@ class SliderFlatShape extends RoundedRectSliderTrackShape {
       isDiscrete: isDiscrete,
     );
     final Radius trackRadius = Radius.circular(trackRect.height / 2);
-    final Radius activeTrackRadius =
-        Radius.circular((trackRect.height + additionalActiveTrackHeight) / 2);
+    final Radius activeTrackRadius = Radius.circular(
+      (trackRect.height + additionalActiveTrackHeight) / 2,
+    );
 
     context.canvas.drawRRect(
       RRect.fromLTRBAndCorners(
@@ -119,15 +122,17 @@ class SliderFlatShape extends RoundedRectSliderTrackShape {
       rightTrackPaint,
     );
 
-    final bool showSecondaryTrack = (secondaryOffset != null) &&
+    final bool showSecondaryTrack =
+        (secondaryOffset != null) &&
         ((textDirection == TextDirection.ltr)
             ? (secondaryOffset.dx > thumbCenter.dx)
             : (secondaryOffset.dx < thumbCenter.dx));
 
     if (showSecondaryTrack) {
       final ColorTween secondaryTrackColorTween = ColorTween(
-          begin: sliderTheme.disabledSecondaryActiveTrackColor,
-          end: sliderTheme.secondaryActiveTrackColor);
+        begin: sliderTheme.disabledSecondaryActiveTrackColor,
+        end: sliderTheme.secondaryActiveTrackColor,
+      );
       final Paint secondaryTrackPaint = Paint()
         ..color = secondaryTrackColorTween.evaluate(enableAnimation)!;
       if (textDirection == TextDirection.ltr) {

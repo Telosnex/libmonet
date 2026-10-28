@@ -55,15 +55,33 @@ class _SolverConst {
   final List<double> criticalPlanes;
 
   _SolverConst._({
-    required this.aw, required this.nbb, required this.invCZ,
-    required this.tInnerCoeff, required this.p1Coeff,
-    required this.m00, required this.m01, required this.m02,
-    required this.m10, required this.m11, required this.m12,
-    required this.m20, required this.m21, required this.m22,
-    required this.sd00, required this.sd01, required this.sd02,
-    required this.sd10, required this.sd11, required this.sd12,
-    required this.sd20, required this.sd21, required this.sd22,
-    required this.kR, required this.kG, required this.kB, required this.kSum,
+    required this.aw,
+    required this.nbb,
+    required this.invCZ,
+    required this.tInnerCoeff,
+    required this.p1Coeff,
+    required this.m00,
+    required this.m01,
+    required this.m02,
+    required this.m10,
+    required this.m11,
+    required this.m12,
+    required this.m20,
+    required this.m21,
+    required this.m22,
+    required this.sd00,
+    required this.sd01,
+    required this.sd02,
+    required this.sd10,
+    required this.sd11,
+    required this.sd12,
+    required this.sd20,
+    required this.sd21,
+    required this.sd22,
+    required this.kR,
+    required this.kG,
+    required this.kB,
+    required this.kSum,
     required this.criticalPlanes,
   });
 
@@ -75,17 +93,32 @@ class _SolverConst {
     final inner = 1.64 - exp(vc.backgroundYToWhitePointY * log(0.29));
     final tIC = 1.0 / exp(0.73 * log(inner));
     return _SolverConst._(
-      aw: vc.aw, nbb: vc.nbb,
+      aw: vc.aw,
+      nbb: vc.nbb,
       invCZ: 1.0 / (vc.c * vc.z),
       tInnerCoeff: tIC,
       p1Coeff: (50000.0 / 13.0) * vc.nC * vc.ncb,
-      m00: m[0][0], m01: m[0][1], m02: m[0][2],
-      m10: m[1][0], m11: m[1][1], m12: m[1][2],
-      m20: m[2][0], m21: m[2][1], m22: m[2][2],
-      sd00: sd[0][0], sd01: sd[0][1], sd02: sd[0][2],
-      sd10: sd[1][0], sd11: sd[1][1], sd12: sd[1][2],
-      sd20: sd[2][0], sd21: sd[2][1], sd22: sd[2][2],
-      kR: g.yFromLinrgb[0], kG: g.yFromLinrgb[1], kB: g.yFromLinrgb[2],
+      m00: m[0][0],
+      m01: m[0][1],
+      m02: m[0][2],
+      m10: m[1][0],
+      m11: m[1][1],
+      m12: m[1][2],
+      m20: m[2][0],
+      m21: m[2][1],
+      m22: m[2][2],
+      sd00: sd[0][0],
+      sd01: sd[0][1],
+      sd02: sd[0][2],
+      sd10: sd[1][0],
+      sd11: sd[1][1],
+      sd12: sd[1][2],
+      sd20: sd[2][0],
+      sd21: sd[2][1],
+      sd22: sd[2][2],
+      kR: g.yFromLinrgb[0],
+      kG: g.yFromLinrgb[1],
+      kB: g.yFromLinrgb[2],
       kSum: g.yFromLinrgb[0] + g.yFromLinrgb[1] + g.yFromLinrgb[2],
       criticalPlanes: g.criticalPlanes,
     );
@@ -191,7 +224,11 @@ class HctSolver {
   /// Always returns within 5 iterations: either converges (error < 0.002)
   /// or returns the best approximation on iteration 4.
   static (double, double, double)? _findResultByJ(
-      double hueRadians, double chroma, double y, Gamut gamut) {
+    double hueRadians,
+    double chroma,
+    double y,
+    Gamut gamut,
+  ) {
     // Initial estimate of j.
     var j = sqrt(y) * 11.0;
     // ===========================================================
@@ -221,7 +258,8 @@ class HctSolver {
       final ac = viewingConditions.aw * exp(invCZ * logJN);
       final t = exp(_inv0_9 * logCT + tJNCoeff * logJN);
       final p2 = ac / viewingConditions.nbb;
-      final gamma = 23.0 *
+      final gamma =
+          23.0 *
           (p2 + 0.305) *
           t /
           (23.0 * p1 + 11 * t * hCos + 108.0 * t * hSin);
@@ -234,13 +272,16 @@ class HctSolver {
       final gCScaled = _inverseChromaticAdaptation(gA);
       final bCScaled = _inverseChromaticAdaptation(bA);
       final matrix = gamut.linrgbFromScaledDiscount;
-      final linR = rCScaled * matrix[0][0] +
+      final linR =
+          rCScaled * matrix[0][0] +
           gCScaled * matrix[0][1] +
           bCScaled * matrix[0][2];
-      final linG = rCScaled * matrix[1][0] +
+      final linG =
+          rCScaled * matrix[1][0] +
           gCScaled * matrix[1][1] +
           bCScaled * matrix[1][2];
-      final linB = rCScaled * matrix[2][0] +
+      final linB =
+          rCScaled * matrix[2][0] +
           gCScaled * matrix[2][1] +
           bCScaled * matrix[2][2];
       // ===========================================================
@@ -277,7 +318,11 @@ class HctSolver {
   /// the same as the legacy solver; gamut fallback still preserves hue because
   /// CAM16 v11 uses the same opponent hue definition.
   static (double, double, double)? _findResultByJv11(
-      double hueRadians, double chroma, double y, Gamut gamut) {
+    double hueRadians,
+    double chroma,
+    double y,
+    Gamut gamut,
+  ) {
     var j = sqrt(y) * 11.0;
     final viewingConditions = Cam16V11ViewingConditions.standard;
     final eHue = Cam16V11.hueEccentricity(hueRadians);
@@ -287,7 +332,7 @@ class HctSolver {
     final opponentMagnitude = chroma <= 0.0
         ? 0.0
         : (chroma * viewingConditions.aw / 35.0) /
-            (43.0 * viewingConditions.nC * eHue);
+              (43.0 * viewingConditions.nC * eHue);
     final a = opponentMagnitude * hCos;
     final b = opponentMagnitude * hSin;
 
@@ -305,13 +350,16 @@ class HctSolver {
       final gCScaled = _inverseChromaticAdaptation(gA);
       final bCScaled = _inverseChromaticAdaptation(bA);
       final matrix = gamut.linrgbFromScaledDiscount;
-      final linR = rCScaled * matrix[0][0] +
+      final linR =
+          rCScaled * matrix[0][0] +
           gCScaled * matrix[0][1] +
           bCScaled * matrix[0][2];
-      final linG = rCScaled * matrix[1][0] +
+      final linG =
+          rCScaled * matrix[1][0] +
           gCScaled * matrix[1][1] +
           bCScaled * matrix[1][2];
-      final linB = rCScaled * matrix[2][0] +
+      final linB =
+          rCScaled * matrix[2][0] +
           gCScaled * matrix[2][1] +
           bCScaled * matrix[2][2];
 
@@ -344,8 +392,12 @@ class HctSolver {
   /// [lstar], respectively. If it is impossible to satisfy all three
   /// constraints, the hue and L* will be sufficiently close, and the
   /// chroma will be maximized.
-  static int solveToInt(double hueDegrees, double chroma, double lstar,
-      [String callSite = '?']) {
+  static int solveToInt(
+    double hueDegrees,
+    double chroma,
+    double lstar, [
+    String callSite = '?',
+  ]) {
     final sc = _sc;
     if (chroma < 0.0001 || lstar < 0.0001 || lstar > 99.9999) {
       final y = yFromLstar(lstar);
@@ -519,7 +571,11 @@ class HctSolver {
 
   /// Newton solver specialized for sRGB: uses precomputed constants.
   static (double, double, double)? _findResultByJSrgb(
-      _SolverConst sc, double hueRadians, double chroma, double y) {
+    _SolverConst sc,
+    double hueRadians,
+    double chroma,
+    double y,
+  ) {
     var j = sqrt(y) * 11.0;
     final eHue = 0.25 * (cos(hueRadians + 2.0) + 3.8);
     final p1 = eHue * sc.p1Coeff;
@@ -534,7 +590,10 @@ class HctSolver {
       final ac = sc.aw * exp(sc.invCZ * logJN);
       final t = exp(_inv0_9 * logCT + tJNCoeff * logJN);
       final p2 = ac / sc.nbb;
-      final gamma = 23.0 * (p2 + 0.305) * t /
+      final gamma =
+          23.0 *
+          (p2 + 0.305) *
+          t /
           (23.0 * p1 + 11.0 * t * hCos + 108.0 * t * hSin);
       final a = gamma * hCos;
       final b = gamma * hSin;
@@ -547,7 +606,9 @@ class HctSolver {
       {
         final a1 = rA < 0.0 ? -rA : rA;
         final d1 = 400.0 - a1;
-        if (d1 <= 0.0) { rCS = 0.0; } else {
+        if (d1 <= 0.0) {
+          rCS = 0.0;
+        } else {
           final b1 = 27.13 * a1 / d1;
           rCS = b1 <= 0.0 ? 0.0 : exp(_inv0_42 * log(b1));
           if (rA < 0.0) rCS = -rCS;
@@ -556,7 +617,9 @@ class HctSolver {
       {
         final a1 = gA < 0.0 ? -gA : gA;
         final d1 = 400.0 - a1;
-        if (d1 <= 0.0) { gCS = 0.0; } else {
+        if (d1 <= 0.0) {
+          gCS = 0.0;
+        } else {
           final b1 = 27.13 * a1 / d1;
           gCS = b1 <= 0.0 ? 0.0 : exp(_inv0_42 * log(b1));
           if (gA < 0.0) gCS = -gCS;
@@ -565,7 +628,9 @@ class HctSolver {
       {
         final a1 = bA < 0.0 ? -bA : bA;
         final d1 = 400.0 - a1;
-        if (d1 <= 0.0) { bCS = 0.0; } else {
+        if (d1 <= 0.0) {
+          bCS = 0.0;
+        } else {
           final b1 = 27.13 * a1 / d1;
           bCS = b1 <= 0.0 ? 0.0 : exp(_inv0_42 * log(b1));
           if (bA < 0.0) bCS = -bCS;
@@ -593,7 +658,10 @@ class HctSolver {
 
   /// Bisection fallback specialized for sRGB: uses precomputed constants.
   static (double, double, double) _bisectToLimitSrgb(
-      _SolverConst sc, double y, double targetHue) {
+    _SolverConst sc,
+    double y,
+    double targetHue,
+  ) {
     var lR = -1.0, lG = -1.0, lB = -1.0;
     var rR = -1.0, rG = -1.0, rB = -1.0;
     var mR = -1.0, mG = -1.0, mB = -1.0;
@@ -606,31 +674,60 @@ class HctSolver {
       if (n < 4) {
         final g = coordA, b = coordB;
         final r = (y - g * sc.kG - b * sc.kB) / sc.kR;
-        if (r >= 0.0 && r <= 100.0) { mR = r; mG = g; mB = b; } else { mR = -1.0; }
+        if (r >= 0.0 && r <= 100.0) {
+          mR = r;
+          mG = g;
+          mB = b;
+        } else {
+          mR = -1.0;
+        }
       } else if (n < 8) {
         final b = coordA, r = coordB;
         final g = (y - r * sc.kR - b * sc.kB) / sc.kG;
-        if (g >= 0.0 && g <= 100.0) { mR = r; mG = g; mB = b; } else { mR = -1.0; }
+        if (g >= 0.0 && g <= 100.0) {
+          mR = r;
+          mG = g;
+          mB = b;
+        } else {
+          mR = -1.0;
+        }
       } else {
         final r = coordA, g = coordB;
         final b = (y - r * sc.kR - g * sc.kG) / sc.kB;
-        if (b >= 0.0 && b <= 100.0) { mR = r; mG = g; mB = b; } else { mR = -1.0; }
+        if (b >= 0.0 && b <= 100.0) {
+          mR = r;
+          mG = g;
+          mB = b;
+        } else {
+          mR = -1.0;
+        }
       }
       if (mR < 0.0) continue;
       final midHue = _hueOfSrgb(sc, mR, mG, mB);
       if (!initialized) {
-        lR = mR; lG = mG; lB = mB;
-        rR = mR; rG = mG; rB = mB;
-        leftHue = midHue; rightHue = midHue;
+        lR = mR;
+        lG = mG;
+        lB = mB;
+        rR = mR;
+        rG = mG;
+        rB = mB;
+        leftHue = midHue;
+        rightHue = midHue;
         initialized = true;
         continue;
       }
       if (uncut || _areInCyclicOrder(leftHue, midHue, rightHue)) {
         uncut = false;
         if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
-          rR = mR; rG = mG; rB = mB; rightHue = midHue;
+          rR = mR;
+          rG = mG;
+          rB = mB;
+          rightHue = midHue;
         } else {
-          lR = mR; lG = mG; lB = mB; leftHue = midHue;
+          lR = mR;
+          lG = mG;
+          lB = mB;
+          leftHue = midHue;
         }
       }
     }
@@ -661,9 +758,16 @@ class HctSolver {
         mB = lB + (rB - lB) * t;
         final midHue = _hueOfSrgb(sc, mR, mG, mB);
         if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
-          rR = mR; rG = mG; rB = mB; rPlane = mPlane;
+          rR = mR;
+          rG = mG;
+          rB = mB;
+          rPlane = mPlane;
         } else {
-          lR = mR; lG = mG; lB = mB; leftHue = midHue; lPlane = mPlane;
+          lR = mR;
+          lG = mG;
+          lB = mB;
+          leftHue = midHue;
+          lPlane = mPlane;
         }
       }
     }
@@ -830,8 +934,11 @@ class HctSolver {
             continue;
           }
           final midHue = _hueOfComponents(
-              bisectToSegmentMid0, bisectToSegmentMid1, bisectToSegmentMid2,
-              gamut!);
+            bisectToSegmentMid0,
+            bisectToSegmentMid1,
+            bisectToSegmentMid2,
+            gamut!,
+          );
           if (!initialized) {
             bisectToSegmentLeft0 = bisectToSegmentMid0;
             bisectToSegmentLeft1 = bisectToSegmentMid1;
@@ -868,7 +975,11 @@ class HctSolver {
       var bisectToLimitLeft1 = bisectToSegmentLeft1;
       var bisectToLimitLeft2 = bisectToSegmentLeft2;
       var leftHue = _hueOfComponents(
-          bisectToLimitLeft0, bisectToLimitLeft1, bisectToLimitLeft2, gamut!);
+        bisectToLimitLeft0,
+        bisectToLimitLeft1,
+        bisectToLimitLeft2,
+        gamut!,
+      );
       var bisectToLimitRight0 = bisectToSegmentRight0;
       var bisectToLimitRight1 = bisectToSegmentRight1;
       var bisectToLimitRight2 = bisectToSegmentRight2;
@@ -886,27 +997,23 @@ class HctSolver {
           0 => bisectToLimitLeft0,
           1 => bisectToLimitLeft1,
           2 => bisectToLimitLeft2,
-          _ => throw StateError('unreachable: axis must be 0, 1, or 2')
+          _ => throw StateError('unreachable: axis must be 0, 1, or 2'),
         };
         var rightForAxis = switch (axis) {
           0 => bisectToLimitRight0,
           1 => bisectToLimitRight1,
           2 => bisectToLimitRight2,
-          _ => throw StateError('unreachable: axis must be 0, 1, or 2')
+          _ => throw StateError('unreachable: axis must be 0, 1, or 2'),
         };
         if (leftForAxis != rightForAxis) {
           var lPlane = -1;
           var rPlane = 255;
           if (leftForAxis < rightForAxis) {
-            lPlane = _criticalPlaneBelow(
-                gamut.trueDelinearize(leftForAxis));
-            rPlane = _criticalPlaneAbove(
-                gamut.trueDelinearize(rightForAxis));
+            lPlane = _criticalPlaneBelow(gamut.trueDelinearize(leftForAxis));
+            rPlane = _criticalPlaneAbove(gamut.trueDelinearize(rightForAxis));
           } else {
-            lPlane = _criticalPlaneAbove(
-                gamut.trueDelinearize(leftForAxis));
-            rPlane = _criticalPlaneBelow(
-                gamut.trueDelinearize(rightForAxis));
+            lPlane = _criticalPlaneAbove(gamut.trueDelinearize(leftForAxis));
+            rPlane = _criticalPlaneBelow(gamut.trueDelinearize(rightForAxis));
           }
           for (var i = 0; i < 8; i++) {
             if ((rPlane - lPlane).abs() <= 1) {
@@ -914,33 +1021,56 @@ class HctSolver {
             } else {
               final mPlane = ((lPlane + rPlane) / 2.0).floor();
               final midPlaneCoordinate = gamut.criticalPlanes[mPlane];
-              void setCoordinate2(int axis, double sourceAxisValue,
-                  double coordinate, double targetAxisValue) {
+              void setCoordinate2(
+                int axis,
+                double sourceAxisValue,
+                double coordinate,
+                double targetAxisValue,
+              ) {
                 double lerpPoint(double source, double t, double target) {
                   return source + (target - source) * t;
                 }
 
-                final t =
-                    _intercept(sourceAxisValue, coordinate, targetAxisValue);
+                final t = _intercept(
+                  sourceAxisValue,
+                  coordinate,
+                  targetAxisValue,
+                );
                 if (axis == 0) {
-                  bisectToLimitMid0 =
-                      lerpPoint(bisectToLimitLeft0, t, bisectToLimitRight0);
+                  bisectToLimitMid0 = lerpPoint(
+                    bisectToLimitLeft0,
+                    t,
+                    bisectToLimitRight0,
+                  );
                 } else if (axis == 1) {
-                  bisectToLimitMid1 =
-                      lerpPoint(bisectToLimitLeft1, t, bisectToLimitRight1);
+                  bisectToLimitMid1 = lerpPoint(
+                    bisectToLimitLeft1,
+                    t,
+                    bisectToLimitRight1,
+                  );
                 } else if (axis == 2) {
-                  bisectToLimitMid2 =
-                      lerpPoint(bisectToLimitLeft2, t, bisectToLimitRight2);
+                  bisectToLimitMid2 = lerpPoint(
+                    bisectToLimitLeft2,
+                    t,
+                    bisectToLimitRight2,
+                  );
                 }
               }
 
               for (var axis2 = 0; axis2 < 3; axis2++) {
                 setCoordinate2(
-                    axis2, leftForAxis, midPlaneCoordinate, rightForAxis);
+                  axis2,
+                  leftForAxis,
+                  midPlaneCoordinate,
+                  rightForAxis,
+                );
               }
               final midHue = _hueOfComponents(
-                  bisectToLimitMid0, bisectToLimitMid1, bisectToLimitMid2,
-                  gamut);
+                bisectToLimitMid0,
+                bisectToLimitMid1,
+                bisectToLimitMid2,
+                gamut,
+              );
               if (_areInCyclicOrder(leftHue, targetHue, midHue)) {
                 bisectToLimitRight0 = bisectToLimitMid0;
                 bisectToLimitRight1 = bisectToLimitMid1;
@@ -983,7 +1113,8 @@ class HctSolver {
         gamut ??= Gamut.srgb;
         if (chroma < 0.0001 || lstar < 0.0001 || lstar > 99.9999) {
           final y = yFromLstar(lstar);
-          final kSum = gamut.yFromLinrgb[0] +
+          final kSum =
+              gamut.yFromLinrgb[0] +
               gamut.yFromLinrgb[1] +
               gamut.yFromLinrgb[2];
           final v = y / kSum;
@@ -1032,8 +1163,12 @@ class HctSolver {
     Gamut? gamut,
   }) {
     gamut ??= Gamut.srgb;
-    final (linR, linG, linB) =
-        solveToLinrgb(hueDegrees, chroma, lstar, gamut: gamut);
+    final (linR, linG, linB) = solveToLinrgb(
+      hueDegrees,
+      chroma,
+      lstar,
+      gamut: gamut,
+    );
     return (
       (gamut.trueDelinearize(linR) / 255.0).clamp(0.0, 1.0),
       (gamut.trueDelinearize(linG) / 255.0).clamp(0.0, 1.0),

@@ -1,4 +1,3 @@
-
 import 'package:material_ui/material_ui.dart';
 
 class HorizontalPadding extends StatelessWidget {
@@ -9,11 +8,13 @@ class HorizontalPadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(width: 8,);
+    return const SizedBox(
+      width: 8,
+    );
   }
 }
 
-class  VerticalPadding extends StatelessWidget {
+class VerticalPadding extends StatelessWidget {
   static const bottomInset = EdgeInsets.only(bottom: 8);
   static const inset = EdgeInsets.symmetric(vertical: 8);
   static const topInset = EdgeInsets.only(top: 8);
@@ -22,6 +23,8 @@ class  VerticalPadding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(height: 8,);
+    return const SizedBox(
+      height: 8,
+    );
   }
 }

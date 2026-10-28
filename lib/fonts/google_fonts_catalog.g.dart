@@ -2142,11 +2142,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,500,600,700',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Abel': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Abel': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Abhaya Libre': {
     'category': 'serif',
     'variants': '400,500,600,700,800',
@@ -2172,21 +2168,9 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Acme': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Actor': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Adamina': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Acme': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
+  'Actor': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
+  'Adamina': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Advent Pro': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -2250,7 +2234,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Akt': {
     'category': 'sans-serif',
     'variants': '100,200,300,400,500,600,700,800,900',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Aladin': {
     'category': 'display',
@@ -2277,11 +2262,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext',
   },
-  'Aldrich': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Aldrich': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Alef': {
     'category': 'sans-serif',
     'variants': '400,700',
@@ -2290,22 +2271,28 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Alegreya': {
     'category': 'serif',
     'variants': '400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Alegreya SC': {
     'category': 'serif',
     'variants': '400,400i,500,500i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Alegreya Sans': {
     'category': 'sans-serif',
-    'variants': '100,100i,300,300i,400,400i,500,500i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'variants':
+        '100,100i,300,300i,400,400i,500,500i,700,700i,800,800i,900,900i',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Alegreya Sans SC': {
     'category': 'sans-serif',
-    'variants': '100,100i,300,300i,400,400i,500,500i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'variants':
+        '100,100i,300,300i,400,400i,500,500i,700,700i,800,800i,900,900i',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Aleo': {
     'category': 'serif',
@@ -2362,11 +2349,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,700',
     'subsets': 'latin,latin-ext',
   },
-  'Allerta': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Allerta': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Allerta Stencil': {
     'category': 'sans-serif',
     'variants': '400',
@@ -2377,11 +2360,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Allkin': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': '',
-  },
+  'Allkin': {'category': 'display', 'variants': '400', 'subsets': ''},
   'Allura': {
     'category': 'handwriting',
     'variants': '400',
@@ -2402,11 +2381,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Almendra SC': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Almendra SC': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Alumni Sans': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -2449,7 +2424,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Amarna': {
     'category': 'sans-serif',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'latin,latin-ext',
   },
   'Amatic SC': {
@@ -2457,11 +2433,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,700',
     'subsets': 'cyrillic,hebrew,latin,latin-ext,vietnamese',
   },
-  'Amethysta': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Amethysta': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Amiko': {
     'category': 'sans-serif',
     'variants': '400,600,700',
@@ -2494,7 +2466,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Ancizar Serif': {
     'category': 'serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'greek,latin,latin-ext',
   },
   'Andada Pro': {
@@ -2582,21 +2555,9 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext,math,symbols',
   },
-  'Antic': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Antic Didone': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Antic Slab': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Antic': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
+  'Antic Didone': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
+  'Antic Slab': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Anton': {
     'category': 'sans-serif',
     'variants': '400',
@@ -2627,11 +2588,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'japanese,latin,latin-ext',
   },
-  'Arapey': {
-    'category': 'serif',
-    'variants': '400,400i',
-    'subsets': 'latin',
-  },
+  'Arapey': {'category': 'serif', 'variants': '400,400i', 'subsets': 'latin'},
   'Arbutus': {
     'category': 'serif',
     'variants': '400',
@@ -2707,11 +2664,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
-  'Artifika': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Artifika': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Arvo': {
     'category': 'serif',
     'variants': '400,400i,700,700i',
@@ -2752,16 +2705,8 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '300,400,500,600,700,800',
     'subsets': 'korean,latin',
   },
-  'Astloch': {
-    'category': 'display',
-    'variants': '400,700',
-    'subsets': 'latin',
-  },
-  'Asul': {
-    'category': 'serif',
-    'variants': '400,700',
-    'subsets': 'latin',
-  },
+  'Astloch': {'category': 'display', 'variants': '400,700', 'subsets': 'latin'},
+  'Asul': {'category': 'serif', 'variants': '400,700', 'subsets': 'latin'},
   'Athiti': {
     'category': 'sans-serif',
     'variants': '200,300,400,500,600,700',
@@ -2774,12 +2719,14 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Atkinson Hyperlegible Mono': {
     'category': 'sans-serif',
-    'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
+    'variants':
+        '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'latin,latin-ext',
   },
   'Atkinson Hyperlegible Next': {
     'category': 'sans-serif',
-    'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
+    'variants':
+        '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'latin,latin-ext',
   },
   'Atma': {
@@ -2792,11 +2739,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Aubrey': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Aubrey': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Audiowide': {
     'category': 'display',
     'variants': '400',
@@ -2997,11 +2940,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext',
   },
-  'Balthazar': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Balthazar': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Bangers': {
     'category': 'display',
     'variants': '400',
@@ -3052,11 +2991,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,300,400,700,900',
     'subsets': 'khmer,latin',
   },
-  'Baumans': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Baumans': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Bayon': {
     'category': 'sans-serif',
     'variants': '400',
@@ -3087,11 +3022,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,600,700',
     'subsets': 'latin,latin-ext',
   },
-  'Belgrano': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Belgrano': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Bellefair': {
     'category': 'serif',
     'variants': '400',
@@ -3192,11 +3123,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Bigshot One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Bigshot One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Bilbo': {
     'category': 'handwriting',
     'variants': '400',
@@ -3337,11 +3264,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext,math,symbols',
   },
-  'Bokor': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'khmer,latin',
-  },
+  'Bokor': {'category': 'display', 'variants': '400', 'subsets': 'khmer,latin'},
   'Boldonse': {
     'category': 'display',
     'variants': '400',
@@ -3357,31 +3280,19 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,700',
     'subsets': 'cyrillic,cyrillic-ext,greek,hebrew,latin,latin-ext,vietnamese',
   },
-  'Bonbon': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Bonbon': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Bonheur Royale': {
     'category': 'handwriting',
     'variants': '400',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Boogaloo': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Boogaloo': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Borel': {
     'category': 'handwriting',
     'variants': '400',
     'subsets': 'latin,latin-ext,math,symbols,vietnamese',
   },
-  'Bowlby One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Bowlby One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Bowlby One SC': {
     'category': 'display',
     'variants': '400',
@@ -3407,11 +3318,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'gurmukhi,latin,latin-ext,vietnamese',
   },
-  'Brawler': {
-    'category': 'serif',
-    'variants': '400,700',
-    'subsets': 'latin',
-  },
+  'Brawler': {'category': 'serif', 'variants': '400,700', 'subsets': 'latin'},
   'Bree Serif': {
     'category': 'serif',
     'variants': '400',
@@ -3447,11 +3354,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Buda': {
-    'category': 'display',
-    'variants': '300',
-    'subsets': 'latin',
-  },
+  'Buda': {'category': 'display', 'variants': '300', 'subsets': 'latin'},
   'Buenard': {
     'category': 'serif',
     'variants': '400,500,600,700',
@@ -3572,11 +3475,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Candal': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Candal': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Cantarell': {
     'category': 'sans-serif',
     'variants': '400,400i,700,700i',
@@ -3620,13 +3519,10 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Carlito': {
     'category': 'sans-serif',
     'variants': '400,400i,700,700i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
-  'Carme': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Carme': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Carrois Gothic': {
     'category': 'sans-serif',
     'variants': '400',
@@ -3637,11 +3533,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin',
   },
-  'Carter One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Carter One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Cascadia Code': {
     'category': 'sans-serif',
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
@@ -3752,11 +3644,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Chenla': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'khmer',
-  },
+  'Chenla': {'category': 'display', 'variants': '400', 'subsets': 'khmer'},
   'Cherish': {
     'category': 'handwriting',
     'variants': '400',
@@ -3777,11 +3665,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,700',
     'subsets': 'latin,latin-ext',
   },
-  'Chewy': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Chewy': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Chicle': {
     'category': 'display',
     'variants': '400',
@@ -3912,11 +3796,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Content': {
-    'category': 'display',
-    'variants': '400,700',
-    'subsets': 'khmer',
-  },
+  'Content': {'category': 'display', 'variants': '400,700', 'subsets': 'khmer'},
   'Contrail One': {
     'category': 'display',
     'variants': '400',
@@ -3927,16 +3807,8 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Cookie': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Copse': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Cookie': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
+  'Copse': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Coral Pixels': {
     'category': 'display',
     'variants': '400',
@@ -4022,11 +3894,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin',
   },
-  'Creepster': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Creepster': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Crete Round': {
     'category': 'serif',
     'variants': '400,400i',
@@ -4162,11 +4030,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Delius': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Delius': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Delius Swash Caps': {
     'category': 'handwriting',
     'variants': '400',
@@ -4177,11 +4041,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,700',
     'subsets': 'latin',
   },
-  'Della Respira': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Della Respira': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Denk One': {
     'category': 'sans-serif',
     'variants': '400',
@@ -4247,11 +4107,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Dorsa': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Dorsa': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Dosis': {
     'category': 'sans-serif',
     'variants': '200,300,400,500,600,700,800',
@@ -4290,7 +4146,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'EB Garamond': {
     'category': 'serif',
     'variants': '400,400i,500,500i,600,600i,700,700i,800,800i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Eagle Lake': {
     'category': 'handwriting',
@@ -4469,12 +4326,14 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Epunda Sans': {
     'category': 'sans-serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext',
   },
   'Epunda Slab': {
     'category': 'serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext',
   },
   'Erica One': {
@@ -4592,16 +4451,8 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Federant': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Federo': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Federant': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
+  'Federo': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Felipa': {
     'category': 'handwriting',
     'variants': '400',
@@ -4619,7 +4470,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Figtree': {
     'category': 'sans-serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext',
   },
   'Finger Paint': {
@@ -4650,28 +4502,27 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Fira Sans': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Fira Sans Condensed': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Fira Sans Extra Condensed': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Fjalla One': {
     'category': 'sans-serif',
     'variants': '400',
     'subsets': 'cyrillic-ext,latin,latin-ext,vietnamese',
   },
-  'Fjord One': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Fjord One': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Flamenco': {
     'category': 'display',
     'variants': '300,400',
@@ -4772,21 +4623,13 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Frijole': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Frijole': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Fruktur': {
     'category': 'display',
     'variants': '400,400i',
     'subsets': 'cyrillic-ext,latin,latin-ext,vietnamese',
   },
-  'Fugaz One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Fugaz One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Fuggles': {
     'category': 'handwriting',
     'variants': '400',
@@ -4857,11 +4700,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'bengali,latin',
   },
-  'Galdeano': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Galdeano': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Galindo': {
     'category': 'display',
     'variants': '400',
@@ -4920,18 +4759,16 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Gentium Book Plus': {
     'category': 'serif',
     'variants': '400,400i,700,700i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Gentium Plus': {
     'category': 'serif',
     'variants': '400,400i,700,700i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
-  'Geo': {
-    'category': 'sans-serif',
-    'variants': '400,400i',
-    'subsets': 'latin',
-  },
+  'Geo': {'category': 'sans-serif', 'variants': '400,400i', 'subsets': 'latin'},
   'Geologica': {
     'category': 'sans-serif',
     'variants': '100,200,300,400,500,600,700,800,900',
@@ -4939,7 +4776,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Geom': {
     'category': 'sans-serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'greek,latin,latin-ext',
   },
   'Georama': {
@@ -4947,11 +4785,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Geostar': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Geostar': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Geostar Fill': {
     'category': 'display',
     'variants': '400',
@@ -5022,11 +4856,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,200,300,400,500,600,700,800,900',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Goblin One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Goblin One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Gochi Hand': {
     'category': 'handwriting',
     'variants': '400',
@@ -5087,11 +4917,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'korean,latin,latin-ext,vietnamese',
   },
-  'Graduate': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Graduate': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Grand Hotel': {
     'category': 'handwriting',
     'variants': '400',
@@ -5157,11 +4983,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,700',
     'subsets': 'latin,latin-ext',
   },
-  'Gugi': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'korean,latin',
-  },
+  'Gugi': {'category': 'display', 'variants': '400', 'subsets': 'korean,latin'},
   'Gulzar': {
     'category': 'serif',
     'variants': '400',
@@ -5227,11 +5049,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,200,300,400,500,600,700,800,900',
     'subsets': 'arabic,armenian,cyrillic,cyrillic-ext,greek,hebrew,latin,latin-ext,vietnamese',
   },
-  'Handlee': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Handlee': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Hanken Grotesk': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -5272,11 +5090,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,200,300,400,500,600,700,800,900',
     'subsets': 'hebrew,latin,latin-ext,math,symbols',
   },
-  'Henny Penny': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Henny Penny': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Hepta Slab': {
     'category': 'serif',
     'variants': '100,200,300,400,500,600,700,800,900',
@@ -5337,11 +5151,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin',
   },
-  'Homenaje': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Homenaje': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Honk': {
     'category': 'display',
     'variants': '400',
@@ -5374,12 +5184,14 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'IBM Plex Mono': {
     'category': 'monospace',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
   'IBM Plex Sans': {
     'category': 'sans-serif',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,vietnamese',
   },
   'IBM Plex Sans Arabic': {
@@ -5419,7 +5231,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'IBM Plex Serif': {
     'category': 'serif',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
   'IM Fell DW Pica': {
@@ -5482,16 +5295,8 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,500,500i,600,600i,700,700i',
     'subsets': 'latin,latin-ext',
   },
-  'Iceberg': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Iceland': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Iceberg': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
+  'Iceland': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Idiqlat': {
     'category': 'serif',
     'variants': '200,300,400',
@@ -5580,12 +5385,14 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Inter': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Inter Tight': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Iosevka Charon': {
     'category': 'monospace',
@@ -5612,11 +5419,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext',
   },
-  'Italiana': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Italiana': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Italianno': {
     'category': 'handwriting',
     'variants': '400',
@@ -5764,12 +5567,14 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Josefin Sans': {
     'category': 'sans-serif',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'latin,latin-ext,vietnamese',
   },
   'Josefin Slab': {
     'category': 'serif',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'latin',
   },
   'Jost': {
@@ -5802,11 +5607,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Junge': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Junge': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Jura': {
     'category': 'sans-serif',
     'variants': '300,400,500,600,700',
@@ -5889,7 +5690,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Kantumruy Pro': {
     'category': 'sans-serif',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'khmer,latin,latin-ext',
   },
   'Kapakana': {
@@ -5904,7 +5706,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Karla': {
     'category': 'sans-serif',
-    'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
+    'variants':
+        '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'latin,latin-ext',
   },
   'Karla Tamil Inclined': {
@@ -5967,21 +5770,13 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'cyrillic,latin,latin-ext',
   },
-  'Kenia': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Kenia': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Khand': {
     'category': 'sans-serif',
     'variants': '300,400,500,600,700',
     'subsets': 'devanagari,latin,latin-ext',
   },
-  'Khmer': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'khmer',
-  },
+  'Khmer': {'category': 'sans-serif', 'variants': '400', 'subsets': 'khmer'},
   'Khula': {
     'category': 'sans-serif',
     'variants': '300,400,600,700,800',
@@ -6067,21 +5862,13 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'khmer,latin',
   },
-  'Kranky': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Kranky': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Kreon': {
     'category': 'serif',
     'variants': '300,400,500,600,700',
     'subsets': 'latin,latin-ext',
   },
-  'Kristi': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Kristi': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Krona One': {
     'category': 'sans-serif',
     'variants': '400',
@@ -6152,11 +5939,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Lacquer': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Lacquer': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Laila': {
     'category': 'serif',
     'variants': '300,400,500,600,700',
@@ -6282,11 +6065,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Libertinus Math': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': '',
-  },
+  'Libertinus Math': {'category': 'display', 'variants': '400', 'subsets': ''},
   'Libertinus Mono': {
     'category': 'monospace',
     'variants': '400',
@@ -6295,7 +6074,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Libertinus Sans': {
     'category': 'sans-serif',
     'variants': '400,400i,700',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Libertinus Serif': {
     'category': 'serif',
@@ -6305,7 +6085,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Libertinus Serif Display': {
     'category': 'display',
     'variants': '400',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Libre Barcode 128': {
     'category': 'display',
@@ -6379,8 +6160,10 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Lilex': {
     'category': 'monospace',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,symbols2,vietnamese',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,latin,latin-ext,symbols2,vietnamese',
   },
   'Lilita One': {
     'category': 'display',
@@ -6420,7 +6203,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Literata': {
     'category': 'serif',
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Liu Jian Mao Cao': {
     'category': 'handwriting',
@@ -6512,16 +6296,8 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,700',
     'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,hebrew,latin,latin-ext,vietnamese',
   },
-  'Lusitana': {
-    'category': 'serif',
-    'variants': '400,700',
-    'subsets': 'latin',
-  },
-  'Lustria': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Lusitana': {'category': 'serif', 'variants': '400,700', 'subsets': 'latin'},
+  'Lustria': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Luxurious Roman': {
     'category': 'display',
     'variants': '400',
@@ -6572,11 +6348,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'chinese-simplified,latin',
   },
-  'Macondo': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Macondo': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Macondo Swash Caps': {
     'category': 'display',
     'variants': '400',
@@ -6692,11 +6464,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,500,600,700',
     'subsets': 'arabic,latin,latin-ext,vietnamese',
   },
-  'Marko One': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Marko One': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Marmelad': {
     'category': 'sans-serif',
     'variants': '400',
@@ -6767,11 +6535,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Medula One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Medula One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Meera Inimai': {
     'category': 'sans-serif',
     'variants': '400',
@@ -6804,7 +6568,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Merriweather': {
     'category': 'serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
   'Merriweather Sans': {
@@ -6812,11 +6577,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'cyrillic-ext,latin,latin-ext,vietnamese',
   },
-  'Metal': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'khmer,latin',
-  },
+  'Metal': {'category': 'display', 'variants': '400', 'subsets': 'khmer,latin'},
   'Metal Mania': {
     'category': 'display',
     'variants': '400',
@@ -6852,11 +6613,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Miltonian': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Miltonian': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Miltonian Tattoo': {
     'category': 'display',
     'variants': '400',
@@ -6872,11 +6629,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext,lepcha',
   },
-  'Miniver': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Miniver': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Miranda Sans': {
     'category': 'sans-serif',
     'variants': '400,400i,500,500i,600,600i,700,700i',
@@ -7002,11 +6755,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Montaga': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Montaga': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Montagu Slab': {
     'category': 'serif',
     'variants': '100,200,300,400,500,600,700',
@@ -7057,11 +6806,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Moul': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'khmer,latin',
-  },
+  'Moul': {'category': 'display', 'variants': '400', 'subsets': 'khmer,latin'},
   'Moulpali': {
     'category': 'sans-serif',
     'variants': '400',
@@ -7260,11 +7005,13 @@ const googleFontsDetails = <String, Map<String, String>>{
   'News Cycle': {
     'category': 'sans-serif',
     'variants': '400,700',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Newsreader': {
     'category': 'serif',
-    'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
+    'variants':
+        '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'latin,latin-ext,vietnamese',
   },
   'Niconne': {
@@ -7277,11 +7024,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'latin,latin-ext,thai,vietnamese',
   },
-  'Nixie One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Nixie One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Nobile': {
     'category': 'sans-serif',
     'variants': '400,400i,500,500i,700,700i',
@@ -7302,11 +7045,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Notable': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Notable': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Nothing You Could Do': {
     'category': 'handwriting',
     'variants': '400',
@@ -7500,7 +7239,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Noto Sans Display': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Noto Sans Duployan': {
     'category': 'sans-serif',
@@ -7785,7 +7525,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Noto Sans Mono': {
     'category': 'sans-serif',
     'variants': '100,200,300,400,500,600,700,800,900',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Noto Sans Mro': {
     'category': 'sans-serif',
@@ -8160,7 +7901,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Noto Serif': {
     'category': 'serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,math,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,math,vietnamese',
   },
   'Noto Serif Ahom': {
     'category': 'serif',
@@ -8190,7 +7932,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Noto Serif Display': {
     'category': 'serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Noto Serif Dives Akuru': {
     'category': 'serif',
@@ -8422,11 +8165,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Numans': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Numans': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Nunito': {
     'category': 'sans-serif',
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -8442,11 +8181,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext,yi',
   },
-  'Odibee Sans': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Odibee Sans': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Odor Mean Chey': {
     'category': 'serif',
     'variants': '400',
@@ -8460,7 +8195,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Oi': {
     'category': 'display',
     'variants': '400',
-    'subsets': 'arabic,cyrillic,cyrillic-ext,greek,latin,latin-ext,tamil,vietnamese',
+    'subsets':
+        'arabic,cyrillic,cyrillic-ext,greek,latin,latin-ext,tamil,vietnamese',
   },
   'Ojuju': {
     'category': 'sans-serif',
@@ -8577,11 +8313,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '300,400,500,600,700',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
-  'Ovo': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Ovo': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Oxanium': {
     'category': 'display',
     'variants': '200,300,400,500,600,700,800',
@@ -8722,11 +8454,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'cyrillic,latin,latin-ext,thai,vietnamese',
   },
-  'Patua One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Patua One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Pavanam': {
     'category': 'sans-serif',
     'variants': '400',
@@ -8785,7 +8513,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Piazzolla': {
     'category': 'serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Piedra': {
     'category': 'display',
@@ -8829,7 +8558,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Playfair': {
     'category': 'serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
   'Playfair Display': {
@@ -8845,7 +8575,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Playpen Sans': {
     'category': 'handwriting',
     'variants': '100,200,300,400,500,600,700,800',
-    'subsets': 'cyrillic,cyrillic-ext,emoji,greek,latin,latin-ext,math,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,emoji,greek,latin,latin-ext,math,vietnamese',
   },
   'Playpen Sans Arabic': {
     'category': 'handwriting',
@@ -9394,7 +9125,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Plus Jakarta Sans': {
     'category': 'sans-serif',
-    'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
+    'variants':
+        '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'cyrillic-ext,latin,latin-ext,vietnamese',
   },
   'Pochaevsk': {
@@ -9417,11 +9149,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'cyrillic,latin,latin-ext',
   },
-  'Poller One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Poller One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Poltawski Nowy': {
     'category': 'serif',
     'variants': '400,400i,500,500i,600,600i,700,700i',
@@ -9432,11 +9160,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i',
     'subsets': 'latin,latin-ext',
   },
-  'Pompiere': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Pompiere': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Ponnala': {
     'category': 'display',
     'variants': '400',
@@ -9512,11 +9236,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Prociono': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Prociono': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Prompt': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -9702,11 +9422,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Rancho': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Rancho': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Ranga': {
     'category': 'display',
     'variants': '400,700',
@@ -9739,7 +9455,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Red Hat Display': {
     'category': 'sans-serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext',
   },
   'Red Hat Mono': {
@@ -9864,7 +9581,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Roboto Mono': {
     'category': 'monospace',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,vietnamese',
   },
   'Roboto Serif': {
@@ -9875,7 +9593,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Roboto Slab': {
     'category': 'serif',
     'variants': '100,200,300,400,500,600,700,800,900',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Rochester': {
     'category': 'handwriting',
@@ -9939,7 +9658,8 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Rubik': {
     'category': 'sans-serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'arabic,cyrillic,cyrillic-ext,hebrew,latin,latin-ext',
   },
   'Rubik 80s Fade': {
@@ -10132,11 +9852,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
-  'STIX Two Math': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': '',
-  },
+  'STIX Two Math': {'category': 'serif', 'variants': '400', 'subsets': ''},
   'STIX Two Text': {
     'category': 'serif',
     'variants': '400,400i,500,500i,600,600i,700,700i',
@@ -10177,11 +9893,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Salsa': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Salsa': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Sanchez': {
     'category': 'serif',
     'variants': '400,400i',
@@ -10237,11 +9949,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Satisfy': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Satisfy': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Savate': {
     'category': 'sans-serif',
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -10427,11 +10135,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'gujarati,latin,latin-ext',
   },
-  'Siemreap': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'khmer',
-  },
+  'Siemreap': {'category': 'sans-serif', 'variants': '400', 'subsets': 'khmer'},
   'Sigmar': {
     'category': 'display',
     'variants': '400',
@@ -10512,11 +10216,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Slackey': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Slackey': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Slackside One': {
     'category': 'handwriting',
     'variants': '400',
@@ -10537,36 +10237,20 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,200,300,400,500,600,700,800,900',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Smythe': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Smythe': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Sniglet': {
     'category': 'display',
     'variants': '400,800',
     'subsets': 'latin,latin-ext',
   },
-  'Snippet': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Snippet': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Snowburst One': {
     'category': 'display',
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Sofadi One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
-  'Sofia': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Sofadi One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
+  'Sofia': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Sofia Sans': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -10635,12 +10319,14 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Source Code Pro': {
     'category': 'monospace',
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Source Sans 3': {
     'category': 'sans-serif',
     'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,vietnamese',
   },
   'Source Serif 4': {
     'category': 'serif',
@@ -10679,12 +10365,14 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Spectral': {
     'category': 'serif',
-    'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
+    'variants':
+        '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
   'Spectral SC': {
     'category': 'serif',
-    'variants': '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
+    'variants':
+        '200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i',
     'subsets': 'cyrillic,cyrillic-ext,latin,latin-ext,vietnamese',
   },
   'Spicy Rice': {
@@ -10697,11 +10385,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Spirax': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Spirax': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Splash': {
     'category': 'handwriting',
     'variants': '400',
@@ -10717,11 +10401,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'latin,latin-ext',
   },
-  'Squada One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Squada One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Square Peg': {
     'category': 'handwriting',
     'variants': '400',
@@ -11127,11 +10807,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Trade Winds': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Trade Winds': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Train One': {
     'category': 'display',
     'variants': '400',
@@ -11180,13 +10856,10 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Tuffy': {
     'category': 'sans-serif',
     'variants': '400,400i,700,700i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,phoenician',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext,phoenician',
   },
-  'Tulpen One': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Tulpen One': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Turret Road': {
     'category': 'display',
     'variants': '200,300,400,500,700,800',
@@ -11222,11 +10895,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400,400i,500,500i,600,600i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,greek,greek-ext,latin,latin-ext',
   },
-  'Uchen': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin,tibetan',
-  },
+  'Uchen': {'category': 'serif', 'variants': '400', 'subsets': 'latin,tibetan'},
   'Ultra': {
     'category': 'serif',
     'variants': '400',
@@ -11262,11 +10931,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin',
   },
-  'Unkempt': {
-    'category': 'display',
-    'variants': '400,700',
-    'subsets': 'latin',
-  },
+  'Unkempt': {'category': 'display', 'variants': '400,700', 'subsets': 'latin'},
   'Unlock': {
     'category': 'display',
     'variants': '400',
@@ -11317,11 +10982,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '300,400,500,600,700',
     'subsets': 'latin,latin-ext,vietnamese',
   },
-  'Vast Shadow': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Vast Shadow': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Vazirmatn': {
     'category': 'sans-serif',
     'variants': '100,200,300,400,500,600,700,800,900',
@@ -11347,21 +11008,14 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'arabic,latin',
   },
-  'Vibur': {
-    'category': 'handwriting',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Vibur': {'category': 'handwriting', 'variants': '400', 'subsets': 'latin'},
   'Victor Mono': {
     'category': 'monospace',
-    'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
+    'variants':
+        '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i',
     'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,vietnamese',
   },
-  'Vidaloka': {
-    'category': 'serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Vidaloka': {'category': 'serif', 'variants': '400', 'subsets': 'latin'},
   'Viga': {
     'category': 'sans-serif',
     'variants': '400',
@@ -11422,11 +11076,7 @@ const googleFontsDetails = <String, Map<String, String>>{
     'variants': '400',
     'subsets': 'latin,latin-ext',
   },
-  'Wallpoet': {
-    'category': 'display',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Wallpoet': {'category': 'display', 'variants': '400', 'subsets': 'latin'},
   'Walter Turncoat': {
     'category': 'handwriting',
     'variants': '400',
@@ -11474,19 +11124,17 @@ const googleFontsDetails = <String, Map<String, String>>{
   },
   'Winky Rough': {
     'category': 'sans-serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext',
   },
   'Winky Sans': {
     'category': 'sans-serif',
-    'variants': '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
+    'variants':
+        '300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
     'subsets': 'latin,latin-ext',
   },
-  'Wire One': {
-    'category': 'sans-serif',
-    'variants': '400',
-    'subsets': 'latin',
-  },
+  'Wire One': {'category': 'sans-serif', 'variants': '400', 'subsets': 'latin'},
   'Wittgenstein': {
     'category': 'serif',
     'variants': '400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
@@ -11595,22 +11243,26 @@ const googleFontsDetails = <String, Map<String, String>>{
   'Ysabeau': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
   },
   'Ysabeau Infant': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
   },
   'Ysabeau Office': {
     'category': 'sans-serif',
     'variants': '100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i',
-    'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
   },
   'Ysabeau SC': {
     'category': 'sans-serif',
     'variants': '100,200,300,400,500,600,700,800,900',
-    'subsets': 'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
+    'subsets':
+        'cyrillic,cyrillic-ext,greek,latin,latin-ext,math,symbols,vietnamese',
   },
   'Yuji Boku': {
     'category': 'serif',

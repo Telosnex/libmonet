@@ -84,11 +84,7 @@ void main() async {
   );
 
   attempt.resetBracketBreaks();
-  await tester.run(
-    warmupRuns: 50,
-    benchmarkRuns: 20,
-    profile: false,
-  );
+  await tester.run(warmupRuns: 50, benchmarkRuns: 20, profile: false);
   print('');
   print('  Deltas > 0.001T: $mismatchCount / ${testCases.length}');
   print('  Max delta: ${maxDelta.toStringAsFixed(6)}T');

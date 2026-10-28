@@ -58,7 +58,8 @@ Duration buttonStyleAnimationDuration = Duration.zero;
 
 Size get maximumSize => const Size(double.infinity, double.infinity);
 EdgeInsetsGeometry get padding {
-  final isDesktop = !kIsWeb &&
+  final isDesktop =
+      !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.macOS ||
           defaultTargetPlatform == TargetPlatform.windows ||
           defaultTargetPlatform == TargetPlatform.linux);
@@ -79,22 +80,26 @@ ButtonStyle backgroundButtonStyle(
     animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
-        normal: () => sc.background,
-        hover: () => sc.backgroundHovered,
-        splash: () => sc.backgroundSplashed),
+      normal: () => sc.background,
+      hover: () => sc.backgroundHovered,
+      splash: () => sc.backgroundSplashed,
+    ),
     surfaceTintColor: widgetPropertyByState(
-        normal: () => sc.background,
-        hover: () => sc.backgroundHovered,
-        splash: () => sc.backgroundSplashed),
+      normal: () => sc.background,
+      hover: () => sc.backgroundHovered,
+      splash: () => sc.backgroundSplashed,
+    ),
     overlayColor: const WidgetStatePropertyAll(Colors.transparent),
     foregroundColor: widgetPropertyByState(
-        normal: () => sc.backgroundText,
-        hover: () => sc.backgroundHoveredText,
-        splash: () => sc.backgroundSplashedText),
+      normal: () => sc.backgroundText,
+      hover: () => sc.backgroundHoveredText,
+      splash: () => sc.backgroundSplashedText,
+    ),
     iconColor: widgetPropertyByState(
-        normal: () => sc.backgroundFill,
-        hover: () => sc.backgroundHoveredFill,
-        splash: () => sc.backgroundSplashedFill),
+      normal: () => sc.backgroundFill,
+      hover: () => sc.backgroundHoveredFill,
+      splash: () => sc.backgroundSplashedFill,
+    ),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
@@ -105,13 +110,17 @@ ButtonStyle backgroundButtonStyle(
             if (states.contains(WidgetState.pressed) ||
                 states.contains(WidgetState.dragged)) {
               return BorderSide(
-                  color: sc.backgroundSplashedBorder, width: borderWidth);
+                color: sc.backgroundSplashedBorder,
+                width: borderWidth,
+              );
             }
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.focused) ||
                 states.contains(WidgetState.selected)) {
               return BorderSide(
-                  color: sc.backgroundHoveredBorder, width: borderWidth);
+                color: sc.backgroundHoveredBorder,
+                width: borderWidth,
+              );
             }
             return BorderSide(color: sc.backgroundBorder, width: borderWidth);
           })
@@ -132,18 +141,26 @@ ButtonStyle fillButtonStyle(
     animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
-        normal: () => sc.fill, hover: () => sc.fillHovered, splash: () => sc.fillSplashed),
+      normal: () => sc.fill,
+      hover: () => sc.fillHovered,
+      splash: () => sc.fillSplashed,
+    ),
     surfaceTintColor: widgetPropertyByState(
-        normal: () => sc.fill, hover: () => sc.fillHovered, splash: () => sc.fillSplashed),
+      normal: () => sc.fill,
+      hover: () => sc.fillHovered,
+      splash: () => sc.fillSplashed,
+    ),
     overlayColor: const WidgetStatePropertyAll(Colors.transparent),
     foregroundColor: widgetPropertyByState(
-        normal: () => sc.fillText,
-        hover: () => sc.fillHoveredText,
-        splash: () => sc.fillSplashedText),
+      normal: () => sc.fillText,
+      hover: () => sc.fillHoveredText,
+      splash: () => sc.fillSplashedText,
+    ),
     iconColor: widgetPropertyByState(
-        normal: () => sc.fillIcon,
-        hover: () => sc.fillHoveredIcon,
-        splash: () => sc.fillSplashedIcon),
+      normal: () => sc.fillIcon,
+      hover: () => sc.fillHoveredIcon,
+      splash: () => sc.fillSplashedIcon,
+    ),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
@@ -154,13 +171,17 @@ ButtonStyle fillButtonStyle(
             if (states.contains(WidgetState.pressed) ||
                 states.contains(WidgetState.dragged)) {
               return BorderSide(
-                  color: sc.fillSplashedBorder, width: borderWidth);
+                color: sc.fillSplashedBorder,
+                width: borderWidth,
+              );
             }
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.focused) ||
                 states.contains(WidgetState.selected)) {
               return BorderSide(
-                  color: sc.fillHoveredBorder, width: borderWidth);
+                color: sc.fillHoveredBorder,
+                width: borderWidth,
+              );
             }
             return BorderSide(color: sc.fillBorder, width: borderWidth);
           })
@@ -181,19 +202,30 @@ ButtonStyle colorButtonStyle(
     animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
     backgroundColor: widgetPropertyByState(
-        normal: () => sc.color, hover: () => sc.colorHovered, splash: () => sc.colorSplashed),
+      normal: () => sc.color,
+      hover: () => sc.colorHovered,
+      splash: () => sc.colorSplashed,
+    ),
     surfaceTintColor: widgetPropertyByState(
-        normal: () => sc.color, hover: () => sc.colorHovered, splash: () => sc.colorSplashed),
+      normal: () => sc.color,
+      hover: () => sc.colorHovered,
+      splash: () => sc.colorSplashed,
+    ),
     overlayColor: widgetPropertyByState(
-        normal: () => sc.color, hover: () => sc.colorHovered, splash: () => sc.colorSplashed),
+      normal: () => sc.color,
+      hover: () => sc.colorHovered,
+      splash: () => sc.colorSplashed,
+    ),
     foregroundColor: widgetPropertyByState(
-        normal: () => sc.colorText,
-        hover: () => sc.colorHoveredText,
-        splash: () => sc.colorSplashedText),
+      normal: () => sc.colorText,
+      hover: () => sc.colorHoveredText,
+      splash: () => sc.colorSplashedText,
+    ),
     iconColor: widgetPropertyByState(
-        normal: () => sc.colorIcon,
-        hover: () => sc.colorHoveredIcon,
-        splash: () => sc.colorSplashedIcon),
+      normal: () => sc.colorIcon,
+      hover: () => sc.colorHoveredIcon,
+      splash: () => sc.colorSplashedIcon,
+    ),
     textStyle: textStyle != null ? WidgetStatePropertyAll(textStyle) : null,
     minimumSize: WidgetStatePropertyAll(minimumSizeForScale(scale)),
     maximumSize: WidgetStatePropertyAll(maximumSize),
@@ -204,13 +236,17 @@ ButtonStyle colorButtonStyle(
             if (states.contains(WidgetState.pressed) ||
                 states.contains(WidgetState.dragged)) {
               return BorderSide(
-                  color: sc.colorSplashedBorder, width: borderWidth);
+                color: sc.colorSplashedBorder,
+                width: borderWidth,
+              );
             }
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.focused) ||
                 states.contains(WidgetState.selected)) {
               return BorderSide(
-                  color: sc.colorHoveredBorder, width: borderWidth);
+                color: sc.colorHoveredBorder,
+                width: borderWidth,
+              );
             }
             return BorderSide(color: sc.colorBorder, width: borderWidth);
           })
@@ -252,10 +288,7 @@ ButtonStyle textButtonStyle(
 }
 
 /// Icon button: transparent background and stateful icon/text colors.
-ButtonStyle iconButtonStyle(
-  Palette sc, {
-  TextStyle? textStyle,
-}) {
+ButtonStyle iconButtonStyle(Palette sc, {TextStyle? textStyle}) {
   return ButtonStyle(
     animationDuration: buttonStyleAnimationDuration,
     visualDensity: VisualDensity.compact,
@@ -297,12 +330,14 @@ ButtonStyle outlineButtonStyle(
   OutlinedBorder? shape,
   required double scale,
 }) {
-  final base = backgroundButtonStyle(sc,
-      showBorder: true,
-      textStyle: textStyle,
-      borderWidth: borderWidth,
-      shape: shape,
-      scale: scale);
+  final base = backgroundButtonStyle(
+    sc,
+    showBorder: true,
+    textStyle: textStyle,
+    borderWidth: borderWidth,
+    shape: shape,
+    scale: scale,
+  );
   return base.copyWith(
     backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
   );

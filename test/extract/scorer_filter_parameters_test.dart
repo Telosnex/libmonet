@@ -9,12 +9,15 @@ import 'package:libmonet/extract/scorer.dart';
 import 'package:libmonet/extract/scorer_triad.dart';
 
 void main() {
-  testWidgets('Scorer honors tone and chroma filter parameters',
-      (tester) async {
+  testWidgets('Scorer honors tone and chroma filter parameters', (
+    tester,
+  ) async {
     await tester.runAsync(() async {
-      final image = FileImage(File(
-        'test/fixtures/wallpapers/henrique-ferreira-lneox9o1MjU-unsplash.jpg',
-      ));
+      final image = FileImage(
+        File(
+          'test/fixtures/wallpapers/henrique-ferreira-lneox9o1MjU-unsplash.jpg',
+        ),
+      );
       final result = await Extract.quantize(image, 32);
 
       final defaults = Scorer(result, colorModel: ColorModel.cam16v11);
@@ -39,8 +42,10 @@ void main() {
 
       expect(noToneFilter.hcts.length, defaults.hcts.length);
       expect(noChromaFilter.hcts.length, greaterThan(defaults.hcts.length));
-      expect(noToneOrChromaFilter.hcts.length,
-          greaterThanOrEqualTo(noChromaFilter.hcts.length));
+      expect(
+        noToneOrChromaFilter.hcts.length,
+        greaterThanOrEqualTo(noChromaFilter.hcts.length),
+      );
 
       final defaultTriad = ScorerTriad.threeColorsFromQuantizer(
         result,

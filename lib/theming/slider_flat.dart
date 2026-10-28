@@ -14,8 +14,8 @@ class SliderFlat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = this.borderColor ??
-        MonetTheme.of(context).primary.colorBorder;
+    final borderColor =
+        this.borderColor ?? MonetTheme.of(context).primary.colorBorder;
     final borderWidth = this.borderWidth ?? 2;
     final sliderTheme = Theme.of(context).sliderTheme;
     final trackHeight = sliderTheme.trackHeight!;
@@ -31,7 +31,8 @@ class SliderFlat extends StatelessWidget {
               width: thumbWidth,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(trackHeight / 2),
-                color: activeTrackColor ??
+                color:
+                    activeTrackColor ??
                     Theme.of(context).sliderTheme.activeTrackColor,
               ),
               height: trackHeight,
@@ -47,9 +48,7 @@ class SliderFlat extends StatelessWidget {
             ),
           ],
         ),
-        Positioned.fill(
-          child: slider,
-        ),
+        Positioned.fill(child: slider),
         IgnorePointer(
           child: Container(
             decoration: BoxDecoration(

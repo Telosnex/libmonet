@@ -59,10 +59,12 @@ void main() {
           errors.add(err(p, q));
           final (pu, pv) = p;
           final (qu, qv) = q;
-          final inStr =
-              math.sqrt((pu - wu) * (pu - wu) + (pv - wv) * (pv - wv));
-          final outStr =
-              math.sqrt((qu - wu) * (qu - wu) + (qv - wv) * (qv - wv));
+          final inStr = math.sqrt(
+            (pu - wu) * (pu - wu) + (pv - wv) * (pv - wv),
+          );
+          final outStr = math.sqrt(
+            (qu - wu) * (qu - wu) + (qv - wv) * (qv - wv),
+          );
           if (inStr > 0.02) {
             chromaticInputs++;
             if (outStr < 0.005) grayCheats++;
@@ -76,19 +78,32 @@ void main() {
     final jnd = errors.where((e) => e < 0.004).length / errors.length;
     expect(pct(.5), lessThan(0.001), reason: 'median should be sub-JND');
     expect(pct(.95), lessThan(0.004), reason: 'p95 should be sub-JND');
-    expect(pct(1.0), lessThan(0.01),
-        reason: 'max error is a gamut-clamping floor, ~0.005');
-    expect(jnd, greaterThan(0.99),
-        reason: 'nearly all of the cube should mix to neutral within a JND');
-    expect(grayCheats / chromaticInputs, lessThan(0.01),
-        reason: 'gray output for chromatic input = degenerate non-answer');
+    expect(
+      pct(1.0),
+      lessThan(0.01),
+      reason: 'max error is a gamut-clamping floor, ~0.005',
+    );
+    expect(
+      jnd,
+      greaterThan(0.99),
+      reason: 'nearly all of the cube should mix to neutral within a JND',
+    );
+    expect(
+      grayCheats / chromaticInputs,
+      lessThan(0.01),
+      reason: 'gray output for chromatic input = degenerate non-answer',
+    );
   }, timeout: const Timeout(Duration(minutes: 5)));
 
   test('achromatic inputs return themselves', () {
-    expect(afterimageComplement(Hct.fromInt(0xff000000)).toInt(),
-        equals(0xff000000));
-    expect(afterimageComplement(Hct.fromInt(0xffffffff)).toInt(),
-        equals(0xffffffff));
+    expect(
+      afterimageComplement(Hct.fromInt(0xff000000)).toInt(),
+      equals(0xff000000),
+    );
+    expect(
+      afterimageComplement(Hct.fromInt(0xffffffff)).toInt(),
+      equals(0xffffffff),
+    );
     final gray = afterimageComplement(Hct.from(0.0, 0.0, 50.0));
     expect(gray.chroma, lessThan(2.5));
     expect(gray.tone, closeTo(50.0, 0.5));

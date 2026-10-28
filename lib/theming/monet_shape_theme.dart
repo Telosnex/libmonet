@@ -2,19 +2,17 @@ import 'package:material_ui/material_ui.dart';
 import 'package:libmonet/util/size_scale.dart';
 
 /// Creates an outlined border from resolved logical-pixel geometry.
-typedef MonetBorderBuilder =
-    OutlinedBorder Function({
-      required BorderRadiusGeometry borderRadius,
-      required BorderSide side,
-    });
+typedef MonetBorderBuilder = OutlinedBorder Function({
+  required BorderRadiusGeometry borderRadius,
+  required BorderSide side,
+});
 
 /// Creates an input border from resolved logical-pixel geometry.
-typedef MonetInputBorderBuilder =
-    InputBorder Function({
-      required BorderRadius borderRadius,
-      required BorderSide borderSide,
-      required double gapPadding,
-    });
+typedef MonetInputBorderBuilder = InputBorder Function({
+  required BorderRadius borderRadius,
+  required BorderSide borderSide,
+  required double gapPadding,
+});
 
 OutlinedBorder _roundedBorderBuilder({
   required BorderRadiusGeometry borderRadius,

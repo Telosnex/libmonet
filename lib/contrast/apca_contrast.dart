@@ -17,11 +17,13 @@ class LstarRange {
   bool get isDegenerate => darkest == lightest;
 
   /// Returns the L* in this range closest to [target] in L* space.
-  /// 
+  ///
   /// WARNING: This may not preserve apcaY! Use [closestByApcaY] when you need
   /// the L* that best preserves a target apcaY value.
   double closestTo(double target) =>
-      (target - darkest).abs() <= (target - lightest).abs() ? darkest : lightest;
+      (target - darkest).abs() <= (target - lightest).abs()
+      ? darkest
+      : lightest;
 }
 
 /// Returns the L* of a lighter background that achieves [apca] contrast
@@ -40,21 +42,29 @@ class LstarRange {
 ///
 /// This means grayscale colors at the returned L* will have MORE contrast than
 /// requested, but that's the safe choice for a general-purpose API.
-double lighterBackgroundLstarUnsafe(double textLstar, double apca,
-    {bool debug = false}) {
+double lighterBackgroundLstarUnsafe(
+  double textLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* UNSAFE ENTER');
   final textApcaY = lstarToApcaY(textLstar);
-  final lighterBackgroundApcaYValue =
-      lighterBackgroundApcaY(textApcaY, apca);
+  final lighterBackgroundApcaYValue = lighterBackgroundApcaY(textApcaY, apca);
   return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest;
 }
 
-double lighterBackgroundLstar(double textLstar, double apca,
-    {bool debug = false}) {
+double lighterBackgroundLstar(
+  double textLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'LIGHTER BACKGROUND L* ENTER');
-  final lighterBackgroundApcaYValue =
-      lighterBackgroundApcaY(lstarToApcaY(textLstar), apca);
-  return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest.clamp(0.0, 100.0);
+  final lighterBackgroundApcaYValue = lighterBackgroundApcaY(
+    lstarToApcaY(textLstar),
+    apca,
+  );
+  return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest
+      .clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a lighter text that achieves [apca] contrast
@@ -65,35 +75,53 @@ double lighterBackgroundLstar(double textLstar, double apca,
 ///
 /// Returns the lightest L* in the valid range to be safe for chromatic colors.
 /// See [lighterBackgroundLstarUnsafe] for detailed explanation.
-double lighterTextLstarUnsafe(double backgroundLstar, double apca,
-    {bool debug = false}) {
+double lighterTextLstarUnsafe(
+  double backgroundLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'LIGHTER TEXT L* UNSAFE ENTER');
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
-  final lighterTextApcaYValue =
-      lighterTextApcaY(backgroundApcaY, apca, debug: debug);
+  final lighterTextApcaYValue = lighterTextApcaY(
+    backgroundApcaY,
+    apca,
+    debug: debug,
+  );
   return apcaYToLstarRange(lighterTextApcaYValue).lightest;
 }
 
-double lighterTextLstar(double backgroundLstar, double apca,
-    {bool debug = false}) {
+double lighterTextLstar(
+  double backgroundLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'LIGHTER TEXT L* ENTER');
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
   monetDebug(debug, () => 'apcaY: $backgroundApcaY');
-  final lighterTextApcaYValue =
-      lighterTextApcaY(backgroundApcaY, apca, debug: debug);
+  final lighterTextApcaYValue = lighterTextApcaY(
+    backgroundApcaY,
+    apca,
+    debug: debug,
+  );
   if (lighterTextApcaYValue > 1.0) {
-    monetDebug(debug,
-        () => 'lighter text has $lighterTextApcaYValue, lets check darker');
-    final darkerTextApcaYValue =
-        darkerTextApcaY(backgroundApcaY, apca, debug: debug);
+    monetDebug(
+      debug,
+      () => 'lighter text has $lighterTextApcaYValue, lets check darker',
+    );
+    final darkerTextApcaYValue = darkerTextApcaY(
+      backgroundApcaY,
+      apca,
+      debug: debug,
+    );
     if (darkerTextApcaYValue < 0) {
       final distanceFromNeededLightToMaxLight = lighterTextApcaYValue - 1.0;
       final distanceFromNeededDarkToMaxDark = 0.0 - darkerTextApcaYValue;
       if (distanceFromNeededLightToMaxLight > distanceFromNeededDarkToMaxDark) {
         monetDebug(
-            debug,
-            () =>
-                'going with darker, lighter distance was $distanceFromNeededLightToMaxLight, darker distance was $distanceFromNeededDarkToMaxDark');
+          debug,
+          () =>
+              'going with darker, lighter distance was $distanceFromNeededLightToMaxLight, darker distance was $distanceFromNeededDarkToMaxDark',
+        );
         return 0.0;
       } else {
         monetDebug(debug, () => 'going with lighter');
@@ -101,9 +129,10 @@ double lighterTextLstar(double backgroundLstar, double apca,
       }
     } else {
       monetDebug(
-          debug,
-          () =>
-              'asked for lighter, but darker is in bounds. darkerTextApcaYValue: $darkerTextApcaYValue');
+        debug,
+        () =>
+            'asked for lighter, but darker is in bounds. darkerTextApcaYValue: $darkerTextApcaYValue',
+      );
       return apcaYToLstarRange(darkerTextApcaYValue).darkest.clamp(0.0, 100.0);
     }
   }
@@ -118,16 +147,22 @@ double lighterTextLstar(double backgroundLstar, double apca,
 ///
 /// Returns the darkest L* in the valid range to be safe for chromatic colors.
 /// See [lighterBackgroundLstarUnsafe] for detailed explanation.
-double darkerBackgroundLstarUnsafe(double textLstar, double apca,
-    {bool debug = false}) {
+double darkerBackgroundLstarUnsafe(
+  double textLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'DARKER BACKGROUND L* UNSAFE ENTER');
   final textApcaY = lstarToApcaY(textLstar);
   final darkerBackgroundApcaYValue = darkerBackgroundApcaY(textApcaY, apca);
   return apcaYToLstarRange(darkerBackgroundApcaYValue).darkest;
 }
 
-double darkerBackgroundLstar(double textLstar, double apca,
-    {bool debug = false}) {
+double darkerBackgroundLstar(
+  double textLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'DARKER BACKGROUND L* ENTER');
 
   final textApcaY = lstarToApcaY(textLstar);
@@ -135,12 +170,15 @@ double darkerBackgroundLstar(double textLstar, double apca,
 
   final darkerBackgroundApcaYValue = darkerBackgroundApcaY(textApcaY, apca);
   monetDebug(
-      debug, () => 'darkerBackgroundApcaYValue: $darkerBackgroundApcaYValue');
+    debug,
+    () => 'darkerBackgroundApcaYValue: $darkerBackgroundApcaYValue',
+  );
   if (darkerBackgroundApcaYValue < 0) {
     monetDebug(
-        debug,
-        () =>
-            'darker background has $darkerBackgroundApcaYValue, lets check lighter');
+      debug,
+      () =>
+          'darker background has $darkerBackgroundApcaYValue, lets check lighter',
+    );
     final lighterBackgroundApcaYValue = lighterBackgroundApcaY(textApcaY, apca);
     if (lighterBackgroundApcaYValue > 1) {
       final distanceFromNeededLightToMaxLight =
@@ -148,18 +186,21 @@ double darkerBackgroundLstar(double textLstar, double apca,
       final distanceFromNeededDarkToMaxDark = 0.0 - darkerBackgroundApcaYValue;
       if (distanceFromNeededLightToMaxLight > distanceFromNeededDarkToMaxDark) {
         monetDebug(
-            debug,
-            () =>
-                'going with darker, lighter distance was $distanceFromNeededLightToMaxLight, darker distance was $distanceFromNeededDarkToMaxDark');
+          debug,
+          () =>
+              'going with darker, lighter distance was $distanceFromNeededLightToMaxLight, darker distance was $distanceFromNeededDarkToMaxDark',
+        );
         return 0.0;
       } else {
         return 100.0;
       }
     }
-    return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest.clamp(0.0, 100.0);
+    return apcaYToLstarRange(lighterBackgroundApcaYValue).lightest
+        .clamp(0.0, 100.0);
   }
 
-  return apcaYToLstarRange(darkerBackgroundApcaYValue).darkest.clamp(0.0, 100.0);
+  return apcaYToLstarRange(darkerBackgroundApcaYValue).darkest
+      .clamp(0.0, 100.0);
 }
 
 /// Returns the L* of a darker text that achieves [apca] contrast
@@ -170,56 +211,78 @@ double darkerBackgroundLstar(double textLstar, double apca,
 ///
 /// Returns the darkest L* in the valid range to be safe for chromatic colors.
 /// See [lighterBackgroundLstarUnsafe] for detailed explanation.
-double darkerTextLstarUnsafe(double backgroundLstar, double apca,
-    {bool debug = false}) {
+double darkerTextLstarUnsafe(
+  double backgroundLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'DARKER TEXT L* UNSAFE ENTER');
   final backgroundApcaY = lstarToApcaY(backgroundLstar);
-  final darkerTextApcaYValue =
-      darkerTextApcaY(backgroundApcaY, apca, debug: debug);
+  final darkerTextApcaYValue = darkerTextApcaY(
+    backgroundApcaY,
+    apca,
+    debug: debug,
+  );
   return apcaYToLstarRange(darkerTextApcaYValue).darkest;
 }
 
-double darkerTextLstar(double backgroundYLstar, double apca,
-    {bool debug = false}) {
+double darkerTextLstar(
+  double backgroundYLstar,
+  double apca, {
+  bool debug = false,
+}) {
   monetDebug(debug, () => 'DARKER TEXT L* ENTER');
 
   final backgroundApcaY = lstarToApcaY(backgroundYLstar);
   monetDebug(debug, () => 'apcaY: $backgroundApcaY');
-  final darkerTextApcaYValue =
-      darkerTextApcaY(backgroundApcaY, apca, debug: debug);
+  final darkerTextApcaYValue = darkerTextApcaY(
+    backgroundApcaY,
+    apca,
+    debug: debug,
+  );
   monetDebug(debug, () => 'darkerTextApcaYValue: $darkerTextApcaYValue');
   if (darkerTextApcaYValue < 0) {
-    monetDebug(debug,
-        () => 'darker text has $darkerTextApcaYValue, lets check lighter');
-    final lighterTextApcaYValue =
-        lighterTextApcaY(backgroundApcaY, apca, debug: debug);
+    monetDebug(
+      debug,
+      () => 'darker text has $darkerTextApcaYValue, lets check lighter',
+    );
+    final lighterTextApcaYValue = lighterTextApcaY(
+      backgroundApcaY,
+      apca,
+      debug: debug,
+    );
     if (lighterTextApcaYValue > 1) {
       final distanceFromNeededLightToMaxLight = lighterTextApcaYValue - 1.0;
       final distanceFromNeededDarkToMaxDark = 0.0 - darkerTextApcaYValue;
       if (distanceFromNeededLightToMaxLight > distanceFromNeededDarkToMaxDark) {
         monetDebug(
-            debug,
-            () =>
-                'going with darker, lighter distance was $distanceFromNeededLightToMaxLight, darker distance was $distanceFromNeededDarkToMaxDark');
+          debug,
+          () =>
+              'going with darker, lighter distance was $distanceFromNeededLightToMaxLight, darker distance was $distanceFromNeededDarkToMaxDark',
+        );
         return 0.0;
       } else {
         monetDebug(debug, () => 'going with lighter');
         return 100.0;
       }
     } else {
-
       monetDebug(
-          debug,
-          () =>
-              'asked for darker, but lighter is in bounds. lighterTextApcaYValue: $lighterTextApcaYValue');
-      return apcaYToLstarRange(lighterTextApcaYValue).lightest.clamp(0.0, 100.0);
+        debug,
+        () =>
+            'asked for darker, but lighter is in bounds. lighterTextApcaYValue: $lighterTextApcaYValue',
+      );
+      return apcaYToLstarRange(lighterTextApcaYValue).lightest
+          .clamp(0.0, 100.0);
     }
   }
   return apcaYToLstarRange(darkerTextApcaYValue).darkest.clamp(0.0, 100.0);
 }
 
-double lighterBackgroundApcaY(double textApcaY, double apca,
-    {bool debug = false}) {
+double lighterBackgroundApcaY(
+  double textApcaY,
+  double apca, {
+  bool debug = false,
+}) {
   textApcaY = inBoundsApcaY(textApcaY);
   apca = apca / 100.0;
   // Go backwards through apcaContrastOfApcaY with background > text
@@ -251,8 +314,11 @@ double lighterBackgroundApcaY(double textApcaY, double apca,
   return bgApcaY;
 }
 
-double lighterTextApcaY(double backgroundApcaY, double apca,
-    {bool debug = false}) {
+double lighterTextApcaY(
+  double backgroundApcaY,
+  double apca, {
+  bool debug = false,
+}) {
   backgroundApcaY = inBoundsApcaY(backgroundApcaY);
   apca = apca / 100.0;
   if (apca > 0) {
@@ -283,10 +349,7 @@ double lighterTextApcaY(double backgroundApcaY, double apca,
     return complexTerm2.real;
   }
   final textApcaY = math
-      .pow(
-        math.pow(backgroundApcaY, revBg) - (sapc / scaleWoB),
-        1.0 / revText,
-      )
+      .pow(math.pow(backgroundApcaY, revBg) - (sapc / scaleWoB), 1.0 / revText)
       .toDouble();
   monetDebug(debug, () => 'lighterTextApcaY textApcaY: $textApcaY');
   return textApcaY;
@@ -330,8 +393,11 @@ double darkerBackgroundApcaY(
   return bgApcaY;
 }
 
-double darkerTextApcaY(double backgroundApcaY, double apca,
-    {bool debug = false}) {
+double darkerTextApcaY(
+  double backgroundApcaY,
+  double apca, {
+  bool debug = false,
+}) {
   backgroundApcaY = inBoundsApcaY(backgroundApcaY);
   monetDebug(debug, () => 'backgroundApcaY: $backgroundApcaY');
   apca = apca / 100.0;
@@ -357,29 +423,26 @@ double darkerTextApcaY(double backgroundApcaY, double apca,
   final base = firstTerm - secondTerm;
 
   if (base < 0) {
-// When 'secondTerm' is greater than 'firstTerm', the difference
-// (firstTerm - secondTerm) is negative.
-// Negative numbers present complexities when raised to fractional powers.
-// To adhere to mathematical principals in the complex plane,
-// we switch positions from 'firstTerm - secondTerm' to 'secondTerm - firstTerm'
-// to make the difference positive.
-// As we are dealing with a negative number (in the real number system),
-// which corresponds to a purely imaginary number in the complex plane,
-// we put this positive difference in the imaginary part (0, (secondTerm - firstTerm).abs()).
-// This way, we represent the original negative real number as a positive imaginary number,
-// in order to handle the power operation in the complex number system properly.
-    Complex complexTerm2 =
-        Complex(0, (secondTerm - firstTerm)).pow(1 / normText);
+    // When 'secondTerm' is greater than 'firstTerm', the difference
+    // (firstTerm - secondTerm) is negative.
+    // Negative numbers present complexities when raised to fractional powers.
+    // To adhere to mathematical principals in the complex plane,
+    // we switch positions from 'firstTerm - secondTerm' to 'secondTerm - firstTerm'
+    // to make the difference positive.
+    // As we are dealing with a negative number (in the real number system),
+    // which corresponds to a purely imaginary number in the complex plane,
+    // we put this positive difference in the imaginary part (0, (secondTerm - firstTerm).abs()).
+    // This way, we represent the original negative real number as a positive imaginary number,
+    // in order to handle the power operation in the complex number system properly.
+    Complex complexTerm2 = Complex(
+      0,
+      (secondTerm - firstTerm),
+    ).pow(1 / normText);
 
     return complexTerm2.real;
   }
 
-  final textApcaY = math
-      .pow(
-        base,
-        1.0 / normText,
-      )
-      .toDouble();
+  final textApcaY = math.pow(base, 1.0 / normText).toDouble();
   return textApcaY;
 }
 
@@ -501,8 +564,8 @@ List<int> findBoundaryArgbsForApcaY(double apcaY) {
     double sCO,
   ) {
     final apcaYNeeded = apcaY - apcaYAlreadyFulfilled;
-    final answer =
-        (255.0 * math.pow(apcaYNeeded / sCO, 1.0 / 2.4)).roundToDouble();
+    final answer = (255.0 * math.pow(apcaYNeeded / sCO, 1.0 / 2.4))
+        .roundToDouble();
     if (answer.isNaN) {
       assert(apcaYAlreadyFulfilled >= apcaY);
       return 0.0;
@@ -544,7 +607,10 @@ List<int> findBoundaryArgbsForApcaY(double apcaY) {
     } else {
       const greenContribution = sGco;
       final b1 = calculateContribution(
-          apcaY, redContribution + greenContribution, sBco);
+        apcaY,
+        redContribution + greenContribution,
+        sBco,
+      );
       addAnswer(argbFromRgb(255, 255, b1.round()));
     }
     final b2 = calculateContribution(apcaY, redContribution, sBco);
@@ -553,7 +619,10 @@ List<int> findBoundaryArgbsForApcaY(double apcaY) {
     } else {
       const blueContribution = sBco;
       final g2 = calculateContribution(
-          apcaY, redContribution + blueContribution, sGco);
+        apcaY,
+        redContribution + blueContribution,
+        sGco,
+      );
       addAnswer(argbFromRgb(255, g2.round(), 255));
     }
   }
@@ -568,7 +637,10 @@ List<int> findBoundaryArgbsForApcaY(double apcaY) {
     } else {
       const redContribution = sRco;
       final b1 = calculateContribution(
-          apcaY, greenContribution + redContribution, sBco);
+        apcaY,
+        greenContribution + redContribution,
+        sBco,
+      );
       addAnswer(argbFromRgb(255, 255, b1.round()));
     }
     final b2 = calculateContribution(apcaY, greenContribution, sBco);
@@ -577,7 +649,10 @@ List<int> findBoundaryArgbsForApcaY(double apcaY) {
     } else {
       const blueContribution = sBco;
       final r2 = calculateContribution(
-          apcaY, greenContribution + blueContribution, sRco);
+        apcaY,
+        greenContribution + blueContribution,
+        sRco,
+      );
       addAnswer(argbFromRgb(r2.round(), 255, 255));
     }
   }
@@ -592,7 +667,10 @@ List<int> findBoundaryArgbsForApcaY(double apcaY) {
     } else {
       const redContribution = sRco;
       final g1 = calculateContribution(
-          apcaY, blueContribution + redContribution, sGco);
+        apcaY,
+        blueContribution + redContribution,
+        sGco,
+      );
       addAnswer(argbFromRgb(255, g1.round(), 255));
     }
     final g2 = calculateContribution(apcaY, blueContribution, sGco);
@@ -601,7 +679,10 @@ List<int> findBoundaryArgbsForApcaY(double apcaY) {
     } else {
       const greenContribution = sGco;
       final r2 = calculateContribution(
-          apcaY, blueContribution + greenContribution, sRco);
+        apcaY,
+        blueContribution + greenContribution,
+        sRco,
+      );
       addAnswer(argbFromRgb(r2.round(), 255, 255));
     }
   }

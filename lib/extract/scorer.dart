@@ -49,8 +49,9 @@ class Scorer {
       final meetsHigh = toneTooHigh == null || element.tone <= toneTooHigh;
       return meetsLow && meetsHigh;
     }).toList();
-    final filteredHcts = toneFilteredHcts
-        .where((element) => element.chroma >= effectiveMinChroma);
+    final filteredHcts = toneFilteredHcts.where(
+      (element) => element.chroma >= effectiveMinChroma,
+    );
     hcts.addAll(filteredHcts);
 
     // 2. Get the percentage of each color
@@ -61,8 +62,9 @@ class Scorer {
       return previousValue + element;
     });
 
-    final colorToPercent =
-        argbToCount.map((key, value) => MapEntry(key, value / totalCount));
+    final colorToPercent = argbToCount.map(
+      (key, value) => MapEntry(key, value / totalCount),
+    );
     for (final hct in filteredHcts) {
       final hue = hct.hue.round();
       final percentage = colorToPercent[hct.toInt()]!;
@@ -74,11 +76,7 @@ class Scorer {
       primaryHueToPercent[hue] += percentage;
     }
 
-    _smearHuePercentages(
-      hueToPercent,
-      hueToSmearedPercent,
-      smearDistance,
-    );
+    _smearHuePercentages(hueToPercent, hueToSmearedPercent, smearDistance);
     _smearHuePercentages(
       primaryHueToPercent,
       primaryHueToSmearedPercent,
@@ -124,8 +122,9 @@ class Scorer {
   }
 
   Hct averagedHctNearHue({required double hue, required double backupTone}) {
-    final hctsNearHue =
-        hcts.where((hct) => differenceDegrees(hct.hue, hue) < 15);
+    final hctsNearHue = hcts.where(
+      (hct) => differenceDegrees(hct.hue, hue) < 15,
+    );
     final totalCount = hctsNearHue.fold(0, (previousValue, element) {
       return previousValue + hctToCount[element]!;
     });
@@ -154,8 +153,9 @@ class Scorer {
     required double hue,
     required double backupTone,
   }) {
-    final hctsNearHue =
-        candidates.where((hct) => differenceDegrees(hct.hue, hue) < 15);
+    final hctsNearHue = candidates.where(
+      (hct) => differenceDegrees(hct.hue, hue) < 15,
+    );
     if (hctsNearHue.isEmpty) {
       return Hct.from(hue, 8.0, backupTone, model: colorModel);
     }

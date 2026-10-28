@@ -68,12 +68,7 @@ class Hct {
     double tone, {
     ColorModel model = ColorModel.kDefault,
   }) {
-    final argb = HctSolver.solveToIntForModel(
-      hue,
-      chroma,
-      tone,
-      model: model,
-    );
+    final argb = HctSolver.solveToIntForModel(hue, chroma, tone, model: model);
     return Hct._(argb, model: model);
   }
 
@@ -104,19 +99,11 @@ class Hct {
     double tone, {
     ColorModel model = ColorModel.kDefault,
   }) {
-    final argb = HctSolver.solveToIntForModel(
-      hue,
-      chroma,
-      tone,
-      model: model,
-    );
+    final argb = HctSolver.solveToIntForModel(hue, chroma, tone, model: model);
     return Color(argb);
   }
 
-  factory Hct.fromColor(
-    Color color, {
-    ColorModel model = ColorModel.kDefault,
-  }) {
+  factory Hct.fromColor(Color color, {ColorModel model = ColorModel.kDefault}) {
     final argb = color.argb;
     return Hct._(argb, model: model);
   }
@@ -284,13 +271,7 @@ class Hct {
     }
 
     final cam = _camFromInt(argb, model);
-    final hct = Hct._raw(
-      argb,
-      model,
-      cam.hue,
-      cam.chroma,
-      lstarFromArgb(argb),
-    );
+    final hct = Hct._raw(argb, model, cam.hue, cam.chroma, lstarFromArgb(argb));
     cache[argb] = hct;
     if (cache.length > _fromIntCacheCapacity) {
       cache.remove(cache.keys.first);
@@ -298,10 +279,7 @@ class Hct {
     return hct;
   }
 
-  static ({double hue, double chroma}) _camFromInt(
-    int argb,
-    ColorModel model,
-  ) {
+  static ({double hue, double chroma}) _camFromInt(int argb, ColorModel model) {
     switch (model) {
       case ColorModel.cam16:
         final cam16 = Cam16.fromInt(argb);

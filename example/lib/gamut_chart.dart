@@ -188,8 +188,7 @@ class GamutChart extends HookConsumerWidget {
                           value: hue.value,
                           min: 0,
                           max: 360,
-                          onChanged: (v) =>
-                              hue.value = v >= 360.0 ? 0.0 : v,
+                          onChanged: (v) => hue.value = v >= 360.0 ? 0.0 : v,
                         ),
                       ),
                     ),
@@ -300,9 +299,7 @@ class _GamutChartBody extends HookWidget {
       for (var c = 0.0; c <= maxChroma; c += 10.0) c
     ];
     // Tone steps: 100, 90, 80, ... 0 (top to bottom)
-    final toneSteps = <double>[
-      for (var t = 100.0; t >= 0.0; t -= 10.0) t
-    ];
+    final toneSteps = <double>[for (var t = 100.0; t >= 0.0; t -= 10.0) t];
 
     final cols = chromaSteps.length;
     final rows = toneSteps.length;
@@ -413,11 +410,9 @@ class _HoverTooltip extends StatelessWidget {
     String gamutLine(String name, double actH, double actC, double actT,
         (double, double, double) lin, bool inGamut) {
       final hDelta = _hueDelta(c.requestedHue, actH);
-      final hDeltaStr =
-          '${hDelta >= 0 ? '+' : ''}${hDelta.toStringAsFixed(1)}';
+      final hDeltaStr = '${hDelta >= 0 ? '+' : ''}${hDelta.toStringAsFixed(1)}';
       final cDelta = actC - c.requestedChroma;
-      final cDeltaStr =
-          '${cDelta >= 0 ? '+' : ''}${cDelta.toStringAsFixed(1)}';
+      final cDeltaStr = '${cDelta >= 0 ? '+' : ''}${cDelta.toStringAsFixed(1)}';
 
       final tag = inGamut ? '✓' : '✗';
       return '$tag $name  '

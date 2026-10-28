@@ -7,8 +7,7 @@ class ContrastPicker extends HookConsumerWidget {
   final Algo algo;
   final Function(double newContrast) onContrastChanged;
   final Function(Algo newAlgo) onAlgoChanged;
-  const ContrastPicker(
-      {
+  const ContrastPicker({
     required this.algo,
     required this.contrast,
     required this.onAlgoChanged,

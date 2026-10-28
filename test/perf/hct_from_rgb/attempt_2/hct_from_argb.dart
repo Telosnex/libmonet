@@ -18,13 +18,15 @@ import 'dart:typed_data';
 // ═══════════════════════════════════════════════════════════════════
 // LUT: sRGB byte [0..255] → linearized×100 [0..100]
 // ═══════════════════════════════════════════════════════════════════
-final _lut = Float64List.fromList(List<double>.generate(256, (i) {
-  final s = i / 255.0;
-  return (s <= 0.040449936
-          ? s / 12.92
-          : math.pow((s + 0.055) / 1.055, 2.4).toDouble()) *
-      100.0;
-}));
+final _lut = Float64List.fromList(
+  List<double>.generate(256, (i) {
+    final s = i / 255.0;
+    return (s <= 0.040449936
+            ? s / 12.92
+            : math.pow((s + 0.055) / 1.055, 2.4).toDouble()) *
+        100.0;
+  }),
+);
 
 // ═══════════════════════════════════════════════════════════════════
 // Fused sRGB_linear → Cone = M_HPE × M_sRGBtoXYZ
@@ -183,7 +185,8 @@ const _rad2deg = 180.0 / math.pi;
   final eHue = 0.25 * (math.cos(huePrime * _deg2rad + 2.0) + 3.8);
   final t = vc.p1k * eHue * math.sqrt(a * a + b * b) / (u + 0.305);
   final chroma =
-      vc.alphaK * math.exp(0.9 * math.log(t) + vc.halfCz * math.log(ac * vc.invAw));
+      vc.alphaK *
+      math.exp(0.9 * math.log(t) + vc.halfCz * math.log(ac * vc.invAw));
 
   return (hue, chroma, tone);
 }
