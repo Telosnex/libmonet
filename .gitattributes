@@ -1,0 +1,8 @@
+# LF everywhere, Windows checkouts included: generated tables and fixtures
+# are compared as text with the output of their generators.
+* text=auto eol=lf
+*.png binary
+*.ttf binary
+*.otf binary
+*.woff2 binary
+*.json text eol=lf

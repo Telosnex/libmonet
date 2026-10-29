@@ -1,3 +1,7 @@
+// Imports tool/ or reads files (dart:io): the VM only.
+@TestOn('vm')
+library;
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';

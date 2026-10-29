@@ -1,3 +1,7 @@
+// Imports tool/ or reads files (dart:io): the VM only.
+@TestOn('vm')
+library;
+
 import 'dart:io';
 
 import 'package:material_ui/material_ui.dart' show FileImage;

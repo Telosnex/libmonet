@@ -1,3 +1,7 @@
+// A benchmark of experiments with Int64List (not in dart2js): the VM only.
+@TestOn('vm')
+library;
+
 // ignore_for_file: avoid_print
 //
 // HCT-from-RGB performance benchmark.
@@ -14,6 +18,8 @@
 // To compare a different attempt, change the import below.
 
 import 'dart:math' as math;
+
+import 'package:flutter_test/flutter_test.dart' show TestOn;
 
 import '../perf_tester.dart';
 

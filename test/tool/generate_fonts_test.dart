@@ -1,3 +1,7 @@
+// Imports tool/ or reads files (dart:io): the VM only.
+@TestOn('vm')
+library;
+
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -29,10 +33,11 @@ String descriptor(String family, {bool constant = true}) =>
 
 void main() {
   test('generated font data is fresh for the resolved dependency', () async {
+    // runInShell: on Windows `dart` is dart.bat, which needs a shell.
     final result = await Process.run('dart', [
       'tool/generate_fonts.dart',
       '--check',
-    ]);
+    ], runInShell: Platform.isWindows);
     expect(result.exitCode, 0, reason: '${result.stdout}\n${result.stderr}');
   });
 

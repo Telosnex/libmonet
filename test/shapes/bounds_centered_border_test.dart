@@ -1,3 +1,7 @@
+// Image goldens (matchesGoldenFile on an image; web compares only finders): the VM only.
+@TestOn('vm')
+library;
+
 import 'dart:ui' as ui;
 
 import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';

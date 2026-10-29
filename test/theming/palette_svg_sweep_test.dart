@@ -1,3 +1,7 @@
+// Imports tool/ or reads files (dart:io): the VM only.
+@TestOn('vm')
+library;
+
 // ignore_for_file: avoid_print
 import 'dart:io';
 import 'dart:ui';

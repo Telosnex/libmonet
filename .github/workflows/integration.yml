@@ -55,7 +55,11 @@ jobs:
           persist-credentials: false
       - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@cba77fc0d4330f1bef81193c53cd7dd976f0ebcf # v0.5.3
       - run: flutter pub get
-      - run: flutter test --platform chrome $WASM -r expanded
+      # flutter test compiles every file it is given into one web bundle, so
+      # the VM-only files (@TestOn('vm'): dart:io, tool/) are left out.
+      - run: |
+          files=$(git ls-files 'test/**_test.dart' | xargs grep -L "@TestOn('vm')")
+          flutter test --platform chrome $WASM -r expanded $files
 
   web-linux-chrome-dart2wasm:
     name: Web Linux x64 Chrome dart2wasm
