@@ -7,7 +7,7 @@ import 'dart:ui' as ui;
 import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:material_ui/material_ui.dart' hide MaterialShapes;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/expressive_button.dart';
+import 'package:monet_ui/shapes/expressive_button.dart';
 
 void main() {
   test('catalog and morph frames use the Compose scale-then-center transform', () {

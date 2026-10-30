@@ -8,8 +8,8 @@ import 'dart:ui';
 
 import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/material_expressive_shape.dart';
-import 'package:libmonet/shapes/src/material_shape_safe_area_data.dart';
+import 'package:monet_ui/shapes/material_expressive_shape.dart';
+import 'package:monet_ui/shapes/src/material_shape_safe_area_data.dart';
 
 import '../../tool/src/optical_center.dart';
 import '../../tool/src/safe_interior.dart';

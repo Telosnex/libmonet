@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 
 class Oklch {
   final double hue;

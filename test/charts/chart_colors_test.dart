@@ -1,12 +1,12 @@
 import 'dart:ui';
 
-import 'package:libmonet/charts/chart_colors.dart';
-import 'package:libmonet/colorspaces/cam16/cam16.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/uv_harmony.dart';
+import 'package:monet_ui/charts/chart_colors.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/effects/uv_harmony.dart';
 import 'package:test/test.dart';
 
 import 'dart:math' as math;

@@ -1,10 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
 
 class PaletteViewer extends StatelessWidget {
   const PaletteViewer({super.key, required this.themeDataByModel});

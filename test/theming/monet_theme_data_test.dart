@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/theming/animated_monet_theme.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/theming/monet_shape_theme.dart';
+import 'package:monet_ui/theming/animated_monet_theme.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
+import 'package:monet_ui/theming/monet_shape_theme.dart';
 
 Typography _typography(ColorScheme colorScheme) {
   return Typography.material2021(colorScheme: colorScheme);

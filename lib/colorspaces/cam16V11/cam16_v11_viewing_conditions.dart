@@ -17,8 +17,8 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/math.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/math.dart';
 
 /// Viewing conditions for Hellwig/Fairchild 2022 CAM16 v11.
 ///

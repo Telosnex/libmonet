@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/contrast/contrast.dart';
+import 'package:monet_ui/contrast/contrast.dart';
 
 class ContrastPicker extends HookConsumerWidget {
   final double contrast;

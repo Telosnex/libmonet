@@ -14,12 +14,12 @@ There are two entry points:
 
 ## Import
 
-`package:libmonet/libmonet.dart` exports both entry points. You can also import
+`package:monet_ui/monet_ui.dart` exports both entry points. You can also import
 one file:
 
 ```dart
-import 'package:libmonet/shapes/material_expressive_border.dart';
-import 'package:libmonet/shapes/expressive_button.dart';
+import 'package:monet_ui/shapes/material_expressive_border.dart';
+import 'package:monet_ui/shapes/expressive_button.dart';
 ```
 
 ## One static shape

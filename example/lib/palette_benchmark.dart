@@ -6,8 +6,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/theming/paint/palette_motion.dart'
+import 'package:monet_ui/monet_ui.dart';
+import 'package:monet_ui/theming/paint/palette_motion.dart'
     show PaintMotionStats;
 
 const _mode =

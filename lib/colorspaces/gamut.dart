@@ -8,8 +8,8 @@
 
 import 'dart:math';
 
-import 'package:libmonet/colorspaces/matrix_utils.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/colorspaces/matrix_utils.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 
 /// Defines the gamut-specific constants that the HCT solver needs.
 ///

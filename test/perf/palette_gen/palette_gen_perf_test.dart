@@ -6,8 +6,8 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/cam16/cam16.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 
 import '../perf_tester.dart';
 

@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/colorspaces/hct.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
 
 class HueTonePicker extends HookConsumerWidget {
   // Even if the color has lower chroma, ex. the user dragged to tone 0/tone 100

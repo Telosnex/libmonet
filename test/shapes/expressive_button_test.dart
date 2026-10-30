@@ -6,8 +6,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/expressive_button.dart';
-import 'package:libmonet/shapes/src/material_shape_safe_area_data.dart';
+import 'package:monet_ui/shapes/expressive_button.dart';
+import 'package:monet_ui/shapes/src/material_shape_safe_area_data.dart';
 
 import '../../tool/src/safe_interior.dart';
 

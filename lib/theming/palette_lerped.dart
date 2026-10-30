@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/theming/interpolation_style.dart';
-import 'package:libmonet/theming/palette.dart';
-import 'package:libmonet/theming/palette_roles.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/theming/interpolation_style.dart';
+import 'package:monet_ui/theming/palette.dart';
+import 'package:monet_ui/theming/palette_roles.dart';
 
 /// Explicit, immutable interpolation of solved outputs. Construction reads no
 /// colors; endpoint reads access only that endpoint. Each role is memoized.

@@ -84,7 +84,7 @@ dirty on notifications, and unsubscribes on detach.
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 class PaintBoundSwatch extends StatefulWidget {
   const PaintBoundSwatch({super.key, this.palette = MonetPalette.primary});

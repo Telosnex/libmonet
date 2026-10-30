@@ -1,9 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
 
 final monetThemeDataProvider =
     Provider.family<MonetThemeData, MonetThemeDataRequest>((ref, request) {

@@ -14,9 +14,9 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/effects/afterimage.dart';
-import 'package:libmonet/effects/uv_harmony.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/effects/afterimage.dart';
+import 'package:monet_ui/effects/uv_harmony.dart';
 import 'package:test/test.dart';
 
 /// Distance from white to the convex hull of the colors' chromaticities:

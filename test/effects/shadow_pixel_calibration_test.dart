@@ -14,8 +14,8 @@ import 'dart:ui' as ui;
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/effects/over_image.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/effects/over_image.dart';
 
 const _edgeX = 96;
 const _imgW = 160;

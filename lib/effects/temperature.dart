@@ -17,11 +17,11 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/effects/afterimage.dart';
-import 'package:libmonet/effects/uv_harmony.dart' as uv;
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/effects/afterimage.dart';
+import 'package:monet_ui/effects/uv_harmony.dart' as uv;
 
 /// Design utilities using color temperature theory.
 ///

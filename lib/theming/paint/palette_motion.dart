@@ -1,16 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/theming/interpolation_style.dart';
-import 'package:libmonet/theming/palette.dart';
-import 'package:libmonet/theming/palette_roles.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/theming/interpolation_style.dart';
+import 'package:monet_ui/theming/palette.dart';
+import 'package:monet_ui/theming/palette_roles.dart';
 
 import 'progress_motion.dart';
 
 // Compatibility for the original paint API; outputs no longer depend on motion.
-export 'package:libmonet/theming/palette_roles.dart';
+export 'package:monet_ui/theming/palette_roles.dart';
 
 /// Optional structural work counters, not wall-clock performance guarantees.
 class PaintMotionStats {

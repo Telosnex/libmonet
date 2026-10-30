@@ -1,5 +1,5 @@
-import 'package:libmonet/extract/quantizer_celebi.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:monet_ui/extract/quantizer_celebi.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
 import 'package:test/test.dart';
 
 void main() {

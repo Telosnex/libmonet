@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/util/lru_cache.dart';
+import 'package:monet_ui/util/lru_cache.dart';
 
 void main() {
   group('LruCache', () {

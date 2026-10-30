@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/util/lru_cache.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/util/lru_cache.dart';
 
 /// Drawing over something you didn't choose: a wallpaper, a video frame, a
 /// gradient, a map.

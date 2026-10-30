@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 import 'dart:ui' show Brightness, Color;
 
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/uv_harmony.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/effects/uv_harmony.dart';
 
 /// Chart colors derived from a seed color and a real chart background.
 ///

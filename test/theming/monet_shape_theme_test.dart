@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/theming/monet_shape_theme.dart';
+import 'package:monet_ui/theming/monet_shape_theme.dart';
 
 void main() {
   test('scales radii and gap padding with the linear Monet scale', () {

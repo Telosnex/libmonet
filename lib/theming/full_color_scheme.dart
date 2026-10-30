@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/theming/palette.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/theming/palette.dart';
 
 class MonetColorScheme extends ThemeExtension<MonetColorScheme> {
   final Color primaryColor;

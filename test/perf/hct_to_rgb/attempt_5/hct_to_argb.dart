@@ -8,8 +8,8 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
-import 'package:libmonet/colorspaces/gamut.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16_viewing_conditions.dart';
+import 'package:monet_ui/colorspaces/gamut.dart';
 
 // ── Fast transcendentals via IEEE-754 bit manipulation ──
 

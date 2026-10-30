@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/afterimage.dart';
-import 'package:libmonet/effects/uv_harmony.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/effects/afterimage.dart';
+import 'package:monet_ui/effects/uv_harmony.dart';
 
 class Swatch extends StatelessWidget {
   final Color color;

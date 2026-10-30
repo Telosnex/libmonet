@@ -5,7 +5,7 @@ library;
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/contrast/apca_tone_bounds_data.dart';
+import 'package:monet_ui/contrast/apca_tone_bounds_data.dart';
 
 import '../../tool/apca_tone_bounds.dart' as tool;
 

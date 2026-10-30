@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' show Color;
 
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 double lighterLstarUnsafe({
   required double lstar,

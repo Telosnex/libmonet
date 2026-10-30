@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/theming/palette.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
+import 'package:monet_ui/theming/palette.dart';
 
 /// Immutable recipe identity and inputs in one value. Use with bindRecipe rather
 /// than a separate key and closure. Inherited inputs come from the logical theme

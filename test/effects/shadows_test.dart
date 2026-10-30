@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/effects/over_image.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/effects/over_image.dart';
 import 'package:test/test.dart';
 
 /// Modeled net alpha at the first pixel outside the glyph for a stack of

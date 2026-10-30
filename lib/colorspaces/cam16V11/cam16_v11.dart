@@ -19,8 +19,8 @@ import 'dart:collection';
 import 'dart:core';
 import 'dart:math' as math;
 
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/math.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/math.dart';
 
 import 'cam16_v11_viewing_conditions.dart';
 

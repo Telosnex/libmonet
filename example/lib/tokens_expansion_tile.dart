@@ -1,11 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/contrast/contrast.dart';
-import 'package:libmonet/contrast/wcag.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/theming/monet_theme.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/contrast/contrast.dart';
+import 'package:monet_ui/contrast/wcag.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
 
 class TokensExpansionTile extends ConsumerWidget {
   const TokensExpansionTile({super.key});

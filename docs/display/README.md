@@ -110,7 +110,7 @@ component takes the next quantization step up.
 ## How to use it
 
 ```dart
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 final metrics = DisplayModel(
   widthPx: 1920,

@@ -1,13 +1,13 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/extract/extract.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
-import 'package:libmonet/extract/scorer.dart';
-import 'package:libmonet/extract/scorer_triad.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/extract/extract.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
+import 'package:monet_ui/extract/scorer.dart';
+import 'package:monet_ui/extract/scorer_triad.dart';
 import 'package:monet_studio/quantizer_provider.dart';
 
 final _imageByteFingerprintProvider =

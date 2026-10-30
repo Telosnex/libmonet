@@ -6,8 +6,8 @@
 // into the graph (scripts/graph_rule.py, checked equal on every label).
 import 'dart:math';
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 
 /// The roles, in order.
 const kWallpaperColorRoles = ['primary', 'secondary', 'tertiary'];

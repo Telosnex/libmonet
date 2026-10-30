@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 /// Renders text with a single dilated-then-blurred halo underlay — i.e. a
 /// stroke / spread radius, then, a blur.

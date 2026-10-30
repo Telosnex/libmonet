@@ -1,4 +1,4 @@
-import 'package:libmonet/fonts/font_height_equalizer.g.dart';
+import 'package:monet_ui/fonts/font_height_equalizer.g.dart';
 
 /// Clearance between adjacent lines, as a fraction of the requested size.
 ///

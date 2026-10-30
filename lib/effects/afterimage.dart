@@ -14,8 +14,8 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 
 /// CIE 1976 u'v' chromaticity of [argb], or null for degenerate (black).
 (double, double)? uvOfArgb(int argb) {

@@ -1,4 +1,4 @@
-import 'package:libmonet/extract/monet_gdt_rule_v1.dart';
+import 'package:monet_ui/extract/monet_gdt_rule_v1.dart';
 import 'package:test/test.dart';
 
 void main() {

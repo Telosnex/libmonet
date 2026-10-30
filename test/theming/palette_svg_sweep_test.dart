@@ -6,9 +6,9 @@ library;
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/theming/palette.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/theming/palette.dart';
 import 'package:test/test.dart';
 
 /// Brand colors from example/lib/brand_colors.dart, LLM providers, + black & white.

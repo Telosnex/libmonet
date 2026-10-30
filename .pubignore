@@ -1,0 +1,11 @@
+# Not part of the package: tests and their fixtures (wallpapers), research
+# docs and papers, the JS parity port, build output. The example's sources
+# stay: pub.dev shows them.
+test/
+docs/
+js/
+build/
+tool/
+example/build/
+example/.dart_tool/
+example/test/

@@ -8,8 +8,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart' as cie;
-import 'package:libmonet/contrast/apca_tone_bounds_data.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart' as cie;
+import 'package:monet_ui/contrast/apca_tone_bounds_data.dart';
 
 const p = 2.4;
 const q = 1 / p;

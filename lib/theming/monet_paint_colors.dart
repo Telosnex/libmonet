@@ -2,15 +2,15 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:libmonet/theming/interpolation_style.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/theming/palette.dart';
-import 'package:libmonet/theming/palette_recipe.dart';
-import 'package:libmonet/theming/paint/palette_motion.dart';
-import 'package:libmonet/theming/paint/progress_motion.dart';
-import 'package:libmonet/theming/paint/theme_frame.dart';
+import 'package:monet_ui/theming/interpolation_style.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
+import 'package:monet_ui/theming/palette.dart';
+import 'package:monet_ui/theming/palette_recipe.dart';
+import 'package:monet_ui/theming/paint/palette_motion.dart';
+import 'package:monet_ui/theming/paint/progress_motion.dart';
+import 'package:monet_ui/theming/paint/theme_frame.dart';
 
-export 'package:libmonet/theming/paint/palette_motion.dart' show PaletteRole;
+export 'package:monet_ui/theming/paint/palette_motion.dart' show PaletteRole;
 
 /// Stable recipe keys for built-ins; paint and inherited readers share colors.
 enum MonetPalette {

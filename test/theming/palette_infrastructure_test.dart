@@ -7,9 +7,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/theming/palette_lerped.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/monet_ui.dart';
+import 'package:monet_ui/theming/palette_lerped.dart';
 
 MonetThemeData theme({
   Algo algo = Algo.apca,

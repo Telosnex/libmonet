@@ -12,7 +12,7 @@
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:libmonet/flux/sim.dart';
+import 'package:monet_ui/flux/sim.dart';
 
 /// An [Animation<T>] that carries an intrinsic velocity.
 ///

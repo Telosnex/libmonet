@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/fonts/font_height_equalizer.g.dart';
-import 'package:libmonet/fonts/optical_font_size.dart';
+import 'package:monet_ui/fonts/font_height_equalizer.g.dart';
+import 'package:monet_ui/fonts/optical_font_size.dart';
 
 void main() {
   const mono = 'JetBrains Mono';

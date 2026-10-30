@@ -1,10 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/effects/afterimage.dart';
-import 'package:libmonet/effects/uv_harmony.dart';
-import 'package:libmonet/theming/monet_theme.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/effects/afterimage.dart';
+import 'package:monet_ui/effects/uv_harmony.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:monet_studio/swatch.dart';
 

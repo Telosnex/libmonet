@@ -10,10 +10,10 @@ import 'dart:ui' show Color;
 
 import 'package:material_ui/material_ui.dart' show Brightness;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/contrast/apca_contrast.dart' as apca_contrast;
-import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/theming/palette_lerped.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/contrast/apca_contrast.dart' as apca_contrast;
+import 'package:monet_ui/monet_ui.dart';
+import 'package:monet_ui/theming/palette_lerped.dart';
 
 const _paletteRoles = <String>[
   'background',

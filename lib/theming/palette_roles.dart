@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
 
 import 'palette.dart';
 

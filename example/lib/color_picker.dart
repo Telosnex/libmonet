@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/hex_codes.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/hex_codes.dart';
 import 'package:monet_studio/brand_colors.dart';
 import 'package:monet_studio/brightness_setting.dart';
 import 'package:monet_studio/hue_tone_picker.dart';
@@ -9,9 +9,9 @@ import 'package:monet_studio/padding.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/slider_flat.dart';
-import 'package:libmonet/theming/slider_flat_thumb.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
+import 'package:monet_ui/theming/slider_flat.dart';
+import 'package:monet_ui/theming/slider_flat_thumb.dart';
 import 'package:squadron/squadron.dart';
 
 class ColorPicker extends StatefulHookConsumerWidget {
