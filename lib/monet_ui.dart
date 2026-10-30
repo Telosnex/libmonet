@@ -38,6 +38,7 @@ export 'extract/quantizer_wu.dart';
 export 'extract/scorer.dart';
 export 'extract/scorer_triad.dart';
 export 'extract/monet_gdt_rule_v1.dart';
+export 'extract/monet_gdt_rule_2026_10_30.dart';
 export 'extract/service/quantize_service.dart';
 
 // Visual effects
