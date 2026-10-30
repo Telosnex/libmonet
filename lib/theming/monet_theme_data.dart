@@ -4,9 +4,9 @@ import 'dart:ui' show FontFeature;
 
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/util/with_opacity_neue.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/monet_ui.dart';
+import 'package:monet_ui/util/with_opacity_neue.dart';
 
 const _kFontFamilyFallback = [
   'sans-serif', // via https://github.com/flutter/flutter/issues/109516#issuecomment-1218410117

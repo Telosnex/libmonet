@@ -1,7 +1,7 @@
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'package:libmonet/colorspaces/oklch.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct_solver.dart';
+import 'package:monet_ui/colorspaces/oklch.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 import 'package:test/test.dart';
 
 void main() {

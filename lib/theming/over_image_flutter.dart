@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:libmonet/contrast/contrast.dart';
+import 'package:monet_ui/contrast/contrast.dart';
 
-import 'package:libmonet/effects/over_image.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/util/lru_cache.dart';
+import 'package:monet_ui/effects/over_image.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
+import 'package:monet_ui/util/lru_cache.dart';
 
 // Few distinct (algo, contrast) pairs; a handful covers a contrast animation
 // without holding every frame's.

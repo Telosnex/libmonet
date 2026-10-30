@@ -23,8 +23,8 @@
 // whose opposites don't exist in sRGB at that tone).
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/effects/afterimage.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/effects/afterimage.dart';
 import 'package:test/test.dart';
 
 void main() {

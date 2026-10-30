@@ -1,7 +1,7 @@
-import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/contrast/apca_contrast.dart';
-import 'package:libmonet/contrast/contrast.dart';
+import 'package:monet_ui/colorspaces/hct_solver.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/contrast/apca_contrast.dart';
+import 'package:monet_ui/contrast/contrast.dart';
 
 int _bracketBreaks = 0;
 int get bracketBreaks => _bracketBreaks;

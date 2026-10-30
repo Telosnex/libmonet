@@ -19,10 +19,10 @@ import 'dart:collection' show HashMap;
 import 'dart:math' as math show Random, min;
 import 'dart:typed_data';
 
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/extract/point_provider.dart';
-import 'package:libmonet/extract/point_provider_lab.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/extract/point_provider.dart';
+import 'package:monet_ui/extract/point_provider_lab.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
 
 class QuantizerWsmeans {
   static const debug = false;

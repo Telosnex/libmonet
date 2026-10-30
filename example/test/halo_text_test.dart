@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 import 'package:monet_studio/halo_text.dart';
 
 void main() {

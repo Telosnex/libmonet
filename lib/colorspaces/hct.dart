@@ -19,15 +19,15 @@ import 'dart:collection';
 import 'dart:ui';
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/cam16/cam16.dart';
-import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
-import 'package:libmonet/colorspaces/cam16V11/cam16_v11.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'package:libmonet/colorspaces/oklch.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/util/with_opacity_neue.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16_viewing_conditions.dart';
+import 'package:monet_ui/colorspaces/cam16V11/cam16_v11.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct_solver.dart';
+import 'package:monet_ui/colorspaces/oklch.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/util/with_opacity_neue.dart';
 
 const _fromIntCacheCapacity = 512;
 

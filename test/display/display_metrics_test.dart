@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:test/test.dart';
-import 'package:libmonet/display/display_metrics.dart';
+import 'package:monet_ui/display/display_metrics.dart';
 
 void main() {
   group('anchors', () {

@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
 
 /// Immutable theme view, including at rest so getters can discover demand.
 /// Each palette/recipe has shared progress, but can retarget separately; there

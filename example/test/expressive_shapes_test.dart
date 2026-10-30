@@ -1,10 +1,10 @@
 import 'package:androidx_graphics_shapes/androidx_graphics_shapes.dart';
 import 'package:material_ui/material_ui.dart' hide MaterialShapes;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/expressive_button.dart';
-import 'package:libmonet/theming/monet_clip.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:monet_ui/shapes/expressive_button.dart';
+import 'package:monet_ui/theming/monet_clip.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
 import 'package:monet_studio/expressive_shapes_expansion_tile.dart';
 
 void main() {

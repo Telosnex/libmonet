@@ -3,11 +3,11 @@ import 'dart:ui' show lerpDouble;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:libmonet/theming/interpolation_style.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/theming/monet_paint_colors.dart';
-import 'package:libmonet/theming/palette_lerped.dart';
+import 'package:monet_ui/theming/interpolation_style.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
+import 'package:monet_ui/theming/monet_paint_colors.dart';
+import 'package:monet_ui/theming/palette_lerped.dart';
 
 /// Interpolated theme data that lerps the three palettes while keeping
 /// [ThemeData] stable by default to avoid Material transient states.

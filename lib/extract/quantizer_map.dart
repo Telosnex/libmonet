@@ -15,8 +15,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
 
 import 'quantizer.dart';
 

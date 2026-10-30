@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/theming/paint/palette_motion.dart';
-import 'package:libmonet/theming/paint/progress_motion.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/monet_ui.dart';
+import 'package:monet_ui/theming/paint/palette_motion.dart';
+import 'package:monet_ui/theming/paint/progress_motion.dart';
 
 ResolvedPalette palette(Color color, ColorModel model) =>
     ResolvedPalette(List.filled(PaletteRole.values.length, color), model);

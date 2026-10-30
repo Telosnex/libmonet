@@ -16,7 +16,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 const _contrast = 0.5;
 // 96px wide, as Extract downscales.

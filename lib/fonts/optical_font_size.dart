@@ -1,5 +1,5 @@
 import 'package:flutter/painting.dart' show TextStyle;
-import 'package:libmonet/fonts/font_height_equalizer.g.dart';
+import 'package:monet_ui/fonts/font_height_equalizer.g.dart';
 
 /// Font size at which [fontFamily] looks as large as [referenceFontFamily]
 /// does at [referenceFontSize].

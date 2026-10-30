@@ -1,9 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/theming/monet_clip.dart';
-import 'package:libmonet/theming/monet_shape_theme.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:monet_ui/theming/monet_clip.dart';
+import 'package:monet_ui/theming/monet_shape_theme.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
 
 void main() {
   testWidgets('derives its clip from resolved Monet geometry', (tester) async {

@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/slider_flat.dart';
-import 'package:libmonet/theming/slider_flat_thumb.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
+import 'package:monet_ui/theming/slider_flat.dart';
+import 'package:monet_ui/theming/slider_flat_thumb.dart';
 import 'package:monet_studio/padding.dart';
 
 class ScalingExpansionTile extends HookConsumerWidget {

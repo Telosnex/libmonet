@@ -6,8 +6,8 @@ import 'dart:ui' as ui;
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/material_expressive_border.dart';
-import 'package:libmonet/theming/monet_clip.dart';
+import 'package:monet_ui/shapes/material_expressive_border.dart';
+import 'package:monet_ui/theming/monet_clip.dart';
 
 void main() {
   test('catalog has all 35 distinct named silhouettes', () {

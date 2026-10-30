@@ -9,8 +9,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-import 'package:libmonet/flux/rk4_spring.dart';
-import 'package:libmonet/flux/spring.dart';
+import 'package:monet_ui/flux/rk4_spring.dart';
+import 'package:monet_ui/flux/spring.dart';
 
 /// A [Curve] backed by a spring simulation.
 ///

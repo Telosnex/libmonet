@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:material_ui/material_ui.dart' show kThemeAnimationDuration;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
 
 /// Dissolves the previous rendering of [child] into its new one when [data]
 /// changes: a raster cross-fade instead of an animated inherited theme.

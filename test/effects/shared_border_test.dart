@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 /// Stronger-polarity contrast, as borders judge it.
 double sep(Algo algo, int a, int b) => max(

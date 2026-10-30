@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:libmonet/fonts/line_height.dart';
+import 'package:monet_ui/fonts/line_height.dart';
 
 /// [bytes] with the ascent and descent centred on the font's Latin ink.
 ///

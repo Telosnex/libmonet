@@ -1,13 +1,13 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/util/debug_print.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/util/debug_print.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
 
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:libmonet/extract/service/quantize_service.dart';
+import 'package:monet_ui/extract/service/quantize_service.dart';
 import 'package:squadron/squadron.dart';
 
 class Extract {

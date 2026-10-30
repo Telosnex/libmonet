@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:libmonet/charts/chart_colors.dart';
-import 'package:libmonet/theming/monet_theme.dart';
+import 'package:monet_ui/charts/chart_colors.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:monet_studio/swatch.dart';
 

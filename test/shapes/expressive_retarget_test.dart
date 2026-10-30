@@ -1,6 +1,6 @@
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/expressive_button.dart';
+import 'package:monet_ui/shapes/expressive_button.dart';
 
 void main() {
   test('settled and reversed endpoints keep the catalog source', () {

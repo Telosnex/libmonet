@@ -1,13 +1,13 @@
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/contrast/apca_contrast.dart';
-import 'package:libmonet/contrast/apca_tone_bounds.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/contrast/wcag.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct_solver.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/contrast/apca_contrast.dart';
+import 'package:monet_ui/contrast/apca_tone_bounds.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/contrast/wcag.dart';
 
 import '../util/debug_print.dart';
 

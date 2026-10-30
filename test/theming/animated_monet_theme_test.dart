@@ -3,13 +3,13 @@ import 'dart:math' as math;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/theming/animated_monet_theme.dart';
-import 'package:libmonet/theming/interpolation_style.dart';
-import 'package:libmonet/theming/monet_theme.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/theming/monet_paint_colors.dart';
+import 'package:monet_ui/theming/animated_monet_theme.dart';
+import 'package:monet_ui/theming/interpolation_style.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/theming/monet_paint_colors.dart';
 
 class _PaintProbe extends StatefulWidget {
   const _PaintProbe({required this.onValue});

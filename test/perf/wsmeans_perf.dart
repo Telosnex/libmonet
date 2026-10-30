@@ -3,11 +3,11 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:libmonet/extract/point_provider_lab.dart';
-import 'package:libmonet/extract/quantizer_celebi.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
-import 'package:libmonet/extract/quantizer_wsmeans.dart';
-import 'package:libmonet/extract/quantizer_wu.dart';
+import 'package:monet_ui/extract/point_provider_lab.dart';
+import 'package:monet_ui/extract/quantizer_celebi.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
+import 'package:monet_ui/extract/quantizer_wsmeans.dart';
+import 'package:monet_ui/extract/quantizer_wu.dart';
 
 import 'perf_tester.dart';
 

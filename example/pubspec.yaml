@@ -27,7 +27,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   androidx_graphics_shapes: ^2.0.0
-  libmonet:
+  monet_ui:
     path: ../
   flutter:
     sdk: flutter

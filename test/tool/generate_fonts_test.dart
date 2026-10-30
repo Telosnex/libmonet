@@ -6,8 +6,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts_lite.dart';
-import 'package:libmonet/fonts/font_height_equalizer.g.dart';
-import 'package:libmonet/fonts/google_fonts_catalog.g.dart';
+import 'package:monet_ui/fonts/font_height_equalizer.g.dart';
+import 'package:monet_ui/fonts/google_fonts_catalog.g.dart';
 
 import '../../tool/generate_fonts.dart';
 

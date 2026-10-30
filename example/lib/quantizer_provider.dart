@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/extract/extract.dart';
-import 'package:libmonet/extract/quantizer_result.dart';
+import 'package:monet_ui/extract/extract.dart';
+import 'package:monet_ui/extract/quantizer_result.dart';
 
 final quantizerResultProvider =
     FutureProvider.family<QuantizerResult, QuantizerRequest>((ref, request) {

@@ -6,7 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// docs/design/ADR_font_line_height.md in telosnex, I1 to I4 and I6.

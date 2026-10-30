@@ -17,7 +17,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 import '../perf_tester.dart';
 

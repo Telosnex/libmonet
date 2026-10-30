@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/material_expressive_shape.dart';
+import 'package:monet_ui/shapes/material_expressive_shape.dart';
 
 import 'optical_center.dart';
 import 'safe_interior.dart';

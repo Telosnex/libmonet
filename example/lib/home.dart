@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/monet_ui.dart';
 import 'package:monet_studio/background_expansion_tile.dart';
 import 'package:monet_studio/brightness_setting.dart';
 import 'package:monet_studio/chart_colors_expansion_tile.dart';

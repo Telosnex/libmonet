@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/theming/monet_theme.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
 
 class SliderFlat extends StatelessWidget {
   final Color? borderColor;

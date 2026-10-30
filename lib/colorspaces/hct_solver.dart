@@ -17,15 +17,15 @@
 
 import 'dart:math';
 
-import 'package:libmonet/colorspaces/cam16/cam16.dart';
-import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
-import 'package:libmonet/colorspaces/cam16V11/cam16_v11.dart';
-import 'package:libmonet/colorspaces/cam16V11/cam16_v11_viewing_conditions.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/gamut.dart';
-import 'package:libmonet/colorspaces/oklch.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/math.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16_viewing_conditions.dart';
+import 'package:monet_ui/colorspaces/cam16V11/cam16_v11.dart';
+import 'package:monet_ui/colorspaces/cam16V11/cam16_v11_viewing_conditions.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/gamut.dart';
+import 'package:monet_ui/colorspaces/oklch.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/math.dart';
 
 const _inv0_42 = 1.0 / 0.42;
 const _inv0_9 = 1.0 / 0.9;

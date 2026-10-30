@@ -13,7 +13,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/physics.dart';
 
-import 'package:libmonet/flux/sim.dart';
+import 'package:monet_ui/flux/sim.dart';
 
 /// The settle threshold for the spring (both distance and velocity).
 const double _kTolerance = 0.01;

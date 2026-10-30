@@ -1,4 +1,4 @@
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 import 'package:monet_studio/hue_tone_picker.dart';
 import 'package:monet_studio/padding.dart';
 import 'package:material_ui/material_ui.dart';

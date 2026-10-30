@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:libmonet/util/debug_print.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/util/debug_print.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 /// Calculations for APCA contrast.
 /// Per [APCA landing page](https://github.com/Myndex/apca-w3/):

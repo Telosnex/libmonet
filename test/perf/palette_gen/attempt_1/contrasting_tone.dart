@@ -14,10 +14,10 @@
 /// searching, widening to full range if the seed was off.
 library;
 
-import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/contrast/apca_contrast.dart';
-import 'package:libmonet/contrast/contrast.dart';
+import 'package:monet_ui/colorspaces/hct_solver.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/contrast/apca_contrast.dart';
+import 'package:monet_ui/contrast/contrast.dart';
 
 /// APCA contrast from a precomputed reference apcaY and a candidate ARGB.
 /// Avoids recomputing apcaY for the reference on every iteration.

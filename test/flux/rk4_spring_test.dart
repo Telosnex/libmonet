@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/flux/rk4_spring.dart';
+import 'package:monet_ui/flux/rk4_spring.dart';
 
 void main() {
   test('monotonic queries step only the elapsed delta', () {

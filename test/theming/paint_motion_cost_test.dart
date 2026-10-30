@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/libmonet.dart';
-import 'package:libmonet/theming/paint/palette_motion.dart';
+import 'package:monet_ui/monet_ui.dart';
+import 'package:monet_ui/theming/paint/palette_motion.dart';
 
 // A diagnostic workload, not a release frame-time benchmark. Time endpoint
 // resolution separately from motion sampling; correctness guards are structural.

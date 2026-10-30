@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/monet_ui.dart';
 
 /// Optional instance-local work diagnostics. Counts requests at the palette
 /// boundary, not iterations/cache misses inside the color-science routines.

@@ -7,7 +7,7 @@
 
 import 'package:flutter/physics.dart';
 
-import 'package:libmonet/flux/sim.dart';
+import 'package:monet_ui/flux/sim.dart';
 
 /// Named spring presets from Fuchsia's Armadillo shell.
 ///

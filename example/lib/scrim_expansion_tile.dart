@@ -1,4 +1,4 @@
-import 'package:libmonet/libmonet.dart';
+import 'package:monet_ui/monet_ui.dart';
 import 'package:monet_studio/chessboard_painter.dart';
 import 'package:monet_studio/halo_text.dart';
 import 'package:monet_studio/padding.dart';

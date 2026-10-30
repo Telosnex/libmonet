@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/theming/palette.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/theming/palette.dart';
 import 'package:test/test.dart';
 
 import '../utils/color_matcher.dart';

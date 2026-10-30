@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
-import 'package:libmonet/core/complex.dart';
-import 'package:libmonet/util/debug_print.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/core/complex.dart';
+import 'package:monet_ui/util/debug_print.dart';
 
 /// Represents a range of L* values that produce the same APCA Y value.
 ///

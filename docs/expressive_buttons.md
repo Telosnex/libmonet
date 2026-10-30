@@ -10,14 +10,14 @@ There are two widgets:
 - `ExpressiveButton` is a stock Flutter button with this layout.
 - `ExpressiveShapeContent` is the layout alone, for a custom surface.
 
-Both come from `package:libmonet/shapes/expressive_button.dart`, which
-`package:libmonet/libmonet.dart` also exports. For the shape catalog itself, see
+Both come from `package:monet_ui/shapes/expressive_button.dart`, which
+`package:monet_ui/monet_ui.dart` also exports. For the shape catalog itself, see
 [Material 3 Expressive shapes](material_expressive_shapes.md).
 
 ## Quick start
 
 ```dart
-import 'package:libmonet/shapes/expressive_button.dart';
+import 'package:monet_ui/shapes/expressive_button.dart';
 
 // Keep this object in a State or another long-lived owner.
 // Create a new one when the endpoints change.

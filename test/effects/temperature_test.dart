@@ -14,11 +14,11 @@
 
 import 'dart:math' as math;
 
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/core/hex_codes.dart';
-import 'package:libmonet/effects/afterimage.dart';
-import 'package:libmonet/effects/temperature.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/core/hex_codes.dart';
+import 'package:monet_ui/effects/afterimage.dart';
+import 'package:monet_ui/effects/temperature.dart';
 import 'package:test/test.dart';
 
 import '../utils/color_matcher.dart';

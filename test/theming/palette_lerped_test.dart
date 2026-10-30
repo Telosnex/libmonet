@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:libmonet/colorspaces/color_model.dart';
-import 'package:libmonet/colorspaces/hct.dart';
-import 'package:libmonet/theming/interpolation_style.dart';
-import 'package:libmonet/theming/palette.dart';
-import 'package:libmonet/theming/palette_lerped.dart';
+import 'package:monet_ui/colorspaces/color_model.dart';
+import 'package:monet_ui/colorspaces/hct.dart';
+import 'package:monet_ui/theming/interpolation_style.dart';
+import 'package:monet_ui/theming/palette.dart';
+import 'package:monet_ui/theming/palette_lerped.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:test/test.dart';
-import 'package:libmonet/colorspaces/gamut.dart';
-import 'package:libmonet/colorspaces/hct_solver.dart';
-import 'package:libmonet/colorspaces/cam16/cam16.dart';
-import 'package:libmonet/colorspaces/cam16/cam16_viewing_conditions.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/colorspaces/gamut.dart';
+import 'package:monet_ui/colorspaces/hct_solver.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16.dart';
+import 'package:monet_ui/colorspaces/cam16/cam16_viewing_conditions.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 
 void main() {
   // =========================================================================

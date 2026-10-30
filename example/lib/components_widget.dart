@@ -4,8 +4,8 @@ import 'package:monet_studio/tab_bar_component.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:libmonet/theming/button_style.dart';
-import 'package:libmonet/theming/monet_theme.dart';
+import 'package:monet_ui/theming/button_style.dart';
+import 'package:monet_ui/theming/monet_theme.dart';
 
 class H3 extends ConsumerWidget {
   final String text;

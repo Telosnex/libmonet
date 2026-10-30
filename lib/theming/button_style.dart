@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:libmonet/theming/palette.dart';
-import 'package:libmonet/theming/monet_theme_data.dart';
-import 'package:libmonet/util/size_scale.dart';
+import 'package:monet_ui/theming/palette.dart';
+import 'package:monet_ui/theming/monet_theme_data.dart';
+import 'package:monet_ui/util/size_scale.dart';
 
 // Resolve Material states to our 3-state model and return a value per state.
 // All parameters are lazy to avoid computing expensive color values until needed.

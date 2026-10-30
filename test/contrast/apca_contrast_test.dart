@@ -3,9 +3,9 @@
 import 'dart:math' as math;
 
 import 'package:test/test.dart';
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/contrast/apca_contrast.dart';
-import 'package:libmonet/core/argb_srgb_xyz_lab.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/contrast/apca_contrast.dart';
+import 'package:monet_ui/core/argb_srgb_xyz_lab.dart';
 
 void main() {
   test(

@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:libmonet/shapes/material_expressive_shape.dart';
+import 'package:monet_ui/shapes/material_expressive_shape.dart';
 
 const _source = 'androidx.compose.material3:material3:1.5.0-alpha27';
 const _coordinateOrder = [

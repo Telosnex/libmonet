@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:libmonet/contrast/apca.dart';
-import 'package:libmonet/contrast/apca_tone_bounds_data.dart';
-import 'package:libmonet/util/lru_cache.dart';
+import 'package:monet_ui/contrast/apca.dart';
+import 'package:monet_ui/contrast/apca_tone_bounds_data.dart';
+import 'package:monet_ui/util/lru_cache.dart';
 
 /// Conservative raw APCA-brightness envelope for every opaque sRGB color at
 /// one actual CIE L*. These are inputs to canonical APCA, before its black clamp.
