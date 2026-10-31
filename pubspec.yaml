@@ -1,6 +1,6 @@
 name: monet_ui
 description: Dynamic, user-friendly, design themes.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/Telosnex/monet_ui
 issue_tracker: https://github.com/Telosnex/monet_ui/issues
 environment:
